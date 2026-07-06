@@ -14,6 +14,8 @@ export default function SoundCatcher() {
   const [targetSound, setTargetSound] = useState(null)
   const [bubbles, setBubbles] = useState([])
   const [score, setScore] = useState(0)
+  const [combo, setCombo] = useState(0)
+  const [isWon, setIsWon] = useState(false)
 
   const hasPlayedRef = React.useRef(false)
   const lastXRef = React.useRef(50)
@@ -23,11 +25,11 @@ export default function SoundCatcher() {
     if (!isPlaying && tickets > 0) {
       useTicket()
       setIsPlaying(true)
-      // Pick a random target sound
-      const q = questionEngine.generateDailyChallenge()[0]
-      setTargetSound(q.targetSound)
+      const pool = [...questionEngine.sounds].sort(() => Math.random() - 0.5)
+      const target = pool[0]
+      setTargetSound(target)
       if (!hasPlayedRef.current) {
-        audioEngine.play(q.targetSound.audio_url).catch(()=>{})
+        audioEngine.play(target.audio_url).catch(()=>{})
         hasPlayedRef.current = true
       }
     } else if (!isPlaying) {
@@ -37,27 +39,28 @@ export default function SoundCatcher() {
     return () => audioEngine.stop()
   }, [])
 
-  // Bubble Spawner Logic (Simplified for Prototype)
+  // Bubble Spawner Logic (Dynamic Difficulty)
   useEffect(() => {
-    if (!isPlaying || !targetSound) return;
+    if (!isPlaying || !targetSound || isWon) return;
     
     let bubbleId = 0
+    // QA FIX: Escalating difficulty (faster spawn rate as score increases)
+    const spawnRate = Math.max(800, 2000 - (score * 100))
+    
     const interval = setInterval(() => {
-      // QA FIX: Prevent bubble flooding if tab is backgrounded
       if (document.hidden) return;
 
       setBubbles(prev => {
-        // Randomly decide if bubble is correct or distractor
-        const isCorrect = Math.random() > 0.5
+        // As score goes up, more distractors (isCorrect probability goes down slightly)
+        const isCorrect = Math.random() > (0.4 + (score * 0.02))
+        
         const soundObj = isCorrect 
           ? targetSound 
-          : questionEngine.sounds[Math.floor(Math.random() * questionEngine.sounds.length)]
+          : questionEngine.sounds.filter(s => s.sound_id !== targetSound.sound_id)[Math.floor(Math.random() * (questionEngine.sounds.length - 1))]
 
-        // QA FIX 1: Remove bubbles that have fallen off screen (older than 6s) to prevent memory leaks
         const now = Date.now()
         const activeBubbles = prev.filter(b => now - b.createdAt < 6000)
 
-        // QA FIX 2: Prevent overlapping bubbles by ensuring X is at least 20% away from last X
         let newX = Math.random() * 80 + 10;
         while (Math.abs(newX - lastXRef.current) < 20) {
           newX = Math.random() * 80 + 10;
@@ -71,13 +74,13 @@ export default function SoundCatcher() {
           isCorrect,
           createdAt: now,
           x: newX,
-          y: -20 // Start above screen
+          y: -20
         }]
       })
-    }, 2000)
+    }, spawnRate)
 
     return () => clearInterval(interval)
-  }, [isPlaying, targetSound])
+  }, [isPlaying, targetSound, score, isWon])
 
   const handlePop = (bubble) => {
     // Mark as popping for animation
@@ -92,19 +95,28 @@ export default function SoundCatcher() {
       setScore(s => {
         const newScore = s + 1
         if (newScore >= 10) {
-          setTimeout(() => navigate('/braingames'), 2000)
+          setIsWon(true)
+          setTimeout(() => navigate('/braingames'), 4000) // Longer delay for celebration
         }
         return newScore
       })
+      setCombo(c => c + 1)
       
-      // Play correct chime, then repeat target sound
+      // QA FIX: Change target sound to prevent visual guessing exploit!
       audioEngine.play('assets/correct_chime.mp3').catch(()=>{}).finally(() => {
-        if (targetSound) audioEngine.play(targetSound.audio_url).catch(()=>{})
+        if (score + 1 < 10) {
+          const newPool = questionEngine.sounds.filter(s => s.sound_id !== targetSound.sound_id)
+          const newTarget = newPool[Math.floor(Math.random() * newPool.length)]
+          setTargetSound(newTarget)
+          setBubbles([]) // Clear screen for new target
+          setTimeout(() => audioEngine.play(newTarget.audio_url).catch(()=>{}), 500)
+        }
       })
     } else {
-      setScore(s => Math.max(0, s - 1)) // Penalty
-      // Pedagogy FIX: Tell them what they actually clicked!
+      // QA FIX: Remove score penalty, reset combo, provide corrective audio
+      setCombo(0)
       if (bubble.audioUrl) audioEngine.play(bubble.audioUrl).catch(()=>{})
+      // Optional: Visual shake effect could be added here
     }
   }
 
@@ -119,12 +131,21 @@ export default function SoundCatcher() {
 
       {/* Header */}
       <div style={{ width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center', zIndex: 10 }}>
-        <button className="btn-secondary" style={{ padding: '0.5rem', background: 'white' }} onClick={() => navigate('/braingames')}>
+        <button className="btn-secondary" style={{ padding: '0.5rem', background: 'white' }} onClick={() => {
+          if (window.confirm("Quit game? You will lose your ticket!")) navigate('/braingames')
+        }}>
           <X size={24} />
         </button>
         
-        <div style={{ background: 'white', padding: '0.5rem 2rem', borderRadius: '100px', fontSize: '1.5rem', fontWeight: 'bold', color: '#0369a1', boxShadow: '0 4px 0 rgba(0,0,0,0.1)' }}>
-          Score: {score} / 10
+        <div style={{ display: 'flex', gap: '1rem' }}>
+          {combo > 2 && (
+             <div style={{ background: '#f59e0b', padding: '0.5rem 1rem', borderRadius: '100px', fontSize: '1.2rem', fontWeight: 'bold', color: 'white', animation: 'popIn 0.3s' }}>
+               {combo} Combo! 🔥
+             </div>
+          )}
+          <div style={{ background: 'white', padding: '0.5rem 2rem', borderRadius: '100px', fontSize: '1.5rem', fontWeight: 'bold', color: '#0369a1', boxShadow: '0 4px 0 rgba(0,0,0,0.1)' }}>
+            Score: {score} / 10
+          </div>
         </div>
       </div>
 
@@ -141,10 +162,17 @@ export default function SoundCatcher() {
         >
           <Volume2 size={48} />
         </button>
-        <h2 style={{ color: 'white', marginTop: '1rem', textShadow: '2px 2px 0 #0369a1' }}>
-          {score >= 10 ? '🎉 You Win! 🎉' : 'Catch the matching sound!'}
+        <h2 style={{ color: 'white', marginTop: '1rem', textShadow: '2px 2px 0 #0369a1', fontSize: '2.5rem', animation: isWon ? 'pulse-glow 2s infinite' : 'none' }}>
+          {isWon ? '🎉 You Win! 🎉' : 'Catch the matching sound!'}
         </h2>
       </div>
+
+      {/* Win Effects */}
+      {isWon && (
+        <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 20, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+           <div style={{ fontSize: '10rem', animation: 'popIn 1s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards' }}>🏆</div>
+        </div>
+      )}
 
       {/* Falling Bubbles */}
       {score < 10 && bubbles.map(bubble => (

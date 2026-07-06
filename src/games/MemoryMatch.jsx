@@ -16,6 +16,16 @@ export default function MemoryMatch() {
   const [isLocked, setIsLocked] = useState(false);
   const [moves, setMoves] = useState(0);
 
+  // QA FIX: Unique colors and icons for the 6 pairs to reduce cognitive load
+  const cardThemes = [
+    { color: '#fca5a5', icon: '🍎' },
+    { color: '#fcd34d', icon: '⭐' },
+    { color: '#86efac', icon: '🐸' },
+    { color: '#93c5fd', icon: '🐳' },
+    { color: '#c4b5fd', icon: '🍇' },
+    { color: '#f9a8d4', icon: '🌸' }
+  ];
+
   // Initialize Game
   useEffect(() => {
     if (!isPlaying && tickets > 0) {
@@ -28,8 +38,8 @@ export default function MemoryMatch() {
       // Create pairs: each sound has an "Audio" card and a "Text" card
       const deck = [];
       pool.forEach((sound, index) => {
-        deck.push({ id: `audio_${index}`, pairId: index, type: 'audio', sound });
-        deck.push({ id: `text_${index}`, pairId: index, type: 'text', sound });
+        deck.push({ id: `audio_${index}`, pairId: index, type: 'audio', sound, theme: cardThemes[index] });
+        deck.push({ id: `text_${index}`, pairId: index, type: 'text', sound, theme: cardThemes[index] });
       });
       
       // Shuffle deck
@@ -49,12 +59,8 @@ export default function MemoryMatch() {
     
     const card = cards[index];
     
-    // Play sound if it's an audio card
-    if (card.type === 'audio') {
-      audioEngine.play(card.sound.audio_url);
-    } else {
-      audioEngine.playUI('pop');
-    }
+    // QA FIX: Play sound for BOTH audio and text cards!
+    audioEngine.play(card.sound.audio_url);
 
     const newFlipped = [...flippedIndices, index];
     setFlippedIndices(newFlipped);
@@ -82,7 +88,7 @@ export default function MemoryMatch() {
         setTimeout(() => {
           setFlippedIndices([]);
           setIsLocked(false);
-        }, 1200);
+        }, 600); // QA FIX: Reduced from 1200ms to prevent UI lockout frustration
       }
     }
   };
@@ -93,10 +99,12 @@ export default function MemoryMatch() {
     <div className="screen-container" style={{ background: '#f5f3ff', position: 'relative' }}>
       {/* Header */}
       <div style={{ width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center', zIndex: 10, marginBottom: '2rem' }}>
-        <button className="btn-secondary" style={{ padding: '0.5rem', background: 'white' }} onClick={() => navigate('/braingames')}>
+        <button className="btn-secondary" style={{ padding: '0.5rem', background: 'white' }} onClick={() => {
+          if (window.confirm("Quit game? You will lose your ticket!")) navigate('/braingames');
+        }}>
           <X size={24} />
         </button>
-        <div style={{ display: 'flex', gap: '1rem' }}>
+        <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', justifyContent: 'flex-end' }}>
            <div style={{ background: 'white', padding: '0.5rem 2rem', borderRadius: '100px', fontSize: '1.25rem', fontWeight: 'bold', color: '#6d28d9', boxShadow: '0 4px 0 rgba(0,0,0,0.1)' }}>
              Moves: {moves}
            </div>
@@ -106,11 +114,12 @@ export default function MemoryMatch() {
         </div>
       </div>
 
-      <h1 style={{ textAlign: 'center', color: '#7c3aed', fontSize: '2.5rem', marginBottom: '2rem' }}>
+      <h1 style={{ textAlign: 'center', color: '#7c3aed', fontSize: '2.5rem', marginBottom: '2rem', animation: matchedPairs.length === 6 ? 'pulse-glow 2s infinite' : 'none' }}>
         {matchedPairs.length === 6 ? '🎉 You matched them all! 🎉' : 'Memory Match'}
       </h1>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1rem', maxWidth: '800px', margin: '0 auto', flex: 1 }}>
+      {/* QA FIX: Grid responsiveness */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '1rem', width: '100%', maxWidth: '800px', margin: '0 auto', flex: 1, alignContent: 'start' }}>
         {cards.map((card, index) => {
           const isFlipped = flippedIndices.includes(index) || matchedPairs.includes(card.pairId);
           
@@ -140,14 +149,17 @@ export default function MemoryMatch() {
                 {/* Front of Card */}
                 <div style={{
                   position: 'absolute', width: '100%', height: '100%', backfaceVisibility: 'hidden', transform: 'rotateY(180deg)',
-                  background: matchedPairs.includes(card.pairId) ? '#d1fae5' : 'white', 
-                  borderRadius: '16px', border: `4px solid ${matchedPairs.includes(card.pairId) ? '#34d399' : '#c4b5fd'}`,
-                  display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 6px rgba(0,0,0,0.1)'
+                  background: matchedPairs.includes(card.pairId) ? '#d1fae5' : (card.type === 'audio' ? card.theme.color : 'white'), 
+                  borderRadius: '16px', border: `4px solid ${matchedPairs.includes(card.pairId) ? '#34d399' : (card.type === 'audio' ? 'white' : '#c4b5fd')}`,
+                  display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 6px rgba(0,0,0,0.1)'
                 }}>
                   {card.type === 'audio' ? (
-                    <Volume2 size={48} color={matchedPairs.includes(card.pairId) ? '#059669' : '#7c3aed'} />
+                    <>
+                      <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>{card.theme.icon}</div>
+                      <Volume2 size={40} color={matchedPairs.includes(card.pairId) ? '#059669' : 'white'} />
+                    </>
                   ) : (
-                    <span style={{ fontSize: '3rem', fontWeight: 'bold', color: matchedPairs.includes(card.pairId) ? '#059669' : '#1e3a8a' }}>
+                    <span style={{ fontSize: '3.5rem', fontWeight: 'bold', color: matchedPairs.includes(card.pairId) ? '#059669' : '#1e3a8a' }}>
                       {card.sound.label}
                     </span>
                   )}

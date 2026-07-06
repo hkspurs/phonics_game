@@ -31,7 +31,15 @@ export default function BrainGamesIsland() {
       </div>
 
       <h1 style={{ textAlign: 'center', color: '#86198f', fontSize: '2.5rem', marginTop: '2rem' }}>Brain Games Island</h1>
-      <p style={{ textAlign: 'center', color: '#d946ef', fontSize: '1.25rem', marginBottom: '3rem' }}>Use tickets to play fun mini-games!</p>
+      <p style={{ textAlign: 'center', color: '#d946ef', fontSize: '1.25rem', marginBottom: '1rem' }}>Use tickets to play fun mini-games!</p>
+      
+      {tickets <= 0 && (
+        <div style={{ textAlign: 'center', marginBottom: '2rem', animation: 'wobble 2s infinite' }}>
+          <div style={{ display: 'inline-block', background: '#fee2e2', color: '#b91c1c', padding: '1rem 2rem', borderRadius: '100px', fontWeight: 'bold', fontSize: '1.2rem', border: '2px solid #f87171' }}>
+            Out of tickets! 😭 Complete a Daily Challenge to earn more!
+          </div>
+        </div>
+      )}
 
       <div style={{ display: 'flex', gap: '2rem', justifyContent: 'center', flexWrap: 'wrap' }}>
         
