@@ -70,21 +70,22 @@ class QuestionEngine {
     if (!targetSound) return this.generateDailyChallenge();
 
     // QA FIX: Prevent Semantic Satiation by interleaving review sounds
-    const reviewPool = shuffle(this.sounds.filter(s => s.sound_id !== targetSound.sound_id)).slice(0, 2);
+    const reviewPool = shuffle(this.sounds.filter(s => s.sound_id !== targetSound.sound_id)).slice(0, 3);
     
+    // Target, Target, Review, Target, Review, Target, Target, Review, Compare, Boss
     const combinedTargets = [
       targetSound, targetSound, reviewPool[0], 
-      targetSound, targetSound, reviewPool[1], 
-      targetSound, targetSound, targetSound, targetSound
+      targetSound, reviewPool[1], targetSound, 
+      targetSound, reviewPool[2], targetSound, targetSound
     ];
-    let distractorBasePool = Array.from(new Set([targetSound, ...shuffle(this.sounds).slice(0, 10)]));
+    let distractorBasePool = Array.from(new Set([targetSound, ...shuffle(this.sounds).slice(0, 15)]));
     return this._buildQuestionsArray(combinedTargets, distractorBasePool);
   }
 
   _buildQuestionsArray(combinedTargets, distractorBasePool) {
     const questions = [];
     let lastCorrectIndex = -1;
-    let consecutiveCorrectCount = 0;
+    let consecutiveSameCount = 0; // Prevent >2 'Same' in a row (Challenge 2)
 
     combinedTargets.forEach((targetSound, index) => {
       let type = 'listen_and_choose';
@@ -94,27 +95,30 @@ class QuestionEngine {
       // QA FIX: Boss sound requires 3 distractors (4 choices total) to avoid extreme visual clutter
       const numDistractors = type === 'boss' ? 3 : 2;
       
-      // Smart Distractor Logic: Match by sound family, not blind string slicing
+      // Smart Distractor Logic (Challenge 28: Dynamic Difficulty)
+      // Pick 1 from same family (if possible), others completely random to avoid guessing purely by family
       let potentialDistractors = distractorBasePool.filter(s => s.sound_id !== targetSound.sound_id);
-      let smartDistractors = potentialDistractors.filter(s => 
-        s.family && targetSound.family && s.family === targetSound.family
-      );
+      let sameFamily = potentialDistractors.filter(s => s.family && targetSound.family && s.family === targetSound.family);
+      let diffFamily = potentialDistractors.filter(s => !s.family || s.family !== targetSound.family);
       
-      let distractors;
-      if (smartDistractors.length >= numDistractors) {
-        distractors = shuffle(smartDistractors).slice(0, numDistractors);
+      let distractors = [];
+      if (sameFamily.length > 0) {
+        distractors.push(shuffle(sameFamily)[0]);
+        distractors.push(...shuffle(diffFamily).slice(0, numDistractors - 1));
       } else {
-        // Fallback: force distractors that share first letter to prevent easy guessing
-        let letterDistractors = potentialDistractors.filter(s => s.label[0] === targetSound.label[0]);
-        if (letterDistractors.length >= numDistractors) {
-           distractors = shuffle(letterDistractors).slice(0, numDistractors);
-        } else {
-           distractors = shuffle(potentialDistractors).slice(0, numDistractors);
-        }
+        distractors = shuffle(potentialDistractors).slice(0, numDistractors);
       }
       
       if (type === 'compare') {
-        const isSame = Math.random() > 0.5;
+        let isSame = Math.random() > 0.5;
+        // Challenge 2: Prevent 'Same' from appearing too many times in a row
+        if (consecutiveSameCount >= 2) {
+          isSame = false;
+        }
+        
+        if (isSame) consecutiveSameCount++;
+        else consecutiveSameCount = 0;
+
         const compareSoundObj = isSame ? targetSound : distractors[0];
         questions.push({
           id: `q_${index}`,
@@ -125,27 +129,16 @@ class QuestionEngine {
           correctAnswer: isSame ? 'Same' : 'Different'
         });
         lastCorrectIndex = -1; // Reset for compare
-        consecutiveCorrectCount = 0;
       } else {
         let choices = shuffle([targetSound.label, ...distractors.map(d => d.label)]);
         let correctIndex = choices.indexOf(targetSound.label);
 
-        // Player Experience FIX: Prevent answer position repeating more than 2 times
-        if (correctIndex === lastCorrectIndex) {
-          consecutiveCorrectCount++;
-          if (consecutiveCorrectCount >= 2) {
-            // Force swap with a different index
-            const newIndex = (correctIndex + 1) % choices.length;
-            const temp = choices[newIndex];
-            choices[newIndex] = choices[correctIndex];
-            choices[correctIndex] = temp;
-            correctIndex = newIndex;
-            consecutiveCorrectCount = 1;
-          }
-        } else {
-          lastCorrectIndex = correctIndex;
-          consecutiveCorrectCount = 1;
+        // Player Experience FIX (Challenge 21): Prevent answer position repeating AT ALL
+        while (correctIndex === lastCorrectIndex) {
+            choices = shuffle(choices);
+            correctIndex = choices.indexOf(targetSound.label);
         }
+        lastCorrectIndex = correctIndex;
 
         questions.push({
           id: `q_${index}`,

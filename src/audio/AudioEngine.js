@@ -1,49 +1,95 @@
 class AudioEngine {
   constructor() {
     this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
-    this.preloadedBuffers = {};
+    
+    // Master Compressor for Volume Normalization (Challenge 14)
+    this.compressor = this.audioContext.createDynamicsCompressor();
+    this.compressor.threshold.setValueAtTime(-24, this.audioContext.currentTime);
+    this.compressor.knee.setValueAtTime(30, this.audioContext.currentTime);
+    this.compressor.ratio.setValueAtTime(12, this.audioContext.currentTime);
+    this.compressor.attack.setValueAtTime(0.003, this.audioContext.currentTime);
+    this.compressor.release.setValueAtTime(0.25, this.audioContext.currentTime);
+    this.compressor.connect(this.audioContext.destination);
+
+    this.preloadedBuffers = new Map(); // Use Map for LRU Cache (Challenge 11)
+    this.MAX_CACHE_SIZE = 30;
+
     this.currentSource = null;
     this.bgmSource = null;
+    this.playCallId = 0; // Prevent Race Conditions (Challenge 12)
+
+    // Handle background suspend/resume (Challenge 20)
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) {
+        this.audioContext.suspend();
+      } else {
+        this.audioContext.resume();
+      }
+    });
   }
 
-  async _loadBuffer(url) {
-    if (this.preloadedBuffers[url]) return this.preloadedBuffers[url];
-    try {
-      const response = await fetch(url);
-      const arrayBuffer = await response.arrayBuffer();
-      const audioBuffer = await this.audioContext.decodeAudioData(arrayBuffer);
-      this.preloadedBuffers[url] = audioBuffer;
-      return audioBuffer;
-    } catch (e) {
-      console.warn("Failed to load audio:", url, e);
-      return null;
+  async _loadBuffer(url, retries = 2) {
+    if (this.preloadedBuffers.has(url)) {
+      // LRU refresh
+      const buf = this.preloadedBuffers.get(url);
+      this.preloadedBuffers.delete(url);
+      this.preloadedBuffers.set(url, buf);
+      return buf;
     }
+    
+    for (let i = 0; i <= retries; i++) {
+      try {
+        const response = await fetch(url);
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const arrayBuffer = await response.arrayBuffer();
+        const audioBuffer = await this.audioContext.decodeAudioData(arrayBuffer);
+        
+        // Enforce LRU size limit
+        if (this.preloadedBuffers.size >= this.MAX_CACHE_SIZE) {
+          const firstKey = this.preloadedBuffers.keys().next().value;
+          this.preloadedBuffers.delete(firstKey);
+        }
+        
+        this.preloadedBuffers.set(url, audioBuffer);
+        return audioBuffer;
+      } catch (e) {
+        console.warn(`Failed to load audio (Attempt ${i+1}):`, url, e);
+        if (i === retries) return null;
+        await new Promise(r => setTimeout(r, 500)); // wait 500ms before retry
+      }
+    }
+    return null;
   }
 
   async preload(urls) {
     for (const url of urls) {
-      if (url && !this.preloadedBuffers[url]) {
-        await this._loadBuffer(url);
+      if (url && !this.preloadedBuffers.has(url)) {
+        await this._loadBuffer(url); // Fire and forget can cause issues if awaited linearly.
       }
     }
   }
 
-  play(url, startTimeMs = 0, durationMs = 0) {
+  play(url, startTimeMs = 0, durationMs = 0, playbackRate = 1.0) {
     return new Promise(async (resolve) => {
       this.stop(); // stop current
+      const currentCallId = ++this.playCallId; // Unique ID for this play request
+
       if (this.audioContext.state === 'suspended') {
-        await this.audioContext.resume();
+        await this.audioContext.resume().catch(()=>{});
       }
 
       const buffer = await this._loadBuffer(url);
-      if (!buffer) {
+      
+      // If a new play call was made while we were fetching, abort this one (Challenge 12)
+      if (this.playCallId !== currentCallId || !buffer) {
         resolve();
         return;
       }
 
       const source = this.audioContext.createBufferSource();
       source.buffer = buffer;
-      source.connect(this.audioContext.destination);
+      source.playbackRate.value = playbackRate; // Challenge 26: Playback Speed
+      source.connect(this.compressor); // Connect to compressor instead of raw destination
       this.currentSource = source;
 
       source.onended = () => {
@@ -51,7 +97,7 @@ class AudioEngine {
       };
 
       const startOffset = startTimeMs / 1000;
-      const duration = durationMs > 0 ? durationMs / 1000 : buffer.duration - startOffset;
+      const duration = durationMs > 0 ? durationMs / 1000 : (buffer.duration - startOffset) / playbackRate;
 
       if (durationMs > 0) {
         source.start(0, startOffset, duration);
@@ -85,7 +131,7 @@ class AudioEngine {
     gainNode.gain.value = volume;
     
     source.connect(gainNode);
-    gainNode.connect(this.audioContext.destination);
+    gainNode.connect(this.compressor); // Connect to compressor
     
     this.bgmSource = source;
     source.start(0);
@@ -106,7 +152,7 @@ class AudioEngine {
     const gainNode = this.audioContext.createGain();
     
     osc.connect(gainNode);
-    gainNode.connect(this.audioContext.destination);
+    gainNode.connect(this.compressor);
     
     if (type === 'pop') {
       osc.type = 'sine';

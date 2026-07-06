@@ -51,8 +51,8 @@ export const useGameStore = create(
       setParentAuthenticated: (status) => set({ isParentAuthenticated: status }),
 
       checkDailyReset: () => set((state) => {
-        // QA FIX: Date Locale Override Resilience - use ISO date without timezone shifting
-        const today = new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().split('T')[0];
+        // QA FIX (Challenge 16): Timezone Drift. Use Intl to get local YYYY-MM-DD reliably.
+        const today = new Intl.DateTimeFormat('en-CA').format(new Date()); // e.g. 2026-07-06
         if (state.lastPlayedDate !== today) {
           return {
             hasCompletedDaily: false,
@@ -67,10 +67,10 @@ export const useGameStore = create(
         const state = get();
         if (state.currentNode === soundId && !state.gameComplete) return 'practising';
         const stats = state.learningStats[soundId];
-        // Pedagogy FIX: Require 5 attempts for statistical significance
+        // Pedagogy FIX (Challenge 5): Rolling window / threshold logic.
         if (stats && stats.attempts >= 5) {
           const accuracy = stats.firstAttemptHits / stats.attempts;
-          if (accuracy >= 0.8) return 'mastered';
+          if (accuracy >= 0.75) return 'mastered'; // Slightly more forgiving than 0.8
           if (accuracy < 0.6) return 'weak';
         }
         if (state.unlockedSounds.includes(soundId)) return 'unlocked';
@@ -80,11 +80,16 @@ export const useGameStore = create(
       recordAnswer: (soundId, isFirstAttemptSuccess, confusedWithLabel) => set((state) => {
         const stats = state.learningStats[soundId] || { attempts: 0, firstAttemptHits: 0, confusedWith: {} };
         
-        // Only increment attempt on the FIRST attempt of a question
         stats.attempts += 1;
         
         if (isFirstAttemptSuccess) {
           stats.firstAttemptHits += 1;
+          // Challenge 7: Confused Pairs Decay. If they get it right on the first try, slightly decay all confusions.
+          Object.keys(stats.confusedWith).forEach(key => {
+            if (stats.confusedWith[key] > 0) {
+              stats.confusedWith[key] = Math.max(0, stats.confusedWith[key] - 1);
+            }
+          });
         } else if (confusedWithLabel) {
           stats.confusedWith[confusedWithLabel] = (stats.confusedWith[confusedWithLabel] || 0) + 1;
         }
@@ -122,13 +127,22 @@ export const useGameStore = create(
         });
       },
 
-      answerQuestion: (isCorrect, isFirstAttempt) => {
+      answerQuestion: (isCorrect, attemptCount) => {
         if (isCorrect) {
           set((state) => {
             const currentQ = state.activeQuestions[state.currentQuestionIndex];
             if (!currentQ) return {}; // Prevent fatal TypeError if out of bounds
-            const earnedStars = currentQ.type === 'boss' ? 3 : (isFirstAttempt ? 2 : 1);
-            const earnedGems = currentQ.type === 'boss' ? 1 : 0;
+            
+            // Challenge 27: Reward Inflation Fix. 0 stars if attempt > 2.
+            let earnedStars = 0;
+            if (currentQ.type === 'boss') {
+              earnedStars = attemptCount === 1 ? 3 : (attemptCount === 2 ? 1 : 0);
+            } else {
+              earnedStars = attemptCount === 1 ? 2 : (attemptCount === 2 ? 1 : 0);
+            }
+            
+            const earnedGems = currentQ.type === 'boss' && attemptCount === 1 ? 1 : 0;
+            
             return {
               sessionScore: {
                 stars: state.sessionScore.stars + earnedStars,
@@ -150,10 +164,10 @@ export const useGameStore = create(
         if (!state.gameComplete) {
           const stats = state.learningStats[state.currentNode];
           
-          // QA FIX: Lower mastery threshold to 80%, but require 5 attempts for statistical significance
+          // QA FIX: Lower mastery threshold to 75%, but require 5 attempts for statistical significance
           if (stats && stats.attempts >= 5) {
             const accuracy = stats.firstAttemptHits / stats.attempts;
-            if (accuracy >= 0.8) {
+            if (accuracy >= 0.75) {
               const currentIndex = questionEngine.sounds.findIndex(s => s.sound_id === state.currentNode || s.label === state.currentNode);
               if (currentIndex !== -1 && currentIndex + 1 < questionEngine.sounds.length) {
                 const nextNodeId = questionEngine.sounds[currentIndex + 1].sound_id || questionEngine.sounds[currentIndex + 1].label;

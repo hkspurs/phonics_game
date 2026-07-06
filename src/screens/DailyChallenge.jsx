@@ -23,7 +23,7 @@ export default function DailyChallenge() {
 
   const [selected, setSelected] = useState(null)
   const [feedbackState, setFeedbackState] = useState(null) // 'correct', 'wrong', null
-  const [isFirstAttempt, setIsFirstAttempt] = useState(true)
+  const [attemptCount, setAttemptCount] = useState(1) // QA FIX (Challenge 27): Track attempts for reward inflation
   const [disabledChoices, setDisabledChoices] = useState([]) // QA FIX: Track disabled choices
   const [isProcessing, setIsProcessing] = useState(false) // QA FIX: Spam-click Cooldown
 
@@ -64,7 +64,8 @@ export default function DailyChallenge() {
       }
 
       setTimeout(() => {
-        audioEngine.play(currentQ.targetSound.audio_url).catch(() => {}).finally(() => setIsProcessing(false))
+        // Playback Speed (Challenge 26): 0.9x speed for better accessibility
+        audioEngine.play(currentQ.targetSound.audio_url, 0, 0, 0.9).catch(() => {}).finally(() => setIsProcessing(false))
       }, 1000); // Wait 1s for voice-over
     }
     // Cleanup on unmount
@@ -91,10 +92,10 @@ export default function DailyChallenge() {
 
     if (isCorrect) {
       setFeedbackState('correct')
-      answerQuestion(true, isFirstAttempt)
+      answerQuestion(true, attemptCount)
       
       // QA FIX: Record learning stats
-      if (isFirstAttempt) {
+      if (attemptCount === 1) {
         recordAnswer(currentQ.targetSound.label, true, null);
       }
       
@@ -111,7 +112,7 @@ export default function DailyChallenge() {
           } else {
             setFeedbackState(null)
             setSelected(null)
-            setIsFirstAttempt(true)
+            setAttemptCount(1)
             setDisabledChoices([])
             nextQuestion()
           }
@@ -132,13 +133,13 @@ export default function DailyChallenge() {
 
     } else {
       // QA FIX: Remove traumatic 'wrong' state delay. Just fade out the button instantly.
-      answerQuestion(false, isFirstAttempt)
+      answerQuestion(false, attemptCount)
       
-      if (isFirstAttempt) {
+      if (attemptCount === 1) {
         recordAnswer(currentQ.targetSound.label, false, choice);
       }
       
-      setIsFirstAttempt(false)
+      setAttemptCount(prev => prev + 1)
       setDisabledChoices(prev => [...prev, choice])
       
       setFeedbackState('wrong')
@@ -147,7 +148,7 @@ export default function DailyChallenge() {
       }, 1000)
       
       // Play target audio again as a hint, and DO NOT unlock until it finishes!
-      audioEngine.play(currentQ.targetSound.audio_url).catch(() => {}).finally(() => {
+      audioEngine.play(currentQ.targetSound.audio_url, 0, 0, 0.9).catch(() => {}).finally(() => {
         setIsProcessing(false)
       })
     }
@@ -155,7 +156,7 @@ export default function DailyChallenge() {
 
   const handlePlayAudio = () => {
     if (isProcessing) return; // QA FIX: Prevent audio overlap spam
-    audioEngine.play(currentQ.targetSound.audio_url)
+    audioEngine.play(currentQ.targetSound.audio_url, 0, 0, 0.9)
   }
 
   const progressPercent = Math.max(5, (currentQuestionIndex / activeQuestions.length) * 100)
@@ -207,7 +208,7 @@ export default function DailyChallenge() {
             <button 
               className="btn-primary" 
               style={{ padding: '2rem', background: '#38bdf8', borderRadius: '50%' }}
-              onClick={() => !isProcessing && audioEngine.play(currentQ.targetSound.audio_url).catch(()=>{})}
+              onClick={() => !isProcessing && audioEngine.play(currentQ.targetSound.audio_url, 0, 0, 0.9).catch(()=>{})}
             >
               <Volume2 size={48} />
               <div style={{ fontSize: '1rem', marginTop: '0.5rem' }}>Sound 1</div>
@@ -216,7 +217,7 @@ export default function DailyChallenge() {
             <button 
               className="btn-primary" 
               style={{ padding: '2rem', background: '#818cf8', borderRadius: '50%' }}
-              onClick={() => !isProcessing && audioEngine.play(currentQ.compareSound.audio_url).catch(()=>{})}
+              onClick={() => !isProcessing && audioEngine.play(currentQ.compareSound.audio_url, 0, 0, 0.9).catch(()=>{})}
             >
               <Volume2 size={48} />
               <div style={{ fontSize: '1rem', marginTop: '0.5rem' }}>Sound 2</div>
@@ -268,12 +269,12 @@ export default function DailyChallenge() {
                 padding: '3rem', 
                 background: isProcessing ? '#0ea5e9' : '#38bdf8', 
                 borderRadius: '50%', 
-                animation: isProcessing ? 'pulse-glow 1s infinite' : (isFirstAttempt ? 'pulse-glow 2s infinite' : 'none'), 
+                animation: isProcessing ? 'pulse-glow 1s infinite' : (attemptCount === 1 ? 'pulse-glow 2s infinite' : 'none'), 
                 zIndex: 2,
                 transition: 'background 0.3s',
                 display: 'flex', alignItems: 'center', justifyContent: 'center'
               }}
-              onClick={() => !isProcessing && audioEngine.play(currentQ.targetSound.audio_url).catch(()=>{})}
+              onClick={() => !isProcessing && audioEngine.play(currentQ.targetSound.audio_url, 0, 0, 0.9).catch(()=>{})}
             >
               {isProcessing ? (
                 <div style={{ width: '64px', height: '64px', border: '6px solid #e0f2fe', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
@@ -284,7 +285,7 @@ export default function DailyChallenge() {
             <div style={{ position: 'absolute', right: '-140px', bottom: '0', width: '140px', height: '140px', padding: '10px' }}>
               <ReplayHelper 
                 isPlaying={isProcessing} 
-                onClick={() => !isProcessing && audioEngine.play(currentQ.targetSound.audio_url).catch(()=>{})} 
+                onClick={() => !isProcessing && audioEngine.play(currentQ.targetSound.audio_url, 0, 0, 0.9).catch(()=>{})} 
               />
             </div>
           </div>
