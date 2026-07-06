@@ -7,6 +7,7 @@ import ReplayHelper from '../components/ReplayHelper'
 import CorrectFeedback from '../components/CorrectFeedback'
 import WrongFeedback from '../components/WrongFeedback'
 import AppleIcon from '../components/AppleIcon'
+import MascotRabbit from '../components/MascotRabbit'
 
 export default function DailyChallenge() {
   const navigate = useNavigate()
@@ -200,7 +201,7 @@ export default function DailyChallenge() {
 
       {/* Question Area (QA FIX: Implement Comparison Template) */}
       {currentQ.type === 'compare' ? (
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%', maxWidth: '800px', margin: '0 auto' }}>
           <h2 style={{ color: '#1e3a8a', marginBottom: '2rem' }}>Are these sounds the same or different?</h2>
           <div style={{ display: 'flex', gap: '2rem', marginBottom: '3rem', flexWrap: 'wrap', justifyContent: 'center' }}>
             <button 
@@ -258,7 +259,7 @@ export default function DailyChallenge() {
           </div>
         </div>
       ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%', maxWidth: '800px', margin: '0 auto' }}>
           
           <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '3rem' }}>
             <button 
@@ -269,13 +270,18 @@ export default function DailyChallenge() {
                 borderRadius: '50%', 
                 animation: isProcessing ? 'pulse-glow 1s infinite' : (isFirstAttempt ? 'pulse-glow 2s infinite' : 'none'), 
                 zIndex: 2,
-                transition: 'background 0.3s'
+                transition: 'background 0.3s',
+                display: 'flex', alignItems: 'center', justifyContent: 'center'
               }}
               onClick={() => !isProcessing && audioEngine.play(currentQ.targetSound.audio_url).catch(()=>{})}
             >
-              <Volume2 size={64} color={isProcessing ? '#e0f2fe' : 'white'} />
+              {isProcessing ? (
+                <div style={{ width: '64px', height: '64px', border: '6px solid #e0f2fe', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
+              ) : (
+                <Volume2 size={64} color={'white'} />
+              )}
             </button>
-            <div style={{ position: 'absolute', right: '-120px', bottom: '0', width: '120px', height: '120px' }}>
+            <div style={{ position: 'absolute', right: '-140px', bottom: '0', width: '140px', height: '140px', padding: '10px' }}>
               <ReplayHelper 
                 isPlaying={isProcessing} 
                 onClick={() => !isProcessing && audioEngine.play(currentQ.targetSound.audio_url).catch(()=>{})} 
@@ -316,7 +322,8 @@ export default function DailyChallenge() {
       )}
 
       {/* Mascot Feedback Area */}
-      <div style={{ position: 'absolute', bottom: '2rem', left: '2rem', width: '180px', height: '180px', pointerEvents: 'none' }}>
+      <div style={{ position: 'absolute', bottom: '2rem', left: '2rem', width: '180px', height: '180px', pointerEvents: 'none', zIndex: 10 }}>
+        <MascotRabbit style={{ width: '100%', height: '100%' }} feedbackState={feedbackState} />
         {feedbackState === 'correct' && <CorrectFeedback trigger={true} style={{ position: 'absolute', inset: 0 }} />}
         {feedbackState === 'wrong' && <WrongFeedback trigger={true} style={{ position: 'absolute', inset: 0 }} />}
       </div>

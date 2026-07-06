@@ -1,9 +1,12 @@
 import React from 'react';
 import './MascotRabbit.css';
 
-export default function MascotRabbit({ style, isListening = false }) {
+export default function MascotRabbit({ style, isListening = false, feedbackState = null }) {
+  const isCorrect = feedbackState === 'correct';
+  
   return (
-    <div className={`mascot-rabbit-container ${isListening ? 'listening' : 'idle'}`} style={style}>
+    <div className={`mascot-rabbit-container ${isListening ? 'listening' : 'idle'}`} 
+         style={{ ...style, transform: isCorrect ? 'translateY(-20px)' : 'none', transition: 'transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)' }}>
       <svg viewBox="0 -30 100 130" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
         <g id="mascot-rabbit">
           {/* Shadow */}
@@ -64,19 +67,36 @@ export default function MascotRabbit({ style, isListening = false }) {
             <g id="face">
               {/* Eyes with blinking animation */}
               <g style={{ animation: 'mascot-blink 4s infinite' }}>
-                <circle cx="33" cy="46" r="4.5" fill="#4A3F35"/>
-                <circle cx="31.5" cy="44.5" r="1.5" fill="#FFFFFF"/>
-                <circle cx="67" cy="46" r="4.5" fill="#4A3F35"/>
-                <circle cx="65.5" cy="44.5" r="1.5" fill="#FFFFFF"/>
+                {!isCorrect ? (
+                  <>
+                    <circle cx="33" cy="46" r="4.5" fill="#4A3F35"/>
+                    <circle cx="31.5" cy="44.5" r="1.5" fill="#FFFFFF"/>
+                    <circle cx="67" cy="46" r="4.5" fill="#4A3F35"/>
+                    <circle cx="65.5" cy="44.5" r="1.5" fill="#FFFFFF"/>
+                  </>
+                ) : (
+                  <>
+                    {/* Happy closed eyes (arcs) */}
+                    <path d="M 28 46 Q 33 42 38 46" fill="none" stroke="#4A3F35" strokeWidth="2" strokeLinecap="round"/>
+                    <path d="M 62 46 Q 67 42 72 46" fill="none" stroke="#4A3F35" strokeWidth="2" strokeLinecap="round"/>
+                  </>
+                )}
               </g>
               
               {/* Blushes */}
-              <ellipse cx="26" cy="52" rx="5" ry="2.5" fill="#FFA6A6" opacity="0.6"/>
-              <ellipse cx="74" cy="52" rx="5" ry="2.5" fill="#FFA6A6" opacity="0.6"/>
+              <ellipse cx="26" cy="52" rx="5" ry="2.5" fill="#FFA6A6" opacity={isCorrect ? "0.9" : "0.6"}/>
+              <ellipse cx="74" cy="52" rx="5" ry="2.5" fill="#FFA6A6" opacity={isCorrect ? "0.9" : "0.6"}/>
               
               {/* Cute cat-like mouth */}
-              <path d="M 46 50 C 48 53 50 53 50 50 C 50 53 52 53 54 50" fill="none" stroke="#4A3F35" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-              <path d="M 48 51 C 48 55 52 55 52 51 Z" fill="#FFB3B3" />
+              {!isCorrect ? (
+                <>
+                  <path d="M 46 50 C 48 53 50 53 50 50 C 50 53 52 53 54 50" fill="none" stroke="#4A3F35" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path d="M 48 51 C 48 55 52 55 52 51 Z" fill="#FFB3B3" />
+                </>
+              ) : (
+                /* Big happy open mouth */
+                <path d="M 44 50 Q 50 60 56 50 Z" fill="#FFB3B3" stroke="#4A3F35" strokeWidth="1.5" strokeLinejoin="round"/>
+              )}
             </g>
 
             {/* Proper Headphones on the head! */}

@@ -97,6 +97,41 @@ class AudioEngine {
       this.bgmSource = null;
     }
   }
+
+  playUI(type = 'pop') {
+    if (this.audioContext.state === 'suspended') {
+      this.audioContext.resume().catch(() => {});
+    }
+    const osc = this.audioContext.createOscillator();
+    const gainNode = this.audioContext.createGain();
+    
+    osc.connect(gainNode);
+    gainNode.connect(this.audioContext.destination);
+    
+    if (type === 'pop') {
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(400, this.audioContext.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(600, this.audioContext.currentTime + 0.05);
+      
+      gainNode.gain.setValueAtTime(0, this.audioContext.currentTime);
+      gainNode.gain.linearRampToValueAtTime(0.5, this.audioContext.currentTime + 0.01);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + 0.1);
+      
+      osc.start(this.audioContext.currentTime);
+      osc.stop(this.audioContext.currentTime + 0.1);
+    } else if (type === 'error') {
+      osc.type = 'square';
+      osc.frequency.setValueAtTime(150, this.audioContext.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(100, this.audioContext.currentTime + 0.15);
+      
+      gainNode.gain.setValueAtTime(0, this.audioContext.currentTime);
+      gainNode.gain.linearRampToValueAtTime(0.3, this.audioContext.currentTime + 0.02);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + 0.2);
+      
+      osc.start(this.audioContext.currentTime);
+      osc.stop(this.audioContext.currentTime + 0.2);
+    }
+  }
 }
 
 export const audioEngine = new AudioEngine();

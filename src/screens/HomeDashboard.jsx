@@ -2,13 +2,14 @@ import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Map, Play, Trophy, Puzzle, ClipboardList, Settings, X } from 'lucide-react'
 import { useGameStore } from '../store/gameStore'
+import { audioEngine } from '../audio/AudioEngine'
 import MascotRabbit from '../components/MascotRabbit'
 import MissionSun from '../components/MissionSun'
 
 const ParentGateModal = ({ onClose, onSuccess }) => {
   const [pin, setPin] = useState('');
   return (
-    <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+    <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.4)', backdropFilter: 'blur(8px)', zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
       <div style={{ background: 'white', padding: '2rem', borderRadius: '20px', textAlign: 'center', width: '300px' }}>
         <h3 style={{ color: '#1e3a8a', marginBottom: '1rem' }}>Grown-Ups Only</h3>
         <p style={{ color: '#64748b', marginBottom: '1rem', fontSize: '0.9rem' }}>Enter year of birth to access settings:</p>
@@ -43,15 +44,18 @@ const ParentGateModal = ({ onClose, onSuccess }) => {
 export default function HomeDashboard() {
   const navigate = useNavigate()
   const [showParentGate, setShowParentGate] = useState(false);
+  const [isEntering, setIsEntering] = useState(true);
   
   // Connect to global state
   const { stars, gems, tickets, streak, startDailyChallenge, activeAssignment, hasCompletedDaily, checkDailyReset, setParentAuthenticated } = useGameStore()
 
   useEffect(() => {
     checkDailyReset()
+    setTimeout(() => setIsEntering(false), 800)
   }, [checkDailyReset])
 
   const handleStartMission = () => {
+    audioEngine.playUI('pop');
     startDailyChallenge()
     navigate('/challenge')
   }
@@ -79,17 +83,28 @@ export default function HomeDashboard() {
         </div>
         <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
           {activeAssignment && !activeAssignment.completed && (
-             <div onClick={() => navigate('/assignments')} style={{ background: '#fef3c7', width: '40px', height: '40px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#d97706', cursor: 'pointer', boxShadow: '0 4px 6px rgba(0,0,0,0.05)', position: 'relative' }}>
+             <div onClick={() => { audioEngine.playUI('pop'); navigate('/assignments'); }} style={{ background: '#fef3c7', width: '40px', height: '40px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#d97706', cursor: 'pointer', boxShadow: '0 4px 6px rgba(0,0,0,0.05)', position: 'relative' }}>
                <ClipboardList size={20} />
                <span style={{ position: 'absolute', top: -5, right: -5, background: '#ef4444', color: 'white', fontSize: '0.7rem', width: '18px', height: '18px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>1</span>
              </div>
           )}
-          <div style={{ background: 'white', padding: '0.5rem 1rem', borderRadius: '100px', fontWeight: 'bold', color: '#ef4444', boxShadow: '0 4px 6px rgba(0,0,0,0.05)' }}>
-            🔥 {streak}
+          
+          {/* Visual Streak: More dramatic styling if streak is high */}
+          <div style={{ 
+            background: streak > 2 ? 'linear-gradient(135deg, #ef4444, #f97316)' : 'white', 
+            color: streak > 2 ? 'white' : '#ef4444',
+            padding: '0.5rem 1rem', 
+            borderRadius: '100px', 
+            fontWeight: 'bold', 
+            boxShadow: streak > 2 ? '0 4px 10px rgba(239,68,68,0.4)' : '0 4px 6px rgba(0,0,0,0.05)',
+            transform: isEntering ? 'scale(0)' : 'scale(1)',
+            transition: 'transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.6s'
+          }}>
+            {streak > 2 ? '🔥' : '⭐'} Streak: {streak}
           </div>
           <button 
             style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: '#94a3b8', padding: '0.5rem' }} 
-            onClick={() => setShowParentGate(true)}
+            onClick={() => { audioEngine.playUI('pop'); setShowParentGate(true); }}
           >
             <Settings size={24} />
           </button>
@@ -97,12 +112,24 @@ export default function HomeDashboard() {
       </div>
 
       {/* Mascot Area */}
-      <div className="mascot-container" style={{ marginBottom: '2rem', filter: 'drop-shadow(0 10px 10px rgba(0,0,0,0.15))', zIndex: 10 }}>
+      <div className="mascot-container" style={{ 
+        marginBottom: '2rem', filter: 'drop-shadow(0 10px 10px rgba(0,0,0,0.15))', zIndex: 10,
+        transform: isEntering ? 'translateY(50px) scale(0.8)' : 'translateY(0) scale(1)',
+        opacity: isEntering ? 0 : 1,
+        transition: 'all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s'
+      }}>
         <MascotRabbit style={{ width: '250px', height: '250px' }} />
       </div>
       
-      <h1 style={{ fontSize: '3rem', color: '#1e3a8a', marginBottom: '0.5rem', textAlign: 'center' }}>Ready to Learn?</h1>
-      <p style={{ fontSize: '1.5rem', color: '#3b82f6', marginBottom: '3rem' }}>Today's Mission is waiting for you!</p>
+      <div style={{
+        opacity: isEntering ? 0 : 1,
+        transform: isEntering ? 'translateY(20px)' : 'translateY(0)',
+        transition: 'all 0.6s ease-out 0.4s',
+        display: 'flex', flexDirection: 'column', alignItems: 'center'
+      }}>
+        <h1 style={{ fontSize: '3rem', color: '#1e3a8a', marginBottom: '0.5rem', textAlign: 'center' }}>Ready to Learn?</h1>
+        <p style={{ fontSize: '1.5rem', color: '#3b82f6', marginBottom: '3rem' }}>Today's Mission is waiting for you!</p>
+      </div>
 
       {/* Main Action */}
       <div style={{ position: 'relative', display: 'inline-block' }}>
@@ -120,20 +147,27 @@ export default function HomeDashboard() {
 
       {/* Secondary Actions (QA FIX: Mobile Responsive & Gamification Lock) */}
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '2rem', marginTop: '4rem', justifyContent: 'center' }}>
-        <button className="btn-secondary" onClick={() => navigate('/map')}>
+        <button className="btn-secondary" onClick={() => { audioEngine.playUI('pop'); navigate('/map'); }}>
           <Map size={24} /> Sound Map
         </button>
         <button 
           className="btn-secondary" 
-          onClick={() => { 
-            if (hasCompletedDaily) navigate('/braingames');
-            else alert("Complete today's mission first to unlock Brain Games!");
+          onClick={(e) => { 
+            if (hasCompletedDaily) {
+              audioEngine.playUI('pop');
+              navigate('/braingames');
+            } else {
+              audioEngine.playUI('error');
+              // visual shake
+              e.currentTarget.style.animation = 'shake 0.3s';
+              setTimeout(() => { e.currentTarget.style.animation = '' }, 300);
+            }
           }}
-          style={{ opacity: hasCompletedDaily ? 1 : 0.5, cursor: hasCompletedDaily ? 'pointer' : 'not-allowed' }}
+          style={{ opacity: hasCompletedDaily ? 1 : 0.5, cursor: hasCompletedDaily ? 'pointer' : 'default' }}
         >
           {hasCompletedDaily ? <Puzzle size={24} /> : <span style={{fontSize:'24px'}}>🔒</span>} Brain Games
         </button>
-        <button className="btn-secondary" onClick={() => navigate('/assignments')}>
+        <button className="btn-secondary" onClick={() => { audioEngine.playUI('pop'); navigate('/assignments'); }}>
           <ClipboardList size={24} /> Assignments
         </button>
       </div>
