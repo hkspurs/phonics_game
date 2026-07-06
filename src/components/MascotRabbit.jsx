@@ -11,32 +11,32 @@ export default function MascotRabbit({ style, isListening = false }) {
           
           {/* Back Ear (Right Ear) */}
           <g transform="translate(65, 25) rotate(15)">
-            <g id="right-ear" style={{ transformOrigin: '0px 0px' }}>
-              <path d="M -5 5 C 15 -35 5 -45 -5 -40 C -15 -35 -10 -15 -5 5 Z" fill="#FFFDF8" stroke="#8D7A6F" strokeWidth="2"/>
-              <path d="M -4 2 C 8 -25 2 -37 -3 -33 C -8 -29 -6 -15 -4 2 Z" fill="#FFD1D1"/>
+            <g id="right-ear" style={{ transformOrigin: '-5px 5px' }}>
+              <path d="M -5 5 C 15 -35 5 -45 -5 -40 C -15 -35 -10 -15 -5 5 Z" fill="var(--mascot-fur)" stroke="var(--mascot-stroke)" strokeWidth="2"/>
+              <path d="M -4 2 C 8 -25 2 -37 -3 -33 C -8 -29 -6 -15 -4 2 Z" fill="var(--mascot-inner-ear)"/>
             </g>
           </g>
 
           {/* Body */}
           <g id="body">
             {/* Main torso */}
-            <path d="M 35 55 C 30 85 40 92 50 92 C 60 92 70 85 65 55 Z" fill="#FFFDF8" stroke="#8D7A6F" strokeWidth="2"/>
+            <path d="M 35 55 C 30 85 40 92 50 92 C 60 92 70 85 65 55 Z" fill="var(--mascot-fur)" stroke="var(--mascot-stroke)" strokeWidth="2"/>
             {/* Belly patch */}
             <path d="M 40 65 C 38 82 45 88 50 88 C 55 88 62 82 60 65 Z" fill="#FFF0F0" opacity="0.6"/>
           </g>
 
           {/* Feet */}
           <g id="feet">
-            <ellipse cx="38" cy="90" rx="7" ry="4" fill="#FFFDF8" stroke="#8D7A6F" strokeWidth="2"/>
-            <ellipse cx="62" cy="90" rx="7" ry="4" fill="#FFFDF8" stroke="#8D7A6F" strokeWidth="2"/>
+            <ellipse cx="38" cy="90" rx="7" ry="4" fill="var(--mascot-fur)" stroke="var(--mascot-stroke)" strokeWidth="2"/>
+            <ellipse cx="62" cy="90" rx="7" ry="4" fill="var(--mascot-fur)" stroke="var(--mascot-stroke)" strokeWidth="2"/>
           </g>
 
           {/* Arms */}
           <g id="arms">
-            <path d="M 36 60 C 30 70 32 75 35 73" fill="none" stroke="#FFFDF8" strokeWidth="6" strokeLinecap="round"/>
-            <path d="M 36 60 C 30 70 32 75 35 73" fill="none" stroke="#8D7A6F" strokeWidth="2" strokeLinecap="round"/>
-            <path d="M 64 60 C 70 70 68 75 65 73" fill="none" stroke="#FFFDF8" strokeWidth="6" strokeLinecap="round"/>
-            <path d="M 64 60 C 70 70 68 75 65 73" fill="none" stroke="#8D7A6F" strokeWidth="2" strokeLinecap="round"/>
+            <path d="M 36 60 C 30 70 32 75 35 73" fill="none" stroke="var(--mascot-fur)" strokeWidth="6" strokeLinecap="round"/>
+            <path d="M 36 60 C 30 70 32 75 35 73" fill="none" stroke="var(--mascot-stroke)" strokeWidth="2" strokeLinecap="round"/>
+            <path d="M 64 60 C 70 70 68 75 65 73" fill="none" stroke="var(--mascot-fur)" strokeWidth="6" strokeLinecap="round"/>
+            <path d="M 64 60 C 70 70 68 75 65 73" fill="none" stroke="var(--mascot-stroke)" strokeWidth="2" strokeLinecap="round"/>
           </g>
 
           {/* Satchel (Crossbody bag) */}
@@ -51,14 +51,14 @@ export default function MascotRabbit({ style, isListening = false }) {
           <g id="head-group">
             {/* Front Ear (Left Ear) */}
             <g transform="translate(35, 25) rotate(-15)">
-              <g id="left-ear" style={{ transformOrigin: '0px 0px' }}>
-                <path d="M 5 5 C -15 -35 -5 -45 5 -40 C 15 -35 10 -15 5 5 Z" fill="#FFFDF8" stroke="#8D7A6F" strokeWidth="2"/>
-                <path d="M 4 2 C -8 -25 -2 -37 3 -33 C 8 -29 6 -15 4 2 Z" fill="#FFD1D1"/>
+              <g id="left-ear" style={{ transformOrigin: '5px 5px' }}>
+                <path d="M 5 5 C -15 -35 -5 -45 5 -40 C 15 -35 10 -15 5 5 Z" fill="var(--mascot-fur)" stroke="var(--mascot-stroke)" strokeWidth="2"/>
+                <path d="M 4 2 C -8 -25 -2 -37 3 -33 C 8 -29 6 -15 4 2 Z" fill="var(--mascot-inner-ear)"/>
               </g>
             </g>
             
             {/* Big cute squircle head - Shifting down so ears don't get cut off entirely, plus overflow: visible */}
-            <path id="head-base" d="M 20 50 C 20 15 80 15 80 50 C 80 75 20 75 20 50 Z" fill="#FFFDF8" stroke="#8D7A6F" strokeWidth="2"/>
+            <path id="head-base" d="M 20 50 C 20 15 80 15 80 50 C 80 75 20 75 20 50 Z" fill="var(--mascot-fur)" stroke="var(--mascot-stroke)" strokeWidth="2"/>
             
             {/* Kawaii Face */}
             <g id="face">

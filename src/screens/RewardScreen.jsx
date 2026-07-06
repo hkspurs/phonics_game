@@ -2,7 +2,9 @@ import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Home } from 'lucide-react'
 import { useGameStore } from '../store/gameStore'
+import TreasureChest from '../components/TreasureChest'
 import RewardSticker from '../components/RewardSticker'
+import ConfettiSVG from '../components/ConfettiSVG'
 import { audioEngine } from '../audio/AudioEngine'
 
 export default function RewardScreen() {
@@ -28,35 +30,26 @@ export default function RewardScreen() {
   return (
     <div className="screen-container" style={{ background: 'linear-gradient(135deg, #fdf4ff, #fae8ff)', alignItems: 'center', justifyContent: 'center', position: 'relative', overflow: 'hidden' }}>
       
-      {/* Decorative Confetti Background */}
-      {chestState === 'open' && (
-        <>
-          <div style={{ position: 'absolute', top: '10%', left: '10%', fontSize: '3rem', animation: 'float 3s infinite', opacity: 0.6 }}>✨</div>
-          <div style={{ position: 'absolute', top: '20%', right: '15%', fontSize: '4rem', animation: 'float 4s infinite alternate-reverse', opacity: 0.7 }}>🎉</div>
-          <div style={{ position: 'absolute', bottom: '20%', left: '20%', fontSize: '3rem', animation: 'float 5s infinite', opacity: 0.5 }}>💎</div>
-          <div style={{ position: 'absolute', bottom: '30%', right: '10%', fontSize: '4rem', animation: 'float 3.5s infinite alternate', opacity: 0.8 }}>⭐</div>
-        </>
-      )}
+      {/* Canvas Confetti Background */}
+      <ConfettiSVG isVisible={chestState === 'open'} />
 
       <h1 style={{ fontSize: '5rem', color: '#86198f', marginBottom: '1rem', textShadow: '4px 4px 0px #f0abfc', animation: 'pulse-glow 2s infinite', zIndex: 2, opacity: chestState === 'open' ? 1 : 0, transition: 'opacity 1s' }}>Mission Complete!</h1>
       
       {chestState !== 'open' ? (
         <div 
-          onClick={handleChestClick}
           style={{
-            fontSize: '8rem',
-            cursor: 'pointer',
+            width: '300px', height: '300px',
             animation: chestState === 'shaking' ? 'shake 0.1s infinite' : 'float 3s infinite',
             transform: chestState === 'shaking' ? 'scale(1.2)' : 'scale(1)',
             transition: 'transform 0.2s',
             zIndex: 10,
-            padding: '4rem',
+            padding: '2rem',
             borderRadius: '50%',
             background: 'rgba(255,255,255,0.4)',
             boxShadow: '0 10px 30px rgba(0,0,0,0.1)'
           }}
         >
-          🎁
+          <TreasureChest state={chestState} onClick={handleChestClick} />
           <div style={{ fontSize: '2rem', textAlign: 'center', color: '#a21caf', marginTop: '1rem', whiteSpace: 'nowrap' }}>Tap to open!</div>
         </div>
       ) : (

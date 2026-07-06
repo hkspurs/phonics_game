@@ -6,6 +6,7 @@ import { audioEngine } from '../audio/AudioEngine'
 import ReplayHelper from '../components/ReplayHelper'
 import CorrectFeedback from '../components/CorrectFeedback'
 import WrongFeedback from '../components/WrongFeedback'
+import AppleIcon from '../components/AppleIcon'
 
 export default function DailyChallenge() {
   const navigate = useNavigate()
@@ -226,8 +227,7 @@ export default function DailyChallenge() {
               const isDisabled = disabledChoices.includes(choice);
               // QA FIX: Literacy Rule - Use visuals for Same/Different
               const isSame = choice === 'Same';
-              const labelIcon = isSame ? '🍏🍏' : '🍏🍎';
-              const labelText = isSame ? 'Same' : 'Different'; // Keep text small as secondary
+              const labelText = isSame ? 'Same' : 'Different';
 
               return (
                 <button
@@ -247,8 +247,11 @@ export default function DailyChallenge() {
                     cursor: (feedbackState !== null || isDisabled) ? 'default' : 'pointer'
                   }}
                 >
-                  <span style={{ fontSize: '4rem' }}>{labelIcon}</span>
-                  <span style={{ fontSize: '1.2rem', color: '#94a3b8', marginTop: '0.5rem' }}>{labelText}</span>
+                  <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.5rem' }}>
+                    <AppleIcon size={48} />
+                    <AppleIcon size={48} isRed={!isSame} />
+                  </div>
+                  <span style={{ fontSize: '1.2rem', color: '#94a3b8' }}>{labelText}</span>
                 </button>
               )
             })}
