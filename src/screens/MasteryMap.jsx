@@ -3,10 +3,20 @@ import { useNavigate } from 'react-router-dom'
 import { ArrowLeft } from 'lucide-react'
 import { useGameStore } from '../store/gameStore'
 import MapNodeCloud from '../components/MapNodeCloud'
+import { audioEngine } from '../audio/AudioEngine'
+import { questionEngine } from '../game/QuestionEngine'
 
 export default function MasteryMap() {
   const navigate = useNavigate()
   const { getNodeStatus } = useGameStore()
+
+  const handleNodeClick = (nodeId, status) => {
+    if (status === 'locked') return;
+    const soundData = questionEngine.sounds.find(s => s.label === nodeId || s.sound_id === nodeId);
+    if (soundData && soundData.audio_url) {
+      audioEngine.play(soundData.audio_url);
+    }
+  }
 
   // Dynamic status based on learning progression
   const nodes = [
@@ -69,7 +79,7 @@ export default function MasteryMap() {
               <MapNodeCloud 
                 isMastered={node.status === 'mastered'} 
                 isLocked={node.status === 'locked'} 
-                onClick={() => {}}
+                onClick={() => handleNodeClick(node.id, node.status)}
                 style={{ position: 'absolute', inset: 0, animation: node.status === 'practising' ? 'pulse-glow 2s infinite' : 'none' }}
               />
               <div style={{
