@@ -19,7 +19,7 @@ export const useGameStore = create(
       gameComplete: false, // QA FIX: Dead-End Map state
 
       // Assignment State
-      activeAssignment: { id: 'asgn_1', targetSoundId: 'AB', title: "Vowel 'A' Mastery", completed: false },
+      activeAssignment: null,
 
       // Learning Analytics State (QA FIX)
       learningStats: {}, // { 'AB': { attempts: 0, firstAttemptHits: 0, confusedWith: { 'EB': 2 } } }
@@ -34,6 +34,20 @@ export const useGameStore = create(
       sessionScore: { stars: 0, gems: 0 },
 
       // Actions
+      resetProgress: () => set({
+        stars: 0,
+        gems: 0,
+        tickets: 2,
+        streak: 0,
+        unlockedSounds: ['AB', 'EB'],
+        currentNode: 'IB',
+        gameComplete: false,
+        learningStats: {},
+        activeAssignment: null,
+        hasCompletedDaily: false,
+        lastPlayedDate: null
+      }),
+
       setParentAuthenticated: (status) => set({ isParentAuthenticated: status }),
 
       checkDailyReset: () => set((state) => {
@@ -179,7 +193,7 @@ export const useGameStore = create(
         
         let state = { ...persistedState };
         if (version === 0 || version === 1) {
-          state.activeAssignment = { id: 'asgn_1', targetSoundId: 'AB', title: "Vowel 'A' Mastery", completed: false };
+          state.activeAssignment = null;
         }
         return state;
       },

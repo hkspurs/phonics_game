@@ -3,32 +3,48 @@ import { useNavigate } from 'react-router-dom'
 import { useGameStore } from '../store/gameStore'
 import { questionEngine } from '../game/QuestionEngine'
 import { audioEngine } from '../audio/AudioEngine'
-import { ArrowLeft, Volume2, AlertTriangle, CheckCircle, Trash2, BookOpen, Skull } from 'lucide-react'
+import { ArrowLeft, Volume2, AlertTriangle, CheckCircle, Trash2, BookOpen, Skull, Play, XCircle } from 'lucide-react'
+import DonutChart from '../components/DonutChart'
+import MascotRabbit from '../components/MascotRabbit'
 
 export default function ParentDashboard() {
   const navigate = useNavigate()
-  const { learningStats, unlockedSounds, currentNode, activeAssignment, getNodeStatus } = useGameStore()
+  const { learningStats, unlockedSounds, currentNode, activeAssignment, getNodeStatus, resetProgress } = useGameStore()
+  const [toastMsg, setToastMsg] = React.useState(null);
+
+  const showToast = (msg) => {
+    setToastMsg(msg);
+    audioEngine.playUI('pop');
+    setTimeout(() => setToastMsg(null), 3000);
+  }
 
   const handleReset = () => {
-    if (window.confirm("NUCLEAR OPTION: Are you sure you want to wipe all progress? This cannot be undone.")) {
-      localStorage.removeItem('phonics-game-storage');
-      window.location.href = '/';
+    if (window.confirm("Are you sure you want to wipe all progress? This will reset the child's entire journey. This cannot be undone.")) {
+      resetProgress();
+      navigate('/');
     }
   }
 
   const handleAssign = (sound) => {
-    useGameStore.setState({
-      activeAssignment: { id: 'asgn_' + Date.now(), targetSoundId: sound.label, title: `Custom Assignment: ${sound.label}`, completed: false }
-    });
-    alert(`Assigned ${sound.label} to the child's dashboard.`);
+    if (activeAssignment?.targetSoundId === sound.label) {
+      useGameStore.setState({ activeAssignment: null });
+      showToast(`Removed assignment for ${sound.label}.`);
+    } else {
+      useGameStore.setState({
+        activeAssignment: { id: 'asgn_' + Date.now(), targetSoundId: sound.label, title: `Custom Assignment: ${sound.label}`, completed: false }
+      });
+      showToast(`Assigned ${sound.label} to the child's dashboard.`);
+    }
   }
 
   const handleForceUnlock = (sound) => {
-    useGameStore.setState(state => {
-      const newUnlocked = state.unlockedSounds.includes(sound.sound_id) ? state.unlockedSounds : [...state.unlockedSounds, sound.sound_id];
-      return { currentNode: sound.label, unlockedSounds: newUnlocked };
-    });
-    alert(`Map Current Node forcibly set to ${sound.label}.`);
+    if (window.confirm(`Warning: Jumping ahead to ${sound.label} might frustrate the child if they miss foundational sounds. Proceed?`)) {
+      useGameStore.setState(state => {
+        const newUnlocked = state.unlockedSounds.includes(sound.sound_id) ? state.unlockedSounds : [...state.unlockedSounds, sound.sound_id];
+        return { currentNode: sound.label, unlockedSounds: newUnlocked };
+      });
+      showToast(`Map Current Node forcibly set to ${sound.label}.`);
+    }
   }
 
   // Analytics Computation
@@ -42,6 +58,7 @@ export default function ParentDashboard() {
     });
   });
   confusedPairs.sort((a, b) => b.count - a.count);
+  const topConfusions = confusedPairs.slice(0, 5); // Limit to top 5
 
   let totalAttempts = 0;
   let totalFirstHits = 0;
@@ -52,58 +69,84 @@ export default function ParentDashboard() {
   const overallAccuracy = totalAttempts > 0 ? ((totalFirstHits / totalAttempts) * 100).toFixed(1) : 0;
 
   return (
-    <div className="screen-container" style={{ background: '#f8fafc', padding: '2rem' }}>
+    <div className="screen-container" style={{ background: '#f8fafc', padding: '2rem', position: 'relative' }}>
       
+      {/* Toast Notification */}
+      {toastMsg && (
+        <div style={{ position: 'absolute', top: '1rem', left: '50%', transform: 'translateX(-50%)', background: '#3b82f6', color: 'white', padding: '1rem 2rem', borderRadius: '100px', fontWeight: 'bold', boxShadow: '0 10px 25px rgba(59,130,246,0.5)', zIndex: 100, animation: 'float 2s infinite' }}>
+          {toastMsg}
+        </div>
+      )}
+
       {/* Header */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
-        <button className="btn-secondary" onClick={() => navigate('/')}>
-          <ArrowLeft size={24} /> Back to Game
-        </button>
-        <h1 style={{ color: '#0f172a', margin: 0 }}>Parent & Teacher Dashboard</h1>
-        <button className="btn-secondary" style={{ color: '#ef4444', borderColor: '#ef4444' }} onClick={handleReset}>
-          <Trash2 size={24} /> Factory Reset
-        </button>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem', flexWrap: 'wrap', gap: '1rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+          <button className="btn-secondary" onClick={() => { audioEngine.playUI('pop'); navigate('/'); }}>
+            <ArrowLeft size={24} /> Back to Game
+          </button>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            <MascotRabbit style={{ width: '50px', height: '50px' }} />
+            <h1 style={{ color: '#0f172a', margin: 0, fontSize: '1.8rem' }}>Learning Hub</h1>
+          </div>
+        </div>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '2rem', height: 'calc(100vh - 120px)' }}>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '2rem', height: 'calc(100vh - 150px)' }}>
         
         {/* Left Column: Analytics */}
-        <div style={{ background: 'white', borderRadius: '16px', padding: '1.5rem', overflowY: 'auto', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}>
+        <div style={{ flex: '1 1 300px', background: 'white', borderRadius: '16px', padding: '1.5rem', overflowY: 'auto', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}>
           <h2 style={{ color: '#334155', borderBottom: '2px solid #e2e8f0', paddingBottom: '0.5rem', marginBottom: '1.5rem' }}>Learning Analytics</h2>
           
           {/* Overview Metrics */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '2rem' }}>
-            <div style={{ background: '#f8fafc', padding: '1rem', borderRadius: '12px', border: '1px solid #e2e8f0', display: 'flex', flexDirection: 'column' }}>
-              <span style={{ color: '#64748b', fontSize: '0.875rem', fontWeight: 'bold' }}>TOTAL ATTEMPTS</span>
-              <span style={{ color: '#0f172a', fontSize: '2rem', fontWeight: 'bold' }}>{totalAttempts}</span>
+          <div style={{ display: 'flex', gap: '1rem', marginBottom: '2rem', flexWrap: 'wrap' }}>
+            <div style={{ flex: 1, background: '#f8fafc', padding: '1rem', borderRadius: '12px', border: '1px solid #e2e8f0', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+              <span style={{ color: '#64748b', fontSize: '0.875rem', fontWeight: 'bold', marginBottom: '0.5rem' }}>TOTAL FOCUS</span>
+              <span style={{ color: '#0f172a', fontSize: '2.5rem', fontWeight: 'bold' }}>{totalAttempts}</span>
+              <span style={{ color: '#94a3b8', fontSize: '0.75rem' }}>Meaningful Attempts</span>
             </div>
-            <div style={{ background: '#f8fafc', padding: '1rem', borderRadius: '12px', border: '1px solid #e2e8f0', display: 'flex', flexDirection: 'column' }}>
-              <span style={{ color: '#64748b', fontSize: '0.875rem', fontWeight: 'bold' }}>OVERALL ACCURACY</span>
-              <span style={{ color: '#0ea5e9', fontSize: '2rem', fontWeight: 'bold' }}>{overallAccuracy}%</span>
+            <div style={{ flex: 1, background: '#f8fafc', padding: '1rem', borderRadius: '12px', border: '1px solid #e2e8f0', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+              <span style={{ color: '#64748b', fontSize: '0.875rem', fontWeight: 'bold', marginBottom: '0.5rem' }}>LEARNING GROWTH</span>
+              <DonutChart percentage={parseFloat(overallAccuracy)} color={overallAccuracy > 80 ? '#10b981' : '#0ea5e9'} />
             </div>
           </div>
 
-          <h3 style={{ color: '#ef4444', display: 'flex', alignItems: 'center', gap: '0.5rem' }}><AlertTriangle size={20}/> Weak Sounds</h3>
-          <p style={{ fontSize: '0.875rem', color: '#64748b', marginBottom: '0.5rem' }}>Accuracy below 60% after 3+ attempts.</p>
-          {weakSounds.length === 0 ? <p style={{ color: '#94a3b8', fontStyle: 'italic', background: '#f1f5f9', padding: '1rem', borderRadius: '8px' }}>No weak sounds detected yet.</p> : (
+          <h3 style={{ color: '#ef4444', display: 'flex', alignItems: 'center', gap: '0.5rem' }}><AlertTriangle size={20}/> Areas to Practice</h3>
+          <p style={{ fontSize: '0.875rem', color: '#64748b', marginBottom: '0.5rem' }}>Sounds that need a little more love.</p>
+          {weakSounds.length === 0 ? (
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '1rem', background: '#f1f5f9', borderRadius: '8px' }}>
+              <div style={{ fontSize: '3rem', animation: 'float 3s infinite' }}>🏆</div>
+              <p style={{ color: '#64748b', fontWeight: 'bold', marginTop: '0.5rem' }}>Looking Great!</p>
+            </div>
+          ) : (
             <ul style={{ padding: 0, listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
               {weakSounds.map(([soundId, stats]) => (
-                <li key={soundId} style={{ display: 'flex', justifyContent: 'space-between', background: '#fee2e2', padding: '0.75rem 1rem', borderRadius: '8px' }}>
-                  <strong style={{ color: '#991b1b' }}>{soundId}</strong> 
-                  <span style={{ color: '#dc2626', fontWeight: 'bold' }}>{(stats.firstAttemptHits/stats.attempts * 100).toFixed(0)}%</span>
+                <li key={soundId} style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', background: '#fee2e2', padding: '0.75rem 1rem', borderRadius: '8px', borderLeft: '4px solid #ef4444' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <strong style={{ color: '#991b1b', fontSize: '1.2rem' }}>{soundId}</strong> 
+                    <span style={{ color: '#dc2626', fontWeight: 'bold' }}>{(stats.firstAttemptHits/stats.attempts * 100).toFixed(0)}%</span>
+                  </div>
+                  <span style={{ fontSize: '0.8rem', color: '#991b1b', opacity: 0.8 }}>💡 Tip: Try practicing this sound in front of a mirror together!</span>
                 </li>
               ))}
             </ul>
           )}
 
           <h3 style={{ color: '#d97706', display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '1.5rem' }}><Skull size={20}/> Confused Pairs</h3>
-          <p style={{ fontSize: '0.875rem', color: '#64748b', marginBottom: '0.5rem' }}>Sounds that the child frequently mixes up.</p>
-          {confusedPairs.length === 0 ? <p style={{ color: '#94a3b8', fontStyle: 'italic', background: '#f1f5f9', padding: '1rem', borderRadius: '8px' }}>No confusions logged yet.</p> : (
+          <p style={{ fontSize: '0.875rem', color: '#64748b', marginBottom: '0.5rem' }}>Sounds that sound alike (Top 5).</p>
+          {topConfusions.length === 0 ? (
+            <p style={{ color: '#94a3b8', fontStyle: 'italic', background: '#f1f5f9', padding: '1rem', borderRadius: '8px' }}>No confusions logged yet.</p>
+          ) : (
             <ul style={{ padding: 0, listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-              {confusedPairs.map((pair, idx) => (
-                <li key={idx} style={{ display: 'flex', justifyContent: 'space-between', background: '#fef3c7', padding: '0.75rem 1rem', borderRadius: '8px' }}>
-                  <span style={{ color: '#92400e' }}>Confused <strong>{pair.target}</strong> with <strong>{pair.confused}</strong></span>
-                  <span style={{ background: '#f59e0b', color: 'white', padding: '0.1rem 0.5rem', borderRadius: '100px', fontSize: '0.8rem', fontWeight: 'bold' }}>{pair.count}x</span>
+              {topConfusions.map((pair, idx) => (
+                <li key={idx} style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', background: '#fef3c7', padding: '0.75rem 1rem', borderRadius: '8px', borderLeft: '4px solid #f59e0b' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ color: '#92400e' }}>Mixed <strong>{pair.target}</strong> & <strong>{pair.confused}</strong></span>
+                    <span style={{ background: '#f59e0b', color: 'white', padding: '0.1rem 0.5rem', borderRadius: '100px', fontSize: '0.8rem', fontWeight: 'bold' }}>{pair.count}x</span>
+                  </div>
+                  <div style={{ display: 'flex', gap: '0.5rem' }}>
+                     <button onClick={() => { audioEngine.playUI('pop'); audioEngine.play(questionEngine.sounds.find(s=>s.label===pair.target)?.audio_url) }} style={{ fontSize: '0.75rem', padding: '0.25rem 0.5rem', background: '#fcd34d', border: 'none', borderRadius: '4px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.25rem' }}><Volume2 size={12}/> {pair.target}</button>
+                     <button onClick={() => { audioEngine.playUI('pop'); audioEngine.play(questionEngine.sounds.find(s=>s.label===pair.confused)?.audio_url) }} style={{ fontSize: '0.75rem', padding: '0.25rem 0.5rem', background: '#fcd34d', border: 'none', borderRadius: '4px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.25rem' }}><Volume2 size={12}/> {pair.confused}</button>
+                  </div>
                 </li>
               ))}
             </ul>
@@ -123,22 +166,24 @@ export default function ParentDashboard() {
         </div>
 
         {/* Right Column: Curriculum Control */}
-        <div style={{ background: 'white', borderRadius: '16px', padding: '1.5rem', overflowY: 'auto', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}>
+        <div style={{ flex: '2 1 500px', background: 'white', borderRadius: '16px', padding: '1.5rem', overflowY: 'auto', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}>
           <h2 style={{ color: '#334155', borderBottom: '2px solid #e2e8f0', paddingBottom: '0.5rem', marginBottom: '1rem', display: 'flex', justifyContent: 'space-between' }}>
             Curriculum Control
             <span style={{ fontSize: '1rem', color: '#64748b', fontWeight: 'normal' }}>Total Sounds: {questionEngine.sounds.length}</span>
           </h2>
           
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          <ul style={{ display: 'flex', flexDirection: 'column', gap: '1rem', padding: 0, listStyle: 'none' }}>
             {questionEngine.sounds.map(sound => {
               const status = getNodeStatus(sound.sound_id);
+              const isAssigned = activeAssignment?.targetSoundId === sound.label;
+
               return (
-                <div key={sound.sound_id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '1rem', background: '#f8fafc', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+                <li key={sound.sound_id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '1rem', background: '#f8fafc', borderRadius: '8px', border: '1px solid #e2e8f0', transition: 'box-shadow 0.2s', ':hover': { boxShadow: '0 4px 6px rgba(0,0,0,0.05)' } }}>
                   
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', width: '200px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flex: 1, minWidth: '150px' }}>
                     <span style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#0f172a' }}>{sound.label}</span>
                     <span style={{ 
-                      fontSize: '0.8rem', padding: '0.25rem 0.5rem', borderRadius: '100px', fontWeight: 'bold',
+                      fontSize: '0.75rem', padding: '0.25rem 0.5rem', borderRadius: '100px', fontWeight: 'bold',
                       background: status === 'mastered' ? '#d1fae5' : status === 'weak' ? '#fee2e2' : status === 'practising' ? '#dbeafe' : status === 'unlocked' ? '#e0f2fe' : '#f1f5f9',
                       color: status === 'mastered' ? '#047857' : status === 'weak' ? '#b91c1c' : status === 'practising' ? '#1d4ed8' : status === 'unlocked' ? '#0369a1' : '#64748b'
                     }}>
@@ -146,20 +191,32 @@ export default function ParentDashboard() {
                     </span>
                   </div>
 
-                  <div style={{ display: 'flex', gap: '0.5rem' }}>
-                    <button className="btn-secondary" style={{ padding: '0.5rem', fontSize: '1rem' }} onClick={() => audioEngine.play(sound.audio_url)} title="Preview Audio">
+                  <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', justifyContent: 'flex-end' }}>
+                    <button className="btn-secondary" aria-label={`Preview Audio for ${sound.label}`} style={{ padding: '0.5rem', fontSize: '1rem' }} onClick={() => { audioEngine.playUI('pop'); audioEngine.play(sound.audio_url); }} title="Preview Audio">
                       <Volume2 size={20} />
                     </button>
-                    <button className="btn-secondary" style={{ padding: '0.5rem 1rem', fontSize: '1rem', color: '#0ea5e9' }} onClick={() => handleAssign(sound)}>
-                      <BookOpen size={20} /> Assign
+                    <button 
+                      className="btn-secondary" 
+                      aria-label={isAssigned ? `Unassign ${sound.label}` : `Assign ${sound.label}`}
+                      style={{ padding: '0.5rem 1rem', fontSize: '1rem', color: isAssigned ? '#ef4444' : '#0ea5e9', borderColor: isAssigned ? '#ef4444' : '#bae6fd' }} 
+                      onClick={() => handleAssign(sound)}
+                    >
+                      {isAssigned ? <><XCircle size={18}/> Unassign</> : <><BookOpen size={18} /> Assign</>}
                     </button>
-                    <button className="btn-secondary" style={{ padding: '0.5rem 1rem', fontSize: '1rem', color: '#d946ef' }} onClick={() => handleForceUnlock(sound)}>
+                    <button className="btn-secondary" aria-label={`Force Unlock ${sound.label}`} style={{ padding: '0.5rem 1rem', fontSize: '1rem', color: '#d946ef' }} onClick={() => handleForceUnlock(sound)}>
                       Force Unlock
                     </button>
                   </div>
-                </div>
+                </li>
               )
             })}
+          </ul>
+
+          <div style={{ marginTop: '4rem', padding: '2rem', borderTop: '2px dashed #e2e8f0', textAlign: 'center' }}>
+            <h3 style={{ color: '#94a3b8', marginBottom: '1rem' }}>Advanced Settings</h3>
+            <button className="btn-secondary" style={{ color: '#ef4444', borderColor: '#ef4444', margin: '0 auto' }} onClick={handleReset}>
+              <Trash2 size={20} /> Wipe All Progress
+            </button>
           </div>
         </div>
 
