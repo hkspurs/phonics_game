@@ -13,6 +13,12 @@ export default function BrainGamesIsland() {
     }
   }
 
+  const handlePlayMemoryMatch = () => {
+    if (tickets > 0) {
+      navigate('/games/memorymatch')
+    }
+  }
+
   return (
     <div className="screen-container" style={{ background: '#fdf4ff', position: 'relative' }}>
       
@@ -44,12 +50,19 @@ export default function BrainGamesIsland() {
           </button>
         </div>
 
-        {/* Coming Soon */}
-        <div style={{ background: '#f3f4f6', padding: '2rem', borderRadius: '24px', border: '4px dashed #d1d5db', display: 'flex', flexDirection: 'column', alignItems: 'center', width: '300px', opacity: 0.7 }}>
-          <div style={{ fontSize: '4rem', marginBottom: '1rem', filter: 'grayscale(1)' }}>🚂</div>
-          <h2 style={{ color: '#6b7280', marginBottom: '1rem' }}>Letter Train</h2>
-          <p style={{ color: '#9ca3af', textAlign: 'center', marginBottom: '2rem' }}>Coming soon in the next update!</p>
-          <button className="btn-secondary" disabled>Locked</button>
+        {/* Memory Match */}
+        <div style={{ background: 'white', padding: '2rem', borderRadius: '24px', border: '4px solid #c4b5fd', display: 'flex', flexDirection: 'column', alignItems: 'center', width: '300px', transition: 'transform 0.2s', ':hover': { transform: 'scale(1.05)' } }}>
+          <div style={{ fontSize: '4rem', marginBottom: '1rem' }}>🃏</div>
+          <h2 style={{ color: '#6d28d9', marginBottom: '1rem' }}>Memory Match</h2>
+          <p style={{ color: '#8b5cf6', textAlign: 'center', marginBottom: '2rem' }}>Match the sounds to the letters!</p>
+          <button 
+            className="btn-primary" 
+            style={{ background: tickets > 0 ? '#8b5cf6' : '#e5e7eb', boxShadow: tickets > 0 ? '0 6px 0 #6d28d9' : 'none', color: tickets > 0 ? 'white' : '#9ca3af' }}
+            onClick={handlePlayMemoryMatch}
+            disabled={tickets <= 0}
+          >
+            {tickets > 0 ? 'Play (1 🎟️)' : 'Need Tickets'}
+          </button>
         </div>
 
       </div>

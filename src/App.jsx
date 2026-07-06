@@ -7,6 +7,7 @@ import RewardScreen from './screens/RewardScreen'
 import BrainGamesIsland from './screens/BrainGamesIsland'
 import AssignmentHub from './screens/AssignmentHub'
 import SoundCatcher from './games/SoundCatcher'
+import MemoryMatch from './games/MemoryMatch'
 import ParentDashboard from './screens/ParentDashboard'
 import MascotRabbit from './components/MascotRabbit'
 
@@ -73,6 +74,7 @@ function App() {
         <Route path="/reward" element={<RewardScreen />} />
         <Route path="/braingames" element={<BrainGamesIsland />} />
         <Route path="/games/soundcatcher" element={<SoundCatcher />} />
+        <Route path="/games/memorymatch" element={<MemoryMatch />} />
         <Route path="/assignments" element={<AssignmentHub />} />
         <Route path="/parent" element={
           <ProtectedParentRoute>
