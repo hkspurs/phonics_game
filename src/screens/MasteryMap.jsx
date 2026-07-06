@@ -1,6 +1,6 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ArrowLeft, Play, X } from 'lucide-react'
+import { ArrowLeft, Play, X, Volume2 } from 'lucide-react'
 import { useGameStore } from '../store/gameStore'
 import MapNodeCloud from '../components/MapNodeCloud'
 import MascotRabbit from '../components/MascotRabbit'
@@ -10,63 +10,78 @@ import { questionEngine } from '../game/QuestionEngine'
 export default function MasteryMap() {
   const navigate = useNavigate()
   const { getNodeStatus, unlockedSounds, currentNode } = useGameStore()
-  const [selectedNode, setSelectedNode] = React.useState(null)
+  const [selectedNode, setSelectedNode] = useState(null)
 
-  const handleNodeClick = (nodeId, status) => {
-    if (status === 'locked') return;
-    const soundData = questionEngine.sounds.find(s => s.label === nodeId || s.sound_id === nodeId);
-    if (soundData) {
-      audioEngine.play(soundData.audio_url);
-      setSelectedNode({ id: nodeId, status, soundData });
-    }
+  // QA FIX: Generate absolute pixel coordinates for perfect DOM vs SVG alignment
+  const MAP_HEIGHT = 600;
+  const nodes = questionEngine.sounds.slice(0, 15).map((sound, index) => {
+    const isEven = index % 2 === 0;
+    return {
+      id: sound.label,
+      status: getNodeStatus(sound.sound_id),
+      x: 100 + (index * 150), 
+      y: isEven ? 420 : 180, 
+      soundId: sound.sound_id,
+      soundData: sound
+    };
+  });
+  const MAP_WIDTH = Math.max(1000, nodes.length * 150 + 200);
+
+  const handleNodeClick = (node) => {
+    if (node.status === 'locked') return;
+    audioEngine.play(node.soundData.audio_url);
+    setSelectedNode(node);
   }
 
   const handlePractice = () => {
-    audioEngine.playUI('pop');
-    // For now, redirect to challenge. Ideally we'd set an active assignment.
+    audioEngine.playUI('correct'); // QA FIX: Magical mission start sound
     useGameStore.setState({ activeAssignment: { id: 'map_practice', targetSoundId: selectedNode.soundData.label, title: `Practice: ${selectedNode.soundData.label}` } });
     navigate('/challenge');
   }
 
-  // Generate dynamic nodes based on curriculum order
-  const nodes = [];
-  questionEngine.sounds.slice(0, 15).forEach((sound, index) => {
-    // Generate a zigzag pattern automatically
-    const isEven = index % 2 === 0;
-    nodes.push({
-      id: sound.label,
-      status: getNodeStatus(sound.sound_id),
-      x: 10 + (index * 15), // space out horizontally
-      y: isEven ? 70 : 30, // zigzag vertically
-      soundId: sound.sound_id
-    });
-  });
+  const playSoundAgain = () => {
+    audioEngine.play(selectedNode.soundData.audio_url);
+  }
+
+  // QA FIX: Scroll lock & Escape dismissal for Modal
+  useEffect(() => {
+    if (selectedNode) {
+      document.body.style.overflow = 'hidden';
+      const handleEsc = (e) => e.key === 'Escape' && setSelectedNode(null);
+      window.addEventListener('keydown', handleEsc);
+      return () => {
+        document.body.style.overflow = 'unset';
+        window.removeEventListener('keydown', handleEsc);
+      };
+    }
+  }, [selectedNode]);
 
   const getStatusColor = (status) => {
     switch(status) {
       case 'mastered': return '#fbbf24'; // Gold
       case 'unlocked': return '#4ade80'; // Green
       case 'practising': return '#38bdf8'; // Light Blue
-      case 'weak': return '#f43f5e'; // Rose
-      default: return '#94a3b8'; // Grey (locked)
+      case 'weak': return '#a855f7'; // QA FIX: Purple (Power-up) instead of Red (Punishment)
+      default: return '#94a3b8'; // Grey
     }
   }
 
-  // Build dynamic SVG paths
+  // QA FIX: Smooth cubic bezier paths (C) instead of rigid (Q/T)
   const generatePath = () => {
     if (nodes.length === 0) return '';
-    let d = `M ${nodes[0].x * 10} ${nodes[0].y * 6}`;
+    let d = `M ${nodes[0].x} ${nodes[0].y}`;
     for (let i = 1; i < nodes.length; i++) {
-      // Add a simple curve
-      const midX = ((nodes[i-1].x + nodes[i].x) / 2) * 10;
-      const midY = ((nodes[i-1].y + nodes[i].y) / 2) * 6;
-      d += ` Q ${midX} ${nodes[i-1].y * 6} ${midX} ${midY} T ${nodes[i].x * 10} ${nodes[i].y * 6}`;
+      const prev = nodes[i-1];
+      const curr = nodes[i];
+      const midX = (prev.x + curr.x) / 2;
+      d += ` C ${midX} ${prev.y}, ${midX} ${curr.y}, ${curr.x} ${curr.y}`;
     }
     return d;
   }
 
-  // Find where the rabbit should stand
-  const currentLevelNode = nodes.find(n => n.soundId === currentNode) || nodes.find(n => n.status !== 'locked') || nodes[0];
+  // QA FIX: Find latest unlocked node for rabbit to prevent amnesia
+  const unlockedNodes = nodes.filter(n => n.status !== 'locked');
+  const currentLevelNode = nodes.find(n => n.soundId === currentNode) || unlockedNodes[unlockedNodes.length - 1] || nodes[0];
 
   return (
     <div className="screen-container" style={{ background: '#fef3c7', position: 'relative' }}>
@@ -79,33 +94,43 @@ export default function MasteryMap() {
       </div>
       <h1 style={{ textAlign: 'center', color: '#b45309', fontSize: '2.5rem', marginTop: '1rem', zIndex: 10, position: 'relative' }}>Adventure Map</h1>
 
-      {/* Map Area (Scrollable without breaking aspect ratio) */}
+      {/* Scrollable Map Area */}
       <div style={{ 
         position: 'relative', width: '100%', flex: 1, marginTop: '1rem', 
-        border: '6px solid #fcd34d', borderRadius: '32px', overflowX: 'auto', overflowY: 'hidden', 
+        border: '6px solid #fcd34d', borderRadius: '32px', overflowX: 'auto', overflowY: 'auto', 
         background: 'linear-gradient(to bottom, #dbeafe, #fef3c7)',
         boxShadow: 'inset 0 0 20px rgba(0,0,0,0.05)' 
       }}>
         
-        {/* Dynamic Canvas Size based on node count */}
-        <div style={{ position: 'relative', width: `${Math.max(100, nodes.length * 15)}%`, minWidth: '800px', height: '100%' }}>
+        {/* Absolute Canvas */}
+        <div style={{ position: 'relative', width: `${MAP_WIDTH}px`, height: `${MAP_HEIGHT}px` }}>
           
-          {/* Base Path (Locked) */}
-          <svg viewBox={`0 0 ${Math.max(1000, nodes.length * 150)} 600`} style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 1, pointerEvents: 'none' }} preserveAspectRatio="none">
-            <path d={generatePath()} fill="none" stroke="#cbd5e1" strokeWidth="12" strokeDasharray="1 24" strokeLinecap="round" />
+          {/* Global SVG Defs to save GPU */}
+          <svg style={{ width: 0, height: 0, position: 'absolute' }}>
+            <defs>
+              <filter id="global-glow" x="-50%" y="-50%" width="200%" height="200%">
+                <feGaussianBlur stdDeviation="4" result="blur" />
+                <feComposite in="SourceGraphic" in2="blur" operator="over" />
+              </filter>
+            </defs>
           </svg>
 
-          {/* Mastered/Unlocked Path (Overlay) */}
-          <svg viewBox={`0 0 ${Math.max(1000, nodes.length * 150)} 600`} style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 1, pointerEvents: 'none' }} preserveAspectRatio="none">
-            <path d={generatePath()} fill="none" stroke="#fbbf24" strokeWidth="12" strokeDasharray="1 24" strokeLinecap="round" className="map-path-animate" style={{ clipPath: `inset(0 ${100 - ((nodes.indexOf(currentLevelNode) + 1) / nodes.length) * 100}% 0 0)` }} />
+          {/* Base Path (Locked) */}
+          <svg width={MAP_WIDTH} height={MAP_HEIGHT} style={{ position: 'absolute', top: 0, left: 0, zIndex: 1, pointerEvents: 'none' }}>
+            <path d={generatePath()} fill="none" stroke="#cbd5e1" strokeWidth="16" strokeDasharray="1 30" strokeLinecap="round" />
+          </svg>
+
+          {/* Mastered/Unlocked Path */}
+          <svg width={MAP_WIDTH} height={MAP_HEIGHT} style={{ position: 'absolute', top: 0, left: 0, zIndex: 1, pointerEvents: 'none' }}>
+            <path d={generatePath()} fill="none" stroke="#fbbf24" strokeWidth="16" strokeDasharray="1 30" strokeLinecap="round" className="map-path-animate" style={{ clipPath: `inset(0 ${MAP_WIDTH - currentLevelNode.x}px 0 0)` }} />
           </svg>
 
           {/* Nodes */}
           {nodes.map(node => (
             <div key={node.id} style={{
               position: 'absolute',
-              left: `${node.x}%`,
-              top: `${node.y}%`,
+              left: `${node.x}px`,
+              top: `${node.y}px`,
               transform: 'translate(-50%, -50%)',
               zIndex: 2,
               display: 'flex',
@@ -118,7 +143,7 @@ export default function MasteryMap() {
                   statusColor={getStatusColor(node.status)}
                   isMastered={node.status === 'mastered'} 
                   isLocked={node.status === 'locked'} 
-                  onClick={() => handleNodeClick(node.id, node.status)}
+                  onClick={() => handleNodeClick(node)}
                   style={{ position: 'absolute', inset: 0 }}
                 />
                 <div style={{
@@ -133,37 +158,56 @@ export default function MasteryMap() {
             </div>
           ))}
 
-          {/* Mascot Rabbit indicating current position! */}
+          {/* Mascot Rabbit */}
           {currentLevelNode && (
             <div style={{
               position: 'absolute',
-              left: `${currentLevelNode.x}%`,
-              top: `${currentLevelNode.y - 12}%`,
+              left: `${currentLevelNode.x}px`,
+              top: `${currentLevelNode.y - 70}px`,
               transform: 'translate(-50%, -50%)',
               zIndex: 10,
-              pointerEvents: 'none',
-              animation: 'bounce 2s infinite'
+              pointerEvents: 'none'
             }}>
-              <MascotRabbit style={{ width: '80px', height: '80px', filter: 'drop-shadow(0 4px 6px rgba(0,0,0,0.2))' }} />
+              <div style={{ animation: 'bounce 2s infinite' }}>
+                <MascotRabbit style={{ width: '80px', height: '80px', filter: 'drop-shadow(0 4px 6px rgba(0,0,0,0.2))' }} />
+              </div>
             </div>
           )}
         </div>
       </div>
 
-      {/* Node Interaction Modal */}
+      {/* Accessible Interactive Modal */}
       {selectedNode && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <div style={{ background: 'white', padding: '2rem', borderRadius: '24px', maxWidth: '400px', width: '90%', textAlign: 'center', animation: 'popIn 0.3s', position: 'relative' }}>
-            <button className="btn-secondary" style={{ position: 'absolute', top: '1rem', right: '1rem', padding: '0.5rem' }} onClick={() => setSelectedNode(null)}>
-              <X size={24} />
+        <div role="dialog" aria-modal="true" aria-labelledby="modal-title" style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(4px)' }}>
+          <div style={{ background: 'white', padding: '2rem', borderRadius: '32px', maxWidth: '400px', width: '90%', textAlign: 'center', animation: 'popIn 0.3s', position: 'relative', boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)' }}>
+            
+            {/* QA FIX: Larger Touch Target for X */}
+            <button className="btn-secondary" aria-label="Close modal" style={{ position: 'absolute', top: '1rem', right: '1rem', width: '48px', height: '48px', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0 }} onClick={() => setSelectedNode(null)}>
+              <X size={28} />
             </button>
-            <h2 style={{ color: '#6b21a8', fontSize: '2rem', marginBottom: '1rem' }}>Sound: {selectedNode.id}</h2>
-            <div style={{ display: 'inline-block', background: getStatusColor(selectedNode.status), color: 'white', padding: '0.5rem 1rem', borderRadius: '100px', fontWeight: 'bold', marginBottom: '2rem' }}>
-              {selectedNode.status.toUpperCase()}
+            
+            <h2 id="modal-title" style={{ color: '#6b21a8', fontSize: '2.5rem', marginBottom: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
+              {selectedNode.id}
+              {/* QA FIX: Giant Replay Audio Button */}
+              <button onClick={playSoundAgain} style={{ background: '#fef08a', border: 'none', borderRadius: '50%', width: '48px', height: '48px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 0 #eab308' }}>
+                <Volume2 size={24} color="#ca8a04" />
+              </button>
+            </h2>
+
+            {/* Visual Reward Status */}
+            <div style={{ display: 'flex', justifyContent: 'center', gap: '0.5rem', fontSize: '2rem', marginBottom: '1rem' }}>
+              {selectedNode.status === 'mastered' ? '⭐⭐⭐' : '⭐☆☆'}
             </div>
-            <p style={{ color: '#475569', marginBottom: '2rem' }}>Ready to practice this sound and earn stars?</p>
-            <button className="btn-primary" style={{ width: '100%', fontSize: '1.25rem', padding: '1rem' }} onClick={handlePractice}>
-              <Play size={24} style={{ display: 'inline', verticalAlign: 'middle', marginRight: '0.5rem' }} /> Let's Practice!
+
+            {/* QA FIX: Child-friendly adaptive copy */}
+            <p style={{ color: '#475569', fontSize: '1.25rem', marginBottom: '2rem', fontWeight: 'bold' }}>
+              {selectedNode.status === 'mastered' 
+                ? "You are a master! Want to do a Speed Run?" 
+                : "Let's play and earn stars!"}
+            </p>
+
+            <button className="btn-primary" style={{ width: '100%', fontSize: '1.5rem', padding: '1rem', justifyContent: 'center' }} onClick={handlePractice}>
+              <Play size={28} fill="currentColor" /> GO!
             </button>
           </div>
         </div>
