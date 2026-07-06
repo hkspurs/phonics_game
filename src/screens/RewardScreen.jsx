@@ -46,7 +46,7 @@ export default function RewardScreen() {
             padding: '2rem',
             borderRadius: '50%',
             background: 'rgba(255,255,255,0.4)',
-            boxShadow: '0 10px 30px rgba(0,0,0,0.1)'
+            boxShadow: chestState === 'shaking' ? '0 0 50px gold' : '0 10px 30px rgba(0,0,0,0.1)'
           }}
         >
           <TreasureChest state={chestState} onClick={handleChestClick} />
@@ -54,6 +54,9 @@ export default function RewardScreen() {
         </div>
       ) : (
         <>
+          {/* Starburst background */}
+          <div style={{ position: 'absolute', top: '50%', left: '50%', width: '600px', height: '600px', background: 'radial-gradient(circle, rgba(253,224,71,0.8) 0%, rgba(255,255,255,0) 70%)', transform: 'translate(-50%, -50%)', animation: 'spin 10s linear infinite', zIndex: 1 }} />
+          
           <div style={{ width: '200px', height: '200px', marginBottom: '2rem', animation: 'float 3s infinite, popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards', zIndex: 2 }}>
             <RewardSticker isRevealed={true} />
           </div>

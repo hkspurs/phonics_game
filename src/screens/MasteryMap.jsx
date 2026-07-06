@@ -47,19 +47,21 @@ export default function MasteryMap() {
       <h1 style={{ textAlign: 'center', color: '#b45309', fontSize: '2.5rem', marginTop: '1rem' }}>Sound Mastery Map</h1>
 
       {/* Map Area */}
-      <div style={{ position: 'relative', width: '100%', height: '600px', marginTop: '2rem', border: '6px solid #fcd34d', borderRadius: '32px', background: 'linear-gradient(to bottom, #dbeafe, #fef3c7)', overflow: 'hidden', boxShadow: 'inset 0 0 20px rgba(0,0,0,0.05)' }}>
+      <div style={{ position: 'relative', width: '100%', height: '600px', marginTop: '2rem', border: '6px solid #fcd34d', borderRadius: '32px', overflowX: 'auto', overflowY: 'hidden', WebkitOverflowScrolling: 'touch', boxShadow: 'inset 0 0 20px rgba(0,0,0,0.05)' }}>
         
-        {/* Decorative Scenery */}
-        <div style={{ position: 'absolute', top: '15%', left: '10%', fontSize: '4rem', opacity: 0.8 }}>🏔️</div>
-        <div style={{ position: 'absolute', top: '45%', right: '15%', fontSize: '5rem', opacity: 0.9 }}>🌲</div>
-        <div style={{ position: 'absolute', bottom: '25%', left: '30%', fontSize: '3rem', opacity: 0.7 }}>🌲</div>
-        <div style={{ position: 'absolute', bottom: '10%', right: '25%', fontSize: '4rem', opacity: 0.8 }}>🏖️</div>
-        <div style={{ position: 'absolute', top: '5%', right: '30%', fontSize: '3rem', animation: 'float 6s infinite alternate' }}>☁️</div>
-        
-        {/* Draw lines (mocking a path) */}
-        <svg style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 1 }}>
-          <path d="M 20% 80% Q 30% 60% 40% 70% T 60% 50% T 80% 30% T 70% 10%" fill="none" stroke="#fbbf24" strokeWidth="12" strokeDasharray="16 16" strokeLinecap="round" />
-        </svg>
+        {/* Inner Map Container (wide enough to pan) */}
+        <div style={{ position: 'relative', width: '150%', minWidth: '800px', height: '100%', background: 'linear-gradient(to bottom, #dbeafe, #fef3c7)' }}>
+          {/* Decorative Scenery */}
+          <div style={{ position: 'absolute', top: '15%', left: '10%', fontSize: '4rem', opacity: 0.8 }}>🏔️</div>
+          <div style={{ position: 'absolute', top: '45%', right: '15%', fontSize: '5rem', opacity: 0.9 }}>🌲</div>
+          <div style={{ position: 'absolute', bottom: '25%', left: '30%', fontSize: '3rem', opacity: 0.7 }}>🌲</div>
+          <div style={{ position: 'absolute', bottom: '10%', right: '25%', fontSize: '4rem', opacity: 0.8 }}>🏖️</div>
+          <div style={{ position: 'absolute', top: '5%', right: '30%', fontSize: '3rem', animation: 'float 6s infinite alternate' }}>☁️</div>
+          
+          {/* Draw lines (mocking a path) */}
+          <svg style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 1, pointerEvents: 'none' }}>
+            <path d="M 20% 80% Q 30% 60% 40% 70% T 60% 50% T 80% 30% T 70% 10%" fill="none" stroke="#fbbf24" strokeWidth="12" strokeDasharray="16 16" strokeLinecap="round" className="map-path-animate" />
+          </svg>
 
         {/* Nodes */}
         {nodes.map(node => (
@@ -93,7 +95,7 @@ export default function MasteryMap() {
             </div>
           </div>
         ))}
-
+        </div>
       </div>
     </div>
   )

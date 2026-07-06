@@ -166,9 +166,12 @@ export default function DailyChallenge() {
       
       {/* Safari Autoplay Blocker Overlay */}
       {!hasStartedInteraction && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(255,255,255,0.95)', zIndex: 1000, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(255,255,255,0.95)', zIndex: 1000, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', animation: 'fadeInWipe 0.5s' }}>
+          <div style={{ transform: 'scale(1.5)', marginBottom: '2rem' }}>
+            <MascotRabbit feedbackState="happy" />
+          </div>
           <h2 style={{ fontSize: '3rem', color: '#047857', marginBottom: '2rem' }}>Ready?</h2>
-          <button className="btn-primary" style={{ fontSize: '3rem', padding: '2rem 4rem' }} onClick={() => setHasStartedInteraction(true)}>
+          <button className="btn-primary" style={{ fontSize: '3rem', padding: '2rem 4rem', animation: 'pulse-glow 2s infinite' }} onClick={() => setHasStartedInteraction(true)}>
             <Volume2 size={48} /> Let's Go!
           </button>
         </div>
@@ -176,7 +179,11 @@ export default function DailyChallenge() {
       
       {/* Header */}
       <div style={{ width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
-        <button className="btn-secondary" style={{ padding: '0.5rem' }} onClick={() => navigate('/')}>
+        <button className="btn-secondary" style={{ padding: '0.5rem' }} onClick={() => {
+          if (window.confirm("Are you sure you want to quit? You will lose today's progress!")) {
+             navigate('/');
+          }
+        }}>
           <X size={24} />
         </button>
         
@@ -193,12 +200,31 @@ export default function DailyChallenge() {
       <h2 style={{ 
         color: currentQ.type === 'boss' ? '#e11d48' : '#065f46', 
         fontSize: currentQ.type === 'boss' ? '2.5rem' : '2rem', 
-        marginBottom: '2rem',
+        marginBottom: '1rem',
         textTransform: currentQ.type === 'boss' ? 'uppercase' : 'none',
         animation: currentQ.type === 'boss' ? 'pulse-glow 2s infinite' : 'none'
       }}>
         {currentQ.type === 'boss' ? '⭐ Final Boss Challenge! ⭐' : 'Listen and Choose'}
       </h2>
+
+      {/* QA FIX (Challenge 1 & 2): Boss Visuals */}
+      {currentQ.type === 'boss' && (
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: '2rem' }}>
+          <svg width="120" height="120" viewBox="0 0 100 100" style={{ animation: 'float 2s ease-in-out infinite alternate, shake 5s infinite' }}>
+            <circle cx="50" cy="50" r="45" fill="#f43f5e" />
+            <circle cx="35" cy="40" r="10" fill="white" />
+            <circle cx="65" cy="40" r="10" fill="white" />
+            <circle cx="35" cy="40" r="4" fill="black" />
+            <circle cx="65" cy="40" r="4" fill="black" />
+            <path d="M 30 25 L 45 35 M 70 25 L 55 35" stroke="#9f1239" strokeWidth="4" strokeLinecap="round" />
+            <path d="M 35 70 Q 50 60 65 70" fill="none" stroke="white" strokeWidth="6" strokeLinecap="round" />
+            <path d="M 45 70 L 45 75 M 55 70 L 55 75" stroke="white" strokeWidth="4" />
+          </svg>
+          <div style={{ width: '200px', height: '12px', background: '#fecdd3', borderRadius: '6px', marginTop: '1rem', overflow: 'hidden' }}>
+            <div style={{ width: attemptCount === 1 ? '100%' : (attemptCount === 2 ? '30%' : '0%'), height: '100%', background: '#e11d48', transition: 'width 0.3s' }} />
+          </div>
+        </div>
+      )}
 
       {/* Question Area (QA FIX: Implement Comparison Template) */}
       {currentQ.type === 'compare' ? (
@@ -236,24 +262,33 @@ export default function DailyChallenge() {
                   key={i}
                   onClick={() => handleAnswer(choice)}
                   disabled={isProcessing || feedbackState !== null || isDisabled}
-                  className={`btn-secondary ${feedbackState === 'correct' && choice === selected ? 'correct-sparkle' : ''}`}
+                  className={`btn-secondary ${feedbackState === 'correct' && choice === selected ? 'correct-sparkle' : ''} ${feedbackState === 'wrong' && choice === selected ? 'wobble-wrong' : ''}`}
                   style={{
-                    width: '240px', height: '140px',
+                    width: '240px', minHeight: '140px', height: 'auto', padding: '1rem', // QA FIX (Challenge 27)
                     display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
                     background: 'white', color: '#1e3a8a',
                     borderColor: '#bae6fd', borderWidth: '4px', borderStyle: 'solid', borderRadius: '24px',
                     opacity: isDisabled ? 0 : (feedbackState !== null && choice !== selected ? 0 : 1),
                     transform: isDisabled ? 'scale(0.8)' : 'none',
                     pointerEvents: isDisabled ? 'none' : 'auto',
-                    transition: 'all 0.3s',
+                    transition: 'opacity 0.3s, transform 0.3s',
                     cursor: (feedbackState !== null || isDisabled) ? 'default' : 'pointer'
                   }}
                 >
-                  <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.5rem' }}>
-                    <AppleIcon size={48} />
-                    <AppleIcon size={48} isRed={!isSame} />
+                  <div style={{ display: 'flex', gap: '1rem', marginBottom: '0.5rem' }}>
+                    {isSame ? (
+                      <div style={{ display: 'flex' }}>
+                         <div style={{ width: 40, height: 40, background: '#4ade80', borderRadius: '8px' }} />
+                         <div style={{ width: 40, height: 40, background: '#4ade80', borderRadius: '8px', marginLeft: '-10px', mixBlendMode: 'multiply' }} />
+                      </div>
+                    ) : (
+                      <div style={{ display: 'flex', gap: '10px' }}>
+                         <div style={{ width: 40, height: 40, background: '#38bdf8', borderRadius: '50%' }} />
+                         <div style={{ width: 40, height: 40, background: '#f472b6', transform: 'rotate(45deg)' }} />
+                      </div>
+                    )}
                   </div>
-                  <span style={{ fontSize: '1.2rem', color: '#94a3b8' }}>{labelText}</span>
+                  <span style={{ fontSize: '1.2rem', color: '#64748b', fontWeight: 'bold' }}>{labelText}</span>
                 </button>
               )
             })}
@@ -298,9 +333,9 @@ export default function DailyChallenge() {
                   key={i}
                   onClick={() => handleAnswer(choice)}
                   disabled={isProcessing || feedbackState !== null || isDisabled}
-                  className={feedbackState === 'correct' && choice === selected ? 'correct-sparkle' : ''}
+                  className={`${feedbackState === 'correct' && choice === selected ? 'correct-sparkle' : ''} ${feedbackState === 'wrong' && choice === selected ? 'wobble-wrong' : ''}`}
                   style={{
-                    width: '160px', height: '200px',
+                    width: '160px', minHeight: '200px', height: 'auto', padding: '1rem', // QA FIX (Challenge 27)
                     fontSize: '4rem', fontWeight: 'bold', color: isDisabled ? '#94a3b8' : '#1e3a8a',
                     background: isDisabled ? '#f1f5f9' : 'linear-gradient(135deg, #ffffff, #f0f9ff)', 
                     border: `4px solid ${isDisabled ? '#cbd5e1' : '#7dd3fc'}`, 
@@ -309,9 +344,9 @@ export default function DailyChallenge() {
                     cursor: (feedbackState !== null || isDisabled) ? 'default' : 'pointer',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     opacity: isDisabled ? 0.6 : (feedbackState !== null && choice !== selected ? 0.3 : 1),
-                    transform: isDisabled ? 'scale(0.95)' : (choice === selected && feedbackState === 'correct' ? 'scale(1.1) translateY(-10px)' : (choice === selected && feedbackState === 'wrong' ? 'translateX(10px)' : 'none')),
+                    transform: isDisabled ? 'scale(0.95)' : (choice === selected && feedbackState === 'correct' ? 'scale(1.1) translateY(-10px)' : 'none'),
                     pointerEvents: isDisabled ? 'none' : 'auto',
-                    transition: 'all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)'
+                    transition: 'opacity 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)'
                   }}
                 >
                   {choice}
@@ -324,6 +359,12 @@ export default function DailyChallenge() {
 
       {/* Mascot Feedback Area */}
       <div style={{ position: 'absolute', bottom: '2rem', left: '2rem', width: '180px', height: '180px', pointerEvents: 'none', zIndex: 10 }}>
+        {feedbackState === 'correct' && (
+          <div style={{ position: 'absolute', top: '-40px', right: '-80px', background: 'white', padding: '0.5rem 1rem', borderRadius: '20px', boxShadow: '0 4px 10px rgba(0,0,0,0.1)', fontWeight: 'bold', color: '#047857', animation: 'popIn 0.3s ease-out' }}>
+            Great job!
+            <div style={{ position: 'absolute', bottom: '-10px', left: '20px', borderLeft: '10px solid transparent', borderRight: '10px solid transparent', borderTop: '10px solid white' }}></div>
+          </div>
+        )}
         <MascotRabbit style={{ width: '100%', height: '100%' }} feedbackState={feedbackState} />
         {feedbackState === 'correct' && <CorrectFeedback trigger={true} style={{ position: 'absolute', inset: 0 }} />}
         {feedbackState === 'wrong' && <WrongFeedback trigger={true} style={{ position: 'absolute', inset: 0 }} />}
