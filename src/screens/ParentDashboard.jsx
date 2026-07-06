@@ -68,6 +68,15 @@ export default function ParentDashboard() {
   });
   const overallAccuracy = totalAttempts > 0 ? ((totalFirstHits / totalAttempts) * 100).toFixed(1) : 0;
 
+  // Group sounds by first letter
+  const groupedSounds = {};
+  questionEngine.sounds.forEach(sound => {
+    const letter = sound.label[0].toUpperCase();
+    if (!groupedSounds[letter]) groupedSounds[letter] = [];
+    groupedSounds[letter].push(sound);
+  });
+  const sortedLetters = Object.keys(groupedSounds).sort();
+
   return (
     <div className="screen-container" style={{ background: '#f8fafc', padding: '2rem', position: 'relative' }}>
       
@@ -171,46 +180,54 @@ export default function ParentDashboard() {
             Curriculum Control
             <span style={{ fontSize: '1rem', color: '#64748b', fontWeight: 'normal' }}>Total Sounds: {questionEngine.sounds.length}</span>
           </h2>
-          
-          <ul style={{ display: 'flex', flexDirection: 'column', gap: '1rem', padding: 0, listStyle: 'none' }}>
-            {questionEngine.sounds.map(sound => {
-              const status = getNodeStatus(sound.sound_id);
-              const isAssigned = activeAssignment?.targetSoundId === sound.label;
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+            {sortedLetters.map(letter => (
+              <div key={letter}>
+                <h3 style={{ color: '#0ea5e9', borderBottom: '2px solid #bae6fd', paddingBottom: '0.5rem', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <span style={{ background: '#e0f2fe', color: '#0369a1', padding: '0.2rem 0.6rem', borderRadius: '8px', fontSize: '1.2rem' }}>{letter}</span> Sounds
+                </h3>
+                <ul style={{ display: 'flex', flexDirection: 'column', gap: '1rem', padding: 0, listStyle: 'none' }}>
+                  {groupedSounds[letter].map(sound => {
+                    const status = getNodeStatus(sound.sound_id);
+                    const isAssigned = activeAssignment?.targetSoundId === sound.label;
 
-              return (
-                <li key={sound.sound_id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '1rem', background: '#f8fafc', borderRadius: '8px', border: '1px solid #e2e8f0', transition: 'box-shadow 0.2s', ':hover': { boxShadow: '0 4px 6px rgba(0,0,0,0.05)' } }}>
-                  
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flex: 1, minWidth: '150px' }}>
-                    <span style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#0f172a' }}>{sound.label}</span>
-                    <span style={{ 
-                      fontSize: '0.75rem', padding: '0.25rem 0.5rem', borderRadius: '100px', fontWeight: 'bold',
-                      background: status === 'mastered' ? '#d1fae5' : status === 'weak' ? '#fee2e2' : status === 'practising' ? '#dbeafe' : status === 'unlocked' ? '#e0f2fe' : '#f1f5f9',
-                      color: status === 'mastered' ? '#047857' : status === 'weak' ? '#b91c1c' : status === 'practising' ? '#1d4ed8' : status === 'unlocked' ? '#0369a1' : '#64748b'
-                    }}>
-                      {status.toUpperCase()}
-                    </span>
-                  </div>
+                    return (
+                      <li key={sound.sound_id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '1rem', background: '#f8fafc', borderRadius: '8px', border: '1px solid #e2e8f0', transition: 'box-shadow 0.2s', ':hover': { boxShadow: '0 4px 6px rgba(0,0,0,0.05)' } }}>
+                        
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flex: 1, minWidth: '150px' }}>
+                          <span style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#0f172a' }}>{sound.label}</span>
+                          <span style={{ 
+                            fontSize: '0.75rem', padding: '0.25rem 0.5rem', borderRadius: '100px', fontWeight: 'bold',
+                            background: status === 'mastered' ? '#d1fae5' : status === 'weak' ? '#fee2e2' : status === 'practising' ? '#dbeafe' : status === 'unlocked' ? '#e0f2fe' : '#f1f5f9',
+                            color: status === 'mastered' ? '#047857' : status === 'weak' ? '#b91c1c' : status === 'practising' ? '#1d4ed8' : status === 'unlocked' ? '#0369a1' : '#64748b'
+                          }}>
+                            {status.toUpperCase()}
+                          </span>
+                        </div>
 
-                  <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', justifyContent: 'flex-end' }}>
-                    <button className="btn-secondary" aria-label={`Preview Audio for ${sound.label}`} style={{ padding: '0.5rem', fontSize: '1rem' }} onClick={() => { audioEngine.playUI('pop'); audioEngine.play(sound.audio_url); }} title="Preview Audio">
-                      <Volume2 size={20} />
-                    </button>
-                    <button 
-                      className="btn-secondary" 
-                      aria-label={isAssigned ? `Unassign ${sound.label}` : `Assign ${sound.label}`}
-                      style={{ padding: '0.5rem 1rem', fontSize: '1rem', color: isAssigned ? '#ef4444' : '#0ea5e9', borderColor: isAssigned ? '#ef4444' : '#bae6fd' }} 
-                      onClick={() => handleAssign(sound)}
-                    >
-                      {isAssigned ? <><XCircle size={18}/> Unassign</> : <><BookOpen size={18} /> Assign</>}
-                    </button>
-                    <button className="btn-secondary" aria-label={`Force Unlock ${sound.label}`} style={{ padding: '0.5rem 1rem', fontSize: '1rem', color: '#d946ef' }} onClick={() => handleForceUnlock(sound)}>
-                      Force Unlock
-                    </button>
-                  </div>
-                </li>
-              )
-            })}
-          </ul>
+                        <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', justifyContent: 'flex-end' }}>
+                          <button className="btn-secondary" aria-label={`Preview Audio for ${sound.label}`} style={{ padding: '0.5rem', fontSize: '1rem' }} onClick={() => { audioEngine.playUI('pop'); audioEngine.play(sound.audio_url); }} title="Preview Audio">
+                            <Volume2 size={20} />
+                          </button>
+                          <button 
+                            className="btn-secondary" 
+                            aria-label={isAssigned ? `Unassign ${sound.label}` : `Assign ${sound.label}`}
+                            style={{ padding: '0.5rem 1rem', fontSize: '1rem', color: isAssigned ? '#ef4444' : '#0ea5e9', borderColor: isAssigned ? '#ef4444' : '#bae6fd' }} 
+                            onClick={() => handleAssign(sound)}
+                          >
+                            {isAssigned ? <><XCircle size={18}/> Unassign</> : <><BookOpen size={18} /> Assign</>}
+                          </button>
+                          <button className="btn-secondary" aria-label={`Force Unlock ${sound.label}`} style={{ padding: '0.5rem 1rem', fontSize: '1rem', color: '#d946ef' }} onClick={() => handleForceUnlock(sound)}>
+                            Force Unlock
+                          </button>
+                        </div>
+                      </li>
+                    )
+                  })}
+                </ul>
+              </div>
+            ))}
+          </div>
 
           <div style={{ marginTop: '4rem', padding: '2rem', borderTop: '2px dashed #e2e8f0', textAlign: 'center' }}>
             <h3 style={{ color: '#94a3b8', marginBottom: '1rem' }}>Advanced Settings</h3>
