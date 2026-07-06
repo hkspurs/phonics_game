@@ -3,6 +3,9 @@ import { useNavigate } from 'react-router-dom'
 import { Volume2, X } from 'lucide-react'
 import { useGameStore } from '../store/gameStore'
 import { audioEngine } from '../audio/AudioEngine'
+import ReplayHelper from '../components/ReplayHelper'
+import CorrectFeedback from '../components/CorrectFeedback'
+import WrongFeedback from '../components/WrongFeedback'
 
 export default function DailyChallenge() {
   const navigate = useNavigate()
@@ -104,6 +107,11 @@ export default function DailyChallenge() {
       setIsFirstAttempt(false)
       setDisabledChoices(prev => [...prev, choice])
       
+      setFeedbackState('wrong')
+      setTimeout(() => {
+        setFeedbackState(prev => prev === 'wrong' ? null : prev)
+      }, 1000)
+      
       // Play target audio again as a hint
       audioEngine.play(currentQ.targetSound.audio_url)
       
@@ -199,13 +207,21 @@ export default function DailyChallenge() {
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
           
-          <button 
-            className="btn-primary" 
-            style={{ padding: '3rem', background: '#38bdf8', borderRadius: '50%', marginBottom: '3rem', animation: isFirstAttempt ? 'pulse-glow 2s infinite' : 'none' }}
-            onClick={() => !isProcessing && audioEngine.play(currentQ.targetSound.audio_url)}
-          >
-            <Volume2 size={64} />
-          </button>
+          <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '3rem' }}>
+            <button 
+              className="btn-primary" 
+              style={{ padding: '3rem', background: '#38bdf8', borderRadius: '50%', animation: isFirstAttempt ? 'pulse-glow 2s infinite' : 'none', zIndex: 2 }}
+              onClick={() => !isProcessing && audioEngine.play(currentQ.targetSound.audio_url)}
+            >
+              <Volume2 size={64} />
+            </button>
+            <div style={{ position: 'absolute', right: '-120px', bottom: '0', width: '120px', height: '120px' }}>
+              <ReplayHelper 
+                isPlaying={isProcessing} 
+                onClick={() => !isProcessing && audioEngine.play(currentQ.targetSound.audio_url)} 
+              />
+            </div>
+          </div>
 
           <div style={{ display: 'flex', gap: '2rem', flexWrap: 'wrap', justifyContent: 'center' }}>
             {currentQ.choices.map((choice, i) => {
@@ -239,8 +255,9 @@ export default function DailyChallenge() {
       )}
 
       {/* Mascot Feedback Area */}
-      <div style={{ position: 'absolute', bottom: '2rem', left: '2rem', fontSize: '6rem', transition: 'all 0.3s' }}>
-        {feedbackState === 'correct' ? '🎉' : '👀'}
+      <div style={{ position: 'absolute', bottom: '2rem', left: '2rem', width: '180px', height: '180px', pointerEvents: 'none' }}>
+        {feedbackState === 'correct' && <CorrectFeedback trigger={true} style={{ position: 'absolute', inset: 0 }} />}
+        {feedbackState === 'wrong' && <WrongFeedback trigger={true} style={{ position: 'absolute', inset: 0 }} />}
       </div>
 
     </div>

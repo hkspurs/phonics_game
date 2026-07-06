@@ -1,0 +1,28 @@
+.wrong-feedback-container {
+  display: inline-block;
+  width: 100%;
+  height: 100%;
+}
+
+.wrong-feedback-container.active #wrong-feedback {
+  animation: gentle-tilt 1s ease-in-out;
+  transform-origin: 35px 75px;
+}
+
+.wrong-feedback-container.active #sweat-drop {
+  animation: sweat-drip 1s ease-in-out;
+}
+
+@keyframes gentle-tilt {
+  0% { transform: rotate(0deg); }
+  25% { transform: rotate(-10deg); }
+  50% { transform: rotate(8deg); }
+  75% { transform: rotate(-5deg); }
+  100% { transform: rotate(0deg); }
+}
+
+@keyframes sweat-drip {
+  0% { transform: translateY(0); opacity: 0.8; }
+  50% { transform: translateY(3px); opacity: 0.5; }
+  100% { transform: translateY(0); opacity: 0.8; }
+}

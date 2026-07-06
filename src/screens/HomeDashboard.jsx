@@ -2,6 +2,7 @@ import React, { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Map, Play, Trophy, Puzzle, ClipboardList, Settings } from 'lucide-react'
 import { useGameStore } from '../store/gameStore'
+import MascotRabbit from '../components/MascotRabbit'
 
 export default function HomeDashboard() {
   const navigate = useNavigate()
@@ -56,8 +57,8 @@ export default function HomeDashboard() {
       </div>
 
       {/* Mascot Area */}
-      <div className="mascot-container" style={{ fontSize: '10rem', marginBottom: '2rem', filter: 'drop-shadow(0 10px 10px rgba(0,0,0,0.15))', zIndex: 10 }}>
-        🦉
+      <div className="mascot-container" style={{ marginBottom: '2rem', filter: 'drop-shadow(0 10px 10px rgba(0,0,0,0.15))', zIndex: 10 }}>
+        <MascotRabbit style={{ width: '250px', height: '250px' }} />
       </div>
       
       <h1 style={{ fontSize: '3rem', color: '#1e3a8a', marginBottom: '0.5rem', textAlign: 'center' }}>Ready to Learn?</h1>

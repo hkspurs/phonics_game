@@ -1,0 +1,41 @@
+.replay-helper-container {
+  display: inline-block;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.2s ease;
+}
+
+.replay-helper-container:hover {
+  transform: scale(1.05);
+}
+
+.replay-helper-container:active {
+  transform: scale(0.95);
+}
+
+.replay-helper-container.idle #tail,
+.replay-helper-container.idle #tail-outline {
+  animation: tail-wag 3s ease-in-out infinite;
+  transform-origin: 25px 60px;
+}
+
+.replay-helper-container.playing #cat-left-ear,
+.replay-helper-container.playing #cat-right-ear {
+  transform: translateY(-2px);
+  transition: transform 0.2s ease;
+}
+
+.animate-waves {
+  animation: pulse-waves 1s infinite;
+}
+
+@keyframes tail-wag {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(-10deg); }
+}
+
+@keyframes pulse-waves {
+  0% { opacity: 0; transform: translateX(0); }
+  50% { opacity: 1; transform: translateX(2px); }
+  100% { opacity: 0; transform: translateX(4px); }
+}
