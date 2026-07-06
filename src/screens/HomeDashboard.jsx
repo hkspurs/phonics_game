@@ -1,15 +1,51 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Map, Play, Trophy, Puzzle, ClipboardList, Settings } from 'lucide-react'
+import { Map, Play, Trophy, Puzzle, ClipboardList, Settings, X } from 'lucide-react'
 import { useGameStore } from '../store/gameStore'
 import MascotRabbit from '../components/MascotRabbit'
 import MissionSun from '../components/MissionSun'
 
+const ParentGateModal = ({ onClose, onSuccess }) => {
+  const [pin, setPin] = useState('');
+  return (
+    <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div style={{ background: 'white', padding: '2rem', borderRadius: '20px', textAlign: 'center', width: '300px' }}>
+        <h3 style={{ color: '#1e3a8a', marginBottom: '1rem' }}>Grown-Ups Only</h3>
+        <p style={{ color: '#64748b', marginBottom: '1rem', fontSize: '0.9rem' }}>Enter year of birth to access settings:</p>
+        <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'center', marginBottom: '1rem' }}>
+          {[1,2,3,4].map((_, i) => (
+            <div key={i} style={{ width: '40px', height: '40px', border: '2px solid #cbd5e1', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem', fontWeight: 'bold' }}>
+              {pin[i] || ''}
+            </div>
+          ))}
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.5rem', marginBottom: '1rem' }}>
+          {[1,2,3,4,5,6,7,8,9].map(num => (
+            <button key={num} className="btn-secondary" style={{ padding: '0.5rem' }} onClick={() => setPin(p => (p + num).slice(0,4))}>{num}</button>
+          ))}
+          <button className="btn-secondary" style={{ padding: '0.5rem' }} onClick={() => setPin('')}>C</button>
+          <button className="btn-secondary" style={{ padding: '0.5rem' }} onClick={() => setPin(p => (p + '0').slice(0,4))}>0</button>
+          <button className="btn-secondary" style={{ padding: '0.5rem', background: '#22c55e', color: 'white', borderColor: '#16a34a' }} onClick={() => { 
+            const year = parseInt(pin, 10);
+            if(pin.length === 4 && year >= 1900 && year <= 2010) {
+              onSuccess();
+            } else {
+              setPin(''); // Reset on wrong pin
+            }
+          }}>Go</button>
+        </div>
+        <button onClick={onClose} style={{ border: 'none', background: 'transparent', color: '#94a3b8', marginTop: '1rem', cursor: 'pointer' }}>Cancel</button>
+      </div>
+    </div>
+  );
+};
+
 export default function HomeDashboard() {
   const navigate = useNavigate()
+  const [showParentGate, setShowParentGate] = useState(false);
   
   // Connect to global state
-  const { stars, gems, tickets, streak, startDailyChallenge, activeAssignment, hasCompletedDaily, checkDailyReset } = useGameStore()
+  const { stars, gems, tickets, streak, startDailyChallenge, activeAssignment, hasCompletedDaily, checkDailyReset, setParentAuthenticated } = useGameStore()
 
   useEffect(() => {
     checkDailyReset()
@@ -20,8 +56,14 @@ export default function HomeDashboard() {
     navigate('/challenge')
   }
 
+  const handleParentAccess = () => {
+    setParentAuthenticated(true);
+    navigate('/parent');
+  };
+
   return (
     <div className="screen-container" style={{ position: 'relative', overflow: 'hidden', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(to bottom, #bae6fd, #e0f2fe)' }}>
+      {showParentGate && <ParentGateModal onClose={() => setShowParentGate(false)} onSuccess={handleParentAccess} />}
       
       {/* Dynamic Game World Background Elements */}
       <div style={{ position: 'absolute', top: '10%', left: '5%', fontSize: '4rem', opacity: 0.7, animation: 'float 4s ease-in-out infinite alternate' }}>☁️</div>
@@ -29,30 +71,27 @@ export default function HomeDashboard() {
       <div style={{ position: 'absolute', bottom: '15%', left: '15%', fontSize: '3rem', opacity: 0.5, animation: 'float 5s ease-in-out infinite alternate' }}>✨</div>
       <div style={{ position: 'absolute', bottom: '30%', right: '5%', fontSize: '4rem', opacity: 0.8, animation: 'float 4.5s ease-in-out infinite alternate-reverse' }}>🎈</div>
       
-      {/* Header / Stats (QA FIX: Mobile Responsive) */}
-      <div style={{ width: '100%', display: 'flex', flexWrap: 'wrap', gap: '1rem', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
-        <div style={{ background: 'white', padding: '0.5rem 1rem', borderRadius: '100px', display: 'flex', flexWrap: 'wrap', gap: '1rem', fontWeight: 'bold' }}>
+      {/* Header / Stats - Simplified for UX */}
+      <div style={{ width: '100%', display: 'flex', flexWrap: 'wrap', gap: '1rem', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem', padding: '1rem', zIndex: 10 }}>
+        <div style={{ background: 'white', padding: '0.5rem 1rem', borderRadius: '100px', display: 'flex', gap: '1rem', fontWeight: 'bold', boxShadow: '0 4px 6px rgba(0,0,0,0.05)' }}>
           <span style={{ color: '#eab308' }}>⭐ {stars}</span>
-          <span style={{ color: '#0ea5e9' }}>💎 {gems}</span>
-          <span style={{ color: '#d946ef' }}>🎟️ {tickets}</span>
+          {gems > 0 && <span style={{ color: '#0ea5e9' }}>💎 {gems}</span>}
         </div>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem' }}>
+        <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
           {activeAssignment && !activeAssignment.completed && (
-            <button className="btn-secondary" style={{ padding: '0.5rem 1rem', borderColor: '#f59e0b', color: '#b45309' }} onClick={() => navigate('/assignments')}>
-              <ClipboardList size={20} /> 1 New Assignment!
-            </button>
+             <div onClick={() => navigate('/assignments')} style={{ background: '#fef3c7', width: '40px', height: '40px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#d97706', cursor: 'pointer', boxShadow: '0 4px 6px rgba(0,0,0,0.05)', position: 'relative' }}>
+               <ClipboardList size={20} />
+               <span style={{ position: 'absolute', top: -5, right: -5, background: '#ef4444', color: 'white', fontSize: '0.7rem', width: '18px', height: '18px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>1</span>
+             </div>
           )}
-          <div style={{ background: 'white', padding: '0.5rem 1rem', borderRadius: '100px', fontWeight: 'bold', color: '#ef4444' }}>
-            🔥 {streak} Day Streak
+          <div style={{ background: 'white', padding: '0.5rem 1rem', borderRadius: '100px', fontWeight: 'bold', color: '#ef4444', boxShadow: '0 4px 6px rgba(0,0,0,0.05)' }}>
+            🔥 {streak}
           </div>
           <button 
             style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: '#94a3b8', padding: '0.5rem' }} 
-            onClick={() => {
-              const pin = prompt('Parent Gate: Enter PIN (1234)');
-              if (pin === '1234') navigate('/parent');
-            }}
+            onClick={() => setShowParentGate(true)}
           >
-            <Settings size={20} />
+            <Settings size={24} />
           </button>
         </div>
       </div>

@@ -8,8 +8,10 @@ export const useGameStore = create(
       // Global Profile Data
       stars: 45,
       gems: 12,
-      tickets: 2, // New for Phase 5
+      tickets: 2, 
       streak: 5,
+      isParentAuthenticated: false, // Prevents Parent Gate Bypass
+      
       
       // Map Progression State (QA FIX)
       unlockedSounds: ['AB', 'EB'],
@@ -32,8 +34,11 @@ export const useGameStore = create(
       sessionScore: { stars: 0, gems: 0 },
 
       // Actions
+      setParentAuthenticated: (status) => set({ isParentAuthenticated: status }),
+
       checkDailyReset: () => set((state) => {
-        const today = new Date().toISOString().split('T')[0];
+        // Fix UTC bug: Use local date string
+        const today = new Date().toLocaleDateString('en-CA'); // YYYY-MM-DD in local time
         if (state.lastPlayedDate !== today) {
           return {
             hasCompletedDaily: false,
@@ -106,6 +111,7 @@ export const useGameStore = create(
         if (isCorrect) {
           set((state) => {
             const currentQ = state.activeQuestions[state.currentQuestionIndex];
+            if (!currentQ) return {}; // Prevent fatal TypeError if out of bounds
             const earnedStars = currentQ.type === 'boss' ? 3 : (isFirstAttempt ? 2 : 1);
             const earnedGems = currentQ.type === 'boss' ? 1 : 0;
             return {
@@ -125,28 +131,26 @@ export const useGameStore = create(
       endChallenge: () => set((state) => {
         let nextNodeUpdates = {};
         
-        // Only process Map Progression if this was a Daily Challenge
-        if (state.currentChallengeType === 'daily' && !state.gameComplete) {
+        // QA FIX: Allow progression on ANY challenge type if game is not complete
+        if (!state.gameComplete) {
           const stats = state.learningStats[state.currentNode];
           
-          // QA FIX: Raise mastery threshold to 90%
+          // QA FIX: Lower mastery threshold to 80% to prevent the mathematical trap of a single misclick
           if (stats && stats.attempts >= 3) {
             const accuracy = stats.firstAttemptHits / stats.attempts;
-            if (accuracy >= 0.9) {
+            if (accuracy >= 0.8) {
               const currentIndex = questionEngine.sounds.findIndex(s => s.sound_id === state.currentNode || s.label === state.currentNode);
-              if (currentIndex !== -1) {
-                if (currentIndex + 1 < questionEngine.sounds.length) {
-                  const nextNodeId = questionEngine.sounds[currentIndex + 1].label;
-                  if (!state.unlockedSounds.includes(nextNodeId)) {
-                    nextNodeUpdates = {
-                      currentNode: nextNodeId,
-                      unlockedSounds: [...state.unlockedSounds, nextNodeId]
-                    };
-                  }
-                } else {
-                  // QA FIX: Reached the absolute end of the game map
-                  nextNodeUpdates = { gameComplete: true };
+              if (currentIndex !== -1 && currentIndex + 1 < questionEngine.sounds.length) {
+                const nextNodeId = questionEngine.sounds[currentIndex + 1].sound_id || questionEngine.sounds[currentIndex + 1].label;
+                if (!state.unlockedSounds.includes(nextNodeId)) {
+                  nextNodeUpdates = {
+                    currentNode: nextNodeId,
+                    unlockedSounds: [...state.unlockedSounds, nextNodeId]
+                  };
                 }
+              } else {
+                // QA FIX: Reached the end, or fallback if findIndex fails to prevent soft-lock
+                nextNodeUpdates = { gameComplete: true };
               }
             }
           }
@@ -168,16 +172,15 @@ export const useGameStore = create(
     }),
     {
       name: 'phonics-game-storage',
-      version: 1, // QA FIX: Schema versioning for future-proofing
+      version: 2, // Bumped version for new schema
       migrate: (persistedState, version) => {
-        if (version === 0) {
-          // Migration from unversioned to version 1
-          return {
-            ...persistedState,
-            activeAssignment: { id: 'asgn_1', targetSoundId: 'AB', title: "Vowel 'A' Mastery", completed: false }
-          };
+        if (!persistedState || typeof persistedState !== 'object') return {}; // Prevent hydration poisoning
+        
+        let state = { ...persistedState };
+        if (version === 0 || version === 1) {
+          state.activeAssignment = { id: 'asgn_1', targetSoundId: 'AB', title: "Vowel 'A' Mastery", completed: false };
         }
-        return persistedState;
+        return state;
       },
       partialize: (state) => ({
         stars: state.stars,

@@ -118,10 +118,10 @@ export default function DailyChallenge() {
         setFeedbackState(prev => prev === 'wrong' ? null : prev)
       }, 1000)
       
-      // Play target audio again as a hint
-      audioEngine.play(currentQ.targetSound.audio_url)
-      
-      setIsProcessing(false)
+      // Play target audio again as a hint, and DO NOT unlock until it finishes!
+      audioEngine.play(currentQ.targetSound.audio_url).then(() => {
+        setIsProcessing(false)
+      })
     }
   }
 
@@ -216,10 +216,17 @@ export default function DailyChallenge() {
           <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '3rem' }}>
             <button 
               className="btn-primary" 
-              style={{ padding: '3rem', background: '#38bdf8', borderRadius: '50%', animation: isFirstAttempt ? 'pulse-glow 2s infinite' : 'none', zIndex: 2 }}
+              style={{ 
+                padding: '3rem', 
+                background: isProcessing ? '#0ea5e9' : '#38bdf8', 
+                borderRadius: '50%', 
+                animation: isProcessing ? 'pulse-glow 1s infinite' : (isFirstAttempt ? 'pulse-glow 2s infinite' : 'none'), 
+                zIndex: 2,
+                transition: 'background 0.3s'
+              }}
               onClick={() => !isProcessing && audioEngine.play(currentQ.targetSound.audio_url)}
             >
-              <Volume2 size={64} />
+              <Volume2 size={64} color={isProcessing ? '#e0f2fe' : 'white'} />
             </button>
             <div style={{ position: 'absolute', right: '-120px', bottom: '0', width: '120px', height: '120px' }}>
               <ReplayHelper 
@@ -240,14 +247,15 @@ export default function DailyChallenge() {
                   className={feedbackState === 'correct' && choice === selected ? 'correct-sparkle' : ''}
                   style={{
                     width: '160px', height: '200px',
-                    fontSize: '4rem', fontWeight: 'bold', color: '#1e3a8a',
-                    background: 'linear-gradient(135deg, #ffffff, #f0f9ff)', 
-                    border: '4px solid #7dd3fc', borderRadius: '32px',
-                    boxShadow: '0 12px 0 #38bdf8, 0 16px 20px rgba(0,0,0,0.1)', 
+                    fontSize: '4rem', fontWeight: 'bold', color: isDisabled ? '#94a3b8' : '#1e3a8a',
+                    background: isDisabled ? '#f1f5f9' : 'linear-gradient(135deg, #ffffff, #f0f9ff)', 
+                    border: `4px solid ${isDisabled ? '#cbd5e1' : '#7dd3fc'}`, 
+                    borderRadius: '32px',
+                    boxShadow: isDisabled ? 'none' : '0 12px 0 #38bdf8, 0 16px 20px rgba(0,0,0,0.1)', 
                     cursor: (feedbackState !== null || isDisabled) ? 'default' : 'pointer',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    opacity: isDisabled ? 0 : (feedbackState !== null && choice !== selected ? 0 : 1),
-                    transform: isDisabled ? 'scale(0.8)' : (choice === selected && feedbackState === 'correct' ? 'scale(1.1) translateY(-10px)' : 'none'),
+                    opacity: isDisabled ? 0.6 : (feedbackState !== null && choice !== selected ? 0.3 : 1),
+                    transform: isDisabled ? 'scale(0.95)' : (choice === selected && feedbackState === 'correct' ? 'scale(1.1) translateY(-10px)' : (choice === selected && feedbackState === 'wrong' ? 'translateX(10px)' : 'none')),
                     pointerEvents: isDisabled ? 'none' : 'auto',
                     transition: 'all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)'
                   }}

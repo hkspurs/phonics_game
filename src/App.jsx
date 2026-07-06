@@ -1,5 +1,5 @@
 import React from 'react'
-import { HashRouter, Routes, Route } from 'react-router-dom'
+import { HashRouter, Routes, Route, Navigate } from 'react-router-dom'
 import HomeDashboard from './screens/HomeDashboard'
 import MasteryMap from './screens/MasteryMap'
 import DailyChallenge from './screens/DailyChallenge'
@@ -8,6 +8,16 @@ import BrainGamesIsland from './screens/BrainGamesIsland'
 import AssignmentHub from './screens/AssignmentHub'
 import SoundCatcher from './games/SoundCatcher'
 import ParentDashboard from './screens/ParentDashboard'
+
+import { useGameStore } from './store/gameStore'
+
+const ProtectedParentRoute = ({ children }) => {
+  const isParentAuthenticated = useGameStore(state => state.isParentAuthenticated);
+  if (!isParentAuthenticated) {
+    return <Navigate to="/" replace />;
+  }
+  return children;
+};
 
 function App() {
   return (
@@ -20,7 +30,13 @@ function App() {
         <Route path="/braingames" element={<BrainGamesIsland />} />
         <Route path="/games/soundcatcher" element={<SoundCatcher />} />
         <Route path="/assignments" element={<AssignmentHub />} />
-        <Route path="/parent" element={<ParentDashboard />} />
+        <Route path="/parent" element={
+          <ProtectedParentRoute>
+            <ParentDashboard />
+          </ProtectedParentRoute>
+        } />
+        {/* QA FIX: Catch-all route to prevent blank screens */}
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </HashRouter>
   )

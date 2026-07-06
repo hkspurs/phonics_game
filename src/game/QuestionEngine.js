@@ -34,11 +34,21 @@ class QuestionEngine {
     const targetSounds = [currentSound, currentSound, currentSound];
     
     // QA FIX: Prioritize actual weak sounds from learningStats
-    const actualWeakSounds = unlockedSounds.filter(s => {
+    let actualWeakSounds = unlockedSounds.filter(s => {
       const stats = learningStats[s.sound_id];
       if (!stats || stats.attempts < 3) return false;
       return (stats.firstAttemptHits / stats.attempts) < 0.6;
     });
+    
+    // If no severely weak sounds, find moderately weak sounds (< 0.85) instead of mastered ones
+    if (actualWeakSounds.length === 0) {
+      actualWeakSounds = unlockedSounds.filter(s => {
+        const stats = learningStats[s.sound_id];
+        if (!stats || stats.attempts < 3) return false;
+        return (stats.firstAttemptHits / stats.attempts) < 0.85;
+      });
+    }
+
     const weakPool = actualWeakSounds.length > 0 ? actualWeakSounds : unlockedSounds;
 
     const weakSounds = [
@@ -59,7 +69,14 @@ class QuestionEngine {
     const targetSound = this.sounds.find(s => s.sound_id === targetSoundId || s.label === targetSoundId);
     if (!targetSound) return this.generateDailyChallenge();
 
-    const combinedTargets = [...Array(8).fill(targetSound), targetSound, targetSound];
+    // QA FIX: Prevent Semantic Satiation by interleaving review sounds
+    const reviewPool = shuffle(this.sounds.filter(s => s.sound_id !== targetSound.sound_id)).slice(0, 2);
+    
+    const combinedTargets = [
+      targetSound, targetSound, reviewPool[0], 
+      targetSound, targetSound, reviewPool[1], 
+      targetSound, targetSound, targetSound, targetSound
+    ];
     let distractorBasePool = Array.from(new Set([targetSound, ...shuffle(this.sounds).slice(0, 10)]));
     return this._buildQuestionsArray(combinedTargets, distractorBasePool);
   }
@@ -71,13 +88,13 @@ class QuestionEngine {
       if (index === 8) type = 'compare'; // 9th question
       if (index === 9) type = 'boss';    // 10th question
 
-      // QA FIX: Boss sound requires 4 distractors (5 choices)
-      const numDistractors = type === 'boss' ? 4 : 2;
+      // QA FIX: Boss sound requires 3 distractors (4 choices total) to avoid extreme visual clutter
+      const numDistractors = type === 'boss' ? 3 : 2;
       
-      // Smart Distractor Logic: Find sounds with the same ending consonant
+      // Smart Distractor Logic: Match by sound family, not blind string slicing
       let potentialDistractors = distractorBasePool.filter(s => s.sound_id !== targetSound.sound_id);
       let smartDistractors = potentialDistractors.filter(s => 
-        s.label && targetSound.label && s.label.slice(-1) === targetSound.label.slice(-1)
+        s.family && targetSound.family && s.family === targetSound.family
       );
       
       let distractors;
