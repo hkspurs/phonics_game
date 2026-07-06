@@ -79,21 +79,27 @@ export default function DailyChallenge() {
         recordAnswer(currentQ.targetSound.label, true, null);
       }
       
-      // QA FIX: Use Web Audio Engine for feedback SFX
+      // QA FIX: Enforce minimum display time for Correct Feedback
+      const startTime = Date.now();
       const proceed = () => {
-        setIsProcessing(false);
-        if (currentQuestionIndex + 1 >= activeQuestions.length) {
-          navigate('/reward')
-        } else {
-          setFeedbackState(null)
-          setSelected(null)
-          setIsFirstAttempt(true)
-          setDisabledChoices([]) // QA FIX: Reset disabled choices
-          nextQuestion()
-        }
+        const elapsed = Date.now() - startTime;
+        const delayNeeded = Math.max(0, 1500 - elapsed); // Ensure at least 1.5s delay
+        
+        setTimeout(() => {
+          setIsProcessing(false);
+          if (currentQuestionIndex + 1 >= activeQuestions.length) {
+            navigate('/reward')
+          } else {
+            setFeedbackState(null)
+            setSelected(null)
+            setIsFirstAttempt(true)
+            setDisabledChoices([])
+            nextQuestion()
+          }
+        }, delayNeeded);
       }
 
-      // Play mock correct sound, proceed immediately if missing
+      // Play mock correct sound, proceed after sound finishes (or fallback delay)
       audioEngine.play('assets/correct_chime.mp3').then(proceed);
 
     } else {

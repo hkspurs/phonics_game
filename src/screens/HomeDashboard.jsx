@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { Map, Play, Trophy, Puzzle, ClipboardList, Settings } from 'lucide-react'
 import { useGameStore } from '../store/gameStore'
 import MascotRabbit from '../components/MascotRabbit'
+import MissionSun from '../components/MissionSun'
 
 export default function HomeDashboard() {
   const navigate = useNavigate()
@@ -65,13 +66,18 @@ export default function HomeDashboard() {
       <p style={{ fontSize: '1.5rem', color: '#3b82f6', marginBottom: '3rem' }}>Today's Mission is waiting for you!</p>
 
       {/* Main Action */}
-      <button 
-        className="btn-primary" 
-        style={{ fontSize: '2rem', padding: '1.5rem 4rem', animation: 'pulse-glow 2s infinite' }}
-        onClick={handleStartMission}
-      >
-        <Play size={32} /> Start Today's Mission
-      </button>
+      <div style={{ position: 'relative', display: 'inline-block' }}>
+        <div style={{ position: 'absolute', top: '-40px', right: '-40px', width: '100px', height: '100px', zIndex: 0 }}>
+          <MissionSun />
+        </div>
+        <button 
+          className="btn-primary" 
+          style={{ fontSize: '2rem', padding: '1.5rem 4rem', animation: 'pulse-glow 2s infinite', position: 'relative', zIndex: 1 }}
+          onClick={handleStartMission}
+        >
+          <Play size={32} /> Start Today's Mission
+        </button>
+      </div>
 
       {/* Secondary Actions (QA FIX: Mobile Responsive & Gamification Lock) */}
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '2rem', marginTop: '4rem', justifyContent: 'center' }}>

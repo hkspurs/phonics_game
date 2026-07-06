@@ -2,6 +2,7 @@ import React from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ArrowLeft } from 'lucide-react'
 import { useGameStore } from '../store/gameStore'
+import MapNodeCloud from '../components/MapNodeCloud'
 
 export default function MasteryMap() {
   const navigate = useNavigate()
@@ -64,26 +65,22 @@ export default function MasteryMap() {
             gap: '0.5rem'
           }}>
             {node.name && <div style={{ background: 'white', padding: '0.5rem 1rem', borderRadius: '100px', fontWeight: 'bold', fontSize: '1rem', color: '#92400e', border: '2px solid #fcd34d', boxShadow: '0 4px 0 #fcd34d', marginBottom: '0.5rem' }}>{node.name}</div>}
-            <button 
-              style={{
-                width: node.status === 'practising' ? '100px' : '80px',
-                height: node.status === 'practising' ? '100px' : '80px',
-                borderRadius: '50%',
-                border: '6px solid white',
-                backgroundColor: getStatusColor(node.status),
-                boxShadow: `0 ${node.status === 'practising' ? '12px' : '8px'} 0 rgba(0,0,0,0.15)`,
-                fontSize: node.status === 'practising' ? '1.8rem' : '1.5rem',
-                fontWeight: 'bold',
-                animation: node.status === 'practising' ? 'pulse-glow 2s infinite' : 'none',
-                color: node.status === 'locked' ? '#94a3b8' : 'white',
-                cursor: node.status === 'locked' ? 'not-allowed' : 'pointer',
-                transition: 'transform 0.1s'
-              }}
-              onMouseOver={e => { if(node.status !== 'locked') e.currentTarget.style.transform = 'scale(1.1)' }}
-              onMouseOut={e => { if(node.status !== 'locked') e.currentTarget.style.transform = 'scale(1)' }}
-            >
-              {node.id}
-            </button>
+            <div style={{ position: 'relative', width: node.status === 'practising' ? '140px' : '120px', height: node.status === 'practising' ? '112px' : '96px' }}>
+              <MapNodeCloud 
+                isMastered={node.status === 'mastered'} 
+                isLocked={node.status === 'locked'} 
+                onClick={() => {}}
+                style={{ position: 'absolute', inset: 0, animation: node.status === 'practising' ? 'pulse-glow 2s infinite' : 'none' }}
+              />
+              <div style={{
+                position: 'absolute',
+                top: '55%', left: '50%', transform: 'translate(-50%, -50%)',
+                fontSize: '1.2rem', fontWeight: 'bold', pointerEvents: 'none',
+                color: node.status === 'locked' ? '#94A3B8' : '#8D7A6F'
+              }}>
+                {node.id}
+              </div>
+            </div>
           </div>
         ))}
 

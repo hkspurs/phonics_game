@@ -2,6 +2,7 @@ import React from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Home } from 'lucide-react'
 import { useGameStore } from '../store/gameStore'
+import RewardSticker from '../components/RewardSticker'
 
 export default function RewardScreen() {
   const navigate = useNavigate()
@@ -23,8 +24,8 @@ export default function RewardScreen() {
 
       <h1 style={{ fontSize: '5rem', color: '#86198f', marginBottom: '1rem', textShadow: '4px 4px 0px #f0abfc', animation: 'pulse-glow 2s infinite', zIndex: 2 }}>Mission Complete!</h1>
       
-      <div style={{ fontSize: '12rem', marginBottom: '2rem', animation: 'float 3s infinite', filter: 'drop-shadow(0 20px 20px rgba(0,0,0,0.1))', zIndex: 2 }}>
-        🏆
+      <div style={{ width: '200px', height: '200px', marginBottom: '2rem', animation: 'float 3s infinite', zIndex: 2 }}>
+        <RewardSticker isRevealed={true} />
       </div>
 
       <div style={{ background: 'white', padding: '3rem 5rem', borderRadius: '48px', border: '6px solid #f0abfc', boxShadow: '0 16px 0 #f0abfc, 0 20px 25px rgba(0,0,0,0.1)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1.5rem', marginBottom: '4rem', zIndex: 2 }}>

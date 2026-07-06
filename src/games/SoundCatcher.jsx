@@ -4,6 +4,7 @@ import { X, Volume2 } from 'lucide-react'
 import { useGameStore } from '../store/gameStore'
 import { questionEngine } from '../game/QuestionEngine'
 import { audioEngine } from '../audio/AudioEngine'
+import GameBubble from '../components/GameBubble'
 
 export default function SoundCatcher() {
   const navigate = useNavigate()
@@ -62,8 +63,13 @@ export default function SoundCatcher() {
   }, [isPlaying, targetSound])
 
   const handlePop = (bubble) => {
-    // Remove the clicked bubble
-    setBubbles(prev => prev.filter(b => b.id !== bubble.id))
+    // Mark as popping for animation
+    setBubbles(prev => prev.map(b => b.id === bubble.id ? { ...b, isPopping: true } : b))
+    
+    // Remove after animation (300ms)
+    setTimeout(() => {
+      setBubbles(prev => prev.filter(b => b.id !== bubble.id))
+    }, 300)
     
     if (bubble.isCorrect) {
       setScore(s => {
@@ -123,25 +129,22 @@ export default function SoundCatcher() {
 
       {/* Falling Bubbles */}
       {score < 10 && bubbles.map(bubble => (
-        <button
+        <div
           key={bubble.id}
-          onClick={() => handlePop(bubble)}
           style={{
             position: 'absolute',
             left: `${bubble.x}%`,
-            width: '120px', height: '120px', borderRadius: '50%',
-            background: 'radial-gradient(circle at 30% 30%, rgba(255,255,255,0.9), rgba(186,230,253,0.5))',
-            border: '2px solid rgba(255,255,255,0.8)',
-            boxShadow: 'inset -10px -10px 20px rgba(2,132,199,0.3), 0 10px 20px rgba(0,0,0,0.1)',
-            fontSize: '3rem', fontWeight: 'bold', color: '#0369a1',
-            cursor: 'crosshair',
-            animation: 'fall 6s linear forwards, wobble 2s ease-in-out infinite alternate',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            padding: 0
+            width: '120px', height: '120px',
+            animation: `fall 6s linear forwards, fall-wobble 2s ease-in-out infinite alternate`,
+            pointerEvents: bubble.isPopping ? 'none' : 'auto'
           }}
         >
-          {bubble.label}
-        </button>
+          <GameBubble 
+            letter={bubble.label} 
+            isPopping={bubble.isPopping}
+            onClick={() => { if (!bubble.isPopping) handlePop(bubble) }} 
+          />
+        </div>
       ))}
 
       <style>{`
@@ -151,7 +154,7 @@ export default function SoundCatcher() {
           90% { opacity: 1; }
           100% { top: 120%; opacity: 0; }
         }
-        @keyframes wobble {
+        @keyframes fall-wobble {
           0% { transform: translateX(-15px); }
           100% { transform: translateX(15px); }
         }
