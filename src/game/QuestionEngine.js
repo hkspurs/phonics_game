@@ -83,6 +83,9 @@ class QuestionEngine {
 
   _buildQuestionsArray(combinedTargets, distractorBasePool) {
     const questions = [];
+    let lastCorrectIndex = -1;
+    let consecutiveCorrectCount = 0;
+
     combinedTargets.forEach((targetSound, index) => {
       let type = 'listen_and_choose';
       if (index === 8) type = 'compare'; // 9th question
@@ -101,7 +104,13 @@ class QuestionEngine {
       if (smartDistractors.length >= numDistractors) {
         distractors = shuffle(smartDistractors).slice(0, numDistractors);
       } else {
-        distractors = shuffle(potentialDistractors).slice(0, numDistractors);
+        // Fallback: force distractors that share first letter to prevent easy guessing
+        let letterDistractors = potentialDistractors.filter(s => s.label[0] === targetSound.label[0]);
+        if (letterDistractors.length >= numDistractors) {
+           distractors = shuffle(letterDistractors).slice(0, numDistractors);
+        } else {
+           distractors = shuffle(potentialDistractors).slice(0, numDistractors);
+        }
       }
       
       if (type === 'compare') {
@@ -115,8 +124,29 @@ class QuestionEngine {
           choices: ['Same', 'Different'],
           correctAnswer: isSame ? 'Same' : 'Different'
         });
+        lastCorrectIndex = -1; // Reset for compare
+        consecutiveCorrectCount = 0;
       } else {
-        const choices = shuffle([targetSound.label, ...distractors.map(d => d.label)]);
+        let choices = shuffle([targetSound.label, ...distractors.map(d => d.label)]);
+        let correctIndex = choices.indexOf(targetSound.label);
+
+        // Player Experience FIX: Prevent answer position repeating more than 2 times
+        if (correctIndex === lastCorrectIndex) {
+          consecutiveCorrectCount++;
+          if (consecutiveCorrectCount >= 2) {
+            // Force swap with a different index
+            const newIndex = (correctIndex + 1) % choices.length;
+            const temp = choices[newIndex];
+            choices[newIndex] = choices[correctIndex];
+            choices[correctIndex] = temp;
+            correctIndex = newIndex;
+            consecutiveCorrectCount = 1;
+          }
+        } else {
+          lastCorrectIndex = correctIndex;
+          consecutiveCorrectCount = 1;
+        }
+
         questions.push({
           id: `q_${index}`,
           type: type,

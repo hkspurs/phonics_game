@@ -54,6 +54,7 @@ export default function DailyChallenge() {
       
       // Voice-over instruction
       if (window.speechSynthesis) {
+        window.speechSynthesis.cancel(); // R3-C3: Prevent speech overlapping
         const text = currentQ.type === 'compare' ? "Are these sounds the same, or different?" : "Listen and choose the right sound.";
         const utterance = new SpeechSynthesisUtterance(text);
         utterance.rate = 0.9;
@@ -117,6 +118,7 @@ export default function DailyChallenge() {
 
       // Pedagogy FIX: Vocal Praise
       if (window.speechSynthesis) {
+        window.speechSynthesis.cancel(); // Prevent overlap
         const praises = ["Great job!", "Awesome!", "You did it!"];
         const utterance = new SpeechSynthesisUtterance(praises[Math.floor(Math.random() * praises.length)]);
         utterance.rate = 1.1;
@@ -185,8 +187,14 @@ export default function DailyChallenge() {
         </span>
       </div>
 
-      <h2 style={{ color: '#065f46', fontSize: '2rem', marginBottom: '2rem' }}>
-        {currentQ.type === 'boss' ? '⭐ Final Challenge! ⭐' : 'Listen and Choose'}
+      <h2 style={{ 
+        color: currentQ.type === 'boss' ? '#e11d48' : '#065f46', 
+        fontSize: currentQ.type === 'boss' ? '2.5rem' : '2rem', 
+        marginBottom: '2rem',
+        textTransform: currentQ.type === 'boss' ? 'uppercase' : 'none',
+        animation: currentQ.type === 'boss' ? 'pulse-glow 2s infinite' : 'none'
+      }}>
+        {currentQ.type === 'boss' ? '⭐ Final Boss Challenge! ⭐' : 'Listen and Choose'}
       </h2>
 
       {/* Question Area (QA FIX: Implement Comparison Template) */}

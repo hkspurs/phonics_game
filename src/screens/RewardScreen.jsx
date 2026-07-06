@@ -49,11 +49,15 @@ export default function RewardScreen() {
             animation: chestState === 'shaking' ? 'shake 0.1s infinite' : 'float 3s infinite',
             transform: chestState === 'shaking' ? 'scale(1.2)' : 'scale(1)',
             transition: 'transform 0.2s',
-            zIndex: 10
+            zIndex: 10,
+            padding: '4rem',
+            borderRadius: '50%',
+            background: 'rgba(255,255,255,0.4)',
+            boxShadow: '0 10px 30px rgba(0,0,0,0.1)'
           }}
         >
           🎁
-          <div style={{ fontSize: '2rem', textAlign: 'center', color: '#a21caf', marginTop: '1rem' }}>Tap to open!</div>
+          <div style={{ fontSize: '2rem', textAlign: 'center', color: '#a21caf', marginTop: '1rem', whiteSpace: 'nowrap' }}>Tap to open!</div>
         </div>
       ) : (
         <>
