@@ -62,12 +62,13 @@ export default function MascotRabbit({ style, isListening = false }) {
             
             {/* Kawaii Face */}
             <g id="face">
-              {/* Big eyes set wide apart */}
-              <circle className="eye" cx="33" cy="46" r="4.5" fill="#4A3F35"/>
-              <circle className="eye-sparkle" cx="31.5" cy="44.5" r="1.5" fill="#FFFFFF"/>
-              
-              <circle className="eye" cx="67" cy="46" r="4.5" fill="#4A3F35"/>
-              <circle className="eye-sparkle" cx="65.5" cy="44.5" r="1.5" fill="#FFFFFF"/>
+              {/* Eyes with blinking animation */}
+              <g style={{ animation: 'mascot-blink 4s infinite' }}>
+                <circle cx="33" cy="46" r="4.5" fill="#4A3F35"/>
+                <circle cx="31.5" cy="44.5" r="1.5" fill="#FFFFFF"/>
+                <circle cx="67" cy="46" r="4.5" fill="#4A3F35"/>
+                <circle cx="65.5" cy="44.5" r="1.5" fill="#FFFFFF"/>
+              </g>
               
               {/* Blushes */}
               <ellipse cx="26" cy="52" rx="5" ry="2.5" fill="#FFA6A6" opacity="0.6"/>

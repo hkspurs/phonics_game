@@ -15,6 +15,9 @@ export default function SoundCatcher() {
   const [bubbles, setBubbles] = useState([])
   const [score, setScore] = useState(0)
 
+  const hasPlayedRef = React.useRef(false)
+  const lastXRef = React.useRef(50)
+
   // Use ticket on mount if not playing yet
   useEffect(() => {
     if (!isPlaying && tickets > 0) {
@@ -23,7 +26,10 @@ export default function SoundCatcher() {
       // Pick a random target sound
       const q = questionEngine.generateDailyChallenge()[0]
       setTargetSound(q.targetSound)
-      audioEngine.play(q.targetSound.audio_url)
+      if (!hasPlayedRef.current) {
+        audioEngine.play(q.targetSound.audio_url).catch(()=>{})
+        hasPlayedRef.current = true
+      }
     } else if (!isPlaying) {
       navigate('/braingames') // No tickets, kick out
     }
@@ -37,23 +43,34 @@ export default function SoundCatcher() {
     
     let bubbleId = 0
     const interval = setInterval(() => {
+      // QA FIX: Prevent bubble flooding if tab is backgrounded
+      if (document.hidden) return;
+
       setBubbles(prev => {
         // Randomly decide if bubble is correct or distractor
         const isCorrect = Math.random() > 0.5
-        const soundLabel = isCorrect 
-          ? targetSound.label 
-          : questionEngine.sounds[Math.floor(Math.random() * questionEngine.sounds.length)].label
+        const soundObj = isCorrect 
+          ? targetSound 
+          : questionEngine.sounds[Math.floor(Math.random() * questionEngine.sounds.length)]
 
         // QA FIX 1: Remove bubbles that have fallen off screen (older than 6s) to prevent memory leaks
         const now = Date.now()
         const activeBubbles = prev.filter(b => now - b.createdAt < 6000)
 
+        // QA FIX 2: Prevent overlapping bubbles by ensuring X is at least 20% away from last X
+        let newX = Math.random() * 80 + 10;
+        while (Math.abs(newX - lastXRef.current) < 20) {
+          newX = Math.random() * 80 + 10;
+        }
+        lastXRef.current = newX;
+
         return [...activeBubbles, {
           id: bubbleId++,
-          label: soundLabel,
+          label: soundObj.label,
+          audioUrl: soundObj.audio_url,
           isCorrect,
           createdAt: now,
-          x: Math.random() * 80 + 10, // 10% to 90% width
+          x: newX,
           y: -20 // Start above screen
         }]
       })
@@ -81,11 +98,13 @@ export default function SoundCatcher() {
       })
       
       // Play correct chime, then repeat target sound
-      audioEngine.play('assets/correct_chime.mp3').then(() => {
-        if (targetSound) audioEngine.play(targetSound.audio_url)
+      audioEngine.play('assets/correct_chime.mp3').catch(()=>{}).finally(() => {
+        if (targetSound) audioEngine.play(targetSound.audio_url).catch(()=>{})
       })
     } else {
       setScore(s => Math.max(0, s - 1)) // Penalty
+      // Pedagogy FIX: Tell them what they actually clicked!
+      if (bubble.audioUrl) audioEngine.play(bubble.audioUrl).catch(()=>{})
     }
   }
 

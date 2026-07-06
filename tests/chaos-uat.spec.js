@@ -65,6 +65,12 @@ test.describe('Chaos & Exhaustive QA UAT', () => {
     await page.getByRole('button', { name: /Start Today's Mission/i }).click({ force: true });
     
     // Wait for challenge to load
+    await expect(page.locator('h2', { hasText: /Ready\?/i })).toBeVisible({ timeout: 10000 }).catch(() => {});
+    
+    // Click the Let's Go overlay
+    await page.getByRole('button', { name: /Let's Go!/i }).click({ force: true }).catch(() => {});
+
+    // Wait for the actual question screen
     await expect(page.locator('h2', { hasText: /Listen and Choose|⭐ Final Challenge! ⭐|Are these sounds the same or different\?/i })).toBeVisible({ timeout: 10000 }).catch(() => {});
 
     const choices = page.locator('button').filter({ hasText: /^(A|B|E|I|O|U|AB|EB|IX|EX|Same|Different)$/i });

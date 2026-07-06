@@ -125,7 +125,10 @@ export default function HomeDashboard() {
         </button>
         <button 
           className="btn-secondary" 
-          onClick={() => { if (hasCompletedDaily) navigate('/braingames') }}
+          onClick={() => { 
+            if (hasCompletedDaily) navigate('/braingames');
+            else alert("Complete today's mission first to unlock Brain Games!");
+          }}
           style={{ opacity: hasCompletedDaily ? 1 : 0.5, cursor: hasCompletedDaily ? 'pointer' : 'not-allowed' }}
         >
           {hasCompletedDaily ? <Puzzle size={24} /> : <span style={{fontSize:'24px'}}>🔒</span>} Brain Games

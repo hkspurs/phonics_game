@@ -45,15 +45,31 @@ export default function DailyChallenge() {
   }, [activeQuestions])
 
   const currentQ = activeQuestions[currentQuestionIndex]
+  const [hasStartedInteraction, setHasStartedInteraction] = useState(false)
 
-  // Play audio when question loads
+  // Play audio when question loads, if interaction started
   useEffect(() => {
-    if (currentQ) {
-      audioEngine.play(currentQ.targetSound.audio_url)
+    if (currentQ && hasStartedInteraction) {
+      setIsProcessing(true);
+      
+      // Voice-over instruction
+      if (window.speechSynthesis) {
+        const text = currentQ.type === 'compare' ? "Are these sounds the same, or different?" : "Listen and choose the right sound.";
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.rate = 0.9;
+        window.speechSynthesis.speak(utterance);
+      }
+
+      setTimeout(() => {
+        audioEngine.play(currentQ.targetSound.audio_url).catch(() => {}).finally(() => setIsProcessing(false))
+      }, 1000); // Wait 1s for voice-over
     }
     // Cleanup on unmount
-    return () => audioEngine.stop()
-  }, [currentQ])
+    return () => {
+      audioEngine.stop()
+      if (window.speechSynthesis) window.speechSynthesis.cancel();
+    }
+  }, [currentQ, hasStartedInteraction])
 
   if (!currentQ) {
     return (
@@ -99,8 +115,16 @@ export default function DailyChallenge() {
         }, delayNeeded);
       }
 
+      // Pedagogy FIX: Vocal Praise
+      if (window.speechSynthesis) {
+        const praises = ["Great job!", "Awesome!", "You did it!"];
+        const utterance = new SpeechSynthesisUtterance(praises[Math.floor(Math.random() * praises.length)]);
+        utterance.rate = 1.1;
+        window.speechSynthesis.speak(utterance);
+      }
+
       // Play mock correct sound, proceed after sound finishes (or fallback delay)
-      audioEngine.play('assets/correct_chime.mp3').then(proceed);
+      audioEngine.play('assets/correct_chime.mp3').catch(() => {}).finally(proceed);
 
     } else {
       // QA FIX: Remove traumatic 'wrong' state delay. Just fade out the button instantly.
@@ -119,7 +143,7 @@ export default function DailyChallenge() {
       }, 1000)
       
       // Play target audio again as a hint, and DO NOT unlock until it finishes!
-      audioEngine.play(currentQ.targetSound.audio_url).then(() => {
+      audioEngine.play(currentQ.targetSound.audio_url).catch(() => {}).finally(() => {
         setIsProcessing(false)
       })
     }
@@ -135,15 +159,25 @@ export default function DailyChallenge() {
   return (
     <div className="screen-container" style={{ background: '#ecfdf5', alignItems: 'center' }}>
       
+      {/* Safari Autoplay Blocker Overlay */}
+      {!hasStartedInteraction && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(255,255,255,0.95)', zIndex: 1000, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+          <h2 style={{ fontSize: '3rem', color: '#047857', marginBottom: '2rem' }}>Ready?</h2>
+          <button className="btn-primary" style={{ fontSize: '3rem', padding: '2rem 4rem' }} onClick={() => setHasStartedInteraction(true)}>
+            <Volume2 size={48} /> Let's Go!
+          </button>
+        </div>
+      )}
+      
       {/* Header */}
       <div style={{ width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
         <button className="btn-secondary" style={{ padding: '0.5rem' }} onClick={() => navigate('/')}>
           <X size={24} />
         </button>
         
-        {/* Progress Bar */}
-        <div style={{ flex: 1, margin: '0 2rem', height: '16px', background: '#d1fae5', borderRadius: '8px', overflow: 'hidden' }}>
-          <div style={{ width: `${progressPercent}%`, height: '100%', background: '#34d399', borderRadius: '8px', transition: 'width 0.3s ease' }}></div>
+        {/* Progress Bar (QA FIX: A11y Contrast) */}
+        <div style={{ flex: 1, margin: '0 2rem', height: '16px', background: '#cbd5e1', borderRadius: '8px', overflow: 'hidden' }}>
+          <div style={{ width: `${progressPercent}%`, height: '100%', background: '#059669', borderRadius: '8px', transition: 'width 0.3s ease' }}></div>
         </div>
         
         <span style={{ fontWeight: 'bold', color: '#047857', fontSize: '1.25rem' }}>
@@ -163,18 +197,20 @@ export default function DailyChallenge() {
             <button 
               className="btn-primary" 
               style={{ padding: '2rem', background: '#38bdf8', borderRadius: '50%' }}
-              onClick={() => !isProcessing && audioEngine.play(currentQ.targetSound.audio_url)}
+              onClick={() => !isProcessing && audioEngine.play(currentQ.targetSound.audio_url).catch(()=>{})}
             >
               <Volume2 size={48} />
               <div style={{ fontSize: '1rem', marginTop: '0.5rem' }}>Sound 1</div>
+              {feedbackState && <div style={{ fontSize: '2rem', fontWeight: 'bold' }}>{currentQ.targetSound.label}</div>}
             </button>
             <button 
               className="btn-primary" 
               style={{ padding: '2rem', background: '#818cf8', borderRadius: '50%' }}
-              onClick={() => !isProcessing && audioEngine.play(currentQ.compareSound.audio_url)}
+              onClick={() => !isProcessing && audioEngine.play(currentQ.compareSound.audio_url).catch(()=>{})}
             >
               <Volume2 size={48} />
               <div style={{ fontSize: '1rem', marginTop: '0.5rem' }}>Sound 2</div>
+              {feedbackState && <div style={{ fontSize: '2rem', fontWeight: 'bold' }}>{currentQ.compareSound.label}</div>}
             </button>
           </div>
           <div style={{ display: 'flex', gap: '2rem', flexWrap: 'wrap', justifyContent: 'center' }}>
@@ -224,14 +260,14 @@ export default function DailyChallenge() {
                 zIndex: 2,
                 transition: 'background 0.3s'
               }}
-              onClick={() => !isProcessing && audioEngine.play(currentQ.targetSound.audio_url)}
+              onClick={() => !isProcessing && audioEngine.play(currentQ.targetSound.audio_url).catch(()=>{})}
             >
               <Volume2 size={64} color={isProcessing ? '#e0f2fe' : 'white'} />
             </button>
             <div style={{ position: 'absolute', right: '-120px', bottom: '0', width: '120px', height: '120px' }}>
               <ReplayHelper 
                 isPlaying={isProcessing} 
-                onClick={() => !isProcessing && audioEngine.play(currentQ.targetSound.audio_url)} 
+                onClick={() => !isProcessing && audioEngine.play(currentQ.targetSound.audio_url).catch(()=>{})} 
               />
             </div>
           </div>

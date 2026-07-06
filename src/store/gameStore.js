@@ -37,8 +37,8 @@ export const useGameStore = create(
       setParentAuthenticated: (status) => set({ isParentAuthenticated: status }),
 
       checkDailyReset: () => set((state) => {
-        // Fix UTC bug: Use local date string
-        const today = new Date().toLocaleDateString('en-CA'); // YYYY-MM-DD in local time
+        // QA FIX: Date Locale Override Resilience - use ISO date without timezone shifting
+        const today = new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().split('T')[0];
         if (state.lastPlayedDate !== today) {
           return {
             hasCompletedDaily: false,
@@ -53,9 +53,10 @@ export const useGameStore = create(
         const state = get();
         if (state.currentNode === soundId && !state.gameComplete) return 'practising';
         const stats = state.learningStats[soundId];
-        if (stats && stats.attempts >= 3) {
+        // Pedagogy FIX: Require 5 attempts for statistical significance
+        if (stats && stats.attempts >= 5) {
           const accuracy = stats.firstAttemptHits / stats.attempts;
-          if (accuracy >= 0.9) return 'mastered';
+          if (accuracy >= 0.8) return 'mastered';
           if (accuracy < 0.6) return 'weak';
         }
         if (state.unlockedSounds.includes(soundId)) return 'unlocked';
@@ -135,8 +136,8 @@ export const useGameStore = create(
         if (!state.gameComplete) {
           const stats = state.learningStats[state.currentNode];
           
-          // QA FIX: Lower mastery threshold to 80% to prevent the mathematical trap of a single misclick
-          if (stats && stats.attempts >= 3) {
+          // QA FIX: Lower mastery threshold to 80%, but require 5 attempts for statistical significance
+          if (stats && stats.attempts >= 5) {
             const accuracy = stats.firstAttemptHits / stats.attempts;
             if (accuracy >= 0.8) {
               const currentIndex = questionEngine.sounds.findIndex(s => s.sound_id === state.currentNode || s.label === state.currentNode);
