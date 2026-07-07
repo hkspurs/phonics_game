@@ -267,6 +267,16 @@ export const useGameStore = create(
         if (!state.currentChapter) {
           state.currentChapter = 'A Families';
         }
+        
+        // Self-Healing: Auto-disable Refresher Mode on app boot to prevent permanent progress loss
+        if (state.refresherMode) {
+          state.refresherMode = false;
+          if (state.preRefresherState) {
+            state.currentNode = state.preRefresherState.currentNode || state.currentNode;
+            state.currentChapter = state.preRefresherState.currentChapter || state.currentChapter;
+          }
+        }
+        
         return state;
       },
       partialize: (state) => ({

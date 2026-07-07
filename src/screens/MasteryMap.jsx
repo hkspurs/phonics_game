@@ -11,21 +11,24 @@ export default function MasteryMap() {
   const navigate = useNavigate()
   const { getNodeStatus, unlockedSounds, currentNode, currentChapter = 'A Families' } = useGameStore()
   const [selectedNode, setSelectedNode] = useState(null)
+  const [isSwapping, setIsSwapping] = useState(false); // QA FIX: Prevent DOM thrashing
 
   // Extract dynamic chapters
   const families = Array.from(new Set(questionEngine.sounds.map(s => s.family).filter(Boolean)));
   const currentChapterIndex = families.indexOf(currentChapter);
   const handlePrevChapter = () => {
-    if (currentChapterIndex > 0) {
-      audioEngine.playUI('pop');
-      useGameStore.getState().setChapter(families[currentChapterIndex - 1]);
-    }
+    if (isSwapping || currentChapterIndex <= 0) return;
+    setIsSwapping(true);
+    audioEngine.playUI('pop');
+    useGameStore.getState().setChapter(families[currentChapterIndex - 1]);
+    setTimeout(() => setIsSwapping(false), 400); // 400ms debounce matches CSS transition
   }
   const handleNextChapter = () => {
-    if (currentChapterIndex < families.length - 1) {
-      audioEngine.playUI('pop');
-      useGameStore.getState().setChapter(families[currentChapterIndex + 1]);
-    }
+    if (isSwapping || currentChapterIndex >= families.length - 1) return;
+    setIsSwapping(true);
+    audioEngine.playUI('pop');
+    useGameStore.getState().setChapter(families[currentChapterIndex + 1]);
+    setTimeout(() => setIsSwapping(false), 400);
   }
 
   // QA FIX: Generate absolute pixel coordinates for perfect DOM vs SVG alignment
@@ -121,15 +124,15 @@ export default function MasteryMap() {
       </div>
       <h1 style={{ textAlign: 'center', color: '#b45309', fontSize: '2.5rem', marginTop: '1rem', zIndex: 10, position: 'relative', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '1rem' }}>
         Adventure Map
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: 'white', padding: '0.2rem 0.5rem', borderRadius: '100px', border: '4px solid #fcd34d' }}>
-          <button onClick={handlePrevChapter} disabled={currentChapterIndex <= 0} style={{ background: 'none', border: 'none', cursor: currentChapterIndex <= 0 ? 'not-allowed' : 'pointer', opacity: currentChapterIndex <= 0 ? 0.3 : 1, display: 'flex', alignItems: 'center', padding: '0.5rem' }}>
-            <ArrowLeft size={24} color="#b45309" />
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: 'white', padding: '0.5rem', borderRadius: '100px', border: '4px solid #fcd34d', boxShadow: '0 8px 0 #fbbf24' }}>
+          <button onClick={handlePrevChapter} disabled={isSwapping || currentChapterIndex <= 0} style={{ background: currentChapterIndex <= 0 ? '#f1f5f9' : '#38bdf8', border: 'none', borderRadius: '50%', width: '48px', height: '48px', cursor: currentChapterIndex <= 0 ? 'not-allowed' : 'pointer', opacity: currentChapterIndex <= 0 ? 0.5 : 1, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: currentChapterIndex <= 0 ? 'none' : '0 4px 0 #0284c7', transform: isSwapping ? 'scale(0.95)' : 'none', transition: 'all 0.2s' }}>
+            <ArrowLeft size={32} color="white" />
           </button>
-          <span style={{ fontSize: '1.2rem', color: '#b45309', fontWeight: 'bold', minWidth: '80px', textAlign: 'center' }}>
+          <span style={{ fontSize: '1.5rem', color: '#b45309', fontWeight: 'bold', minWidth: '120px', textAlign: 'center', textTransform: 'uppercase' }}>
             {currentChapter ? currentChapter.split(' ')[0] : '...'}
           </span>
-          <button onClick={handleNextChapter} disabled={currentChapterIndex >= families.length - 1} style={{ background: 'none', border: 'none', cursor: currentChapterIndex >= families.length - 1 ? 'not-allowed' : 'pointer', opacity: currentChapterIndex >= families.length - 1 ? 0.3 : 1, display: 'flex', alignItems: 'center', padding: '0.5rem' }}>
-            <ArrowLeft size={24} color="#b45309" style={{ transform: 'rotate(180deg)' }} />
+          <button onClick={handleNextChapter} disabled={isSwapping || currentChapterIndex >= families.length - 1} style={{ background: currentChapterIndex >= families.length - 1 ? '#f1f5f9' : '#38bdf8', border: 'none', borderRadius: '50%', width: '48px', height: '48px', cursor: currentChapterIndex >= families.length - 1 ? 'not-allowed' : 'pointer', opacity: currentChapterIndex >= families.length - 1 ? 0.5 : 1, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: currentChapterIndex >= families.length - 1 ? 'none' : '0 4px 0 #0284c7', transform: isSwapping ? 'scale(0.95)' : 'none', transition: 'all 0.2s' }}>
+            <ArrowLeft size={32} color="white" style={{ transform: 'rotate(180deg)' }} />
           </button>
         </div>
       </h1>
@@ -143,11 +146,16 @@ export default function MasteryMap() {
       }}>
         
         {/* Absolute Canvas */}
-        <div style={{ position: 'relative', width: `${MAP_WIDTH}px`, height: `${MAP_HEIGHT}px` }}>
+        <div style={{ position: 'relative', width: `${MAP_WIDTH}px`, height: `${MAP_HEIGHT}px`, opacity: isSwapping ? 0 : 1, transform: isSwapping ? 'translateY(10px)' : 'none', transition: 'opacity 0.2s, transform 0.2s' }}>
           
           {!hasNodes && (
-            <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#94a3b8', fontSize: '1.5rem', fontWeight: 'bold' }}>
-              More adventures coming soon!
+            <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: '#94a3b8', fontSize: '1.5rem', fontWeight: 'bold' }}>
+              <div style={{ transform: 'scale(1.5)', marginBottom: '3rem', opacity: 0.4, filter: 'grayscale(1)' }}>
+                <MascotRabbit />
+              </div>
+              <div style={{ background: '#f1f5f9', padding: '1rem 2rem', borderRadius: '32px', border: '4px dashed #cbd5e1' }}>
+                🚧 Under Construction 🚧
+              </div>
             </div>
           )}
 

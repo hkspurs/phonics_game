@@ -115,8 +115,22 @@ class QuestionEngine {
       randomWeak()  // 10 (Boss)
     ];
 
-    // Pedagogy FIX: Include cross-vowel distractors to build phonological awareness
-    let distractorBasePool = Array.from(new Set([...batchSounds, ...shuffle(this.sounds).slice(0, 10)]));
+    // Pedagogy FIX: Smart Cross-Vowel Distractors. Only pull distractors from easily confused vowel groups to build fine-grained discrimination.
+    const batchFamily = batchSounds.length > 0 ? batchSounds[0].family : null;
+    const confusingFamiliesMap = {
+      'A Families': ['E Families', 'U Families'],
+      'E Families': ['I Families', 'A Families'],
+      'I Families': ['E Families'],
+      'O Families': ['U Families'],
+      'U Families': ['O Families', 'A Families']
+    };
+    const confusingFamilies = batchFamily ? (confusingFamiliesMap[batchFamily] || []) : [];
+    const smartDistractors = this.sounds.filter(s => confusingFamilies.includes(s.family));
+    
+    // Fallback to random if no mapping found, else use targeted distractors
+    const crossVowelPool = smartDistractors.length > 0 ? smartDistractors : this.sounds;
+    
+    let distractorBasePool = Array.from(new Set([...batchSounds, ...shuffle(crossVowelPool).slice(0, 10)]));
     return this._buildQuestionsArray(combinedTargets, distractorBasePool);
   }
 
