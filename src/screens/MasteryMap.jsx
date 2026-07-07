@@ -55,8 +55,13 @@ export default function MasteryMap() {
 
   const handlePractice = () => {
     audioEngine.playUI('correct'); // QA FIX: Magical mission start sound
-    useGameStore.setState({ activeAssignment: { id: 'map_practice', targetSoundId: selectedNode.soundData.label, title: `Practice: ${selectedNode.soundData.label}` } });
-    navigate('/challenge');
+    if (selectedNode.status === 'weak') {
+      useGameStore.getState().startGymWorkout(selectedNode.soundData.sound_id);
+      navigate('/gym');
+    } else {
+      useGameStore.setState({ activeAssignment: { id: 'map_practice', targetSoundId: selectedNode.soundData.label, title: `Practice: ${selectedNode.soundData.label}` } });
+      navigate('/challenge');
+    }
   }
 
   const playSoundAgain = () => {
@@ -206,9 +211,11 @@ export default function MasteryMap() {
                   position: 'absolute',
                   top: '30%', left: '50%', transform: 'translate(-50%, -50%)',
                   fontSize: '1.4rem', fontWeight: 'bold', pointerEvents: 'none',
-                  color: node.status === 'locked' ? '#94A3B8' : '#6b21a8'
+                  color: node.status === 'locked' ? '#94A3B8' : '#6b21a8',
+                  display: 'flex', alignItems: 'center', gap: '0.2rem'
                 }}>
                   {node.id}
+                  {node.status === 'weak' && <span style={{ fontSize: '1rem' }}>🏋️‍♂️</span>}
                 </div>
               </div>
             </div>
@@ -263,11 +270,17 @@ export default function MasteryMap() {
             <p style={{ color: '#475569', fontSize: '1.25rem', marginBottom: '2rem', fontWeight: 'bold' }}>
               {selectedNode.status === 'mastered' 
                 ? "You are a master! Want to do a Speed Run?" 
-                : "Let's play and earn stars!"}
+                : selectedNode.status === 'weak'
+                  ? `Oh no! ${selectedNode.id} is feeling a bit weak. Let's take it to the Gym to get stronger!`
+                  : "Let's play and earn stars!"}
             </p>
 
             <button className="btn-primary" style={{ width: '100%', fontSize: '1.5rem', padding: '1rem', justifyContent: 'center' }} onClick={handlePractice}>
-              <Play size={28} fill="currentColor" /> GO!
+              {selectedNode.status === 'weak' ? (
+                <>🏋️‍♂️ To the Gym!</>
+              ) : (
+                <><Play size={28} fill="currentColor" /> GO!</>
+              )}
             </button>
           </div>
         </div>

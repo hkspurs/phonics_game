@@ -134,6 +134,59 @@ class QuestionEngine {
     return this._buildQuestionsArray(combinedTargets, distractorBasePool);
   }
 
+  /**
+   * Gym Workout: 3-Stage Remedial Practice
+   */
+  generateGymWorkout(targetSoundId, confusedWithLabel) {
+    const targetSound = this.sounds.find(s => s.sound_id === targetSoundId || s.label === targetSoundId);
+    if (!targetSound) return this.generateDailyChallenge();
+
+    const questions = [];
+
+    // Stage 1: Warm-up (2 choices, completely different family)
+    let diffFamilyDistractors = this.sounds.filter(s => s.family !== targetSound.family);
+    if (diffFamilyDistractors.length === 0) diffFamilyDistractors = this.sounds.filter(s => s.sound_id !== targetSound.sound_id);
+    const warmupDistractor = shuffle(diffFamilyDistractors)[0];
+    
+    questions.push({
+      id: `gym_warmup`,
+      type: 'gym_warmup',
+      targetSound: targetSound,
+      choices: shuffle([targetSound.label, warmupDistractor.label]),
+      correctAnswer: targetSound.label
+    });
+
+    // Stage 2: Heavy Lifting (Discrimination against the confused sound, 2 times)
+    let confusedSound = this.sounds.find(s => s.label === confusedWithLabel);
+    if (!confusedSound) {
+      let sameFamilyDistractors = this.sounds.filter(s => s.family === targetSound.family && s.sound_id !== targetSound.sound_id);
+      if (sameFamilyDistractors.length === 0) sameFamilyDistractors = diffFamilyDistractors;
+      confusedSound = shuffle(sameFamilyDistractors)[0];
+    }
+
+    for (let i = 0; i < 2; i++) {
+      questions.push({
+        id: `gym_lift_${i}`,
+        type: 'gym_lift',
+        targetSound: targetSound,
+        choices: shuffle([targetSound.label, confusedSound.label]),
+        correctAnswer: targetSound.label
+      });
+    }
+
+    // Stage 3: The Sprint (Standard 3 choices)
+    let sprintDistractors = shuffle(this.sounds.filter(s => s.sound_id !== targetSound.sound_id && s.sound_id !== confusedSound.sound_id)).slice(0, 2);
+    questions.push({
+      id: `gym_sprint`,
+      type: 'gym_sprint',
+      targetSound: targetSound,
+      choices: shuffle([targetSound.label, ...sprintDistractors.map(d => d.label)]),
+      correctAnswer: targetSound.label
+    });
+
+    return questions;
+  }
+
   _buildQuestionsArray(combinedTargets, distractorBasePool) {
     const questions = [];
     let lastCorrectIndex = -1;

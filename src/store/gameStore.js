@@ -172,6 +172,32 @@ export const useGameStore = create(
         });
       },
 
+      startGymWorkout: (soundId) => {
+        const state = get();
+        // Find most confused sound
+        let confusedWithLabel = null;
+        let maxConfusion = 0;
+        const stats = state.learningStats[soundId];
+        if (stats && stats.confusedWith) {
+          for (const [label, count] of Object.entries(stats.confusedWith)) {
+            if (count > maxConfusion) {
+              maxConfusion = count;
+              confusedWithLabel = label;
+            }
+          }
+        }
+        
+        const questions = questionEngine.generateGymWorkout(soundId, confusedWithLabel);
+        
+        set({
+          activeQuestions: questions,
+          currentQuestionIndex: 0,
+          isChallengeActive: true,
+          currentChallengeType: 'gym',
+          sessionScore: { stars: 0, gems: 0 },
+        });
+      },
+
       answerQuestion: (isCorrect, attemptCount) => {
         if (isCorrect) {
           set((state) => {
@@ -251,6 +277,20 @@ export const useGameStore = create(
             ? { ...state.activeAssignment, completed: true } 
             : state.activeAssignment,
           ...nextNodeUpdates
+        };
+      }),
+
+      completeGymWorkout: (soundId) => set((state) => {
+        const stats = state.learningStats[soundId] || { attempts: 0, firstAttemptHits: 0, confusedWith: {} };
+        // Confidence Boost: +2 hits, +2 attempts
+        stats.attempts += 2;
+        stats.firstAttemptHits += 2;
+        
+        return {
+          learningStats: {
+            ...state.learningStats,
+            [soundId]: stats
+          }
         };
       })
     }),

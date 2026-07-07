@@ -9,6 +9,7 @@ import AssignmentHub from './screens/AssignmentHub'
 import SoundCatcher from './games/SoundCatcher'
 import MemoryMatch from './games/MemoryMatch'
 import ParentDashboard from './screens/ParentDashboard'
+import TrainingGym from './screens/TrainingGym'
 import MascotRabbit from './components/MascotRabbit'
 
 import { useGameStore } from './store/gameStore'
@@ -75,6 +76,7 @@ function App() {
         <Route path="/braingames" element={<BrainGamesIsland />} />
         <Route path="/games/soundcatcher" element={<SoundCatcher />} />
         <Route path="/games/memorymatch" element={<MemoryMatch />} />
+        <Route path="/gym" element={<TrainingGym />} />
         <Route path="/assignments" element={<AssignmentHub />} />
         <Route path="/parent" element={
           <ProtectedParentRoute>
