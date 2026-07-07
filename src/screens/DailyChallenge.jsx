@@ -53,25 +53,44 @@ export default function DailyChallenge() {
 
   // Play audio when question loads, if interaction started
   useEffect(() => {
+    let isCancelled = false;
+
     if (currentQ && hasStartedInteraction) {
       setIsProcessing(true);
       
+      let hasPlayed = false;
+      const playTarget = () => {
+        if (isCancelled || hasPlayed) return;
+        hasPlayed = true;
+        audioEngine.play(currentQ.targetSound.audio_url, 0, 0, 0.9).catch(() => {}).finally(() => {
+          if (!isCancelled) setIsProcessing(false);
+        });
+      };
+
       // Voice-over instruction
-      if (window.speechSynthesis) {
-        window.speechSynthesis.cancel(); // R3-C3: Prevent speech overlapping
+      if (window.speechSynthesis && 'SpeechSynthesisUtterance' in window) {
+        window.speechSynthesis.cancel(); // Prevent speech overlapping
         const text = currentQ.type === 'compare' ? "Are these sounds the same, or different?" : "Listen and choose the right sound.";
         const utterance = new SpeechSynthesisUtterance(text);
         utterance.rate = 0.9;
+        
+        utterance.onend = playTarget;
+        utterance.onerror = playTarget;
+        
         window.speechSynthesis.speak(utterance);
-      }
 
-      setTimeout(() => {
-        // Playback Speed (Challenge 26): 0.9x speed for better accessibility
-        audioEngine.play(currentQ.targetSound.audio_url, 0, 0, 0.9).catch(() => {}).finally(() => setIsProcessing(false))
-      }, 1000); // Wait 1s for voice-over
+        // Safety fallback if speech synth hangs
+        setTimeout(() => {
+           if (!hasPlayed) playTarget();
+        }, 3000);
+      } else {
+        setTimeout(playTarget, 500); 
+      }
     }
+
     // Cleanup on unmount
     return () => {
+      isCancelled = true;
       audioEngine.stop()
       if (window.speechSynthesis) window.speechSynthesis.cancel();
     }
