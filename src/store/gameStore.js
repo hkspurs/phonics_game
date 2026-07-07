@@ -12,6 +12,7 @@ export const useGameStore = create(
       streak: 5,
       isParentAuthenticated: false, // Prevents Parent Gate Bypass
       refresherMode: false, // Teacher Agent Refresher Mode
+      currentChapter: 'A Families', // Chapter Support
       
       
       
@@ -42,26 +43,40 @@ export const useGameStore = create(
         tickets: 2,
         streak: 0,
         unlockedSounds: ['AB', 'EB'],
-        currentNode: 'IB',
+        currentNode: 'AB_01', // QA FIX: Use proper ID
         gameComplete: false,
         learningStats: {},
         activeAssignment: null,
         hasCompletedDaily: false,
         lastPlayedDate: null,
-        refresherMode: false
+        refresherMode: false,
+        currentChapter: 'A Families'
       }),
 
-      toggleRefresherMode: () => set((state) => {
+      toggleRefresherMode: (familyName = 'A Families') => set((state) => {
         const isTurningOn = !state.refresherMode;
         if (isTurningOn) {
-          const shortABatch = ['ab', 'ad', 'ag', 'am', 'an', 'ap', 'at'];
+          const familySounds = questionEngine.sounds.filter(s => s.family === familyName).map(s => s.sound_id || s.label);
+          // If family doesn't exist or is empty, fallback safely
+          if (familySounds.length === 0) return { refresherMode: true };
+          
           return { 
             refresherMode: true, 
-            unlockedSounds: Array.from(new Set([...state.unlockedSounds, ...shortABatch])),
-            currentNode: 'ab'
+            currentChapter: familyName,
+            unlockedSounds: Array.from(new Set([...state.unlockedSounds, ...familySounds])),
+            currentNode: familySounds[0]
           };
         }
         return { refresherMode: false };
+      }),
+
+      setChapter: (familyName) => set((state) => {
+        const familySounds = questionEngine.sounds.filter(s => s.family === familyName).map(s => s.sound_id || s.label);
+        if (familySounds.length === 0) return { currentChapter: familyName };
+        return {
+          currentChapter: familyName,
+          currentNode: state.unlockedSounds.includes(familySounds[0]) ? familySounds[0] : state.currentNode
+        };
       }),
 
       setParentAuthenticated: (status) => set({ isParentAuthenticated: status }),
@@ -241,7 +256,8 @@ export const useGameStore = create(
         hasCompletedDaily: state.hasCompletedDaily,
         lastPlayedDate: state.lastPlayedDate,
         activeAssignment: state.activeAssignment, // Persist assignment state
-        refresherMode: state.refresherMode // Persist refresher toggle
+        refresherMode: state.refresherMode, // Persist refresher toggle
+        currentChapter: state.currentChapter // Persist chapter
       })
     }
   )

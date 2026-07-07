@@ -11,6 +11,7 @@ export default function ParentDashboard() {
   const navigate = useNavigate()
   const { learningStats, unlockedSounds, currentNode, activeAssignment, getNodeStatus, resetProgress, refresherMode, toggleRefresherMode } = useGameStore()
   const [toastMsg, setToastMsg] = React.useState(null);
+  const [selectedChapter, setSelectedChapter] = React.useState('A Families');
 
   const showToast = (msg) => {
     setToastMsg(msg);
@@ -106,12 +107,27 @@ export default function ParentDashboard() {
           <h2 style={{ color: '#0f172a', margin: '0 0 0.5rem 0', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
             ⚡ Refresher Bootcamp Mode
           </h2>
-          <p style={{ color: '#64748b', margin: 0 }}>
-            Batch unlocks vowel families (e.g., Short 'A') and changes daily missions to rapid diagnostic tests to quickly revive forgotten sounds.
+          <p style={{ color: '#64748b', margin: 0, marginBottom: '0.5rem' }}>
+            Batch unlocks vowel families and changes daily missions to rapid diagnostic tests to quickly revive forgotten sounds.
           </p>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <label style={{ fontWeight: 'bold', color: '#334155' }}>Select Chapter:</label>
+            <select 
+              value={selectedChapter} 
+              onChange={(e) => { audioEngine.playUI('pop'); setSelectedChapter(e.target.value); }}
+              disabled={refresherMode}
+              style={{ padding: '0.5rem', borderRadius: '8px', border: '1px solid #cbd5e1', outline: 'none', background: refresherMode ? '#f1f5f9' : 'white', cursor: refresherMode ? 'not-allowed' : 'pointer' }}
+            >
+              <option value="A Families">A Families (ab, ad, ag...)</option>
+              <option value="E Families">E Families (eb, ed, eg...)</option>
+              <option value="I Families">I Families (ib, id, ig...)</option>
+              <option value="O Families">O Families (ob, od, og...)</option>
+              <option value="U Families">U Families (ub, ud, ug...)</option>
+            </select>
+          </div>
         </div>
         <button 
-          onClick={() => { audioEngine.playUI('pop'); toggleRefresherMode(); showToast(refresherMode ? 'Refresher Mode Disabled' : 'Refresher Mode Enabled! Check the map.'); }}
+          onClick={() => { audioEngine.playUI('pop'); toggleRefresherMode(selectedChapter); showToast(refresherMode ? 'Refresher Mode Disabled' : `Refresher Mode Enabled for ${selectedChapter}!`); }}
           style={{
             background: refresherMode ? '#f59e0b' : '#e2e8f0',
             color: refresherMode ? 'white' : '#64748b',

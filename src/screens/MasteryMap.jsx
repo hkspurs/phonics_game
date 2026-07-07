@@ -9,12 +9,13 @@ import { questionEngine } from '../game/QuestionEngine'
 
 export default function MasteryMap() {
   const navigate = useNavigate()
-  const { getNodeStatus, unlockedSounds, currentNode } = useGameStore()
+  const { getNodeStatus, unlockedSounds, currentNode, currentChapter = 'A Families' } = useGameStore()
   const [selectedNode, setSelectedNode] = useState(null)
 
   // QA FIX: Generate absolute pixel coordinates for perfect DOM vs SVG alignment
   const MAP_HEIGHT = 600;
-  const nodes = questionEngine.sounds.slice(0, 15).map((sound, index) => {
+  const chapterSounds = questionEngine.sounds.filter(s => s.family === currentChapter);
+  const nodes = chapterSounds.map((sound, index) => {
     const isEven = index % 2 === 0;
     return {
       id: sound.label,
@@ -87,12 +88,25 @@ export default function MasteryMap() {
     <div className="screen-container" style={{ background: '#fef3c7', position: 'relative' }}>
       
       {/* Header */}
-      <div style={{ position: 'absolute', top: '1rem', left: '1rem', zIndex: 10 }}>
+      <div style={{ position: 'absolute', top: '1rem', left: '1rem', zIndex: 10, display: 'flex', gap: '1rem', alignItems: 'center' }}>
         <button className="btn-secondary" style={{ padding: '0.5rem 1rem' }} onClick={() => navigate('/')}>
           <ArrowLeft size={24} /> Back
         </button>
       </div>
-      <h1 style={{ textAlign: 'center', color: '#b45309', fontSize: '2.5rem', marginTop: '1rem', zIndex: 10, position: 'relative' }}>Adventure Map</h1>
+      <h1 style={{ textAlign: 'center', color: '#b45309', fontSize: '2.5rem', marginTop: '1rem', zIndex: 10, position: 'relative', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '1rem' }}>
+        Adventure Map
+        <select 
+          value={currentChapter} 
+          onChange={(e) => { audioEngine.playUI('pop'); useGameStore.getState().setChapter(e.target.value); }}
+          style={{ fontSize: '1.2rem', padding: '0.5rem', borderRadius: '16px', border: '4px solid #fcd34d', background: 'white', color: '#b45309', fontWeight: 'bold', outline: 'none', cursor: 'pointer' }}
+        >
+          <option value="A Families">Chapter 1: A</option>
+          <option value="E Families">Chapter 2: E</option>
+          <option value="I Families">Chapter 3: I</option>
+          <option value="O Families">Chapter 4: O</option>
+          <option value="U Families">Chapter 5: U</option>
+        </select>
+      </h1>
 
       {/* Scrollable Map Area */}
       <div style={{ 
