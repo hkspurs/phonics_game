@@ -802,68 +802,64 @@ Output:
 * Mascot behaviour
 * UX review notes
 
-### Phase 4: Core App Development
+### Phase 4: Core App Development (✅ COMPLETED)
+  
+  Goal: build the functional MVP.
+  
+  Features:
+  
+  * Child profile
+  * Home dashboard
+  * Daily challenge
+  * Question engine
+  * Audio replay
+  * Feedback animation
+  * Reward system
+  * Progress tracking
+  * Sound mastery map (Upgraded to Dynamic Chapter System)
+  * Local data persistence (with Self-Healing and schema versioning)
+  
+  Output:
+  
+  * Working MVP
+  * Testable daily challenge
+  * Basic progress map
+  * Reward loop
 
-Goal: build the functional MVP.
+### Phase 5: Brain Games and Assignments (✅ COMPLETED)
+  
+  Goal: add replay value and adult control.
+  
+  Features:
+  
+  * Sound Catcher (Arcade falling items)
+  * Memory Match (Card matching)
+  * Assignment creation (via Parent Dashboard)
+  * Refresher Bootcamp Mode (Batch unlocking & diagnostic testing)
+  * Ticket-based economy system
+  
+  Output:
+  
+  * Brain games module
+  * Assignment & Refresher module
 
-Features:
-
-* Child profile
-* Home dashboard
-* Daily challenge
-* Question engine
-* Audio replay
-* Feedback animation
-* Reward system
-* Progress tracking
-* Sound mastery map
-* Local data persistence
-
-Output:
-
-* Working MVP
-* Testable daily challenge
-* Basic progress map
-* Reward loop
-
-### Phase 5: Brain Games and Assignments
-
-Goal: add replay value and adult control.
-
-Features:
-
-* Sound Catcher
-* Echo Cave
-* Letter Train
-* Assignment creation
-* Assignment completion
-* Event challenge
-
-Output:
-
-* Brain games module
-* Assignment module
-* Event module
-
-### Phase 6: Parent/Teacher Dashboard
-
-Goal: make learning data understandable.
-
-Features:
-
-* Daily completion chart
-* Accuracy by sound
-* Weak sounds
-* Confusion pairs
-* Assignment status
-* Recommended practice
-* Audio review status
-
-Output:
-
-* Adult dashboard
-* Exportable report
-* Recommendation logic
+### Phase 6: Parent/Teacher Dashboard (✅ COMPLETED)
+  
+  Goal: make learning data understandable.
+  
+  Features:
+  
+  * Pin-gate protection
+  * Accuracy by sound
+  * Weak sounds
+  * Confusion pairs
+  * Assignment & Curriculum overrides
+  * Refresher Mode toggle
+  
+  Output:
+  
+  * Adult dashboard
+  * Teacher Control Center
 
 ### Phase 7: QA, Polish, and Release
 

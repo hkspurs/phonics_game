@@ -5,10 +5,13 @@ A premium, daily phonics learning application designed specifically for 6-year-o
 ## 🌟 Key Features
 
 *   **Adaptive Daily Challenges:** A core 10-question loop that dynamically adjusts to the child's learning history, focusing on weak sounds while introducing new concepts linearly.
+*   **Chapter System & Adventure Map:** Navigate through vowel families (A, E, I, O, U) on a beautiful SV-generated Mastery Map with dynamic cubic-bezier paths and a floating mascot.
 *   **Child-First Psychology UI:** No harsh "Wrong!" text or red crosses. The app uses gentle process-of-elimination mechanics and positive micro-animations (sparkles, mascots) to build confidence.
-*   **Parent & Teacher Dashboard (PIN Protected):** A hidden analytics screen that tracks exact accuracies, identifies "Confused Pairs" (e.g., mixing up AB and EB), and allows teachers to assign specific sound practice.
+*   **Brain Games Island:** Expend earned tickets to play mini-games like *Memory Match* and *Sound Catcher* to reinforce phonics through play.
+*   **Parent & Teacher Dashboard (PIN Protected):** A hidden analytics screen that tracks exact accuracies, identifies "Confused Pairs" (e.g., mixing up AB and EB).
+*   **Refresher Bootcamp Mode:** Teachers can assign targeted batch-review modes equipped with *Smart Cross-Vowel Distractors* to build fine-grained auditory discrimination.
 *   **Robust Audio Engine:** Preloads audio, handles multi-channel playback (SFX + Voice), and enforces strict metadata validation to ensure children only hear human-approved pronunciations.
-*   **Bulletproof State Persistence:** Built with Zustand's local storage engine, featuring schema versioning, bloat protection, and strict UTC-timezone resets to prevent cheating.
+*   **Bulletproof State Persistence:** Built with Zustand's local storage engine, featuring schema versioning, bloat protection, self-healing state, and strict UTC-timezone resets to prevent cheating.
 
 ## 🛠️ Tech Stack
 

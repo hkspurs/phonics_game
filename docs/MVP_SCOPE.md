@@ -13,12 +13,14 @@ The goal of the Minimum Viable Product (MVP) is to prove the core learning loop,
 ### 2. Child Interface
 - **Home Dashboard**: Animated background, working "Start Daily Challenge" button.
 - **Daily Sound Challenge**: The 10-question adaptive loop.
+- **Chapter System & Adventure Map**: Visual progression map broken into dynamic vowel families (A, E, I, O, U) with soft SVG path rendering.
 - **Question Templates (3 minimum)**:
   1. Listen and Choose (Standard)
   2. Same or Different (Comparison)
   3. Boss Question (Animated finale)
 - **Feedback System**: Complete visual feedback loops for correct/wrong answers (no text-only feedback).
-- **Reward Screen**: End-of-mission celebration, basic Star/Gem counting.
+- **Reward Screen**: End-of-mission celebration, basic Star/Gem counting, and Ticket awarding.
+- **Brain Games Island**: 🎟️ Play mini-games (Memory Match, Sound Catcher) by spending tickets earned from the Daily Challenge.
 
 ### 3. Learning Data & Content
 - **Sound Families**: Implemented 105 total sounds with strict human-reviewed `approved` metadata filtering.
@@ -31,13 +33,12 @@ The goal of the Minimum Viable Product (MVP) is to prove the core learning loop,
 ### 5. Parent & Teacher Dashboard
 - **Analytics**: Deep reporting on Weak Sounds, Mastered Sounds (>=90%), and Confused Pairs.
 - **Curriculum Control**: Manual audio previews, direct Assignments override, and Map node force-unlocks.
+- **Refresher Bootcamp Mode**: A powerful teacher override to batch-unlock sounds and run highly-targeted cross-vowel distractor diagnostics.
 - **Security**: Hidden UI entry point protected by a PIN gate. Nuclear Factory Reset option included.
 
 ## Out of Scope for MVP (Pushed to V3)
 
 - **Backend / Database**: MVP uses LocalStorage. Full cloud sync and database architecture are V3.
-- **Brain Games**: Mini-games are complex to build and distract from the core loop validation. V3 feature.
 - **Reward Room (Stickers/Decorations)**: MVP simply counts Stars/Gems. A full inventory/dress-up system is V3.
 - **Audio Admin Tool**: The actual waveform review UI for admins is V3. (For MVP, we use python data scripts).
 - **Complex Animations (Lottie/PixiJS)**: MVP relies on high-quality CSS keyframes and SVG transitions (e.g. Sparkles, Fade outs). Heavy game engines are V3.
-- **Complex Animations (Lottie/PixiJS)**: MVP will rely on high-quality CSS keyframes and SVG transitions. Heavy game engines are V2.
