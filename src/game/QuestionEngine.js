@@ -187,6 +187,39 @@ class QuestionEngine {
     return questions;
   }
 
+  /**
+   * Super Bubble Challenge
+   */
+  generateBubbleChallenge(unlockedSoundIds = []) {
+    let unlockedSounds = this.sounds.filter(s => unlockedSoundIds.includes(s.sound_id) || unlockedSoundIds.includes(s.label));
+    if (unlockedSounds.length < 10) {
+      unlockedSounds = this.sounds; // Fallback to all sounds if they haven't unlocked enough
+    }
+
+    const questions = [];
+    
+    // 10 rounds
+    for (let i = 0; i < 10; i++) {
+      const targetSound = unlockedSounds[Math.floor(Math.random() * unlockedSounds.length)];
+      
+      // Get 9 distinct distractors
+      let potentialDistractors = this.sounds.filter(s => s.sound_id !== targetSound.sound_id);
+      const distractors = shuffle(potentialDistractors).slice(0, 9);
+      
+      const choices = shuffle([targetSound.label, ...distractors.map(d => d.label)]);
+      
+      questions.push({
+        id: `bubble_${i}`,
+        type: 'bubble',
+        targetSound: targetSound,
+        choices: choices,
+        correctAnswer: targetSound.label
+      });
+    }
+
+    return questions;
+  }
+
   _buildQuestionsArray(combinedTargets, distractorBasePool) {
     const questions = [];
     let lastCorrectIndex = -1;

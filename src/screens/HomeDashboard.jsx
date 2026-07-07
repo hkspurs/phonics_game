@@ -47,7 +47,7 @@ export default function HomeDashboard() {
   const [isEntering, setIsEntering] = useState(true);
   
   // Connect to global state
-  const { stars, gems, tickets, streak, startDailyChallenge, activeAssignment, hasCompletedDaily, checkDailyReset, setParentAuthenticated } = useGameStore()
+  const { stars, gems, tickets, streak, unlockedSounds, startDailyChallenge, startBubbleChallenge, activeAssignment, hasCompletedDaily, checkDailyReset, setParentAuthenticated } = useGameStore()
 
   useEffect(() => {
     checkDailyReset()
@@ -58,6 +58,12 @@ export default function HomeDashboard() {
     audioEngine.playUI('pop');
     startDailyChallenge()
     navigate('/challenge')
+  }
+
+  const handleStartBubble = () => {
+    audioEngine.playUI('pop');
+    startBubbleChallenge()
+    navigate('/bubble')
   }
 
   const handleParentAccess = () => {
@@ -150,6 +156,14 @@ export default function HomeDashboard() {
         <button className="btn-secondary" onClick={() => { audioEngine.playUI('pop'); navigate('/map'); }}>
           <Map size={24} /> Sound Map
         </button>
+        
+        {/* Super Bubble Challenge */}
+        {unlockedSounds.length >= 10 && (
+          <button className="btn-secondary" onClick={handleStartBubble} style={{ background: '#fef08a', color: '#a16207', borderColor: '#fde047' }}>
+            <span style={{ fontSize: '24px' }}>🎈</span> Bubble Challenge
+          </button>
+        )}
+
         <button 
           className="btn-secondary" 
           onClick={(e) => { 

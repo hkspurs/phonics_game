@@ -10,6 +10,7 @@ import SoundCatcher from './games/SoundCatcher'
 import MemoryMatch from './games/MemoryMatch'
 import ParentDashboard from './screens/ParentDashboard'
 import TrainingGym from './screens/TrainingGym'
+import BubbleChallenge from './screens/BubbleChallenge'
 import MascotRabbit from './components/MascotRabbit'
 
 import { useGameStore } from './store/gameStore'
@@ -77,6 +78,7 @@ function App() {
         <Route path="/games/soundcatcher" element={<SoundCatcher />} />
         <Route path="/games/memorymatch" element={<MemoryMatch />} />
         <Route path="/gym" element={<TrainingGym />} />
+        <Route path="/bubble" element={<BubbleChallenge />} />
         <Route path="/assignments" element={<AssignmentHub />} />
         <Route path="/parent" element={
           <ProtectedParentRoute>

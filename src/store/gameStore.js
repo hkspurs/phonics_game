@@ -198,6 +198,28 @@ export const useGameStore = create(
         });
       },
 
+      startBubbleChallenge: () => {
+        const state = get();
+        // Generate 10 rounds of 10 bubbles
+        const questions = questionEngine.generateBubbleChallenge(state.unlockedSounds);
+        set({
+          activeQuestions: questions,
+          currentQuestionIndex: 0,
+          isChallengeActive: true,
+          currentChallengeType: 'bubble',
+          sessionScore: { stars: 0, gems: 0 },
+        });
+      },
+
+      completeBubbleChallenge: (isPerfect) => set((state) => {
+        return {
+          isChallengeActive: false,
+          currentChallengeType: null,
+          stars: state.stars + 10, // Base reward for completing
+          tickets: isPerfect ? state.tickets + 1 : state.tickets // Perfect bonus
+        };
+      }),
+
       answerQuestion: (isCorrect, attemptCount) => {
         if (isCorrect) {
           set((state) => {
