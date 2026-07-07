@@ -187,9 +187,6 @@ class QuestionEngine {
     return questions;
   }
 
-  /**
-   * Super Bubble Challenge
-   */
   generateBubbleChallenge(unlockedSoundIds = []) {
     let unlockedSounds = this.sounds.filter(s => unlockedSoundIds.includes(s.sound_id) || unlockedSoundIds.includes(s.label));
     if (unlockedSounds.length < 10) {
@@ -202,9 +199,13 @@ class QuestionEngine {
     for (let i = 0; i < 10; i++) {
       const targetSound = unlockedSounds[Math.floor(Math.random() * unlockedSounds.length)];
       
-      // Get 9 distinct distractors
+      // Progressive Difficulty (Level Design)
+      let numDistractors = 2; // Rounds 1-3: 3 bubbles total
+      if (i >= 3 && i < 7) numDistractors = 4; // Rounds 4-7: 5 bubbles total
+      if (i >= 7) numDistractors = 9; // Rounds 8-10: 10 bubbles total
+
       let potentialDistractors = this.sounds.filter(s => s.sound_id !== targetSound.sound_id);
-      const distractors = shuffle(potentialDistractors).slice(0, 9);
+      const distractors = shuffle(potentialDistractors).slice(0, numDistractors);
       
       const choices = shuffle([targetSound.label, ...distractors.map(d => d.label)]);
       
