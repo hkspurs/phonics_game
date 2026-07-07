@@ -245,6 +245,7 @@ export const useGameStore = create(
           hasCompletedDaily: state.currentChallengeType === 'daily' ? true : state.hasCompletedDaily, // QA FIX: Unlock Brain Games only on daily
           stars: state.stars + state.sessionScore.stars,
           gems: state.gems + state.sessionScore.gems,
+          tickets: state.currentChallengeType === 'daily' ? state.tickets + 1 : state.tickets, // Award 1 ticket for daily completion
           streak: state.currentChallengeType === 'daily' ? state.streak + 1 : state.streak,
           activeAssignment: state.currentChallengeType === 'assignment' 
             ? { ...state.activeAssignment, completed: true } 
