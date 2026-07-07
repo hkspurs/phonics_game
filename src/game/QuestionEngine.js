@@ -115,8 +115,8 @@ class QuestionEngine {
       randomWeak()  // 10 (Boss)
     ];
 
-    // Distractor pool strictly limited to the batch to avoid out-of-scope unfairness
-    let distractorBasePool = Array.from(new Set([...batchSounds]));
+    // Pedagogy FIX: Include cross-vowel distractors to build phonological awareness
+    let distractorBasePool = Array.from(new Set([...batchSounds, ...shuffle(this.sounds).slice(0, 10)]));
     return this._buildQuestionsArray(combinedTargets, distractorBasePool);
   }
 

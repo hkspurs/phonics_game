@@ -12,6 +12,7 @@ export const useGameStore = create(
       streak: 5,
       isParentAuthenticated: false, // Prevents Parent Gate Bypass
       refresherMode: false, // Teacher Agent Refresher Mode
+      preRefresherState: null, // Restores progression after refresher
       currentChapter: 'A Families', // Chapter Support
       
       
@@ -50,6 +51,7 @@ export const useGameStore = create(
         hasCompletedDaily: false,
         lastPlayedDate: null,
         refresherMode: false,
+        preRefresherState: null,
         currentChapter: 'A Families'
       }),
 
@@ -62,12 +64,17 @@ export const useGameStore = create(
           
           return { 
             refresherMode: true, 
+            preRefresherState: { currentNode: state.currentNode, currentChapter: state.currentChapter },
             currentChapter: familyName,
             unlockedSounds: Array.from(new Set([...state.unlockedSounds, ...familySounds])),
             currentNode: familySounds[0]
           };
         }
-        return { refresherMode: false };
+        return { 
+          refresherMode: false,
+          currentNode: state.preRefresherState?.currentNode || state.currentNode,
+          currentChapter: state.preRefresherState?.currentChapter || state.currentChapter
+        };
       }),
 
       setChapter: (familyName) => set((state) => {
@@ -147,10 +154,15 @@ export const useGameStore = create(
 
       startDailyChallenge: () => {
         const state = get();
-        // Teacher Agent Refresher Mode Check
-        const questions = state.refresherMode
-          ? questionEngine.generateRefresherAssignment(state.unlockedSounds)
-          : questionEngine.generateDailyChallenge(state.unlockedSounds, state.currentNode, state.learningStats);
+        let questions;
+        if (state.refresherMode) {
+          const familySounds = questionEngine.sounds.filter(s => s.family === state.currentChapter).map(s => s.sound_id || s.label);
+          const unlockedFamilySounds = state.unlockedSounds.filter(id => familySounds.includes(id));
+          questions = questionEngine.generateRefresherAssignment(unlockedFamilySounds, state.learningStats);
+        } else {
+          questions = questionEngine.generateDailyChallenge(state.unlockedSounds, state.currentNode, state.learningStats);
+        }
+        
         set({
           activeQuestions: questions,
           currentQuestionIndex: 0,
@@ -204,10 +216,19 @@ export const useGameStore = create(
               const currentIndex = questionEngine.sounds.findIndex(s => s.sound_id === state.currentNode || s.label === state.currentNode);
               if (currentIndex !== -1 && currentIndex + 1 < questionEngine.sounds.length) {
                 const nextNodeId = questionEngine.sounds[currentIndex + 1].sound_id || questionEngine.sounds[currentIndex + 1].label;
+                const nextNodeFamily = questionEngine.sounds[currentIndex + 1].family; // Get next family
+                
                 if (!state.unlockedSounds.includes(nextNodeId)) {
                   nextNodeUpdates = {
                     currentNode: nextNodeId,
-                    unlockedSounds: [...state.unlockedSounds, nextNodeId]
+                    unlockedSounds: [...state.unlockedSounds, nextNodeId],
+                    currentChapter: nextNodeFamily || state.currentChapter // Auto-switch map chapter
+                  };
+                } else {
+                  // If it was already unlocked, just move the cursor and map
+                  nextNodeUpdates = {
+                    currentNode: nextNodeId,
+                    currentChapter: nextNodeFamily || state.currentChapter
                   };
                 }
               } else {
@@ -242,6 +263,10 @@ export const useGameStore = create(
         if (version === 0 || version === 1) {
           state.activeAssignment = null;
         }
+        // V2 Migration fallback
+        if (!state.currentChapter) {
+          state.currentChapter = 'A Families';
+        }
         return state;
       },
       partialize: (state) => ({
@@ -257,6 +282,7 @@ export const useGameStore = create(
         lastPlayedDate: state.lastPlayedDate,
         activeAssignment: state.activeAssignment, // Persist assignment state
         refresherMode: state.refresherMode, // Persist refresher toggle
+        preRefresherState: state.preRefresherState,
         currentChapter: state.currentChapter // Persist chapter
       })
     }

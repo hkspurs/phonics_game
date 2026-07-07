@@ -12,6 +12,22 @@ export default function MasteryMap() {
   const { getNodeStatus, unlockedSounds, currentNode, currentChapter = 'A Families' } = useGameStore()
   const [selectedNode, setSelectedNode] = useState(null)
 
+  // Extract dynamic chapters
+  const families = Array.from(new Set(questionEngine.sounds.map(s => s.family).filter(Boolean)));
+  const currentChapterIndex = families.indexOf(currentChapter);
+  const handlePrevChapter = () => {
+    if (currentChapterIndex > 0) {
+      audioEngine.playUI('pop');
+      useGameStore.getState().setChapter(families[currentChapterIndex - 1]);
+    }
+  }
+  const handleNextChapter = () => {
+    if (currentChapterIndex < families.length - 1) {
+      audioEngine.playUI('pop');
+      useGameStore.getState().setChapter(families[currentChapterIndex + 1]);
+    }
+  }
+
   // QA FIX: Generate absolute pixel coordinates for perfect DOM vs SVG alignment
   const MAP_HEIGHT = 600;
   const chapterSounds = questionEngine.sounds.filter(s => s.family === currentChapter);
@@ -81,8 +97,18 @@ export default function MasteryMap() {
   }
 
   // QA FIX: Find latest unlocked node for rabbit to prevent amnesia
-  const unlockedNodes = nodes.filter(n => n.status !== 'locked');
-  const currentLevelNode = nodes.find(n => n.soundId === currentNode) || unlockedNodes[unlockedNodes.length - 1] || nodes[0];
+  const unlockedNodesInChapter = nodes.filter(n => n.status !== 'locked');
+  let currentLevelNode = nodes.find(n => n.soundId === currentNode);
+  
+  if (!currentLevelNode) {
+    if (unlockedNodesInChapter.length > 0) {
+      currentLevelNode = unlockedNodesInChapter[unlockedNodesInChapter.length - 1];
+    } else if (nodes.length > 0) {
+      currentLevelNode = nodes[0];
+    }
+  }
+
+  const hasNodes = nodes.length > 0;
 
   return (
     <div className="screen-container" style={{ background: '#fef3c7', position: 'relative' }}>
@@ -95,17 +121,17 @@ export default function MasteryMap() {
       </div>
       <h1 style={{ textAlign: 'center', color: '#b45309', fontSize: '2.5rem', marginTop: '1rem', zIndex: 10, position: 'relative', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '1rem' }}>
         Adventure Map
-        <select 
-          value={currentChapter} 
-          onChange={(e) => { audioEngine.playUI('pop'); useGameStore.getState().setChapter(e.target.value); }}
-          style={{ fontSize: '1.2rem', padding: '0.5rem', borderRadius: '16px', border: '4px solid #fcd34d', background: 'white', color: '#b45309', fontWeight: 'bold', outline: 'none', cursor: 'pointer' }}
-        >
-          <option value="A Families">Chapter 1: A</option>
-          <option value="E Families">Chapter 2: E</option>
-          <option value="I Families">Chapter 3: I</option>
-          <option value="O Families">Chapter 4: O</option>
-          <option value="U Families">Chapter 5: U</option>
-        </select>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: 'white', padding: '0.2rem 0.5rem', borderRadius: '100px', border: '4px solid #fcd34d' }}>
+          <button onClick={handlePrevChapter} disabled={currentChapterIndex <= 0} style={{ background: 'none', border: 'none', cursor: currentChapterIndex <= 0 ? 'not-allowed' : 'pointer', opacity: currentChapterIndex <= 0 ? 0.3 : 1, display: 'flex', alignItems: 'center', padding: '0.5rem' }}>
+            <ArrowLeft size={24} color="#b45309" />
+          </button>
+          <span style={{ fontSize: '1.2rem', color: '#b45309', fontWeight: 'bold', minWidth: '80px', textAlign: 'center' }}>
+            {currentChapter ? currentChapter.split(' ')[0] : '...'}
+          </span>
+          <button onClick={handleNextChapter} disabled={currentChapterIndex >= families.length - 1} style={{ background: 'none', border: 'none', cursor: currentChapterIndex >= families.length - 1 ? 'not-allowed' : 'pointer', opacity: currentChapterIndex >= families.length - 1 ? 0.3 : 1, display: 'flex', alignItems: 'center', padding: '0.5rem' }}>
+            <ArrowLeft size={24} color="#b45309" style={{ transform: 'rotate(180deg)' }} />
+          </button>
+        </div>
       </h1>
 
       {/* Scrollable Map Area */}
@@ -119,7 +145,15 @@ export default function MasteryMap() {
         {/* Absolute Canvas */}
         <div style={{ position: 'relative', width: `${MAP_WIDTH}px`, height: `${MAP_HEIGHT}px` }}>
           
-          {/* Global SVG Defs to save GPU */}
+          {!hasNodes && (
+            <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#94a3b8', fontSize: '1.5rem', fontWeight: 'bold' }}>
+              More adventures coming soon!
+            </div>
+          )}
+
+          {hasNodes && (
+            <>
+              {/* Global SVG Defs to save GPU */}
           <svg style={{ width: 0, height: 0, position: 'absolute' }}>
             <defs>
               <filter id="global-glow" x="-50%" y="-50%" width="200%" height="200%">
@@ -180,13 +214,17 @@ export default function MasteryMap() {
               top: `${currentLevelNode.y - 70}px`,
               transform: 'translate(-50%, -50%)',
               zIndex: 10,
-              pointerEvents: 'none'
+              pointerEvents: 'none',
+              transition: 'all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)' // Soft animation
             }}>
               <div style={{ animation: 'bounce 2s infinite' }}>
                 <MascotRabbit style={{ width: '80px', height: '80px', filter: 'drop-shadow(0 4px 6px rgba(0,0,0,0.2))' }} />
               </div>
             </div>
           )}
+          
+          </>
+        )}
         </div>
       </div>
 

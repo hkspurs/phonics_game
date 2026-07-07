@@ -78,6 +78,9 @@ export default function ParentDashboard() {
   });
   const sortedLetters = Object.keys(groupedSounds).sort();
 
+  // Extract dynamic families for Chapter Refresher
+  const families = Array.from(new Set(questionEngine.sounds.map(s => s.family).filter(Boolean)));
+
   return (
     <div className="screen-container" style={{ background: '#f8fafc', padding: '2rem', position: 'relative' }}>
       
@@ -118,11 +121,9 @@ export default function ParentDashboard() {
               disabled={refresherMode}
               style={{ padding: '0.5rem', borderRadius: '8px', border: '1px solid #cbd5e1', outline: 'none', background: refresherMode ? '#f1f5f9' : 'white', cursor: refresherMode ? 'not-allowed' : 'pointer' }}
             >
-              <option value="A Families">A Families (ab, ad, ag...)</option>
-              <option value="E Families">E Families (eb, ed, eg...)</option>
-              <option value="I Families">I Families (ib, id, ig...)</option>
-              <option value="O Families">O Families (ob, od, og...)</option>
-              <option value="U Families">U Families (ub, ud, ug...)</option>
+              {families.map(family => (
+                <option key={family} value={family}>{family}</option>
+              ))}
             </select>
           </div>
         </div>
