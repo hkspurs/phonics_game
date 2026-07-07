@@ -11,6 +11,8 @@ export const useGameStore = create(
       tickets: 2, 
       streak: 5,
       isParentAuthenticated: false, // Prevents Parent Gate Bypass
+      refresherMode: false, // Teacher Agent Refresher Mode
+      
       
       
       // Map Progression State (QA FIX)
@@ -45,7 +47,21 @@ export const useGameStore = create(
         learningStats: {},
         activeAssignment: null,
         hasCompletedDaily: false,
-        lastPlayedDate: null
+        lastPlayedDate: null,
+        refresherMode: false
+      }),
+
+      toggleRefresherMode: () => set((state) => {
+        const isTurningOn = !state.refresherMode;
+        if (isTurningOn) {
+          const shortABatch = ['ab', 'ad', 'ag', 'am', 'an', 'ap', 'at'];
+          return { 
+            refresherMode: true, 
+            unlockedSounds: Array.from(new Set([...state.unlockedSounds, ...shortABatch])),
+            currentNode: 'ab'
+          };
+        }
+        return { refresherMode: false };
       }),
 
       setParentAuthenticated: (status) => set({ isParentAuthenticated: status }),
@@ -116,8 +132,10 @@ export const useGameStore = create(
 
       startDailyChallenge: () => {
         const state = get();
-        // QA FIX: Pass learningStats to prioritize weak sounds
-        const questions = questionEngine.generateDailyChallenge(state.unlockedSounds, state.currentNode, state.learningStats);
+        // Teacher Agent Refresher Mode Check
+        const questions = state.refresherMode
+          ? questionEngine.generateRefresherAssignment(state.unlockedSounds)
+          : questionEngine.generateDailyChallenge(state.unlockedSounds, state.currentNode, state.learningStats);
         set({
           activeQuestions: questions,
           currentQuestionIndex: 0,
@@ -222,7 +240,8 @@ export const useGameStore = create(
         gameComplete: state.gameComplete,
         hasCompletedDaily: state.hasCompletedDaily,
         lastPlayedDate: state.lastPlayedDate,
-        activeAssignment: state.activeAssignment // Persist assignment state
+        activeAssignment: state.activeAssignment, // Persist assignment state
+        refresherMode: state.refresherMode // Persist refresher toggle
       })
     }
   )

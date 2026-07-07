@@ -18,7 +18,9 @@ export default function DailyChallenge() {
     answerQuestion, 
     nextQuestion, 
     isChallengeActive,
-    recordAnswer 
+    recordAnswer,
+    refresherMode,
+    currentChallengeType
   } = useGameStore()
 
   const [selected, setSelected] = useState(null)
@@ -122,7 +124,10 @@ export default function DailyChallenge() {
       // Pedagogy FIX: Vocal Praise
       if (window.speechSynthesis) {
         window.speechSynthesis.cancel(); // Prevent overlap
-        const praises = ["Great job!", "Awesome!", "You did it!"];
+        const isTrueRemembering = refresherMode && attemptCount === 1 && currentChallengeType === 'daily';
+        const praises = isTrueRemembering 
+          ? ["You remembered it!", "Your memory is super strong!", "Great memory!"]
+          : (attemptCount === 1 ? ["Great job!", "Awesome!", "You did it!"] : ["Good try, you found it!", "Now you remember!"]);
         const utterance = new SpeechSynthesisUtterance(praises[Math.floor(Math.random() * praises.length)]);
         utterance.rate = 1.1;
         window.speechSynthesis.speak(utterance);
@@ -335,7 +340,7 @@ export default function DailyChallenge() {
                   disabled={isProcessing || feedbackState !== null || isDisabled}
                   className={`${feedbackState === 'correct' && choice === selected ? 'correct-sparkle' : ''} ${feedbackState === 'wrong' && choice === selected ? 'wobble-wrong' : ''}`}
                   style={{
-                    width: '160px', minHeight: '200px', height: 'auto', padding: '1rem', // QA FIX (Challenge 27)
+                    width: '160px', minHeight: currentQ.type === 'boss' ? '120px' : '200px', height: 'auto', padding: '1rem', // QA FIX (Challenge 27) & Boss UI Overflow fix
                     fontSize: '4rem', fontWeight: 'bold', color: isDisabled ? '#94a3b8' : '#1e3a8a',
                     background: isDisabled ? '#f1f5f9' : 'linear-gradient(135deg, #ffffff, #f0f9ff)', 
                     border: `4px solid ${isDisabled ? '#cbd5e1' : '#7dd3fc'}`, 
@@ -361,7 +366,13 @@ export default function DailyChallenge() {
       <div style={{ position: 'absolute', bottom: '2rem', left: '2rem', width: '180px', height: '180px', pointerEvents: 'none', zIndex: 10 }}>
         {feedbackState === 'correct' && (
           <div style={{ position: 'absolute', top: '-40px', right: '-80px', background: 'white', padding: '0.5rem 1rem', borderRadius: '20px', boxShadow: '0 4px 10px rgba(0,0,0,0.1)', fontWeight: 'bold', color: '#047857', animation: 'popIn 0.3s ease-out' }}>
-            Great job!
+            {(refresherMode && attemptCount === 1 && currentChallengeType === 'daily') ? 'You remembered it!' : (attemptCount === 1 ? 'Great job!' : 'You found it!')}
+            <div style={{ position: 'absolute', bottom: '-10px', left: '20px', borderLeft: '10px solid transparent', borderRight: '10px solid transparent', borderTop: '10px solid white' }}></div>
+          </div>
+        )}
+        {feedbackState === 'wrong' && (
+          <div style={{ position: 'absolute', top: '-60px', right: '-120px', maxWidth: '180px', background: 'white', padding: '0.5rem 1rem', borderRadius: '20px', boxShadow: '0 4px 10px rgba(0,0,0,0.1)', fontWeight: 'bold', color: '#be123c', animation: 'popIn 0.3s ease-out', zIndex: 11 }}>
+            {refresherMode && currentChallengeType === 'daily' ? "Let's dust off this sound!" : "Almost! Listen again."}
             <div style={{ position: 'absolute', bottom: '-10px', left: '20px', borderLeft: '10px solid transparent', borderRight: '10px solid transparent', borderTop: '10px solid white' }}></div>
           </div>
         )}

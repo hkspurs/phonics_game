@@ -9,7 +9,7 @@ import MascotRabbit from '../components/MascotRabbit'
 
 export default function ParentDashboard() {
   const navigate = useNavigate()
-  const { learningStats, unlockedSounds, currentNode, activeAssignment, getNodeStatus, resetProgress } = useGameStore()
+  const { learningStats, unlockedSounds, currentNode, activeAssignment, getNodeStatus, resetProgress, refresherMode, toggleRefresherMode } = useGameStore()
   const [toastMsg, setToastMsg] = React.useState(null);
 
   const showToast = (msg) => {
@@ -98,6 +98,30 @@ export default function ParentDashboard() {
             <h1 style={{ color: '#0f172a', margin: 0, fontSize: '1.8rem' }}>Learning Hub</h1>
           </div>
         </div>
+      </div>
+
+      {/* Refresher Mode Banner */}
+      <div style={{ background: refresherMode ? '#fef3c7' : 'white', borderRadius: '16px', padding: '1.5rem', marginBottom: '2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)', border: refresherMode ? '2px solid #f59e0b' : '1px solid #e2e8f0' }}>
+        <div>
+          <h2 style={{ color: '#0f172a', margin: '0 0 0.5rem 0', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            ⚡ Refresher Bootcamp Mode
+          </h2>
+          <p style={{ color: '#64748b', margin: 0 }}>
+            Batch unlocks vowel families (e.g., Short 'A') and changes daily missions to rapid diagnostic tests to quickly revive forgotten sounds.
+          </p>
+        </div>
+        <button 
+          onClick={() => { audioEngine.playUI('pop'); toggleRefresherMode(); showToast(refresherMode ? 'Refresher Mode Disabled' : 'Refresher Mode Enabled! Check the map.'); }}
+          style={{
+            background: refresherMode ? '#f59e0b' : '#e2e8f0',
+            color: refresherMode ? 'white' : '#64748b',
+            border: 'none', borderRadius: '100px', padding: '0.75rem 2rem', fontSize: '1.2rem', fontWeight: 'bold', cursor: 'pointer',
+            boxShadow: refresherMode ? '0 4px 10px rgba(245,158,11,0.4)' : 'none',
+            transition: 'all 0.3s'
+          }}
+        >
+          {refresherMode ? 'ON' : 'OFF'}
+        </button>
       </div>
 
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '2rem', height: 'calc(100vh - 150px)' }}>

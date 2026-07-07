@@ -82,6 +82,44 @@ class QuestionEngine {
     return this._buildQuestionsArray(combinedTargets, distractorBasePool);
   }
 
+  /**
+   * Refresher Bootcamp: Rapid Diagnostic
+   */
+  generateRefresherAssignment(batchSoundIds, learningStats = {}) {
+    if (!batchSoundIds || batchSoundIds.length === 0) return this.generateDailyChallenge(batchSoundIds, null, learningStats);
+    const batchSounds = this.sounds.filter(s => batchSoundIds.includes(s.sound_id) || batchSoundIds.includes(s.label));
+    if (batchSounds.length === 0) return this.generateDailyChallenge([], null, learningStats);
+
+    // Identify weak sounds from the batch using stats
+    let weakSounds = batchSounds.filter(s => {
+      const stats = learningStats[s.sound_id];
+      if (!stats || stats.attempts < 3) return false;
+      return (stats.firstAttemptHits / stats.attempts) < 0.7; // Higher threshold for refresher
+    });
+
+    if (weakSounds.length === 0) weakSounds = batchSounds;
+
+    // Build exactly 10 targets
+    // Q1-Q5: Rapid Fire (random from batch)
+    // Q6-Q8: Targeted Rescue (from weakSounds)
+    // Q9: Compare (random from batch)
+    // Q10: Boss (random from weakSounds or batch)
+    
+    const randomBatch = () => batchSounds[Math.floor(Math.random() * batchSounds.length)];
+    const randomWeak = () => weakSounds[Math.floor(Math.random() * weakSounds.length)];
+
+    const combinedTargets = [
+      randomBatch(), randomBatch(), randomBatch(), randomBatch(), randomBatch(), // 1-5
+      randomWeak(), randomWeak(), randomWeak(), // 6-8
+      randomBatch(), // 9 (Compare)
+      randomWeak()  // 10 (Boss)
+    ];
+
+    // Distractor pool strictly limited to the batch to avoid out-of-scope unfairness
+    let distractorBasePool = Array.from(new Set([...batchSounds]));
+    return this._buildQuestionsArray(combinedTargets, distractorBasePool);
+  }
+
   _buildQuestionsArray(combinedTargets, distractorBasePool) {
     const questions = [];
     let lastCorrectIndex = -1;
