@@ -205,9 +205,11 @@ export default function DailyChallenge() {
       <h2 style={{ 
         color: currentQ.type === 'boss' ? '#e11d48' : '#065f46', 
         fontSize: currentQ.type === 'boss' ? '2.5rem' : '2rem', 
-        marginBottom: '1rem',
+        marginBottom: '2rem',
         textTransform: currentQ.type === 'boss' ? 'uppercase' : 'none',
-        animation: currentQ.type === 'boss' ? 'pulse-glow 2s infinite' : 'none'
+        animation: currentQ.type === 'boss' ? 'pulse-glow 2s infinite' : 'none',
+        textAlign: 'center',
+        flexShrink: 0
       }}>
         {currentQ.type === 'boss' ? '⭐ Final Boss Challenge! ⭐' : 'Listen and Choose'}
       </h2>
@@ -300,7 +302,7 @@ export default function DailyChallenge() {
           </div>
         </div>
       ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%', maxWidth: '800px', margin: '0 auto' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%', maxWidth: '800px', margin: '0 auto', flexShrink: 0 }}>
           
           <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '3rem' }}>
             <button 
@@ -340,7 +342,7 @@ export default function DailyChallenge() {
                   disabled={isProcessing || feedbackState !== null || isDisabled}
                   className={`${feedbackState === 'correct' && choice === selected ? 'correct-sparkle' : ''} ${feedbackState === 'wrong' && choice === selected ? 'wobble-wrong' : ''}`}
                   style={{
-                    width: '160px', minHeight: currentQ.type === 'boss' ? '120px' : '200px', height: 'auto', padding: '1rem', // QA FIX (Challenge 27) & Boss UI Overflow fix
+                    width: '160px', minHeight: '120px', height: 'auto', padding: '1rem', // QA FIX: Prevent vertical overlap
                     fontSize: '4rem', fontWeight: 'bold', color: isDisabled ? '#94a3b8' : '#1e3a8a',
                     background: isDisabled ? '#f1f5f9' : 'linear-gradient(135deg, #ffffff, #f0f9ff)', 
                     border: `4px solid ${isDisabled ? '#cbd5e1' : '#7dd3fc'}`, 
