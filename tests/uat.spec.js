@@ -23,7 +23,17 @@ test('UAT Flow: App should load, show mascot, and allow navigating to Daily Chal
   // Verify ReplayHelper SVG cat is present
   await expect(page.locator('#helper-cat')).toBeVisible();
 
+  // Expect URL to be /challenge
+  await expect(page).toHaveURL(/.*challenge/);
+
+  // Dismiss overlay if present
+  const letsGoBtn = page.locator('button', { hasText: /Let's Go!/i });
+  if (await letsGoBtn.isVisible()) {
+    await letsGoBtn.click({ force: true });
+    await page.waitForTimeout(500);
+  }
+
   // Check that there are choice buttons available
-  const choices = page.locator('button', { hasText: /^(A|B|E|I|O|U|AB|EB|IX|EX|Same|Different)$/i });
+  const choices = page.getByTestId('choice-button');
   expect(await choices.count()).toBeGreaterThan(0);
 });

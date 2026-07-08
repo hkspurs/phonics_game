@@ -286,6 +286,7 @@ export default function DailyChallenge() {
               return (
                 <button
                   key={i}
+                  data-testid="choice-button"
                   onClick={() => handleAnswer(choice)}
                   disabled={isProcessing || feedbackState !== null || isDisabled}
                   className={`btn-secondary ${feedbackState === 'correct' && choice === selected ? 'correct-sparkle' : ''} ${feedbackState === 'wrong' && choice === selected ? 'wobble-wrong' : ''}`}
@@ -357,6 +358,7 @@ export default function DailyChallenge() {
               return (
                 <button
                   key={i}
+                  data-testid="choice-button"
                   onClick={() => handleAnswer(choice)}
                   disabled={isProcessing || feedbackState !== null || isDisabled}
                   className={`${feedbackState === 'correct' && choice === selected ? 'correct-sparkle' : ''} ${feedbackState === 'wrong' && choice === selected ? 'wobble-wrong' : ''}`}
@@ -386,13 +388,13 @@ export default function DailyChallenge() {
       {/* Mascot Feedback Area */}
       <div style={{ position: 'absolute', bottom: '2rem', left: '2rem', width: '180px', height: '180px', pointerEvents: 'none', zIndex: 10 }}>
         {feedbackState === 'correct' && (
-          <div style={{ position: 'absolute', top: '-40px', right: '-80px', background: 'white', padding: '0.5rem 1rem', borderRadius: '20px', boxShadow: '0 4px 10px rgba(0,0,0,0.1)', fontWeight: 'bold', color: '#047857', animation: 'popIn 0.3s ease-out' }}>
+          <div id="correct-feedback-text" style={{ position: 'absolute', top: '-40px', right: '-80px', background: 'white', padding: '0.5rem 1rem', borderRadius: '20px', boxShadow: '0 4px 10px rgba(0,0,0,0.1)', fontWeight: 'bold', color: '#047857', animation: 'popIn 0.3s ease-out' }}>
             {(refresherMode && attemptCount === 1 && currentChallengeType === 'daily') ? 'You remembered it!' : (attemptCount === 1 ? 'Great job!' : 'You found it!')}
             <div style={{ position: 'absolute', bottom: '-10px', left: '20px', borderLeft: '10px solid transparent', borderRight: '10px solid transparent', borderTop: '10px solid white' }}></div>
           </div>
         )}
         {feedbackState === 'wrong' && (
-          <div style={{ position: 'absolute', top: '-60px', right: '-120px', maxWidth: '180px', background: 'white', padding: '0.5rem 1rem', borderRadius: '20px', boxShadow: '0 4px 10px rgba(0,0,0,0.1)', fontWeight: 'bold', color: '#be123c', animation: 'popIn 0.3s ease-out', zIndex: 11 }}>
+          <div id="wrong-feedback-text" style={{ position: 'absolute', top: '-60px', right: '-120px', maxWidth: '180px', background: 'white', padding: '0.5rem 1rem', borderRadius: '20px', boxShadow: '0 4px 10px rgba(0,0,0,0.1)', fontWeight: 'bold', color: '#be123c', animation: 'popIn 0.3s ease-out', zIndex: 11 }}>
             {refresherMode && currentChallengeType === 'daily' ? "Let's dust off this sound!" : "Almost! Listen again."}
             <div style={{ position: 'absolute', bottom: '-10px', left: '20px', borderLeft: '10px solid transparent', borderRight: '10px solid transparent', borderTop: '10px solid white' }}></div>
           </div>

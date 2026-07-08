@@ -28,6 +28,14 @@ test.describe('Full UAT Test: Visuals, Audio, and Interactions', () => {
     
     // 2. Daily Challenge & Replay Helper
     console.log('--- Step 2: Checking Daily Challenge & Replay Helper ---');
+    
+    // Dismiss Safari Overlay if present
+    const letsGoBtn = page.locator('button', { hasText: /Let's Go!/i });
+    if (await letsGoBtn.isVisible()) {
+      await letsGoBtn.click({ force: true });
+      await page.waitForTimeout(500);
+    }
+    
     await expect(page.getByText(/Listen and Choose|Final Challenge/i)).toBeVisible();
     
     const replayHelper = page.locator('#helper-cat');
@@ -47,8 +55,8 @@ test.describe('Full UAT Test: Visuals, Audio, and Interactions', () => {
 
     // 3. Testing Choice Buttons (Wrong and Correct Reactions)
     console.log('--- Step 3: Testing Choice Buttons & Feedback ---');
-    // Find choice buttons (either normal or comparison template)
-    const choiceButtons = page.locator('button').filter({ hasText: /^(A|B|E|I|O|U|AB|EB|IX|EX|Same|Different)$/i });
+    // Find choice buttons using data-testid
+    const choiceButtons = page.getByTestId('choice-button');
     const count = await choiceButtons.count();
     expect(count).toBeGreaterThan(0);
     
@@ -70,8 +78,8 @@ test.describe('Full UAT Test: Visuals, Audio, and Interactions', () => {
       // Give DOM time to react (feedback animations trigger instantly)
       await page.waitForTimeout(300);
       
-      const wrongFeedback = page.locator('#wrong-feedback');
-      const correctFeedback = page.locator('#correct-feedback');
+      const wrongFeedback = page.locator('#wrong-feedback-text');
+      const correctFeedback = page.locator('#correct-feedback-text');
       
       const isWrongVisible = await wrongFeedback.isVisible();
       const isCorrectVisible = await correctFeedback.isVisible();

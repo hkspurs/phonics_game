@@ -38,7 +38,13 @@ test.describe('Aggressive QA UAT: Edge Cases & Layout', () => {
     await startBtn.click({ force: true });
     await page.waitForTimeout(1000); // Wait for challenge to load
 
-    const choiceButtons = page.locator('button').filter({ hasText: /^(A|B|E|I|O|U|AB|EB|IX|EX|Same|Different)$/i });
+    const letsGoBtn = page.locator('button', { hasText: /Let's Go!/i });
+    if (await letsGoBtn.isVisible()) {
+      await letsGoBtn.click({ force: true });
+      await page.waitForTimeout(500);
+    }
+
+    const choiceButtons = page.getByTestId('choice-button');
     const count = await choiceButtons.count();
     expect(count).toBeGreaterThan(0);
 
@@ -48,15 +54,28 @@ test.describe('Aggressive QA UAT: Edge Cases & Layout', () => {
     for (let i = 0; i < count; i++) {
       const btn = choiceButtons.nth(i);
       
-      if (await btn.isDisabled()) continue;
+      // Wait for any processing to finish (buttons re-enable)
+      // Playwright's waitFor passes when the condition is met. 
+      // If it's permanently disabled (wrong answer), we just check it and skip.
+      await page.waitForTimeout(500); // Give previous animations/audio a bit of time
+      let isPermDisabled = false;
+      
+      // Try to wait for it to be enabled, but don't fail if it times out
+      try {
+        await expect(btn).toBeEnabled({ timeout: 3000 });
+      } catch (e) {
+        isPermDisabled = true;
+      }
+      
+      if (isPermDisabled) continue;
 
       // Spam click the button 5 times rapidly
       await btn.click({ force: true, clickCount: 5 });
       
       await page.waitForTimeout(300);
 
-      const wrongFeedback = page.locator('#wrong-feedback');
-      const correctFeedback = page.locator('#correct-feedback');
+      const wrongFeedback = page.locator('#wrong-feedback-text');
+      const correctFeedback = page.locator('#correct-feedback-text');
 
       if (await wrongFeedback.isVisible()) {
         // Assert it is actually disabled now
@@ -65,8 +84,8 @@ test.describe('Aggressive QA UAT: Edge Cases & Layout', () => {
         // Try to click it again while disabled (should not trigger anything new)
         await btn.click({ force: true });
         
-        // Wait for wrong animation timeout to clear (1 second in code)
-        await page.waitForTimeout(1000);
+        // Wait for wrong animation timeout and audio to clear (~2-3 seconds)
+        await page.waitForTimeout(3000);
       } else if (await correctFeedback.isVisible()) {
         foundCorrect = true;
         
