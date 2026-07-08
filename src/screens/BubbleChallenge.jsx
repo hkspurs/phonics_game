@@ -235,11 +235,11 @@ export default function BubbleChallenge() {
       {/* Play Area */}
       <div ref={playAreaRef} style={{ flexGrow: 1, position: 'relative', width: '100%', zIndex: 5 }}>
         
-        {/* Mascot - Positioned bottom left, heavily integrated */}
+        {/* Mascot - Positioned top left, heavily integrated */}
         <div style={{ 
-          position: 'absolute', bottom: '5%', left: '5%', zIndex: 15, pointerEvents: 'none', 
+          position: 'absolute', top: '5%', left: '5%', zIndex: 15, pointerEvents: 'none', 
           transition: 'all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)', 
-          transform: mascotState === 'correct' ? 'translateY(-40px) scale(1.2)' : (mascotState === 'pointing' ? 'rotate(5deg) scale(1.1)' : 'scale(1)') 
+          transform: mascotState === 'correct' ? 'translateY(-20px) scale(1.2)' : (mascotState === 'pointing' ? 'rotate(5deg) scale(1.1)' : 'scale(1)') 
         }}>
           <MascotRabbit feedbackState={mascotState === 'pointing' ? 'idle' : mascotState} style={{ width: '180px', filter: 'drop-shadow(0 10px 10px rgba(0,0,0,0.3))' }} />
           {/* Mascot Speech Bubble for Context */}
@@ -304,7 +304,7 @@ export default function BubbleChallenge() {
                   animationDuration: `${duration}s`,
                   animationDelay: `${delay}s`,
                   backdropFilter: 'blur(2px)',
-                  fontFamily: '"Comic Sans MS", "Chalkboard SE", sans-serif',
+                  fontFamily: '"Quicksand", "Comic Sans MS", "Chalkboard SE", sans-serif',
                   pointerEvents: isPopped ? 'none' : 'auto',
                   transformOrigin: 'center'
                 }}

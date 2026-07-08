@@ -324,31 +324,53 @@ export default function DailyChallenge() {
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%', maxWidth: '800px', margin: '0 auto', flexShrink: 0 }}>
           
-          <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '3rem' }}>
-            <button 
-              className="btn-primary" 
-              style={{ 
-                padding: '3rem', 
-                background: isProcessing ? '#0ea5e9' : '#38bdf8', 
-                borderRadius: '50%', 
-                animation: isProcessing ? 'pulse-glow 1s infinite' : (attemptCount === 1 ? 'pulse-glow 2s infinite' : 'none'), 
-                zIndex: 2,
-                transition: 'background 0.3s',
-                display: 'flex', alignItems: 'center', justifyContent: 'center'
-              }}
-              onClick={() => !isProcessing && audioEngine.play(currentQ.targetSound.audio_url).catch(()=>{})}
-            >
-              {isProcessing ? (
-                <div style={{ width: '64px', height: '64px', border: '6px solid #e0f2fe', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
-              ) : (
-                <Volume2 size={64} color={'white'} />
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '2rem', marginBottom: '3rem', flexWrap: 'wrap' }}>
+            
+            {/* Mascot Area */}
+            <div style={{ position: 'relative', width: '160px', height: '160px', zIndex: 10 }}>
+              {feedbackState === 'correct' && (
+                <div id="correct-feedback-text" style={{ position: 'absolute', top: '-40px', right: '-40px', background: 'white', padding: '0.5rem 1rem', borderRadius: '20px', boxShadow: '0 4px 10px rgba(0,0,0,0.1)', fontWeight: 'bold', color: '#047857', animation: 'popIn 0.3s ease-out', zIndex: 20 }}>
+                  {(refresherMode && attemptCount === 1 && currentChallengeType === 'daily') ? 'You remembered it!' : (attemptCount === 1 ? 'Great job!' : 'You found it!')}
+                  <div style={{ position: 'absolute', bottom: '-10px', left: '20px', borderLeft: '10px solid transparent', borderRight: '10px solid transparent', borderTop: '10px solid white' }}></div>
+                </div>
               )}
-            </button>
-            <div style={{ position: 'absolute', right: '-140px', bottom: '0', width: '140px', height: '140px', padding: '10px' }}>
-              <ReplayHelper 
-                isPlaying={isProcessing} 
-                onClick={() => !isProcessing && audioEngine.play(currentQ.targetSound.audio_url).catch(()=>{})} 
-              />
+              {feedbackState === 'wrong' && (
+                <div id="wrong-feedback-text" style={{ position: 'absolute', top: '-60px', right: '-60px', background: 'white', padding: '0.5rem 1rem', borderRadius: '20px', boxShadow: '0 4px 10px rgba(0,0,0,0.1)', fontWeight: 'bold', color: '#be123c', animation: 'popIn 0.3s ease-out', zIndex: 20 }}>
+                  {refresherMode && currentChallengeType === 'daily' ? "Let's dust off this sound!" : "Almost! Listen again."}
+                  <div style={{ position: 'absolute', bottom: '-10px', left: '20px', borderLeft: '10px solid transparent', borderRight: '10px solid transparent', borderTop: '10px solid white' }}></div>
+                </div>
+              )}
+              <MascotRabbit style={{ width: '100%', height: '100%' }} feedbackState={feedbackState} />
+              {feedbackState === 'correct' && <CorrectFeedback trigger={true} style={{ position: 'absolute', inset: 0 }} />}
+              {feedbackState === 'wrong' && <WrongFeedback trigger={true} style={{ position: 'absolute', inset: 0 }} />}
+            </div>
+
+            <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <button 
+                className="btn-primary" 
+                style={{ 
+                  padding: '3rem', 
+                  background: isProcessing ? '#0ea5e9' : '#38bdf8', 
+                  borderRadius: '50%', 
+                  animation: isProcessing ? 'pulse-glow 1s infinite' : (attemptCount === 1 ? 'pulse-glow 2s infinite' : 'none'), 
+                  zIndex: 2,
+                  transition: 'background 0.3s',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center'
+                }}
+                onClick={() => !isProcessing && audioEngine.play(currentQ.targetSound.audio_url).catch(()=>{})}
+              >
+                {isProcessing ? (
+                  <div style={{ width: '64px', height: '64px', border: '6px solid #e0f2fe', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
+                ) : (
+                  <Volume2 size={64} color={'white'} />
+                )}
+              </button>
+              <div style={{ position: 'absolute', right: '-120px', bottom: '0', width: '120px', height: '120px', padding: '10px' }}>
+                <ReplayHelper 
+                  isPlaying={isProcessing} 
+                  onClick={() => !isProcessing && audioEngine.play(currentQ.targetSound.audio_url).catch(()=>{})} 
+                />
+              </div>
             </div>
           </div>
 
@@ -361,10 +383,10 @@ export default function DailyChallenge() {
                   data-testid="choice-button"
                   onClick={() => handleAnswer(choice)}
                   disabled={isProcessing || feedbackState !== null || isDisabled}
-                  className={`${feedbackState === 'correct' && choice === selected ? 'correct-sparkle' : ''} ${feedbackState === 'wrong' && choice === selected ? 'wobble-wrong' : ''}`}
+                  className={`font-phonics ${feedbackState === 'correct' && choice === selected ? 'correct-sparkle' : ''} ${feedbackState === 'wrong' && choice === selected ? 'wobble-wrong' : ''}`}
                   style={{
-                    width: '160px', minHeight: '120px', height: 'auto', padding: '1rem', // QA FIX: Prevent vertical overlap
-                    fontSize: '4rem', fontWeight: 'bold', color: isDisabled ? '#94a3b8' : '#1e3a8a',
+                    width: '180px', minHeight: '140px', height: 'auto', padding: '1rem', // Make buttons larger for kids
+                    fontSize: '4.5rem', fontWeight: 'bold', color: isDisabled ? '#94a3b8' : '#1e3a8a',
                     background: isDisabled ? '#f1f5f9' : 'linear-gradient(135deg, #ffffff, #f0f9ff)', 
                     border: `4px solid ${isDisabled ? '#cbd5e1' : '#7dd3fc'}`, 
                     borderRadius: '32px',
@@ -385,24 +407,7 @@ export default function DailyChallenge() {
         </div>
       )}
 
-      {/* Mascot Feedback Area */}
-      <div style={{ position: 'absolute', bottom: '2rem', left: '2rem', width: '180px', height: '180px', pointerEvents: 'none', zIndex: 10 }}>
-        {feedbackState === 'correct' && (
-          <div id="correct-feedback-text" style={{ position: 'absolute', top: '-40px', right: '-80px', background: 'white', padding: '0.5rem 1rem', borderRadius: '20px', boxShadow: '0 4px 10px rgba(0,0,0,0.1)', fontWeight: 'bold', color: '#047857', animation: 'popIn 0.3s ease-out' }}>
-            {(refresherMode && attemptCount === 1 && currentChallengeType === 'daily') ? 'You remembered it!' : (attemptCount === 1 ? 'Great job!' : 'You found it!')}
-            <div style={{ position: 'absolute', bottom: '-10px', left: '20px', borderLeft: '10px solid transparent', borderRight: '10px solid transparent', borderTop: '10px solid white' }}></div>
-          </div>
-        )}
-        {feedbackState === 'wrong' && (
-          <div id="wrong-feedback-text" style={{ position: 'absolute', top: '-60px', right: '-120px', maxWidth: '180px', background: 'white', padding: '0.5rem 1rem', borderRadius: '20px', boxShadow: '0 4px 10px rgba(0,0,0,0.1)', fontWeight: 'bold', color: '#be123c', animation: 'popIn 0.3s ease-out', zIndex: 11 }}>
-            {refresherMode && currentChallengeType === 'daily' ? "Let's dust off this sound!" : "Almost! Listen again."}
-            <div style={{ position: 'absolute', bottom: '-10px', left: '20px', borderLeft: '10px solid transparent', borderRight: '10px solid transparent', borderTop: '10px solid white' }}></div>
-          </div>
-        )}
-        <MascotRabbit style={{ width: '100%', height: '100%' }} feedbackState={feedbackState} />
-        {feedbackState === 'correct' && <CorrectFeedback trigger={true} style={{ position: 'absolute', inset: 0 }} />}
-        {feedbackState === 'wrong' && <WrongFeedback trigger={true} style={{ position: 'absolute', inset: 0 }} />}
-      </div>
+
 
     </div>
   )

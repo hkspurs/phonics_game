@@ -80,7 +80,7 @@ body {
   min-height: 100dvh; /* QA FIX (Challenge 29): Use dynamic viewport height */
   display: flex;
   flex-direction: column;
-  padding: 2rem;
+  padding: calc(2rem + env(safe-area-inset-top)) calc(2rem + env(safe-area-inset-right)) calc(2rem + env(safe-area-inset-bottom)) calc(2rem + env(safe-area-inset-left));
   max-width: 1200px;
   margin: 0 auto;
   animation: fadeInWipe 0.5s cubic-bezier(0.4, 0, 0.2, 1); /* QA FIX (Challenge 13): Page Transitions */
@@ -93,6 +93,11 @@ body {
 
 .mascot-container {
   animation: float 3s ease-in-out infinite;
+}
+
+.font-phonics {
+  font-family: 'Quicksand', 'Nunito', sans-serif;
+  letter-spacing: 2px;
 }
 
 @keyframes float {
