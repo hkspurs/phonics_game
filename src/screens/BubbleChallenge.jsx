@@ -117,7 +117,8 @@ export default function BubbleChallenge() {
       const r = Math.floor(i / cols);
       // Base percentage + some organic jitter
       const baseX = 20 + (c * (60 / Math.max(1, cols - 1)));
-      const baseY = 20 + (r * (60 / Math.max(1, rows - 1)));
+      // Keep bubbles in the upper 75% of the screen so they don't overlap bottom UI
+      const baseY = 15 + (r * (55 / Math.max(1, rows - 1)));
       
       positions.push({
         top: `${baseY + (Math.random() * 10 - 5)}%`,
@@ -235,16 +236,16 @@ export default function BubbleChallenge() {
       {/* Play Area */}
       <div ref={playAreaRef} style={{ flexGrow: 1, position: 'relative', width: '100%', zIndex: 5 }}>
         
-        {/* Mascot - Positioned top left, heavily integrated */}
+        {/* Mascot - Positioned bottom left */}
         <div style={{ 
-          position: 'absolute', top: '5%', left: '5%', zIndex: 15, pointerEvents: 'none', 
+          position: 'absolute', bottom: '2%', left: '2%', zIndex: 15, pointerEvents: 'none', 
           transition: 'all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)', 
           transform: mascotState === 'correct' ? 'translateY(-20px) scale(1.2)' : (mascotState === 'pointing' ? 'rotate(5deg) scale(1.1)' : 'scale(1)') 
         }}>
-          <MascotRabbit feedbackState={mascotState === 'pointing' ? 'idle' : mascotState} style={{ width: '180px', filter: 'drop-shadow(0 10px 10px rgba(0,0,0,0.3))' }} />
+          <MascotRabbit feedbackState={mascotState === 'pointing' ? 'idle' : mascotState} style={{ width: '150px', filter: 'drop-shadow(0 10px 10px rgba(0,0,0,0.3))' }} />
           {/* Mascot Speech Bubble for Context */}
           <div style={{
-            position: 'absolute', top: '-60px', left: '120px', background: 'white', padding: '10px 20px', borderRadius: '30px', 
+            position: 'absolute', top: '-60px', left: '100px', background: 'white', padding: '10px 20px', borderRadius: '30px', 
             boxShadow: '0 5px 15px rgba(0,0,0,0.2)', fontSize: '1.2rem', fontWeight: 'bold', color: '#0369a1',
             opacity: mascotState === 'pointing' ? 1 : 0, transform: mascotState === 'pointing' ? 'scale(1)' : 'scale(0.8)',
             transition: 'all 0.3s', pointerEvents: 'none', whiteSpace: 'nowrap'
@@ -254,12 +255,12 @@ export default function BubbleChallenge() {
           </div>
         </div>
 
-        {/* Central Audio Button (Floating) */}
-        <div style={{ position: 'absolute', top: '40%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: 5, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        {/* Audio Button - Positioned bottom right */}
+        <div style={{ position: 'absolute', bottom: '2%', right: '5%', zIndex: 15, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
           <button 
             onClick={playTargetAudio} 
             style={{ 
-              background: 'linear-gradient(135deg, #fef08a, #fde047)', border: '4px solid white', borderRadius: '50%', width: '120px', height: '120px', 
+              background: 'linear-gradient(135deg, #fef08a, #fde047)', border: '4px solid white', borderRadius: '50%', width: '100px', height: '100px', 
               display: 'flex', justifyContent: 'center', alignItems: 'center', cursor: 'pointer', 
               boxShadow: '0 10px 20px rgba(0,0,0,0.3), inset 0 -5px 10px rgba(202,138,4,0.5)', 
               animation: isProcessing ? 'pulse-glow 0.8s infinite' : 'pulse-glow 3s infinite',
@@ -267,7 +268,7 @@ export default function BubbleChallenge() {
               transition: 'transform 0.1s cubic-bezier(0.175, 0.885, 0.32, 1.275)'
             }}
           >
-            <Volume2 size={60} color="#a16207" fill="#a16207" />
+            <Volume2 size={50} color="#a16207" fill="#a16207" />
           </button>
         </div>
 
