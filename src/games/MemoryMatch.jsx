@@ -26,9 +26,14 @@ export default function MemoryMatch() {
     { color: '#f9a8d4', icon: '🌸' }
   ];
 
+  const hasInitializedRef = React.useRef(false);
+
   // Initialize Game
   useEffect(() => {
+    if (hasInitializedRef.current) return;
+
     if (!isPlaying && tickets > 0) {
+      hasInitializedRef.current = true;
       useTicket();
       setIsPlaying(true);
       

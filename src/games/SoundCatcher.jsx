@@ -20,9 +20,14 @@ export default function SoundCatcher() {
   const hasPlayedRef = React.useRef(false)
   const lastXRef = React.useRef(50)
 
+  const hasInitializedRef = React.useRef(false);
+
   // Use ticket on mount if not playing yet
   useEffect(() => {
+    if (hasInitializedRef.current) return;
+
     if (!isPlaying && tickets > 0) {
+      hasInitializedRef.current = true;
       useTicket()
       setIsPlaying(true)
       const pool = [...questionEngine.sounds].sort(() => Math.random() - 0.5)
