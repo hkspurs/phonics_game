@@ -8,6 +8,7 @@ import BrainGamesIsland from './screens/BrainGamesIsland'
 import AssignmentHub from './screens/AssignmentHub'
 import SoundCatcher from './games/SoundCatcher'
 import MemoryMatch from './games/MemoryMatch'
+import SoundBalloonPop from './games/SoundBalloonPop'
 import ParentDashboard from './screens/ParentDashboard'
 import TrainingGym from './screens/TrainingGym'
 import BubbleChallenge from './screens/BubbleChallenge'
@@ -77,6 +78,7 @@ function App() {
         <Route path="/braingames" element={<BrainGamesIsland />} />
         <Route path="/games/soundcatcher" element={<SoundCatcher />} />
         <Route path="/games/memorymatch" element={<MemoryMatch />} />
+        <Route path="/games/soundballoonpop" element={<SoundBalloonPop />} />
         <Route path="/gym" element={<TrainingGym />} />
         <Route path="/bubble" element={<BubbleChallenge />} />
         <Route path="/assignments" element={<AssignmentHub />} />

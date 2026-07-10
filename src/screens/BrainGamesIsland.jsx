@@ -19,6 +19,12 @@ export default function BrainGamesIsland() {
     }
   }
 
+  const handlePlaySoundBalloonPop = () => {
+    if (tickets > 0) {
+      navigate('/games/soundballoonpop')
+    }
+  }
+
   return (
     <div className="screen-container" style={{ background: '#fdf4ff', position: 'relative' }}>
       
@@ -67,6 +73,21 @@ export default function BrainGamesIsland() {
             className="btn-primary" 
             style={{ background: tickets > 0 ? '#8b5cf6' : '#e5e7eb', boxShadow: tickets > 0 ? '0 6px 0 #6d28d9' : 'none', color: tickets > 0 ? 'white' : '#9ca3af' }}
             onClick={handlePlayMemoryMatch}
+            disabled={tickets <= 0}
+          >
+            {tickets > 0 ? 'Play (1 🎟️)' : 'Need Tickets'}
+          </button>
+        </div>
+
+        {/* Balloon Pop */}
+        <div style={{ background: 'white', padding: '2rem', borderRadius: '24px', border: '4px solid #bae6fd', display: 'flex', flexDirection: 'column', alignItems: 'center', width: '300px' }}>
+          <div style={{ fontSize: '4rem', marginBottom: '1rem' }}>🎈</div>
+          <h2 style={{ color: '#0369a1', marginBottom: '1rem' }}>Balloon Pop</h2>
+          <p style={{ color: '#0284c7', textAlign: 'center', marginBottom: '2rem' }}>Pop the balloons that match the sound!</p>
+          <button 
+            className="btn-primary" 
+            style={{ background: tickets > 0 ? '#0284c7' : '#e5e7eb', boxShadow: tickets > 0 ? '0 6px 0 #0369a1' : 'none', color: tickets > 0 ? 'white' : '#9ca3af' }}
+            onClick={handlePlaySoundBalloonPop}
             disabled={tickets <= 0}
           >
             {tickets > 0 ? 'Play (1 🎟️)' : 'Need Tickets'}
