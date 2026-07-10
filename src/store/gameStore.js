@@ -140,6 +140,7 @@ export const useGameStore = create(
         };
       }),
       useTicket: () => set((state) => ({ tickets: Math.max(0, state.tickets - 1) })),
+      addTicket: () => set((state) => ({ tickets: state.tickets + 1 })),
       
       startAssignment: (soundId) => {
         const questions = questionEngine.generateAssignment(soundId);

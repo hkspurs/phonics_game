@@ -9,7 +9,7 @@ import MascotRabbit from '../components/MascotRabbit'
 
 export default function ParentDashboard() {
   const navigate = useNavigate()
-  const { learningStats, unlockedSounds, currentNode, activeAssignment, getNodeStatus, resetProgress, refresherMode, toggleRefresherMode } = useGameStore()
+  const { learningStats, unlockedSounds, currentNode, activeAssignment, getNodeStatus, resetProgress, refresherMode, toggleRefresherMode, tickets, addTicket } = useGameStore()
   const [toastMsg, setToastMsg] = React.useState(null);
   const [selectedChapter, setSelectedChapter] = React.useState('A Families');
 
@@ -46,6 +46,11 @@ export default function ParentDashboard() {
       });
       showToast(`Map Current Node forcibly set to ${sound.label}.`);
     }
+  }
+
+  const handleGiveTicket = () => {
+    addTicket();
+    showToast(`Gave 1 Train Ticket to the child! (Total: ${tickets + 1})`);
   }
 
   // Analytics Computation
@@ -101,6 +106,19 @@ export default function ParentDashboard() {
             <MascotRabbit style={{ width: '50px', height: '50px' }} />
             <h1 style={{ color: '#0f172a', margin: 0, fontSize: '1.8rem' }}>Learning Hub</h1>
           </div>
+        </div>
+        
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+          <div style={{ background: 'white', padding: '0.5rem 1rem', borderRadius: '100px', border: '2px solid #e2e8f0', fontWeight: 'bold', color: '#64748b' }}>
+            Tickets: <span style={{ color: '#d946ef' }}>{tickets} 🎟️</span>
+          </div>
+          <button 
+            className="btn-primary" 
+            style={{ background: '#d946ef', boxShadow: '0 6px 0 #a21caf, 0 4px 6px -1px rgb(0 0 0 / 0.1)', fontSize: '1rem', padding: '0.75rem 1.5rem' }} 
+            onClick={handleGiveTicket}
+          >
+            + Give Ticket
+          </button>
         </div>
       </div>
 
