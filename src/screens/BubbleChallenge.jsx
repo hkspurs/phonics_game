@@ -32,18 +32,16 @@ export default function BubbleChallenge() {
     playTargetAudio();
   }, [currentQuestionIndex]);
 
-  useEffect(() => {
-    // If child is idle for 5 seconds, mascot points
-    const idleTimer = setTimeout(() => {
-      if (!animatingOut && !showCompletion && !isPaused) {
-        setMascotState('pointing'); // We will just use 'idle' or add a custom class for pointing
-      }
-    }, 5000);
-    return () => clearTimeout(idleTimer);
-  }, [animatingOut, currentQuestionIndex, isPaused, showCompletion]);
+  // User requested no hints: Removed the 5-second idle hint timer.
 
   const playTargetAudio = () => {
     if (!currentQ) return;
+    
+    // Explicit synchronous resume for Safari iOS
+    if (audioEngine.audioContext.state === 'suspended') {
+      audioEngine.audioContext.resume().catch(() => {});
+    }
+
     setIsProcessing(true);
     setMascotState('idle');
     audioEngine.play(currentQ.targetSound.audio_url).catch(() => {}).finally(() => setIsProcessing(false));
@@ -115,10 +113,9 @@ export default function BubbleChallenge() {
     for (let i = 0; i < numChoices; i++) {
       const c = i % cols;
       const r = Math.floor(i / cols);
-      // Base percentage + some organic jitter
       const baseX = 20 + (c * (60 / Math.max(1, cols - 1)));
-      // Keep bubbles in the upper 75% of the screen so they don't overlap bottom UI
-      const baseY = 15 + (r * (55 / Math.max(1, rows - 1)));
+      // Keep bubbles strictly in the upper 55% of the screen so they NEVER overlap Mascot or Speaker
+      const baseY = 10 + (r * (45 / Math.max(1, rows - 1)));
       
       positions.push({
         top: `${baseY + (Math.random() * 10 - 5)}%`,
@@ -240,19 +237,9 @@ export default function BubbleChallenge() {
         <div style={{ 
           position: 'absolute', bottom: '2%', left: '2%', zIndex: 15, pointerEvents: 'none', 
           transition: 'all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)', 
-          transform: mascotState === 'correct' ? 'translateY(-20px) scale(1.2)' : (mascotState === 'pointing' ? 'rotate(5deg) scale(1.1)' : 'scale(1)') 
+          transform: mascotState === 'correct' ? 'translateY(-20px) scale(1.2)' : 'scale(1)' 
         }}>
-          <MascotRabbit feedbackState={mascotState === 'pointing' ? 'idle' : mascotState} style={{ width: '150px', filter: 'drop-shadow(0 10px 10px rgba(0,0,0,0.3))' }} />
-          {/* Mascot Speech Bubble for Context */}
-          <div style={{
-            position: 'absolute', top: '-60px', left: '100px', background: 'white', padding: '10px 20px', borderRadius: '30px', 
-            boxShadow: '0 5px 15px rgba(0,0,0,0.2)', fontSize: '1.2rem', fontWeight: 'bold', color: '#0369a1',
-            opacity: mascotState === 'pointing' ? 1 : 0, transform: mascotState === 'pointing' ? 'scale(1)' : 'scale(0.8)',
-            transition: 'all 0.3s', pointerEvents: 'none', whiteSpace: 'nowrap'
-          }}>
-            {mascotState === 'pointing' ? `Where is "${currentQ.correctAnswer}"?` : ''}
-            <div style={{ position: 'absolute', bottom: '-10px', left: '20px', width: 0, height: 0, borderLeft: '10px solid transparent', borderRight: '10px solid transparent', borderTop: '10px solid white' }} />
-          </div>
+          <MascotRabbit feedbackState={mascotState} style={{ width: '150px', filter: 'drop-shadow(0 10px 10px rgba(0,0,0,0.3))' }} />
         </div>
 
         {/* Audio Button - Positioned bottom right */}
@@ -265,7 +252,9 @@ export default function BubbleChallenge() {
               boxShadow: '0 10px 20px rgba(0,0,0,0.3), inset 0 -5px 10px rgba(202,138,4,0.5)', 
               animation: isProcessing ? 'pulse-glow 0.8s infinite' : 'pulse-glow 3s infinite',
               transform: isProcessing ? 'scale(0.9)' : 'scale(1)',
-              transition: 'transform 0.1s cubic-bezier(0.175, 0.885, 0.32, 1.275)'
+              transition: 'transform 0.1s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+              pointerEvents: 'auto',
+              touchAction: 'manipulation'
             }}
           >
             <Volume2 size={50} color="#a16207" fill="#a16207" />
