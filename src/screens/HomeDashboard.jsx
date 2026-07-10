@@ -167,7 +167,7 @@ export default function HomeDashboard() {
         <button 
           className="btn-secondary" 
           onClick={(e) => { 
-            if (hasCompletedDaily) {
+            if (hasCompletedDaily || tickets > 0) {
               audioEngine.playUI('pop');
               navigate('/braingames');
             } else {
@@ -177,9 +177,9 @@ export default function HomeDashboard() {
               setTimeout(() => { e.currentTarget.style.animation = '' }, 300);
             }
           }}
-          style={{ opacity: hasCompletedDaily ? 1 : 0.5, cursor: hasCompletedDaily ? 'pointer' : 'default' }}
+          style={{ opacity: (hasCompletedDaily || tickets > 0) ? 1 : 0.5, cursor: (hasCompletedDaily || tickets > 0) ? 'pointer' : 'default' }}
         >
-          {hasCompletedDaily ? <Puzzle size={24} /> : <span style={{fontSize:'24px'}}>🔒</span>} Brain Games
+          {(hasCompletedDaily || tickets > 0) ? <Puzzle size={24} /> : <span style={{fontSize:'24px'}}>🔒</span>} Brain Games
         </button>
         <button className="btn-secondary" onClick={() => { audioEngine.playUI('pop'); navigate('/assignments'); }}>
           <ClipboardList size={24} /> Assignments
