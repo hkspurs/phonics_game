@@ -17,7 +17,7 @@ export default function SubjectGateway() {
   const [showParentGate, setShowParentGate] = useState(false)
   const [isEntering, setIsEntering] = useState(true)
 
-  const { stars, gems, tickets, streak, hasCompletedDaily, setParentAuthenticated } = useGameStore()
+  const { stars, gems, tickets, streak, hasCompletedDaily, setParentAuthenticated, math } = useGameStore()
 
   useEffect(() => {
     const timer = setTimeout(() => setIsEntering(false), 600)
@@ -254,7 +254,23 @@ export default function SubjectGateway() {
           onMouseEnter={(e) => { e.currentTarget.style.transform = 'scale(1.03)'; e.currentTarget.style.boxShadow = '0 12px 35px rgba(245,158,11,0.4)'; }}
           onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.boxShadow = '0 8px 25px rgba(245,158,11,0.3)'; }}
         >
-          {/* Placeholder completion badge for math (always hidden for now) */}
+          {/* Completion badge for math */}
+          {math.hasCompletedDaily && (
+            <div style={{
+              position: 'absolute',
+              top: '12px',
+              right: '12px',
+              background: 'rgba(255,255,255,0.9)',
+              borderRadius: '50%',
+              width: '32px',
+              height: '32px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: '1.1rem'
+            }}>✅</div>
+          )}
+
           <span style={{ fontSize: '3rem' }}>{SUBJECTS.math.emoji}</span>
           <h2 style={{
             color: 'white',

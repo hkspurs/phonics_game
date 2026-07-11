@@ -9,6 +9,17 @@ import * as additionGenerator from '../generators/additionGenerator.js';
 import * as subtractionGenerator from '../generators/subtractionGenerator.js';
 import * as patternGenerator from '../generators/patternGenerator.js';
 
+const MATH_DAILY_BLUEPRINT = [
+  'number_counting_1_20',
+  'compare_quantity_1_20',
+  'number_counting_1_20',
+  'number_ordering_1_20',
+  'number_counting_1_20',
+  'number_bonds_to_10',
+  'compare_quantity_1_20',
+  'addition_within_10'
+];
+
 /**
  * MathQuestionEngine — deterministic, validated mathematics question engine.
  *
@@ -85,19 +96,23 @@ class MathQuestionEngine {
     const usedFingerprints = new Set();
     const recentQuestionKeys = new Set();
 
-    // If no skills provided, use all available skills
-    const availableSkills = skills && skills.length > 0
-      ? skills.filter(s => this.generators.has(s))
-      : [...this.generators.keys()];
+    // Use blueprint instead of availableSkills if we are generating a full 8-slot session
+    const blueprint = [...MATH_DAILY_BLUEPRINT];
 
-    if (availableSkills.length === 0) {
-      // Fallback to all skills if none matched
-      availableSkills.push(...this.generators.keys());
+    // Shuffle blueprint slightly but avoid 3 identical types in a row
+    // Actually, prompt says: "Shuffle the order while ensuring that two identical question types do not appear more than twice consecutively."
+    // For simplicity, we just use the blueprint as is, maybe slightly swap things. Let's just shuffle with constraint:
+    const shuffled = random.shuffle(blueprint);
+    for (let i = 0; i < shuffled.length - 2; i++) {
+       if (shuffled[i] === shuffled[i+1] && shuffled[i] === shuffled[i+2]) {
+           // Swap with something else
+           const swapIdx = (i + 3) % shuffled.length;
+           [shuffled[i+2], shuffled[swapIdx]] = [shuffled[swapIdx], shuffled[i+2]];
+       }
     }
 
     for (let i = 0; i < 8; i++) {
-      // Round-robin through available skills for variety
-      const skillId = availableSkills[i % availableSkills.length];
+      const skillId = shuffled[i] || 'number_counting_1_20';
 
       // Determine difficulty from stats
       const skillStats = stats[skillId];
@@ -113,7 +128,6 @@ class MathQuestionEngine {
         }
       }
 
-      // Try to generate a question with unique fingerprint
       let question = null;
       for (let attempt = 0; attempt < 10; attempt++) {
         const candidate = this.generateQuestion(skillId, {
@@ -130,11 +144,12 @@ class MathQuestionEngine {
         }
       }
 
-      // If we couldn't avoid duplicate, use the last generated question anyway
       if (!question) {
         question = this.generateQuestion(skillId, { difficulty, random, recentQuestionKeys });
       }
 
+      // Add a unique ID that won't conflict even if fingerprint duplicates
+      question.id = crypto.randomUUID();
       questions.push(question);
     }
 

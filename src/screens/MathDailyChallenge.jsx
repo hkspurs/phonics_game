@@ -21,6 +21,7 @@ export default function MathDailyChallenge() {
   const [feedbackState, setFeedbackState] = useState(null); // 'correct', 'wrong', null
   const [isProcessing, setIsProcessing] = useState(false);
   const [hasStartedInteraction, setHasStartedInteraction] = useState(false);
+  const [questionStartTime, setQuestionStartTime] = useState(Date.now());
 
   // Redirect if no active challenge or out of bounds
   useEffect(() => {
@@ -43,12 +44,23 @@ export default function MathDailyChallenge() {
     if (isProcessing) return;
     setIsProcessing(true);
 
+    const responseTimeMs = Date.now() - questionStartTime;
+    const hintLevelUsed = Math.max(0, attemptsTaken - 1);
+
     if (isCorrect) {
       setFeedbackState('correct');
       // Calculate stars: 3 for 1st attempt, 2 for 2nd, 1 for 3+
       const stars = Math.max(1, 4 - attemptsTaken);
       awardMathStars(stars);
-      recordMathAnswer(currentQ.skillId, attemptsTaken === 1, currentQ.difficulty);
+      recordMathAnswer({
+        skillId: currentQ.skillId,
+        firstAttemptCorrect: attemptsTaken === 1,
+        eventuallyCompleted: true,
+        attemptCount: attemptsTaken,
+        hintLevelUsed,
+        responseTimeMs,
+        difficulty: currentQ.difficulty || 1
+      });
       
       const startTime = Date.now();
       const proceed = () => {
@@ -57,6 +69,7 @@ export default function MathDailyChallenge() {
         
         setTimeout(() => {
           setIsProcessing(false);
+          setQuestionStartTime(Date.now());
           if (mathCurrentQuestionIndex + 1 >= mathActiveQuestions.length) {
             navigate('/reward?subject=math');
           } else {
@@ -76,7 +89,15 @@ export default function MathDailyChallenge() {
 
       audioEngine.play('assets/correct_chime.mp3').catch(() => {}).finally(proceed);
     } else {
-      recordMathAnswer(currentQ.skillId, false, currentQ.difficulty);
+      recordMathAnswer({
+        skillId: currentQ.skillId,
+        firstAttemptCorrect: false,
+        eventuallyCompleted: false,
+        attemptCount: attemptsTaken,
+        hintLevelUsed,
+        responseTimeMs,
+        difficulty: currentQ.difficulty || 1
+      });
       setFeedbackState('wrong');
       
       setTimeout(() => {

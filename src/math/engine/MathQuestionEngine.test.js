@@ -146,6 +146,31 @@ describe('MathQuestionEngine', () => {
       // 8 questions should easily be unique.
       expect(uniqueFingerprints.size).toBe(8);
     });
+
+    it('generates 100 valid sessions with 8 questions and no duplicate fingerprints per session', () => {
+      const stats = {};
+      for (let i = 0; i < 100; i++) {
+        // Uses the MATH_DAILY_BLUEPRINT logic internally
+        const session = mathQuestionEngine.generateSession([], stats, 1000 + i);
+        
+        expect(session).toHaveLength(8);
+        
+        const fingerprints = new Set();
+        session.forEach((question) => {
+          expect(question.id).toBeDefined();
+          expect(typeof question.id).toBe('string');
+          
+          expect(question.skillId).toBeDefined();
+          expect(question.type).toBeDefined();
+          expect(question.fingerprint).toBeDefined();
+          expect(question.answer).toBeDefined();
+
+          fingerprints.add(question.fingerprint);
+        });
+        
+        expect(fingerprints.size).toBe(8);
+      }
+    });
   });
 
   describe('Fallback behavior', () => {

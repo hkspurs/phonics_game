@@ -70,11 +70,27 @@ export default function RewardScreen() {
 
           <div style={{ background: 'white', padding: '3rem 5rem', borderRadius: '48px', border: '6px solid #f0abfc', boxShadow: '0 16px 0 #f0abfc, 0 20px 25px rgba(0,0,0,0.1)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1.5rem', marginBottom: '4rem', zIndex: 2, animation: 'popIn 0.5s 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) both' }}>
             <h2 style={{ color: '#a21caf', fontSize: '2.5rem' }}>You earned:</h2>
+            
+            {subject === 'math' ? (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', fontSize: '1.5rem', color: '#475569', marginBottom: '1rem', width: '100%', textAlign: 'left' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', gap: '2rem' }}>
+                  <span>Questions completed:</span>
+                  <span style={{ fontWeight: 'bold' }}>+8 ⭐</span>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', gap: '2rem' }}>
+                  <span>Perfect-answer bonus:</span>
+                  <span style={{ fontWeight: 'bold', color: '#eab308' }}>+{math.mathSessionScore.stars - 8} ⭐</span>
+                </div>
+                <div style={{ height: '2px', background: '#e2e8f0', margin: '0.5rem 0' }} />
+              </div>
+            ) : null}
+
             <div style={{ display: 'flex', gap: '3rem', fontSize: '4rem', fontWeight: 'bold' }}>
               <span style={{ color: '#eab308', display: 'flex', alignItems: 'center', gap: '0.5rem' }}><span>+{(subject === 'math' ? math.mathSessionScore.stars : sessionScore.stars)}</span> ⭐</span>
               {subject !== 'math' && <span style={{ color: '#0ea5e9', display: 'flex', alignItems: 'center', gap: '0.5rem' }}><span>+{sessionScore.gems}</span> 💎</span>}
             </div>
-            <p style={{ color: '#d946ef', fontWeight: 'bold', fontSize: '1.5rem', marginTop: '1rem', background: '#fdf4ff', padding: '1rem 2rem', borderRadius: '100px', display: 'inline-block' }}>
+            
+            <p style={{ color: '#d946ef', fontWeight: 'bold', fontSize: '1.5rem', marginTop: '1rem', background: '#fdf4ff', padding: '1rem 2rem', borderRadius: '100px', display: 'inline-block', textAlign: 'center' }}>
               🎟️ {subject === 'math' ? '1 Brain Game Ticket Unlocked!' : '2 Brain Game Tickets Unlocked!'}
             </p>
           </div>

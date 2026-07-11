@@ -30,12 +30,15 @@ test.describe('Mathematics Domain Journey', () => {
     });
 
     // We still have to click through the UI to reflect it or we can just navigate to reward
-    await page.goto('/#/math/reward');
+    await page.goto('/#/reward?subject=math');
+
+    // Tap to open chest
+    await page.click('text=Tap to open!', { force: true });
 
     // After 5 correct answers (eventually), we should hit the reward screen
     await expect(page.getByText('Mission Complete!')).toBeVisible({ timeout: 15000 });
     
     // Check reward params
-    expect(page.url()).toContain('/math/reward');
+    expect(page.url()).toContain('subject=math');
   });
 });

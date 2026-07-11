@@ -31,7 +31,29 @@ export const createMathSlice = (set, get) => ({
   // ---- Mathematics Actions ----
 
   /** Record a mathematics answer attempt */
-  recordMathAnswer: (skillId, isFirstAttemptSuccess, difficulty = 1) => set((state) => {
+  recordMathAnswer: (...args) => set((state) => {
+    // Legacy support (skillId, isFirstAttemptSuccess, difficulty)
+    const payload = args[0];
+    const p = typeof payload === 'string' ? {
+      skillId: args[0],
+      firstAttemptCorrect: args[1],
+      difficulty: args[2] || 1,
+      eventuallyCompleted: true,
+      attemptCount: args[1] ? 1 : 2,
+      hintLevelUsed: 0,
+      responseTimeMs: 0
+    } : payload;
+
+    const {
+      skillId,
+      firstAttemptCorrect,
+      eventuallyCompleted,
+      attemptCount,
+      hintLevelUsed,
+      responseTimeMs,
+      difficulty
+    } = p;
+
     const stats = state.math.learningStats[skillId] || {
       attempts: 0,
       firstAttemptHits: 0,
@@ -40,16 +62,26 @@ export const createMathSlice = (set, get) => ({
       misconceptions: {},
     };
 
-    stats.attempts += 1;
-    if (isFirstAttemptSuccess) {
-      stats.firstAttemptHits += 1;
+    // Only increment attempts on the final completion/failure of a question,
+    // or just track per interaction. Let's say stats.attempts is 'questions encountered'
+    // but the payload gives attemptCount.
+    if (eventuallyCompleted) {
+      stats.attempts += 1;
+      if (firstAttemptCorrect) {
+        stats.firstAttemptHits += 1;
+      }
+      stats.hintsUsed += hintLevelUsed;
     }
 
     // Rolling recent attempts (keep last 20 per skill)
     const recentAttempts = { ...state.math.recentAttempts };
     const skillRecent = [...(recentAttempts[skillId] || [])];
     skillRecent.push({
-      correct: isFirstAttemptSuccess,
+      correct: firstAttemptCorrect,
+      eventuallyCompleted,
+      attemptCount,
+      hintLevelUsed,
+      responseTimeMs,
       timestamp: Date.now(),
       difficulty,
     });

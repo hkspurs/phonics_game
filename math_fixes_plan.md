@@ -1,0 +1,35 @@
+# Math Gameplay Fixes Plan
+
+- [ ] **Phase 1: Diagnose and fix repeated questions**
+  - Check `MathQuestionEngine.js` generation loop.
+  - Ensure 8 slots, no duplicate fingerprints.
+  - Add unit test for 100 sessions.
+- [ ] **Phase 2: Create mixed Mathematics sessions**
+  - Implement `MATH_DAILY_BLUEPRINT`.
+  - Add logic to shuffle and prevent >2 consecutive types.
+  - Implement/check shared validator and retry logic.
+- [x] **Phase 3: Implement Bilingual Copy
+  - [x] Create `src/math/content/mathCopy.js` with structured keys.
+  - [x] Implement a `BilingualPrompt` component (Primary line: Traditional Chinese, Sub-line: English).
+  - [x] Refactor renderer components to use copy keys instead of inline strings.
+- [x] **Phase 4: Enhance Answer Feedback & UX
+  - [x] Create an `AnswerChoice.jsx` wrapper component.
+  - [x] Implement 4 visual states (idle, selected, correct, eliminated).
+  - [x] Handle delayed transitions (show correct/incorrect state before advancing or shaking).
+  - [x] Add gentle CSS shake (`.shake-animation`) for incorrect attempts.
+- [x] **Phase 5: Interactive Counting Objects
+  - [x] Refactor `ObjectGroup.jsx` to accept `interactive=true`.
+  - [x] Add visible ring/glow for counted objects (`countedIndices` prop).
+  - [x] Display running total visually or via text-to-speech.
+  - [x] Use grid/scatter layouts appropriately.
+- [x] **Phase 6: Progressive Scaffolding (Hints)
+  - [x] 1st incorrect attempt: Prevent UI from advancing, apply visual elimination of the chosen option.
+  - [x] 2nd incorrect attempt: Show hint (e.g. highlight objects, remove more wrong answers).
+  - [x] 3rd+ incorrect attempt: Guide explicitly to the correct answer.
+- [x] **Phase 7: Reward Clarity
+  - [x] Update `RewardScreen.jsx` logic to show math total calculation (Base + Perfect-answer bonus).
+  - [x] Ensure Math/Phonics badges render accurately on the Gateway screen.
+- [x] **Phase 8: Tests & Final Validation
+  - [x] Write `generateSession` unique constraints test (`MathQuestionEngine.test.js`).
+  - [x] Update renderer snapshot/behavior tests (`renderers.test.jsx`).
+  - [x] Run E2E Playwright `mathDomain.spec.js` and verify passing.
