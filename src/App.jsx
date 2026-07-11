@@ -5,6 +5,7 @@ import HomeDashboard from './screens/HomeDashboard'
 import MathHome from './screens/MathHome'
 import MathDailyChallenge from './screens/MathDailyChallenge'
 import MathTrainingGym from './screens/MathTrainingGym'
+import MathMasteryMap from './screens/MathMasteryMap'
 import MasteryMap from './screens/MasteryMap'
 import DailyChallenge from './screens/DailyChallenge'
 import RewardScreen from './screens/RewardScreen'
@@ -78,7 +79,7 @@ function App() {
         <Route path="/" element={<SubjectGateway />} />
         <Route path="/phonics" element={<HomeDashboard />} />
         <Route path="/math" element={<MathHome />} />
-        <Route path="/math/map" element={<MathHome />} />
+        <Route path="/math/map" element={<MathMasteryMap />} />
         <Route path="/math/daily" element={<MathDailyChallenge />} />
         <Route path="/math/reward" element={<RewardScreen />} />
         <Route path="/math/gym" element={<MathTrainingGym />} />

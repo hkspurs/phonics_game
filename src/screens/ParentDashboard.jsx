@@ -380,6 +380,23 @@ export default function ParentDashboard() {
                 ))}
               </div>
             )}
+
+            <h3 style={{ color: '#d97706', display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '1.5rem' }}><Skull size={20}/> Misconceptions & Hints</h3>
+            <ul style={{ padding: 0, listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+              {Object.entries(mathStats).filter(([k, v]) => Object.keys(v.misconceptions || {}).length > 0 || v.hintsUsed > 0).length === 0 ? (
+                <p style={{ color: '#94a3b8', fontStyle: 'italic' }}>No misconceptions logged yet.</p>
+              ) : (
+                Object.entries(mathStats).filter(([k, v]) => Object.keys(v.misconceptions || {}).length > 0 || v.hintsUsed > 0).map(([skillId, stats]) => (
+                  <li key={`misc-${skillId}`} style={{ background: '#fef3c7', padding: '0.75rem', borderRadius: '8px', borderLeft: '4px solid #f59e0b' }}>
+                    <strong>{skillId}</strong>
+                    {stats.hintsUsed > 0 && <span style={{ marginLeft: '0.5rem', color: '#d97706', fontSize: '0.8rem' }}>Hints: {stats.hintsUsed}</span>}
+                    {Object.entries(stats.misconceptions || {}).map(([tag, count]) => (
+                      <div key={tag} style={{ fontSize: '0.8rem', color: '#92400e', marginTop: '0.25rem' }}>• {tag} ({count}x)</div>
+                    ))}
+                  </li>
+                ))
+              )}
+            </ul>
           </div>
 
           <div style={{ flex: '2 1 500px', background: 'white', borderRadius: '16px', padding: '1.5rem', overflowY: 'auto', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}>
