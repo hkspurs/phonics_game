@@ -3,6 +3,7 @@ import { HashRouter, Routes, Route, Navigate } from 'react-router-dom'
 import SubjectGateway from './screens/SubjectGateway'
 import HomeDashboard from './screens/HomeDashboard'
 import MathHome from './screens/MathHome'
+import MathDailyChallenge from './screens/MathDailyChallenge'
 import MasteryMap from './screens/MasteryMap'
 import DailyChallenge from './screens/DailyChallenge'
 import RewardScreen from './screens/RewardScreen'
@@ -77,7 +78,7 @@ function App() {
         <Route path="/phonics" element={<HomeDashboard />} />
         <Route path="/math" element={<MathHome />} />
         <Route path="/math/map" element={<MathHome />} />
-        <Route path="/math/challenge" element={<MathHome />} />
+        <Route path="/math/daily" element={<MathDailyChallenge />} />
         <Route path="/math/reward" element={<MathHome />} />
         <Route path="/map" element={<MasteryMap />} />
         <Route path="/challenge" element={<DailyChallenge />} />

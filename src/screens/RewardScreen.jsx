@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { Home } from 'lucide-react'
 import { useGameStore } from '../store/gameStore'
 import TreasureChest from '../components/TreasureChest'
@@ -8,13 +8,20 @@ import ConfettiSVG from '../components/ConfettiSVG'
 import { audioEngine } from '../audio/AudioEngine'
 
 export default function RewardScreen() {
-  const navigate = useNavigate()
-  const { sessionScore, endChallenge } = useGameStore()
+  const [searchParams] = useSearchParams()
+  const subject = searchParams.get('subject') || 'phonics'
+
+  const { sessionScore, endChallenge, math, completeMathDaily } = useGameStore()
   const [chestState, setChestState] = useState('closed'); // 'closed', 'shaking', 'open'
 
   const handleGoHome = () => {
-    endChallenge()
-    navigate('/', { replace: true })
+    if (subject === 'math') {
+      completeMathDaily()
+      navigate('/math', { replace: true })
+    } else {
+      endChallenge()
+      navigate('/', { replace: true })
+    }
   }
 
   const handleChestClick = () => {
@@ -64,11 +71,11 @@ export default function RewardScreen() {
           <div style={{ background: 'white', padding: '3rem 5rem', borderRadius: '48px', border: '6px solid #f0abfc', boxShadow: '0 16px 0 #f0abfc, 0 20px 25px rgba(0,0,0,0.1)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1.5rem', marginBottom: '4rem', zIndex: 2, animation: 'popIn 0.5s 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) both' }}>
             <h2 style={{ color: '#a21caf', fontSize: '2.5rem' }}>You earned:</h2>
             <div style={{ display: 'flex', gap: '3rem', fontSize: '4rem', fontWeight: 'bold' }}>
-              <span style={{ color: '#eab308', display: 'flex', alignItems: 'center', gap: '0.5rem' }}><span>+{sessionScore.stars}</span> ⭐</span>
-              <span style={{ color: '#0ea5e9', display: 'flex', alignItems: 'center', gap: '0.5rem' }}><span>+{sessionScore.gems}</span> 💎</span>
+              <span style={{ color: '#eab308', display: 'flex', alignItems: 'center', gap: '0.5rem' }}><span>+{(subject === 'math' ? math.mathSessionScore.stars : sessionScore.stars)}</span> ⭐</span>
+              {subject !== 'math' && <span style={{ color: '#0ea5e9', display: 'flex', alignItems: 'center', gap: '0.5rem' }}><span>+{sessionScore.gems}</span> 💎</span>}
             </div>
             <p style={{ color: '#d946ef', fontWeight: 'bold', fontSize: '1.5rem', marginTop: '1rem', background: '#fdf4ff', padding: '1rem 2rem', borderRadius: '100px', display: 'inline-block' }}>
-              🎟️ 2 Brain Game Tickets Unlocked!
+              🎟️ {subject === 'math' ? '1 Brain Game Ticket Unlocked!' : '2 Brain Game Tickets Unlocked!'}
             </p>
           </div>
 
