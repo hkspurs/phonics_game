@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import { HashRouter, Routes, Route, Navigate } from 'react-router-dom'
+import SubjectGateway from './screens/SubjectGateway'
 import HomeDashboard from './screens/HomeDashboard'
+import MathHome from './screens/MathHome'
 import MasteryMap from './screens/MasteryMap'
 import DailyChallenge from './screens/DailyChallenge'
 import RewardScreen from './screens/RewardScreen'
@@ -71,7 +73,12 @@ function App() {
     <ErrorBoundary>
       <HashRouter>
       <Routes>
-        <Route path="/" element={<HomeDashboard />} />
+        <Route path="/" element={<SubjectGateway />} />
+        <Route path="/phonics" element={<HomeDashboard />} />
+        <Route path="/math" element={<MathHome />} />
+        <Route path="/math/map" element={<MathHome />} />
+        <Route path="/math/challenge" element={<MathHome />} />
+        <Route path="/math/reward" element={<MathHome />} />
         <Route path="/map" element={<MasteryMap />} />
         <Route path="/challenge" element={<DailyChallenge />} />
         <Route path="/reward" element={<RewardScreen />} />
@@ -96,3 +103,4 @@ function App() {
 }
 
 export default App
+
