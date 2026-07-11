@@ -386,3 +386,7 @@ export const useGameStore = create(
     }
   )
 );
+
+if (typeof window !== 'undefined') {
+  window.useGameStore = useGameStore;
+}
