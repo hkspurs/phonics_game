@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { questionEngine } from '../game/QuestionEngine';
+import { createMathSlice, MATH_DEFAULTS } from './mathSlice';
 
 export const useGameStore = create(
   persist(
@@ -14,6 +15,7 @@ export const useGameStore = create(
       refresherMode: false, // Teacher Agent Refresher Mode
       preRefresherState: null, // Restores progression after refresher
       currentChapter: 'A Families', // Chapter Support
+      selectedSubject: 'phonics', // Current subject selection
       
       
       
@@ -95,7 +97,13 @@ export const useGameStore = create(
           return {
             hasCompletedDaily: false,
             sessionScore: { stars: 0, gems: 0 },
-            lastPlayedDate: today
+            lastPlayedDate: today,
+            // Also reset math daily
+            math: {
+              ...state.math,
+              completedToday: false,
+              mathSessionScore: { stars: 0 },
+            }
           };
         }
         return {};
@@ -315,11 +323,17 @@ export const useGameStore = create(
             [soundId]: stats
           }
         };
-      })
+      }),
+
+      // Subject selection
+      setSelectedSubject: (subject) => set({ selectedSubject: subject }),
+
+      // ---- Mathematics Slice ----
+      ...createMathSlice(set, get),
     }),
     {
       name: 'phonics-game-storage',
-      version: 2, // Bumped version for new schema
+      version: 3, // Bumped for dual-subject support
       migrate: (persistedState, version) => {
         if (!persistedState || typeof persistedState !== 'object') return {}; // Prevent hydration poisoning
         
@@ -330,6 +344,14 @@ export const useGameStore = create(
         // V2 Migration fallback
         if (!state.currentChapter) {
           state.currentChapter = 'A Families';
+        }
+        
+        // V3 Migration: Add mathematics state if missing
+        if (!state.math) {
+          state.math = { ...MATH_DEFAULTS };
+        }
+        if (!state.selectedSubject) {
+          state.selectedSubject = 'phonics';
         }
         
         // Self-Healing: Auto-disable Refresher Mode on app boot to prevent permanent progress loss
@@ -357,7 +379,9 @@ export const useGameStore = create(
         activeAssignment: state.activeAssignment, // Persist assignment state
         refresherMode: state.refresherMode, // Persist refresher toggle
         preRefresherState: state.preRefresherState,
-        currentChapter: state.currentChapter // Persist chapter
+        currentChapter: state.currentChapter, // Persist chapter
+        selectedSubject: state.selectedSubject, // Persist subject selection
+        math: state.math, // Persist entire math slice
       })
     }
   )

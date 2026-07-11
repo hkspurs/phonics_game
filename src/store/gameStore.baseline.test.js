@@ -127,10 +127,10 @@ describe('gameStore baseline — existing Phonics behaviour', () => {
     expect(state.tickets).toBe(2);
   });
 
-  it('persistence version is 2', () => {
+  it('persistence version is 3', () => {
     // Verify that the current persistence version has not changed unexpectedly
     const options = useGameStore.persist.getOptions();
-    expect(options.version).toBe(2);
+    expect(options.version).toBe(3);
   });
 
   it('partialize preserves all expected fields', () => {
@@ -144,7 +144,7 @@ describe('gameStore baseline — existing Phonics behaviour', () => {
       'learningStats', 'unlockedSounds', 'currentNode',
       'gameComplete', 'hasCompletedDaily', 'lastPlayedDate',
       'activeAssignment', 'refresherMode', 'preRefresherState',
-      'currentChapter'
+      'currentChapter', 'selectedSubject', 'math'
     ];
     for (const field of requiredFields) {
       expect(partialState).toHaveProperty(field);
@@ -173,5 +173,40 @@ describe('gameStore baseline — existing Phonics behaviour', () => {
     expect(migrated.refresherMode).toBe(false);
     expect(migrated.currentNode).toBe('XY');
     expect(migrated.currentChapter).toBe('B Families');
+  });
+
+  it('migration from v2 adds math defaults', () => {
+    const options = useGameStore.persist.getOptions();
+    const migrated = options.migrate({
+      stars: 50,
+      gems: 10,
+      tickets: 3,
+    }, 2);
+    expect(migrated.math).toBeDefined();
+    expect(migrated.math.currentUnitId).toBe('numbers-1-20');
+    expect(migrated.math.unlockedSkillIds).toEqual(['number_counting_1_20']);
+    expect(migrated.selectedSubject).toBe('phonics');
+    // Existing phonics fields preserved
+    expect(migrated.stars).toBe(50);
+    expect(migrated.gems).toBe(10);
+    expect(migrated.tickets).toBe(3);
+  });
+
+  it('migration from v2 preserves existing math state if already present', () => {
+    const options = useGameStore.persist.getOptions();
+    const existingMath = {
+      currentUnitId: 'number-bonds',
+      unlockedSkillIds: ['number_counting_1_20', 'addition_within_10'],
+      learningStats: { addition_within_10: { attempts: 5 } },
+      recentAttempts: {},
+      completedToday: true,
+      activeSession: null,
+      mathActiveQuestions: [],
+      mathCurrentQuestionIndex: 0,
+      mathSessionScore: { stars: 3 },
+      isMathChallengeActive: false,
+    };
+    const migrated = options.migrate({ stars: 10, math: existingMath }, 2);
+    expect(migrated.math).toEqual(existingMath);
   });
 });
