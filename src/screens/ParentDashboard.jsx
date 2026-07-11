@@ -9,9 +9,10 @@ import MascotRabbit from '../components/MascotRabbit'
 
 export default function ParentDashboard() {
   const navigate = useNavigate()
-  const { learningStats, unlockedSounds, currentNode, activeAssignment, getNodeStatus, resetProgress, refresherMode, toggleRefresherMode, tickets, addTicket } = useGameStore()
+  const { learningStats, unlockedSounds, currentNode, activeAssignment, getNodeStatus, resetProgress, refresherMode, toggleRefresherMode, tickets, addTicket, math, resetMathProgress } = useGameStore()
   const [toastMsg, setToastMsg] = React.useState(null);
   const [selectedChapter, setSelectedChapter] = React.useState('A Families');
+  const [activeTab, setActiveTab] = React.useState('phonics'); // 'phonics' | 'math'
 
   const showToast = (msg) => {
     setToastMsg(msg);
@@ -20,8 +21,9 @@ export default function ParentDashboard() {
   }
 
   const handleReset = () => {
-    if (window.confirm("Are you sure you want to wipe all progress? This will reset the child's entire journey. This cannot be undone.")) {
+    if (window.confirm("Are you sure you want to wipe all progress? This will reset the child's entire journey for both subjects. This cannot be undone.")) {
       resetProgress();
+      resetMathProgress();
       navigate('/');
     }
   }
@@ -74,6 +76,19 @@ export default function ParentDashboard() {
   });
   const overallAccuracy = totalAttempts > 0 ? ((totalFirstHits / totalAttempts) * 100).toFixed(1) : 0;
 
+  // --- Math Analytics ---
+  const mathStats = math.learningStats || {};
+  const weakMathSkills = Object.entries(mathStats).filter(([k, v]) => v.attempts >= 3 && (v.firstAttemptHits / v.attempts) < 0.6);
+  const masteredMathSkills = Object.entries(mathStats).filter(([k, v]) => v.attempts >= 3 && (v.firstAttemptHits / v.attempts) >= 0.9);
+  
+  let mathTotalAttempts = 0;
+  let mathTotalFirstHits = 0;
+  Object.values(mathStats).forEach(stat => {
+    mathTotalAttempts += stat.attempts || 0;
+    mathTotalFirstHits += stat.firstAttemptHits || 0;
+  });
+  const mathOverallAccuracy = mathTotalAttempts > 0 ? ((mathTotalFirstHits / mathTotalAttempts) * 100).toFixed(1) : 0;
+
   // Group sounds by first letter
   const groupedSounds = {};
   questionEngine.sounds.forEach(sound => {
@@ -121,6 +136,33 @@ export default function ParentDashboard() {
           </button>
         </div>
       </div>
+
+      {/* Subject Tabs */}
+      <div style={{ display: 'flex', gap: '1rem', marginBottom: '2rem' }}>
+        <button 
+          onClick={() => setActiveTab('phonics')}
+          style={{
+            flex: 1, padding: '1rem', borderRadius: '16px', fontSize: '1.25rem', fontWeight: 'bold', border: 'none', cursor: 'pointer',
+            background: activeTab === 'phonics' ? '#3b82f6' : '#e2e8f0',
+            color: activeTab === 'phonics' ? 'white' : '#64748b',
+            boxShadow: activeTab === 'phonics' ? '0 4px 6px rgba(59,130,246,0.3)' : 'none',
+            transition: 'all 0.2s'
+          }}
+        >🔤 Phonics</button>
+        <button 
+          onClick={() => setActiveTab('math')}
+          style={{
+            flex: 1, padding: '1rem', borderRadius: '16px', fontSize: '1.25rem', fontWeight: 'bold', border: 'none', cursor: 'pointer',
+            background: activeTab === 'math' ? '#f59e0b' : '#e2e8f0',
+            color: activeTab === 'math' ? 'white' : '#64748b',
+            boxShadow: activeTab === 'math' ? '0 4px 6px rgba(245,158,11,0.3)' : 'none',
+            transition: 'all 0.2s'
+          }}
+        >🔢 Maths</button>
+      </div>
+
+      {activeTab === 'phonics' && (
+        <>
 
       {/* Refresher Mode Banner */}
       <div style={{ background: refresherMode ? '#fef3c7' : 'white', borderRadius: '16px', padding: '1.5rem', marginBottom: '2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)', border: refresherMode ? '2px solid #f59e0b' : '1px solid #e2e8f0' }}>
@@ -297,6 +339,67 @@ export default function ParentDashboard() {
         </div>
 
       </div>
+      </>)}
+
+      {activeTab === 'math' && (
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '2rem', height: 'calc(100vh - 150px)' }}>
+          <div style={{ flex: '1 1 300px', background: 'white', borderRadius: '16px', padding: '1.5rem', overflowY: 'auto', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}>
+            <h2 style={{ color: '#334155', borderBottom: '2px solid #e2e8f0', paddingBottom: '0.5rem', marginBottom: '1.5rem' }}>Maths Analytics</h2>
+            
+            <div style={{ display: 'flex', gap: '1rem', marginBottom: '2rem', flexWrap: 'wrap' }}>
+              <div style={{ flex: 1, background: '#f8fafc', padding: '1rem', borderRadius: '12px', border: '1px solid #e2e8f0', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                <span style={{ color: '#64748b', fontSize: '0.875rem', fontWeight: 'bold', marginBottom: '0.5rem' }}>TOTAL FOCUS</span>
+                <span style={{ color: '#0f172a', fontSize: '2.5rem', fontWeight: 'bold' }}>{mathTotalAttempts}</span>
+              </div>
+              <div style={{ flex: 1, background: '#f8fafc', padding: '1rem', borderRadius: '12px', border: '1px solid #e2e8f0', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                <span style={{ color: '#64748b', fontSize: '0.875rem', fontWeight: 'bold', marginBottom: '0.5rem' }}>GROWTH</span>
+                <DonutChart percentage={parseFloat(mathOverallAccuracy)} color={mathOverallAccuracy > 80 ? '#10b981' : '#f59e0b'} />
+              </div>
+            </div>
+
+            <h3 style={{ color: '#ef4444', display: 'flex', alignItems: 'center', gap: '0.5rem' }}><AlertTriangle size={20}/> Skills to Practice</h3>
+            {weakMathSkills.length === 0 ? (
+              <p style={{ color: '#94a3b8', fontStyle: 'italic' }}>Looking Great!</p>
+            ) : (
+              <ul style={{ padding: 0, listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                {weakMathSkills.map(([skillId, stats]) => (
+                  <li key={skillId} style={{ background: '#fee2e2', padding: '0.75rem', borderRadius: '8px', borderLeft: '4px solid #ef4444' }}>
+                    <strong>{skillId}</strong> ({(stats.firstAttemptHits/stats.attempts * 100).toFixed(0)}%)
+                  </li>
+                ))}
+              </ul>
+            )}
+
+            <h3 style={{ color: '#10b981', display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '1.5rem' }}><CheckCircle size={20}/> Mastered Skills</h3>
+            {masteredMathSkills.length === 0 ? <p style={{ color: '#94a3b8', fontStyle: 'italic' }}>Keep practicing!</p> : (
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+                {masteredMathSkills.map(([skillId]) => (
+                  <span key={skillId} style={{ background: '#d1fae5', color: '#047857', padding: '0.5rem 1rem', borderRadius: '100px', fontWeight: 'bold' }}>
+                    {skillId}
+                  </span>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <div style={{ flex: '2 1 500px', background: 'white', borderRadius: '16px', padding: '1.5rem', overflowY: 'auto', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}>
+            <h2 style={{ color: '#334155', borderBottom: '2px solid #e2e8f0', paddingBottom: '0.5rem', marginBottom: '1rem' }}>
+              Maths Curriculum Status
+            </h2>
+            <ul style={{ display: 'flex', flexDirection: 'column', gap: '1rem', padding: 0, listStyle: 'none' }}>
+              {math.unlockedSkillIds.map(skillId => {
+                const stats = math.learningStats[skillId];
+                return (
+                  <li key={skillId} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '1rem', background: '#f8fafc', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+                    <span style={{ fontSize: '1.2rem', fontWeight: 'bold' }}>{skillId}</span>
+                    <span style={{ color: '#0ea5e9', fontWeight: 'bold' }}>Unlocked</span>
+                  </li>
+                )
+              })}
+            </ul>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
