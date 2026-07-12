@@ -54,7 +54,7 @@ export const createMathSlice = (set, get) => ({
       difficulty
     } = p;
 
-    const stats = state.math.learningStats[skillId] || {
+    const prevStats = state.math.learningStats[skillId] || {
       attempts: 0,
       firstAttemptHits: 0,
       hintsUsed: 0,
@@ -62,15 +62,17 @@ export const createMathSlice = (set, get) => ({
       misconceptions: {},
     };
 
+    const newStats = { ...prevStats };
+
     // Only increment attempts on the final completion/failure of a question,
     // or just track per interaction. Let's say stats.attempts is 'questions encountered'
     // but the payload gives attemptCount.
     if (eventuallyCompleted) {
-      stats.attempts += 1;
+      newStats.attempts += 1;
       if (firstAttemptCorrect) {
-        stats.firstAttemptHits += 1;
+        newStats.firstAttemptHits += 1;
       }
-      stats.hintsUsed += hintLevelUsed;
+      newStats.hintsUsed += hintLevelUsed;
     }
 
     // Rolling recent attempts (keep last 20 per skill)
@@ -94,7 +96,7 @@ export const createMathSlice = (set, get) => ({
         ...state.math,
         learningStats: {
           ...state.math.learningStats,
-          [skillId]: stats,
+          [skillId]: newStats,
         },
         recentAttempts,
       }
@@ -103,21 +105,28 @@ export const createMathSlice = (set, get) => ({
 
   /** Record a misconception tag */
   recordMathMisconception: (skillId, tag) => set((state) => {
-    const stats = state.math.learningStats[skillId] || {
+    const prevStats = state.math.learningStats[skillId] || {
       attempts: 0,
       firstAttemptHits: 0,
       hintsUsed: 0,
       avgAttemptsToComplete: 0,
       misconceptions: {},
     };
-    stats.misconceptions[tag] = (stats.misconceptions[tag] || 0) + 1;
+    
+    const newStats = {
+      ...prevStats,
+      misconceptions: {
+        ...prevStats.misconceptions,
+        [tag]: (prevStats.misconceptions[tag] || 0) + 1
+      }
+    };
 
     return {
       math: {
         ...state.math,
         learningStats: {
           ...state.math.learningStats,
-          [skillId]: stats,
+          [skillId]: newStats,
         }
       }
     };
@@ -125,21 +134,25 @@ export const createMathSlice = (set, get) => ({
 
   /** Record hint usage */
   recordMathHintUsed: (skillId) => set((state) => {
-    const stats = state.math.learningStats[skillId] || {
+    const prevStats = state.math.learningStats[skillId] || {
       attempts: 0,
       firstAttemptHits: 0,
       hintsUsed: 0,
       avgAttemptsToComplete: 0,
       misconceptions: {},
     };
-    stats.hintsUsed += 1;
+    
+    const newStats = {
+      ...prevStats,
+      hintsUsed: prevStats.hintsUsed + 1
+    };
 
     return {
       math: {
         ...state.math,
         learningStats: {
           ...state.math.learningStats,
-          [skillId]: stats,
+          [skillId]: newStats,
         }
       }
     };
@@ -184,6 +197,18 @@ export const createMathSlice = (set, get) => ({
     // Award shared rewards
     stars: state.stars + state.math.mathSessionScore.stars,
     tickets: state.tickets + 1,
+  })),
+
+  /** Clear math session (for gym or exiting early) */
+  clearMathSession: () => set((state) => ({
+    math: {
+      ...state.math,
+      isMathChallengeActive: false,
+      mathActiveQuestions: [],
+      mathCurrentQuestionIndex: 0,
+    },
+    // Award stars earned!
+    stars: state.stars + state.math.mathSessionScore.stars,
   })),
 
   /** Reset math daily flag (called by checkDailyReset) */

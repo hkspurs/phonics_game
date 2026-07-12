@@ -133,7 +133,7 @@ test.describe('Sound Balloon Pop Game UAT & Integration Tests', () => {
           } else {
             ignoredLabels.clear();
           }
-          await balloon.click({ force: true });
+          await balloon.dispatchEvent('click');
           return { clicked: true, balloon, label: trimmed };
         }
       }

@@ -109,6 +109,19 @@ export default function MathMasteryMap() {
         Mastery Map
       </h1>
 
+      <style>{`
+        @keyframes active-node-pulse {
+          0% { box-shadow: 0 8px 0 #10b981, 0 0 0 0px rgba(16, 185, 129, 0.6); transform: translateY(-4px) scale(1); }
+          50% { box-shadow: 0 8px 0 #10b981, 0 0 0 20px rgba(16, 185, 129, 0); transform: translateY(-4px) scale(1.05); }
+          100% { box-shadow: 0 8px 0 #10b981, 0 0 0 0px rgba(16, 185, 129, 0); transform: translateY(-4px) scale(1); }
+        }
+        @keyframes weak-node-pulse {
+          0% { box-shadow: 0 8px 0 #8b5cf6, 0 0 0 0px rgba(139, 92, 246, 0.6); transform: translateY(-4px) scale(1); }
+          50% { box-shadow: 0 8px 0 #8b5cf6, 0 0 0 20px rgba(139, 92, 246, 0); transform: translateY(-4px) scale(1.05); }
+          100% { box-shadow: 0 8px 0 #8b5cf6, 0 0 0 0px rgba(139, 92, 246, 0); transform: translateY(-4px) scale(1); }
+        }
+      `}</style>
+
       {/* Scrollable Map Area */}
       <div style={{ 
         position: 'relative', width: '100%', flex: 1, marginTop: '1rem', 
@@ -149,7 +162,7 @@ export default function MathMasteryMap() {
 
               {/* Node Button */}
               <button 
-                onClick={() => handleNodeClick(node.id, node.unit)}
+                onClick={() => handleSkillClick(node.id, node.unit)}
                 style={{
                   width: '80px', height: '80px',
                   borderRadius: '50%',
@@ -160,7 +173,8 @@ export default function MathMasteryMap() {
                   cursor: node.status === 'locked' ? 'not-allowed' : 'pointer',
                   boxShadow: node.status === 'locked' ? 'none' : `0 8px 0 ${getStatusColor(node.status)}`,
                   transform: node.status === 'locked' ? 'none' : 'translateY(-4px)',
-                  transition: 'transform 0.2s'
+                  transition: 'transform 0.2s',
+                  animation: node.status === 'unlocked' ? 'active-node-pulse 2s infinite' : (node.status === 'weak' ? 'weak-node-pulse 2s infinite' : 'none')
                 }}
               >
                 {node.status === 'locked' ? <Lock size={32} color="#9ca3b8" /> : SKILL_EMOJIS[node.id]}

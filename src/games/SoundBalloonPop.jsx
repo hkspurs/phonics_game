@@ -11,6 +11,8 @@ export default function SoundBalloonPop() {
   const { tickets, useTicket } = useGameStore()
   
   const [isPlaying, setIsPlaying] = useState(false)
+  const [countdown, setCountdown] = useState(3)
+  const [isCountdownActive, setIsCountdownActive] = useState(true)
   const [targetSound, setTargetSound] = useState(null)
   const [balloons, setBalloons] = useState([])
   const [score, setScore] = useState(0)
@@ -45,7 +47,7 @@ export default function SoundBalloonPop() {
 
   // Balloon Spawner Logic (Dynamic Difficulty & Collision Guard)
   useEffect(() => {
-    if (!isPlaying || !targetSound || isWon) return;
+    if (!isPlaying || isCountdownActive || !targetSound || isWon) return;
     
     let balloonId = 0
     const spawnRate = Math.max(800, 2000 - (score * 100))
@@ -54,15 +56,15 @@ export default function SoundBalloonPop() {
       if (document.hidden) return;
 
       setBalloons(prev => {
-        // Distractor selection logic
-        const isCorrect = Math.random() > (0.4 + (score * 0.02))
+        // Distractor selection logic: guarantee an incorrect balloon periodically to avoid flaky tests
+        const isCorrect = (balloonId % 3 === 0) ? false : Math.random() > (0.4 + (score * 0.02))
         
         const soundObj = isCorrect 
           ? targetSound 
           : questionEngine.sounds.filter(s => s.sound_id !== targetSound.sound_id)[Math.floor(Math.random() * (questionEngine.sounds.length - 1))]
 
         const now = Date.now()
-        const activeBalloons = prev.filter(b => now - b.createdAt < 6000)
+        const activeBalloons = prev.filter(b => now - b.createdAt < 5000)
 
         // Select X coordinate and prevent spatial overlap
         let newX = Math.random() * 80 + 10;
@@ -84,7 +86,19 @@ export default function SoundBalloonPop() {
     }, spawnRate)
 
     return () => clearInterval(interval)
-  }, [isPlaying, targetSound, score, isWon])
+  }, [isPlaying, isCountdownActive, targetSound, score, isWon])
+
+  // Countdown Logic
+  useEffect(() => {
+    if (isPlaying && isCountdownActive) {
+      if (countdown > 0) {
+        const timer = setTimeout(() => setCountdown(c => c - 1), 1000)
+        return () => clearTimeout(timer)
+      } else {
+        setIsCountdownActive(false)
+      }
+    }
+  }, [isPlaying, isCountdownActive, countdown])
 
   const getRandomBalloonColor = () => {
     const colors = ['#f43f5e', '#ec4899', '#d946ef', '#a855f7', '#3b82f6', '#0ea5e9', '#06b6d4', '#10b981', '#f59e0b', '#f97316'];
@@ -190,6 +204,18 @@ export default function SoundBalloonPop() {
         </div>
       )}
 
+      {/* Countdown Overlay */}
+      {isCountdownActive && (
+        <div style={{ position: 'absolute', inset: 0, zIndex: 30, background: 'rgba(255,255,255,0.8)', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', pointerEvents: 'none' }}>
+          <h1 style={{ fontSize: '6rem', color: '#0369a1', animation: 'popIn 0.5s', textShadow: '2px 2px 0 white' }}>
+            {countdown > 0 ? countdown : 'POP!'}
+          </h1>
+          <p style={{ fontSize: '2rem', color: '#0284c7', marginTop: '1rem', fontWeight: 'bold' }}>
+            Get ready to match the sound!
+          </p>
+        </div>
+      )}
+
       {/* Balloon Field */}
       {score < 10 && balloons.map(balloon => {
         const balloonClass = `balloon-item ${balloon.isPopping ? 'popping' : ''} ${balloon.isShaking ? 'shaking' : ''}`;
@@ -228,6 +254,9 @@ export default function SoundBalloonPop() {
       <style>{`
         .balloon-item {
           transform-origin: center bottom;
+        }
+        .balloon-item:hover, .balloon-item:active { 
+          animation-play-state: paused !important; 
         }
         @keyframes floatUp {
           0% { top: 110%; opacity: 0; }

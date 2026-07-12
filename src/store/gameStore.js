@@ -126,26 +126,40 @@ export const useGameStore = create(
       },
 
       recordAnswer: (soundId, isFirstAttemptSuccess, confusedWithLabel) => set((state) => {
-        const stats = state.learningStats[soundId] || { attempts: 0, firstAttemptHits: 0, confusedWith: {} };
+        const prevStats = state.learningStats[soundId] || { attempts: 0, firstAttemptHits: 0, confusedWith: {} };
+        const newConfusedWith = { ...prevStats.confusedWith };
         
-        stats.attempts += 1;
+        let currentAttempts = prevStats.attempts;
+        let currentHits = prevStats.firstAttemptHits;
+        
+        // Teacher Agent Pedagogical Fix: Rolling Window (Decay)
+        if (currentAttempts >= 10) {
+          currentAttempts *= 0.8;
+          currentHits *= 0.8;
+        }
         
         if (isFirstAttemptSuccess) {
-          stats.firstAttemptHits += 1;
           // Challenge 7: Confused Pairs Decay. If they get it right on the first try, slightly decay all confusions.
-          Object.keys(stats.confusedWith).forEach(key => {
-            if (stats.confusedWith[key] > 0) {
-              stats.confusedWith[key] = Math.max(0, stats.confusedWith[key] - 1);
+          Object.keys(newConfusedWith).forEach(key => {
+            if (newConfusedWith[key] > 0) {
+              newConfusedWith[key] = Math.max(0, newConfusedWith[key] - 1);
             }
           });
         } else if (confusedWithLabel) {
-          stats.confusedWith[confusedWithLabel] = (stats.confusedWith[confusedWithLabel] || 0) + 1;
+          newConfusedWith[confusedWithLabel] = (newConfusedWith[confusedWithLabel] || 0) + 1;
         }
+
+        const newStats = {
+          ...prevStats,
+          attempts: currentAttempts + 1,
+          firstAttemptHits: currentHits + (isFirstAttemptSuccess ? 1 : 0),
+          confusedWith: newConfusedWith
+        };
 
         return {
           learningStats: {
             ...state.learningStats,
-            [soundId]: stats
+            [soundId]: newStats
           }
         };
       }),
@@ -314,15 +328,18 @@ export const useGameStore = create(
       }),
 
       completeGymWorkout: (soundId) => set((state) => {
-        const stats = state.learningStats[soundId] || { attempts: 0, firstAttemptHits: 0, confusedWith: {} };
-        // Confidence Boost: +2 hits, +2 attempts
-        stats.attempts += 2;
-        stats.firstAttemptHits += 2;
+        const prevStats = state.learningStats[soundId] || { attempts: 0, firstAttemptHits: 0, confusedWith: {} };
+        
+        const newStats = {
+          ...prevStats,
+          attempts: prevStats.attempts + 2,
+          firstAttemptHits: prevStats.firstAttemptHits + 2
+        };
         
         return {
           learningStats: {
             ...state.learningStats,
-            [soundId]: stats
+            [soundId]: newStats
           }
         };
       }),

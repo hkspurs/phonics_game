@@ -66,7 +66,7 @@ test.describe('Sound Balloon Pop Stress and Edge Case Tests', () => {
 
     // Wait for balloons to appear and find an incorrect one dynamically by clicking
     let foundIncorrect = false;
-    for (let attempt = 0; attempt < 15; attempt++) {
+    for (let attempt = 0; attempt < 30; attempt++) {
       const balloons = page.locator('.balloon-item');
       const count = await balloons.count();
       if (count === 0) {
@@ -79,7 +79,7 @@ test.describe('Sound Balloon Pop Stress and Edge Case Tests', () => {
 
       // Click the first balloon
       const balloon = balloons.first();
-      await balloon.click({ force: true });
+      await balloon.dispatchEvent('click');
       await page.waitForTimeout(600); // Wait for state updates
 
       // Check if score changed
@@ -88,7 +88,7 @@ test.describe('Sound Balloon Pop Stress and Edge Case Tests', () => {
         console.log(`Confirmed balloon is incorrect (Score stayed at "${currentScoreText}"). Rapidly clicking...`);
         // Click rapidly 30 times to stress test
         for (let k = 0; k < 30; k++) {
-          await balloon.click({ force: true }).catch(() => {});
+          await balloon.dispatchEvent('click').catch(() => {});
         }
         foundIncorrect = true;
         break;

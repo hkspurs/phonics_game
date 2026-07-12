@@ -62,11 +62,11 @@ class AudioEngine {
   }
 
   async preload(urls) {
-    for (const url of urls) {
-      if (url && !this.preloadedBuffers.has(url)) {
-        await this._loadBuffer(url); // Fire and forget can cause issues if awaited linearly.
-      }
-    }
+    const promises = urls
+      .filter(url => url && !this.preloadedBuffers.has(url))
+      .map(url => this._loadBuffer(url));
+      
+    await Promise.all(promises);
   }
 
   play(url, startTimeMs = 0, durationMs = 0, playbackRate = 1.0) {

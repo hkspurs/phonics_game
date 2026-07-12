@@ -171,10 +171,23 @@ export default function DailyChallenge() {
         setFeedbackState(prev => prev === 'wrong' ? null : prev)
       }, 1000)
       
-      // Play target audio again as a hint, and DO NOT unlock until it finishes!
-      audioEngine.play(currentQ.targetSound.audio_url).catch(() => {}).finally(() => {
-        setIsProcessing(false)
-      })
+      // Teacher Agent Pedagogical Fix: Contrastive Audio Feedback
+      const clickedSound = currentQ.choiceSounds?.find(s => s.label === choice);
+      
+      if (clickedSound?.audio_url) {
+        audioEngine.play(clickedSound.audio_url).catch(() => {}).finally(() => {
+          setTimeout(() => {
+            audioEngine.play(currentQ.targetSound.audio_url).catch(() => {}).finally(() => {
+              setIsProcessing(false)
+            });
+          }, 300); // Brief pause before playing the target sound
+        });
+      } else {
+        // Play target audio again as a hint, and DO NOT unlock until it finishes!
+        audioEngine.play(currentQ.targetSound.audio_url).catch(() => {}).finally(() => {
+          setIsProcessing(false)
+        })
+      }
     }
   }
 

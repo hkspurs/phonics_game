@@ -20,13 +20,13 @@ test.describe('Chaos & Exhaustive QA UAT', () => {
   });
 
   test('2. Parent Gate: Brute force & Wrong PINs', async ({ page }) => {
-    await page.goto('/#/phonics');
+    await page.goto('/');
     
     // Open Parent Gate Modal
     await page.locator('button', { has: page.locator('svg.lucide-settings') }).click();
     
     // Modal should be visible
-    const modalHeading = page.locator('h3', { hasText: 'Grown-Ups Only' });
+    const modalHeading = page.locator('h3', { hasText: 'For Parents Only' });
     await expect(modalHeading).toBeVisible();
 
     // Enter wrong PIN 9-9-9-9

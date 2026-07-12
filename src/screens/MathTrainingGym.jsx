@@ -14,6 +14,7 @@ export default function MathTrainingGym() {
     recordMathAnswer,
     recordMathAttempt,
     nextMathQuestion,
+    clearMathSession,
   } = useGameStore();
 
   const {
@@ -69,6 +70,7 @@ export default function MathTrainingGym() {
       setTimeout(() => {
         setIsProcessing(false);
         if (currentQuestionIndex + 1 >= activeQuestions.length) {
+          clearMathSession();
           navigate('/math/map'); // Return to map after training
         } else {
           setFeedbackState(null);
@@ -119,6 +121,7 @@ export default function MathTrainingGym() {
       {/* Header */}
       <div style={{ width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem', padding: '1rem' }}>
         <button className="btn-secondary" style={{ padding: '0.5rem' }} onClick={() => {
+             clearMathSession();
              navigate('/math/map');
         }}>
           <X size={24} /> Quit

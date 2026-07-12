@@ -10,7 +10,7 @@ const ParentGateModal = ({ onClose, onSuccess }) => {
   return (
     <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.4)', backdropFilter: 'blur(8px)', zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
       <div style={{ background: 'white', padding: '2rem', borderRadius: '20px', textAlign: 'center', width: '300px' }}>
-        <h3 style={{ color: '#1e3a8a', marginBottom: '1rem' }}>Grown-Ups Only</h3>
+        <h3 style={{ color: '#1e3a8a', marginBottom: '1rem' }}>For Parents Only</h3>
         <p style={{ color: '#64748b', marginBottom: '1rem', fontSize: '0.9rem' }}>Enter year of birth to access settings:</p>
         <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'center', marginBottom: '1rem' }}>
           {[1,2,3,4].map((_, i) => (

@@ -64,7 +64,10 @@ export default function MathHome() {
         difficulty: 1, // Start easy
         random: createRandom(Date.now() + i)
       });
-      if(q) questions.push(q);
+      if(q) {
+        q.id = crypto.randomUUID();
+        questions.push(q);
+      }
     }
     
     startMathSession(questions);
@@ -96,6 +99,7 @@ export default function MathHome() {
           }}
         >
           <ArrowLeft size={24} color="#f59e0b" />
+          <span style={{color: '#f59e0b', fontWeight: 'bold', marginLeft: '0.5rem'}}>Back</span>
         </button>
         <h1 style={{ fontSize: '2rem', color: '#92400e', margin: 0 }}>
           Math Kingdom

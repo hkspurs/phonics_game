@@ -61,7 +61,9 @@ class QuestionEngine {
     const first8 = shuffle([...reviewSounds, ...targetSounds, ...weakSounds]);
     const combinedTargets = [...first8, ...compareSound, ...bossSound];
     
-    let distractorBasePool = Array.from(new Set([...unlockedSounds, currentSound, ...shuffle(this.sounds).slice(0, 10)]));
+    // Teacher Agent Pedagogical Fix: Strict Scope & Sequence
+    const familySounds = currentSound.family ? this.sounds.filter(s => s.family === currentSound.family) : [];
+    let distractorBasePool = Array.from(new Set([...unlockedSounds, ...familySounds, currentSound]));
     return this._buildQuestionsArray(combinedTargets, distractorBasePool);
   }
 
@@ -78,7 +80,9 @@ class QuestionEngine {
       targetSound, reviewPool[1], targetSound, 
       targetSound, reviewPool[2], targetSound, targetSound
     ];
-    let distractorBasePool = Array.from(new Set([targetSound, ...shuffle(this.sounds).slice(0, 15)]));
+    // Teacher Agent Pedagogical Fix: Strict Scope & Sequence
+    const familySounds = targetSound.family ? this.sounds.filter(s => s.family === targetSound.family) : [];
+    let distractorBasePool = Array.from(new Set([...familySounds, targetSound]));
     return this._buildQuestionsArray(combinedTargets, distractorBasePool);
   }
 
@@ -153,7 +157,8 @@ class QuestionEngine {
       type: 'gym_warmup',
       targetSound: targetSound,
       choices: shuffle([targetSound.label, warmupDistractor.label]),
-      correctAnswer: targetSound.label
+      correctAnswer: targetSound.label,
+      choiceSounds: [targetSound, warmupDistractor]
     });
 
     // Stage 2: Heavy Lifting (Discrimination against the confused sound, 2 times)
@@ -170,7 +175,8 @@ class QuestionEngine {
         type: 'gym_lift',
         targetSound: targetSound,
         choices: shuffle([targetSound.label, confusedSound.label]),
-        correctAnswer: targetSound.label
+        correctAnswer: targetSound.label,
+        choiceSounds: [targetSound, confusedSound]
       });
     }
 
@@ -181,7 +187,8 @@ class QuestionEngine {
       type: 'gym_sprint',
       targetSound: targetSound,
       choices: shuffle([targetSound.label, ...sprintDistractors.map(d => d.label)]),
-      correctAnswer: targetSound.label
+      correctAnswer: targetSound.label,
+      choiceSounds: [targetSound, ...sprintDistractors]
     });
 
     return questions;
@@ -214,7 +221,8 @@ class QuestionEngine {
         type: 'bubble',
         targetSound: targetSound,
         choices: choices,
-        correctAnswer: targetSound.label
+        correctAnswer: targetSound.label,
+        choiceSounds: [targetSound, ...distractors]
       });
     }
 
@@ -284,7 +292,8 @@ class QuestionEngine {
           type: type,
           targetSound: targetSound,
           choices: choices,
-          correctAnswer: targetSound.label
+          correctAnswer: targetSound.label,
+          choiceSounds: [targetSound, ...distractors]
         });
       }
     });

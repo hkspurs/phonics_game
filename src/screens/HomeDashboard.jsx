@@ -65,7 +65,7 @@ export default function HomeDashboard() {
             fontWeight: 'bold'
           }}
         >
-          ◀ Subjects
+          &lt; Back
         </button>
         <div style={{ background: 'white', padding: '0.5rem 1rem', borderRadius: '100px', display: 'flex', gap: '1rem', fontWeight: 'bold', boxShadow: '0 4px 6px rgba(0,0,0,0.05)' }}>
           <span style={{ color: '#eab308' }}>⭐ {stars}</span>

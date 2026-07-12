@@ -265,8 +265,11 @@ export default function SubjectGateway() {
               cursor: 'pointer',
               boxShadow: '0 4px 10px rgba(0,0,0,0.1)',
               minWidth: '44px',
-              minHeight: '44px'
+              minHeight: '44px',
+              transition: 'transform 0.2s ease, box-shadow 0.2s ease'
             }}
+            onMouseEnter={(e) => { e.currentTarget.style.transform = 'scale(1.1)'; e.currentTarget.style.boxShadow = '0 6px 15px rgba(0,0,0,0.2)'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.boxShadow = '0 4px 10px rgba(0,0,0,0.1)'; }}
             onClick={(e) => { e.stopPropagation(); handleSubjectClick(SUBJECTS.phonics.route); }}
           >
             Start ▶
@@ -338,8 +341,11 @@ export default function SubjectGateway() {
               cursor: 'pointer',
               boxShadow: '0 4px 10px rgba(0,0,0,0.1)',
               minWidth: '44px',
-              minHeight: '44px'
+              minHeight: '44px',
+              transition: 'transform 0.2s ease, box-shadow 0.2s ease'
             }}
+            onMouseEnter={(e) => { e.currentTarget.style.transform = 'scale(1.1)'; e.currentTarget.style.boxShadow = '0 6px 15px rgba(0,0,0,0.2)'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.boxShadow = '0 4px 10px rgba(0,0,0,0.1)'; }}
             onClick={(e) => { e.stopPropagation(); handleSubjectClick(SUBJECTS.math.route); }}
           >
             Start ▶
