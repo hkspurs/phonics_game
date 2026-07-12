@@ -1,9 +1,9 @@
 # Feature Specification: Phonics Training Gym (發音特訓健身房)
 
 ## 1. Feature Overview
-**Name:** Phonics Training Gym
-**Objective:** Transform remedial practice for "weak" sounds from a frustrating punishment into a positive, empowering "coaching" experience.
-**Target Audience:** 6-year-olds who are struggling with specific phonics families or confusing two similar sounds (e.g., `EX` vs `IX`).
+**Name:** Phonics & Math Training Gym
+**Objective:** Transform remedial practice for "weak" skills from a frustrating punishment into a positive, empowering "coaching" experience.
+**Target Audience:** 6-year-olds who are struggling with specific phonics families (e.g., `EX` vs `IX`) or struggling with specific math concepts (e.g., procedural counting or number bonds).
 
 ## 2. Trigger Conditions (When does a sound go to the Gym?)
 A sound is flagged for the Training Gym based on `learningStats` in `gameStore.js`:
@@ -15,8 +15,8 @@ A sound is flagged for the Training Gym based on `learningStats` in `gameStore.j
 *   Tapping a "Weak" node on the Adventure Map opens a special Modal: *"Oh no! [Sound] is feeling a bit weak. Let's take it to the Gym to get stronger!"*
 *   The "GO!" button is replaced with a "To the Gym! 🏋️‍♂️" button.
 
-## 4. Core Gameplay Loop (The Workout Routine)
-The gym consists of a rapid, highly-scaffolded 3-stage workout. The child acts as the "Coach".
+## 4. Core Gameplay Loop (Phonics Gym)
+The Phonics gym consists of a rapid, highly-scaffolded 3-stage workout. The child acts as the "Coach".
 
 ### Stage 1: Warm-up (Isolating the Sound)
 *   **UI:** The weak sound appears as an SVG character holding a jump rope.
@@ -37,6 +37,13 @@ The gym consists of a rapid, highly-scaffolded 3-stage workout. The child acts a
 *   **Dynamic Hitboxes:** To reduce frustration, hitboxes for the answer cards in the Gym are scaled up by 20% (applying the Dynamic Error-Tolerance concept).
 *   **State Update (`gameStore.js`):** Upon completing the Gym workout, the system injects a "Confidence Boost" into `learningStats`. It adds `+2 attempts` and `+2 firstAttemptHits` artificially, bumping the accuracy percentage up so the node returns to the "Practising" (Blue) or "Unlocked" (Green) state, officially "graduating" from the Gym.
 *   **Audio Engine:** Need a new `playSlow(url)` function in `AudioEngine.js` using `playbackRate = 0.8` for the Warm-up stage.
+
+## 6. Core Gameplay Loop (Math Gym)
+The Math Gym provides a focused, endless procedural practice arena for numerical mastery.
+*   **Skill Detection:** Automatically calculates the mathematically weakest unlocked skill using Exponential Moving Average (EMA) and first-attempt accuracy.
+*   **Procedural Generation:** The Math Question Engine injects a unique PRNG seed for every question, guaranteeing endless replayability without memorization.
+*   **UUID Key Rendering:** Each procedurally generated question is assigned a strict `crypto.randomUUID()` to ensure React unmounts and remounts accurately between identical question types, preventing frozen UI states.
+*   **Continuous Feedback:** Correct answers stack stars into a session vault, which are transferred to the global state upon clicking "Quit".
 
 ## 6. Required Assets (SVG & Audio)
 *   **SVGs:** 
