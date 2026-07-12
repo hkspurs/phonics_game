@@ -66,13 +66,14 @@ export default function OrderingQuestion({ question, onAnswer }) {
         onReorder={setCurrentOrder}
         style={{ 
           display: 'flex', 
-          gap: '16px', 
-          flexWrap: 'wrap', 
+          gap: '8px', 
+          flexWrap: 'nowrap', // Force single line to fix Framer Motion 2D layout glitch
           justifyContent: 'center',
           padding: '24px',
           backgroundColor: '#f8fafc',
           borderRadius: '16px',
           width: '100%',
+          overflowX: 'auto', // Safely contain items on tiny screens without breaking physics
           listStyleType: 'none',
           margin: 0
         }}
@@ -98,9 +99,10 @@ export default function OrderingQuestion({ question, onAnswer }) {
               value={num}
               disabled={isAnswered}
               style={{
-                width: '80px',
-                height: '80px',
-                fontSize: '32px',
+                flexShrink: 0,
+                width: currentOrder.length > 4 ? '55px' : '80px',
+                height: currentOrder.length > 4 ? '55px' : '80px',
+                fontSize: currentOrder.length > 4 ? '24px' : '32px',
                 fontWeight: 'bold',
                 color: color,
                 backgroundColor: bg,
