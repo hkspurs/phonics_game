@@ -10,14 +10,16 @@ A daily phonics learning app for six-year-old children that feels like a real ed
 - **Tertiary**: Content/QA reviewers. Need to ensure audio accuracy (start/end timing, preserved consonants).
 
 ## 3. Core App Modules
-1. **Home World (Dashboard)**: A colourful animated place prioritizing "Start Today's Mission". Contains hidden Parent Gate.
-2. **Daily Sound Challenge**: A short 10-question practice session every day based on adaptive learning (Randomized to prevent pattern recognition).
-3. **Sound Mastery Map**: A visual map showing sound statuses. Controls the `unlockedSounds` and `currentNode` state. Requires 90% accuracy to unlock next node.
-4. **Assignments**: Teacher/parent tasks that override the daily mission queue when active.
-5. **Reward Room**: Visual tracking of earned stars, sound gems, stickers, and badges.
-6. **Brain Games**: Listening and memory mini-games. **Strictly locked** behind a `hasCompletedDaily` flag.
-7. **Reports (Parent Dashboard)**: PIN-gated dashboard showing accuracy, weak sounds, confused pairs, and curriculum controls (Reset, Assign, Force Unlock).
-8. **Audio Data System**: Multi-channel `AudioEngine` and a strict 105-sound JSON metadata file pre-filtered by `human_review_status = approved`.
+1. **Subject Gateway**: A vibrant entry screen directing children to either `Phonics Forest` or `Math Kingdom`.
+2. **Home World (Dashboard)**: A colourful animated place prioritizing "Start Today's Mission". Contains hidden Parent Gate.
+3. **Daily Challenges**: Short 10-question practice sessions (Phonics and Math) based on adaptive learning.
+4. **Mastery Maps**: Visual maps showing skill statuses. Phonics uses vowel families; Math uses numerical concepts.
+5. **Math Training Gym**: An endless, procedurally generated practice arena targeting the child's weakest math skills.
+6. **Assignments**: Teacher/parent tasks that override the daily mission queue when active.
+7. **Reward Room**: Visual tracking of earned stars, sound gems, stickers, and badges.
+8. **Brain Games**: Listening and memory mini-games. **Strictly locked** behind a `hasCompletedDaily` flag.
+9. **Reports (Parent Dashboard)**: PIN-gated dashboard showing accuracy, weak skills, confused pairs, and curriculum controls (Reset, Assign, Force Unlock).
+10. **Audio Data System**: Multi-channel `AudioEngine` with parallel preloading, and a strict 105-sound JSON metadata file pre-filtered by `human_review_status = approved`.
 
 ## 4. Reward Rules
 Rewards give children a reason to return, without utilizing gambling patterns or loot boxes.

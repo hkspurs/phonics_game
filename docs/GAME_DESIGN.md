@@ -14,6 +14,7 @@ The algorithm strictly pulls from the child's `unlockedSounds` and `currentNode`
 ## 2. Question Engine Templates
 To avoid the "AI-template look", the UI rendering for these questions must vary (e.g., bubbles, cards, treasure boxes, doors).
 
+### Phonics Templates
 1. **Listen and Choose**: Audio plays. Child chooses from 2–4 sound cards.
 2. **Sound Match**: Child hears a sound and drags it to the matching letter pair.
 3. **Same or Different**: Child hears two sounds and decides whether they are the same.
@@ -23,17 +24,27 @@ To avoid the "AI-template look", the UI rendering for these questions must vary 
 7. **Echo Sequence**: Child hears a short sequence and repeats it by tapping cards.
 8. **Boss Question**: High-stakes animation (but low pressure) used at the end of the daily challenge.
 
+### Math Generators (Procedural Engine)
+1. **Counting**: 1-20 objects with variable distributions.
+2. **Ordering**: Ascending/descending number lines.
+3. **Comparison**: Quantity evaluation.
+4. **Number Bonds**: Visual ten-frames for addition pairs.
+5. **Addition/Subtraction**: Visual arithmetic within 10.
+6. **Ordinals**: Position tracking in a queue.
+7. **Patterns**: AB, AAB, ABB sequence completion.
+
 ## 3. Feedback System
 - **Correct**: Mascot jumps, sound gem flies into counter, correct letters glow, joyful sound effect.
 - **Wrong (Gentle Retries)**: Replay audio automatically as a hint. Incorrect choices instantly fade out (`opacity: 0`) and become unclickable, guiding the child via process of elimination. The traumatic "Wrong!" text and 1-second delay have been entirely removed to protect child psychology.
 
-## 4. Mastery Algorithm
+## 4. Mastery Algorithm (EMA + Retries)
 Mastery determines what questions are generated. First-attempt accuracy is tracked separately from final correctness.
 - **Practised**: At least 3 total attempts.
 - **Improving**: Recent accuracy > 60%.
 - **Strong**: Recent accuracy > 80%.
 - **Mastered**: 90%+ accuracy (Strict Phase 2 requirement) across at least 3 sessions. Map nodes only unlock if the parent node reaches this 90% threshold.
 - **Weak**: Below 60% accuracy, confused with same pair 3 times, very slow response time, high replay usage, or manually flagged by a teacher.
+- **Exponential Moving Average (EMA)**: Math uses EMA decay (`new = 0.3 * current + 0.7 * past`) to allow a child to eventually master a skill even if their historical average was severely depressed by early struggles.
 
 ## 5. Brain Games
 Short 1-3 minute mini-games unlocked *only after* completing the Daily Challenge.
