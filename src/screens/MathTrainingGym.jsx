@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { X } from 'lucide-react';
 import { useGameStore } from '../store/gameStore';
@@ -32,6 +32,7 @@ export default function MathTrainingGym() {
   const [attemptCount, setAttemptCount] = useState(1);
   const [isProcessing, setIsProcessing] = useState(false);
   const [questionStartTime, setQuestionStartTime] = useState(Date.now());
+  const processingRef = useRef(false);
 
   useEffect(() => {
     if (!isMathChallengeActive || activeQuestions.length === 0 || currentQuestionIndex >= activeQuestions.length) {
@@ -44,7 +45,8 @@ export default function MathTrainingGym() {
   if (!currentQ) return null;
 
   const handleAnswer = (isCorrect, attempts) => {
-    if (isProcessing) return;
+    if (processingRef.current) return;
+    processingRef.current = true;
     setIsProcessing(true);
 
     if (isCorrect) {
@@ -74,6 +76,7 @@ export default function MathTrainingGym() {
 
       setTimeout(() => {
         setIsProcessing(false);
+        processingRef.current = false;
         if (currentQuestionIndex + 1 >= activeQuestions.length) {
           clearMathSession();
           navigate('/math/map'); // Return to map after training
@@ -128,6 +131,7 @@ export default function MathTrainingGym() {
       setTimeout(() => {
         setFeedbackState(null);
         setIsProcessing(false);
+        processingRef.current = false;
       }, 1500);
     }
   };

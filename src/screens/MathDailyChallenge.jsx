@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Volume2, X } from 'lucide-react';
 import { useGameStore } from '../store/gameStore';
@@ -23,6 +23,7 @@ export default function MathDailyChallenge() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [hasStartedInteraction, setHasStartedInteraction] = useState(false);
   const [questionStartTime, setQuestionStartTime] = useState(Date.now());
+  const processingRef = useRef(false);
 
   // Redirect if no active challenge or out of bounds
   useEffect(() => {
@@ -42,7 +43,8 @@ export default function MathDailyChallenge() {
   }
 
   const handleAnswer = (isCorrect, attemptsTaken) => {
-    if (isProcessing) return;
+    if (processingRef.current) return;
+    processingRef.current = true;
     setIsProcessing(true);
 
     const responseTimeMs = Date.now() - questionStartTime;
@@ -78,6 +80,7 @@ export default function MathDailyChallenge() {
         
         setTimeout(() => {
           setIsProcessing(false);
+          processingRef.current = false;
           setQuestionStartTime(Date.now());
           if (mathCurrentQuestionIndex + 1 >= mathActiveQuestions.length) {
             navigate('/reward?subject=math');
@@ -96,7 +99,8 @@ export default function MathDailyChallenge() {
         window.speechSynthesis.speak(utterance);
       }
 
-      audioEngine.play('assets/correct_chime.mp3').catch(() => {}).finally(proceed);
+      audioEngine.playUI('correct');
+      proceed();
     } else {
       recordMathAnswer({
         skillId: currentQ.skillId,
@@ -120,6 +124,7 @@ export default function MathDailyChallenge() {
       setTimeout(() => {
         setFeedbackState(prev => prev === 'wrong' ? null : prev);
         setIsProcessing(false);
+        processingRef.current = false;
       }, 1000);
       
       if (window.speechSynthesis) {

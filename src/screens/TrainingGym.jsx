@@ -14,6 +14,7 @@ export default function TrainingGym() {
   const [selectedId, setSelectedId] = useState(null);
   const [attempts, setAttempts] = useState(0);
   const [animState, setAnimState] = useState('idle'); // idle, success, fail
+  const processingRef = useRef(false);
 
   const currentQ = activeQuestions[currentQuestionIndex];
   
@@ -39,7 +40,8 @@ export default function TrainingGym() {
   if (!currentQ) return null;
 
   const handleChoice = (choiceLabel) => {
-    if (isRevealed) return;
+    if (processingRef.current || isRevealed) return;
+    processingRef.current = true;
     
     const isCorrect = choiceLabel === currentQ.correctAnswer;
     const newAttempts = attempts + 1;
@@ -60,6 +62,7 @@ export default function TrainingGym() {
       setTimeout(() => {
         if (currentQuestionIndex >= activeQuestions.length - 1) {
           audioEngine.playUI('pop'); // Or cheer
+          processingRef.current = false;
           completeGymWorkout(currentNode);
           useGameStore.setState({ isChallengeActive: false, currentChallengeType: null });
           navigate('/map');
@@ -68,13 +71,17 @@ export default function TrainingGym() {
           setSelectedId(null);
           setAttempts(0);
           setAnimState('idle');
+          processingRef.current = false;
           nextQuestion();
         }
       }, 2000);
     } else {
       setAnimState('fail');
       audioEngine.playUI('error');
-      setTimeout(() => setAnimState('idle'), 1000);
+      setTimeout(() => {
+        setAnimState('idle');
+        processingRef.current = false;
+      }, 1000);
       playQuestionAudio(); // Replay audio as a gentle hint
     }
   };

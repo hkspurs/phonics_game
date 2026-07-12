@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Volume2, X } from 'lucide-react'
 import { useGameStore } from '../store/gameStore'
@@ -28,6 +28,7 @@ export default function DailyChallenge() {
   const [attemptCount, setAttemptCount] = useState(1) // QA FIX (Challenge 27): Track attempts for reward inflation
   const [disabledChoices, setDisabledChoices] = useState([]) // QA FIX: Track disabled choices
   const [isProcessing, setIsProcessing] = useState(false) // QA FIX: Spam-click Cooldown
+  const processingRef = useRef(false);
 
   // Redirect if no active challenge or out of bounds (QA FIX)
   useEffect(() => {
@@ -105,7 +106,8 @@ export default function DailyChallenge() {
   }
 
   const handleAnswer = (choice) => {
-    if (isProcessing) return;
+    if (processingRef.current) return;
+    processingRef.current = true;
     setIsProcessing(true);
 
     setSelected(choice)
@@ -128,6 +130,7 @@ export default function DailyChallenge() {
         
         setTimeout(() => {
           setIsProcessing(false);
+          processingRef.current = false;
           if (currentQuestionIndex + 1 >= activeQuestions.length) {
             navigate('/reward')
           } else {
@@ -179,6 +182,7 @@ export default function DailyChallenge() {
           setTimeout(() => {
             audioEngine.play(currentQ.targetSound.audio_url).catch(() => {}).finally(() => {
               setIsProcessing(false)
+              processingRef.current = false;
             });
           }, 300); // Brief pause before playing the target sound
         });
@@ -186,6 +190,7 @@ export default function DailyChallenge() {
         // Play target audio again as a hint, and DO NOT unlock until it finishes!
         audioEngine.play(currentQ.targetSound.audio_url).catch(() => {}).finally(() => {
           setIsProcessing(false)
+          processingRef.current = false;
         })
       }
     }
