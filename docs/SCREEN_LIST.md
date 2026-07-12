@@ -2,12 +2,19 @@
 
 ## 1. Child Interface (Tablet First)
 
-### 1.1 Home Dashboard
+### 1.1 Subject Gateway (Root `/`)
+- **Visuals**: A vibrant split-screen or dual-card layout.
+- **Core Elements**: 
+  - Massive touch targets for "Phonics Forest" and "Math Kingdom".
+  - Shared currency header (Stars, Gems, Tickets).
+  - Parent Gate Settings access.
+
+### 1.2 Subject Home Dashboards
 - **Visuals**: Animated landscape (clouds moving, stars sparkling, mascot waving).
 - **Core Elements**: 
-  - Massive "Start Today's Mission" button.
-  - Buttons linking to Sound Map, Brain Games, and Rewards.
-  - Streak indicator and daily progress bar.
+  - Massive "Start Daily Challenge" button.
+  - Links to subject-specific Mastery Maps, Training Gyms, and Brain Games.
+  - Daily progress and streak indicators.
 
 ### 1.2 Daily Sound Challenge
 - **Visuals**: Varies by question template. Physical-looking answer tiles.
@@ -25,11 +32,16 @@
   - "Brain Games Unlocked" ticket animation.
   - Button to return to Home or go to Brain Games.
 
-### 1.4 Sound Mastery Map
-- **Visuals**: A scrolling 2D map with distinct environments (Beach, Forest, Cave).
+### 1.4 Mastery Maps
+- **Visuals**: A scrolling 2D map with distinct environments (Beach, Forest, Cave for Phonics; Castles for Math).
 - **Core Elements**:
-  - Nodes representing sound families (color-coded by mastery).
+  - Nodes representing skill families (color-coded by mastery).
   - Ability to tap a node to launch specific practice.
+
+### 1.5 Training Gym (Math)
+- **Visuals**: An endless mode focused on rapid procedural practice.
+- **Core Elements**:
+  - Automatically identifies the child's weakest unlocked skill and generates procedural questions using a PRNG engine.
 
 ### 1.5 Reward Room
 - **Visuals**: A bedroom or clubhouse.

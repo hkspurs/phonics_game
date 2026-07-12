@@ -11,16 +11,18 @@ The goal of the Minimum Viable Product (MVP) is to prove the core learning loop,
 - React Router configuration including protected entry points.
 
 ### 2. Child Interface
-- **Home Dashboard**: Animated background, working "Start Daily Challenge" button.
-- **Daily Sound Challenge**: The 10-question adaptive loop.
-- **Chapter System & Adventure Map**: Visual progression map broken into dynamic vowel families (A, E, I, O, U) with soft SVG path rendering.
-- **Question Templates (3 minimum)**:
+- **Subject Gateway**: The new root entry screen `/` allowing children to choose between `Phonics Forest` and `Math Kingdom`.
+- **Home Dashboard (Phonics & Math)**: Animated backgrounds with context-aware "Start Daily Challenge" and "Training Gym" buttons.
+- **Daily Challenges**: Adaptive 10-question loops. Phonics focuses on sounds, while Math focuses on counting, ordering, and logic.
+- **Mastery Maps**: Visual progression maps for both subjects. Phonics uses vowel families; Math uses numerical concepts.
+- **Phonics Question Templates (3 minimum)**:
   1. Listen and Choose (Standard)
   2. Same or Different (Comparison)
   3. Boss Question (Animated finale)
-- **Feedback System**: Complete visual feedback loops for correct/wrong answers (no text-only feedback).
+- **Math Question Generators (8 Types)**: Procedurally generated determinism for Counting, Ordering, Comparison, Number Bonds, Addition, Subtraction, Ordinals, and Patterns.
+- **Feedback System**: Complete visual feedback loops for correct/wrong answers, including Contrastive Audio Feedback.
 - **Reward Screen**: End-of-mission celebration, basic Star/Gem counting, and Ticket awarding.
-- **Brain Games Island**: 🎟️ Play mini-games (Memory Match, Sound Catcher) by spending tickets earned from the Daily Challenge.
+- **Brain Games Island**: 🎟️ Play mini-games (Memory Match, Sound Catcher, Balloon Pop) by spending tickets earned from the Daily Challenge.
 
 ### 3. Learning Data & Content
 - **Sound Families**: Implemented 105 total sounds with strict human-reviewed `approved` metadata filtering.
