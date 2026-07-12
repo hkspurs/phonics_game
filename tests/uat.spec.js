@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 
 test('UAT Flow: App should load, show mascot, and allow navigating to Daily Challenge', async ({ page }) => {
   // Go to the app
-  await page.goto('/');
+  await page.goto('/#/phonics');
 
   // Verify Home Dashboard loaded properly
   await expect(page.getByText(/Ready to Learn/i)).toBeVisible();

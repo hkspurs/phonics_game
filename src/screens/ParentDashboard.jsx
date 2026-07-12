@@ -7,12 +7,19 @@ import { ArrowLeft, Volume2, AlertTriangle, CheckCircle, Trash2, BookOpen, Skull
 import DonutChart from '../components/DonutChart'
 import MascotRabbit from '../components/MascotRabbit'
 
+// Math Report Components
+import MathWeeklyReport from '../math/reports/MathWeeklyReport'
+import MathSkillMatrix from '../math/reports/MathSkillMatrix'
+import MathMistakeHistory from '../math/reports/MathMistakeHistory'
+import EncouragementPanel from '../parent/EncouragementPanel'
+
 export default function ParentDashboard() {
   const navigate = useNavigate()
   const { learningStats, unlockedSounds, currentNode, activeAssignment, getNodeStatus, resetProgress, refresherMode, toggleRefresherMode, tickets, addTicket, math, resetMathProgress } = useGameStore()
   const [toastMsg, setToastMsg] = React.useState(null);
   const [selectedChapter, setSelectedChapter] = React.useState('A Families');
   const [activeTab, setActiveTab] = React.useState('phonics'); // 'phonics' | 'math'
+  const [mathSubTab, setMathSubTab] = React.useState('overview'); // 'overview' | 'skills' | 'mistakes'
 
   const showToast = (msg) => {
     setToastMsg(msg);
@@ -342,78 +349,36 @@ export default function ParentDashboard() {
       </>)}
 
       {activeTab === 'math' && (
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '2rem', height: 'calc(100vh - 150px)' }}>
-          <div style={{ flex: '1 1 300px', background: 'white', borderRadius: '16px', padding: '1.5rem', overflowY: 'auto', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}>
-            <h2 style={{ color: '#334155', borderBottom: '2px solid #e2e8f0', paddingBottom: '0.5rem', marginBottom: '1.5rem' }}>Maths Analytics</h2>
-            
-            <div style={{ display: 'flex', gap: '1rem', marginBottom: '2rem', flexWrap: 'wrap' }}>
-              <div style={{ flex: 1, background: '#f8fafc', padding: '1rem', borderRadius: '12px', border: '1px solid #e2e8f0', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                <span style={{ color: '#64748b', fontSize: '0.875rem', fontWeight: 'bold', marginBottom: '0.5rem' }}>TOTAL FOCUS</span>
-                <span style={{ color: '#0f172a', fontSize: '2.5rem', fontWeight: 'bold' }}>{mathTotalAttempts}</span>
-              </div>
-              <div style={{ flex: 1, background: '#f8fafc', padding: '1rem', borderRadius: '12px', border: '1px solid #e2e8f0', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                <span style={{ color: '#64748b', fontSize: '0.875rem', fontWeight: 'bold', marginBottom: '0.5rem' }}>GROWTH</span>
-                <DonutChart percentage={parseFloat(mathOverallAccuracy)} color={mathOverallAccuracy > 80 ? '#10b981' : '#f59e0b'} />
-              </div>
-            </div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem', height: 'calc(100vh - 150px)', overflowY: 'auto', paddingBottom: '2rem' }}>
+          
+          <EncouragementPanel />
 
-            <h3 style={{ color: '#ef4444', display: 'flex', alignItems: 'center', gap: '0.5rem' }}><AlertTriangle size={20}/> Skills to Practice</h3>
-            {weakMathSkills.length === 0 ? (
-              <p style={{ color: '#94a3b8', fontStyle: 'italic' }}>Looking Great!</p>
-            ) : (
-              <ul style={{ padding: 0, listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                {weakMathSkills.map(([skillId, stats]) => (
-                  <li key={skillId} style={{ background: '#fee2e2', padding: '0.75rem', borderRadius: '8px', borderLeft: '4px solid #ef4444' }}>
-                    <strong>{skillId}</strong> ({(stats.firstAttemptHits/stats.attempts * 100).toFixed(0)}%)
-                  </li>
-                ))}
-              </ul>
-            )}
-
-            <h3 style={{ color: '#10b981', display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '1.5rem' }}><CheckCircle size={20}/> Mastered Skills</h3>
-            {masteredMathSkills.length === 0 ? <p style={{ color: '#94a3b8', fontStyle: 'italic' }}>Keep practicing!</p> : (
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
-                {masteredMathSkills.map(([skillId]) => (
-                  <span key={skillId} style={{ background: '#d1fae5', color: '#047857', padding: '0.5rem 1rem', borderRadius: '100px', fontWeight: 'bold' }}>
-                    {skillId}
-                  </span>
-                ))}
-              </div>
-            )}
-
-            <h3 style={{ color: '#d97706', display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '1.5rem' }}><Skull size={20}/> Misconceptions & Hints</h3>
-            <ul style={{ padding: 0, listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-              {Object.entries(mathStats).filter(([k, v]) => Object.keys(v.misconceptions || {}).length > 0 || v.hintsUsed > 0).length === 0 ? (
-                <p style={{ color: '#94a3b8', fontStyle: 'italic' }}>No misconceptions logged yet.</p>
-              ) : (
-                Object.entries(mathStats).filter(([k, v]) => Object.keys(v.misconceptions || {}).length > 0 || v.hintsUsed > 0).map(([skillId, stats]) => (
-                  <li key={`misc-${skillId}`} style={{ background: '#fef3c7', padding: '0.75rem', borderRadius: '8px', borderLeft: '4px solid #f59e0b' }}>
-                    <strong>{skillId}</strong>
-                    {stats.hintsUsed > 0 && <span style={{ marginLeft: '0.5rem', color: '#d97706', fontSize: '0.8rem' }}>Hints: {stats.hintsUsed}</span>}
-                    {Object.entries(stats.misconceptions || {}).map(([tag, count]) => (
-                      <div key={tag} style={{ fontSize: '0.8rem', color: '#92400e', marginTop: '0.25rem' }}>• {tag} ({count}x)</div>
-                    ))}
-                  </li>
-                ))
-              )}
-            </ul>
+          {/* Math Sub-Tabs */}
+          <div style={{ display: 'flex', gap: '1rem', borderBottom: '2px solid #e2e8f0', paddingBottom: '0.5rem' }}>
+            <button 
+              onClick={() => setMathSubTab('overview')}
+              style={{ background: 'none', border: 'none', padding: '0.5rem 1rem', fontSize: '1.1rem', fontWeight: 'bold', cursor: 'pointer', color: mathSubTab === 'overview' ? '#3b82f6' : '#64748b', borderBottom: mathSubTab === 'overview' ? '3px solid #3b82f6' : 'none' }}
+            >
+              Weekly Report
+            </button>
+            <button 
+              onClick={() => setMathSubTab('skills')}
+              style={{ background: 'none', border: 'none', padding: '0.5rem 1rem', fontSize: '1.1rem', fontWeight: 'bold', cursor: 'pointer', color: mathSubTab === 'skills' ? '#3b82f6' : '#64748b', borderBottom: mathSubTab === 'skills' ? '3px solid #3b82f6' : 'none' }}
+            >
+              Skills Matrix
+            </button>
+            <button 
+              onClick={() => setMathSubTab('mistakes')}
+              style={{ background: 'none', border: 'none', padding: '0.5rem 1rem', fontSize: '1.1rem', fontWeight: 'bold', cursor: 'pointer', color: mathSubTab === 'mistakes' ? '#3b82f6' : '#64748b', borderBottom: mathSubTab === 'mistakes' ? '3px solid #3b82f6' : 'none' }}
+            >
+              Learning Moments
+            </button>
           </div>
 
-          <div style={{ flex: '2 1 500px', background: 'white', borderRadius: '16px', padding: '1.5rem', overflowY: 'auto', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}>
-            <h2 style={{ color: '#334155', borderBottom: '2px solid #e2e8f0', paddingBottom: '0.5rem', marginBottom: '1rem' }}>
-              Maths Curriculum Status
-            </h2>
-            <ul style={{ display: 'flex', flexDirection: 'column', gap: '1rem', padding: 0, listStyle: 'none' }}>
-              {math.unlockedSkillIds.map(skillId => {
-                const stats = math.learningStats[skillId];
-                return (
-                  <li key={skillId} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '1rem', background: '#f8fafc', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
-                    <span style={{ fontSize: '1.2rem', fontWeight: 'bold' }}>{skillId}</span>
-                    <span style={{ color: '#0ea5e9', fontWeight: 'bold' }}>Unlocked</span>
-                  </li>
-                )
-              })}
-            </ul>
+          <div>
+            {mathSubTab === 'overview' && <MathWeeklyReport />}
+            {mathSubTab === 'skills' && <MathSkillMatrix />}
+            {mathSubTab === 'mistakes' && <MathMistakeHistory />}
           </div>
         </div>
       )}

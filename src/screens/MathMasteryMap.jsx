@@ -5,6 +5,7 @@ import { useGameStore } from '../store/gameStore';
 import MathMascot from '../math/components/MathMascot';
 import { mathCurriculum, SKILL_LABELS, SKILL_EMOJIS, isUnitUnlocked } from '../math/curriculum/mathCurriculum';
 import { mathQuestionEngine } from '../math/engine/MathQuestionEngine';
+import { createRandom } from '../math/engine/random';
 
 export default function MathMasteryMap() {
   const navigate = useNavigate();
@@ -36,7 +37,7 @@ export default function MathMasteryMap() {
     for(let i=0; i<5; i++) {
       const q = mathQuestionEngine.generateQuestion(selectedSkill.id, {
         difficulty: selectedSkill.status === 'mastered' ? 3 : (selectedSkill.status === 'weak' ? 1 : 2),
-        random: { random: () => Math.random() }
+        random: createRandom(Date.now() + i)
       });
       if(q) questions.push(q);
     }

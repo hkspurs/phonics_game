@@ -17,12 +17,38 @@ export default function SubjectGateway() {
   const [showParentGate, setShowParentGate] = useState(false)
   const [isEntering, setIsEntering] = useState(true)
 
-  const { stars, gems, tickets, streak, hasCompletedDaily, setParentAuthenticated, math } = useGameStore()
+  const { 
+    stars, gems, tickets, streak, hasCompletedDaily, setParentAuthenticated, math,
+    encouragements, claimEncouragement, addTicket
+  } = useGameStore()
+  
+  const [showEncouragement, setShowEncouragement] = useState(false)
+  const [currentEncouragement, setCurrentEncouragement] = useState(null)
 
   useEffect(() => {
     const timer = setTimeout(() => setIsEntering(false), 600)
     return () => clearTimeout(timer)
   }, [])
+
+  useEffect(() => {
+    if (!isEntering) {
+      const unclaimed = encouragements?.filter(e => !e.claimedAt) || [];
+      if (unclaimed.length > 0) {
+        setCurrentEncouragement(unclaimed[0]);
+        setShowEncouragement(true);
+      }
+    }
+  }, [isEntering, encouragements]);
+
+  const handleClaimEncouragement = () => {
+    if (currentEncouragement) {
+      audioEngine.playUI('correct');
+      // For MVP, just give 1 ticket as a simple reward
+      addTicket();
+      claimEncouragement(currentEncouragement.id);
+      setShowEncouragement(false);
+    }
+  };
 
   const handleParentAccess = () => {
     setParentAuthenticated(true)
@@ -49,6 +75,24 @@ export default function SubjectGateway() {
           onClose={() => setShowParentGate(false)}
           onSuccess={handleParentAccess}
         />
+      )}
+
+      {/* Encouragement Modal */}
+      {showEncouragement && currentEncouragement && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(255,255,255,0.95)', zIndex: 2000, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', animation: 'fadeInWipe 0.5s' }}>
+          <div style={{ transform: 'scale(1.5)', marginBottom: '2rem' }}>
+            <MascotRabbit feedbackState="happy" />
+          </div>
+          <h2 style={{ fontSize: '2.5rem', color: '#b45309', marginBottom: '1rem', textAlign: 'center' }}>
+            你有一封新信件！💌
+          </h2>
+          <div style={{ background: '#fef3c7', padding: '2rem', borderRadius: '24px', maxWidth: '80%', marginBottom: '2rem', border: '2px dashed #f59e0b', fontSize: '1.5rem', color: '#92400e', textAlign: 'center' }}>
+            "{currentEncouragement.message}"
+          </div>
+          <button className="btn-primary" style={{ fontSize: '2rem', padding: '1.5rem 3rem', animation: 'pulse-glow 2s infinite', background: '#f59e0b' }} onClick={handleClaimEncouragement}>
+            領取獎勵 🎟️
+          </button>
+        </div>
       )}
 
       {/* ── Header Bar: Currency + Settings ── */}

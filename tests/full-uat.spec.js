@@ -14,7 +14,7 @@ test.describe('Full UAT Test: Visuals, Audio, and Interactions', () => {
 
     // 1. App Load & Home Dashboard
     console.log('--- Step 1: Checking Home Dashboard & Mascot ---');
-    await page.goto('/');
+    await page.goto('/#/phonics');
     
     // Check "Mimi-chan" SVG is present
     const mascot = page.locator('#mascot-rabbit');

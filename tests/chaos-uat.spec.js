@@ -20,7 +20,7 @@ test.describe('Chaos & Exhaustive QA UAT', () => {
   });
 
   test('2. Parent Gate: Brute force & Wrong PINs', async ({ page }) => {
-    await page.goto('#/');
+    await page.goto('/#/phonics');
     
     // Open Parent Gate Modal
     await page.locator('button', { has: page.locator('svg.lucide-settings') }).click();
@@ -61,7 +61,7 @@ test.describe('Chaos & Exhaustive QA UAT', () => {
   });
 
   test('4. Daily Challenge: The "Piano Player" Spam Attack', async ({ page }) => {
-    await page.goto('#/');
+    await page.goto('/#/phonics');
     await page.getByRole('button', { name: /Start Today's Mission/i }).click({ force: true });
     
     // Wait for challenge to load

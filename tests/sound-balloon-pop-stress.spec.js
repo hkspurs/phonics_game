@@ -17,7 +17,7 @@ test.describe('Sound Balloon Pop Stress and Edge Case Tests', () => {
       }));
     });
 
-    await page.goto('/');
+    await page.goto('/#/phonics');
     
     // Verify Home Dashboard loaded
     await expect(page.getByText(/Ready to Learn/i)).toBeVisible();

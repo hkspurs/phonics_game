@@ -33,7 +33,7 @@ test.describe('Aggressive QA UAT: Edge Cases & Layout', () => {
 
   // Test 2: The "Spam Click" & Exhaustive Correct Path Test
   test('Spam clicking, exhaustive answer checking, and correct transition', async ({ page }) => {
-    await page.goto('/');
+    await page.goto('/#/phonics');
     const startBtn = page.locator('button', { hasText: /Start Today's Mission/i });
     await startBtn.click({ force: true });
     await page.waitForTimeout(1000); // Wait for challenge to load

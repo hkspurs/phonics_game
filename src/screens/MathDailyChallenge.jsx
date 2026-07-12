@@ -14,6 +14,7 @@ export default function MathDailyChallenge() {
   const { 
     math: { mathActiveQuestions, mathCurrentQuestionIndex, isMathChallengeActive },
     recordMathAnswer,
+    recordMathAttempt,
     nextMathQuestion,
     awardMathStars,
   } = useGameStore();
@@ -61,6 +62,14 @@ export default function MathDailyChallenge() {
         responseTimeMs,
         difficulty: currentQ.difficulty || 1
       });
+      recordMathAttempt({
+        question: currentQ,
+        selectedAnswer: currentQ.correctAnswer, // Correct answer chosen
+        isCorrect: true,
+        attemptNumber: attemptsTaken,
+        hintLevel: hintLevelUsed,
+        responseTimeMs,
+      });
       
       const startTime = Date.now();
       const proceed = () => {
@@ -97,6 +106,14 @@ export default function MathDailyChallenge() {
         hintLevelUsed,
         responseTimeMs,
         difficulty: currentQ.difficulty || 1
+      });
+      recordMathAttempt({
+        question: currentQ,
+        selectedAnswer: null, // Don't know which one was picked yet without refactoring all components
+        isCorrect: false,
+        attemptNumber: attemptsTaken,
+        hintLevel: hintLevelUsed,
+        responseTimeMs,
       });
       setFeedbackState('wrong');
       

@@ -49,6 +49,24 @@ export default function HomeDashboard() {
       
       {/* Header / Stats - Simplified for UX */}
       <div style={{ width: '100%', display: 'flex', flexWrap: 'wrap', gap: '1rem', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem', padding: '1rem', zIndex: 10 }}>
+        <button
+          onClick={() => { audioEngine.playUI('pop'); navigate('/'); }}
+          style={{
+            background: 'white',
+            border: 'none',
+            borderRadius: '100px',
+            padding: '0.5rem 1rem',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.5rem',
+            cursor: 'pointer',
+            boxShadow: '0 4px 6px rgba(0,0,0,0.05)',
+            color: '#3b82f6',
+            fontWeight: 'bold'
+          }}
+        >
+          ◀ Subjects
+        </button>
         <div style={{ background: 'white', padding: '0.5rem 1rem', borderRadius: '100px', display: 'flex', gap: '1rem', fontWeight: 'bold', boxShadow: '0 4px 6px rgba(0,0,0,0.05)' }}>
           <span style={{ color: '#eab308' }}>⭐ {stars}</span>
           {gems > 0 && <span style={{ color: '#0ea5e9' }}>💎 {gems}</span>}

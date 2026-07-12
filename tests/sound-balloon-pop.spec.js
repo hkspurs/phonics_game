@@ -51,7 +51,7 @@ test.describe('Sound Balloon Pop Game UAT & Integration Tests', () => {
   test('Game flow: navigation, ticket deduction, gameplay, incorrect/correct feedback, combo reset, and victory screen', async ({ page }) => {
     test.setTimeout(120000);
     // 1. Load the home dashboard
-    await page.goto('/');
+    await page.goto('/#/phonics');
 
     // Mock Zustand store state in localStorage to have exactly 2 tickets, unlocked sounds
     await page.evaluate(() => {

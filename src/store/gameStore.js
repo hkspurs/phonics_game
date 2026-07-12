@@ -2,6 +2,8 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { questionEngine } from '../game/QuestionEngine';
 import { createMathSlice, MATH_DEFAULTS } from './mathSlice';
+import { createAnalyticsSlice } from './analyticsSlice';
+import { createEncouragementSlice } from './encouragementSlice';
 
 export const useGameStore = create(
   persist(
@@ -330,10 +332,16 @@ export const useGameStore = create(
 
       // ---- Mathematics Slice ----
       ...createMathSlice(set, get),
+
+      // ---- Analytics Slice ----
+      ...createAnalyticsSlice(set, get),
+
+      // ---- Encouragement Slice ----
+      ...createEncouragementSlice(set, get)
     }),
     {
       name: 'phonics-game-storage',
-      version: 3, // Bumped for dual-subject support
+      version: 4, // Bumped for analytics & encouragements
       migrate: (persistedState, version) => {
         if (!persistedState || typeof persistedState !== 'object') return {}; // Prevent hydration poisoning
         
@@ -363,6 +371,17 @@ export const useGameStore = create(
           }
         }
         
+        // V4 Migration: Add analytics & encouragements if missing
+        if (!state.analytics) {
+          state.analytics = {
+            mathAttempts: [],
+            weeklyAggregates: {},
+          };
+        }
+        if (!state.encouragements) {
+          state.encouragements = [];
+        }
+        
         return state;
       },
       partialize: (state) => ({
@@ -382,6 +401,8 @@ export const useGameStore = create(
         currentChapter: state.currentChapter, // Persist chapter
         selectedSubject: state.selectedSubject, // Persist subject selection
         math: state.math, // Persist entire math slice
+        analytics: state.analytics, // Persist analytics
+        encouragements: state.encouragements, // Persist encouragements
       })
     }
   )

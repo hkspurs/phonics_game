@@ -3,7 +3,7 @@ import { test, expect } from '@playwright/test';
 test.describe('Extreme Pedagogy & Education Logic Tests', () => {
 
   test('Test 11: Random Clicker Mastery Bypass (No reward for guessing)', async ({ page }) => {
-    await page.goto('http://localhost:5173/phonics_game/');
+    await page.goto('/#/phonics');
     
     await page.locator('button', { hasText: /Start Today's Mission/i }).click({ force: true });
     
@@ -70,7 +70,7 @@ test.describe('Extreme Pedagogy & Education Logic Tests', () => {
   });
 
   test('Test 12: Scope-and-Sequence Violation (No advanced distractors)', async ({ page }) => {
-    await page.goto('http://localhost:5173/phonics_game/');
+    await page.goto('/#/phonics');
     await page.locator('button', { hasText: /Start Today's Mission/i }).click({ force: true });
     
     const letsGoBtn = page.locator('button', { hasText: /Let's Go!/i });
@@ -96,7 +96,7 @@ test.describe('Extreme Pedagogy & Education Logic Tests', () => {
   });
 
   test('Test 14: Phonemic Deafness Frustration Loop (Scaffolding Check)', async ({ page }) => {
-    await page.goto('http://localhost:5173/phonics_game/');
+    await page.goto('/#/phonics');
     await page.locator('button', { hasText: /Start Today's Mission/i }).click({ force: true });
     
     const letsGoBtn = page.locator('button', { hasText: /Let's Go!/i });

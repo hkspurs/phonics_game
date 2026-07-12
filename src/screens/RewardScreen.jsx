@@ -8,6 +8,7 @@ import ConfettiSVG from '../components/ConfettiSVG'
 import { audioEngine } from '../audio/AudioEngine'
 
 export default function RewardScreen() {
+  const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const subject = searchParams.get('subject') || 'phonics'
 
@@ -44,6 +45,7 @@ export default function RewardScreen() {
       
       {chestState !== 'open' ? (
         <div 
+          onClick={handleChestClick}
           style={{
             width: '300px', height: '300px',
             animation: chestState === 'shaking' ? 'shake 0.1s infinite' : 'float 3s infinite',
@@ -53,10 +55,11 @@ export default function RewardScreen() {
             padding: '2rem',
             borderRadius: '50%',
             background: 'rgba(255,255,255,0.4)',
-            boxShadow: chestState === 'shaking' ? '0 0 50px gold' : '0 10px 30px rgba(0,0,0,0.1)'
+            boxShadow: chestState === 'shaking' ? '0 0 50px gold' : '0 10px 30px rgba(0,0,0,0.1)',
+            cursor: 'pointer'
           }}
         >
-          <TreasureChest state={chestState} onClick={handleChestClick} />
+          <TreasureChest state={chestState} />
           <div style={{ fontSize: '2rem', textAlign: 'center', color: '#a21caf', marginTop: '1rem', whiteSpace: 'nowrap' }}>Tap to open!</div>
         </div>
       ) : (

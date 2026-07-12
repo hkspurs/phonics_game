@@ -4,7 +4,7 @@ test.describe('Advanced Pedagogy, Persistence & Edge Cases', () => {
 
   test('Priority 1: Session Persistence & Data Preservation on Reload', async ({ page }) => {
     // Navigate to the app
-    await page.goto('http://localhost:5173/phonics_game/');
+    await page.goto('/#/phonics');
     
     // Check initial state from localStorage
     let stateStr = await page.evaluate(() => window.localStorage.getItem('phonics-game-storage'));
@@ -51,6 +51,9 @@ test.describe('Advanced Pedagogy, Persistence & Edge Cases', () => {
     await page.waitForTimeout(1000);
 
     // Verify user is back to dashboard without infinite loading or broken state
+    // Now it drops back to SubjectGateway because DailyChallenge.jsx does navigate('/')
+    await expect(page.getByText('Phonics Forest')).toBeVisible();
+    await page.getByText('Phonics Forest').click();
     await expect(page.locator('button', { hasText: /Start Today's Mission/i })).toBeVisible();
 
     // Verify localStorage survived the reload
@@ -66,7 +69,7 @@ test.describe('Advanced Pedagogy, Persistence & Edge Cases', () => {
   test('Priority 2: The "Midnight Survivor" (Time-Bound Logic Interruption)', async ({ page }) => {
     // Start session at 11:59:50 PM
     await page.clock.install({ time: new Date('2026-07-06T23:59:50') });
-    await page.goto('http://localhost:5173/phonics_game/');
+    await page.goto('/#/phonics');
     
     // Start game
     const startBtn = page.locator('button', { hasText: /Start Today's Mission/i });
@@ -109,7 +112,7 @@ test.describe('Advanced Pedagogy, Persistence & Edge Cases', () => {
       route.abort('failed');
     });
 
-    await page.goto('http://localhost:5173/phonics_game/');
+    await page.goto('/#/phonics');
     
     // Start the game
     const startBtn = page.locator('button', { hasText: /Start Today's Mission/i });

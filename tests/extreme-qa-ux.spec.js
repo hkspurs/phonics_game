@@ -5,7 +5,7 @@ test.describe('Extreme QA & UX Resilience Tests', () => {
 
   test('Test 1 & 7: Toddler Mash & Rapid-Fire State Corruption', async ({ page }) => {
     // 100 clicks in 3 seconds on the target button while processing and during transitions
-    await page.goto('http://localhost:5173/phonics_game/');
+    await page.goto('/#/phonics');
     await page.locator('button', { hasText: /Start Today's Mission/i }).click({ force: true });
     
     const letsGoBtn = page.locator('button', { hasText: /Let's Go!/i });
@@ -44,7 +44,7 @@ test.describe('Extreme QA & UX Resilience Tests', () => {
     // Throttle CPU to 4x slowdown
     await client.send('Emulation.setCPUThrottlingRate', { rate: 4 });
 
-    await page.goto('http://localhost:5173/phonics_game/');
+    await page.goto('/#/phonics');
     await page.locator('button', { hasText: /Start Today's Mission/i }).click({ force: true });
     
     const letsGoBtn = page.locator('button', { hasText: /Let's Go!/i });
@@ -62,7 +62,7 @@ test.describe('Extreme QA & UX Resilience Tests', () => {
 
   test('Test 6: Safari Autoplay Silent Death (No interaction soft-lock check)', async ({ page }) => {
     // Start the mission normally to trigger the autoplay blocker
-    await page.goto('http://localhost:5173/phonics_game/');
+    await page.goto('/#/phonics');
     await page.locator('button', { hasText: /Start Today's Mission/i }).click({ force: true });
     
     // The "Let's Go" blocker SHOULD catch this to prevent autoplay silent death!
@@ -76,7 +76,7 @@ test.describe('Extreme QA & UX Resilience Tests', () => {
   });
 
   test('Test 8: Eternal Modal Trap (Z-Index Validation)', async ({ page }) => {
-    await page.goto('http://localhost:5173/phonics_game/');
+    await page.goto('/#/phonics');
     await page.locator('button', { hasText: /Start Today's Mission/i }).click({ force: true });
     
     const letsGoBtn = page.locator('button', { hasText: /Let's Go!/i });
@@ -98,7 +98,7 @@ test.describe('Extreme QA & UX Resilience Tests', () => {
 
   test('Test 9: Memory-Leak Confetti Crash (Endurance Mode)', async ({ page }) => {
     test.setTimeout(120000); // 2 minutes
-    await page.goto('http://localhost:5173/phonics_game/');
+    await page.goto('/#/phonics');
     
     // For 10 rapid rounds, we will inject a script to bypass the actual UI
     // just to test memory leaks of the Zustand store and react components.
@@ -114,7 +114,7 @@ test.describe('Extreme QA & UX Resilience Tests', () => {
       await expect(choices.nth(0)).toBeVisible();
       
       // Force return to home
-      await page.goto('http://localhost:5173/phonics_game/');
+      await page.goto('/#/phonics');
       await expect(page.locator('button', { hasText: /Start Today's Mission/i })).toBeVisible();
     }
   });

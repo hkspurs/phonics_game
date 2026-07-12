@@ -12,6 +12,7 @@ export default function CountingQuestion({ question, onAnswer }) {
   const [selectedChoice, setSelectedChoice] = useState(null);
   const [eliminatedChoices, setEliminatedChoices] = useState(new Set());
   const [isAnswered, setIsAnswered] = useState(false);
+  const [feedbackMsg, setFeedbackMsg] = useState(null);
 
   // Reset state when question changes
   useEffect(() => {
@@ -21,6 +22,7 @@ export default function CountingQuestion({ question, onAnswer }) {
     setSelectedChoice(null);
     setEliminatedChoices(new Set());
     setIsAnswered(false);
+    setFeedbackMsg(null);
   }, [question.id]);
 
   const handleItemClick = (index) => {
@@ -60,8 +62,25 @@ export default function CountingQuestion({ question, onAnswer }) {
       newEliminated.add(choice);
 
       if (nextAttempts === 1) {
-        // First incorrect: gently show them how to count by highlighting one
-        setHighlighted([0]);
+        // First incorrect: Guided counting animation
+        setFeedbackMsg("Almost! Let's count together.");
+        let i = 0;
+        const intervalId = setInterval(() => {
+          if (i < values.count) {
+            setHighlighted([i]);
+            if (window.speechSynthesis) {
+               window.speechSynthesis.cancel();
+               const u = new SpeechSynthesisUtterance((i + 1).toString());
+               u.rate = 1.2;
+               window.speechSynthesis.speak(u);
+            }
+            i++;
+          } else {
+            clearInterval(intervalId);
+            setHighlighted(Array.from({ length: values.count }, (_, idx) => idx));
+            setFeedbackMsg(null);
+          }
+        }, 800);
       } else if (nextAttempts === 2) {
         // Second incorrect: highlight all to make it easier to count, remove another wrong option
         setHighlighted(Array.from({ length: values.count }, (_, i) => i));
@@ -100,6 +119,12 @@ export default function CountingQuestion({ question, onAnswer }) {
         promptKey="countObjects" 
         promptParams={{ objectNameZh: values.label || '物品', objectNameEn: values.theme ? values.theme.split('_')[1] : 'items' }} 
       />
+      
+      {feedbackMsg && (
+        <div style={{ color: '#d97706', fontSize: '1.5rem', fontWeight: 'bold', animation: 'fadeIn 0.5s', textAlign: 'center' }}>
+          {feedbackMsg}
+        </div>
+      )}
       
       <ObjectGroup 
         count={values.count} 

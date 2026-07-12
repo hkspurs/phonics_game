@@ -12,6 +12,7 @@ export default function MathTrainingGym() {
   const { 
     math,
     recordMathAnswer,
+    recordMathAttempt,
     nextMathQuestion,
   } = useGameStore();
 
@@ -24,6 +25,7 @@ export default function MathTrainingGym() {
   const [feedbackState, setFeedbackState] = useState(null);
   const [attemptCount, setAttemptCount] = useState(1);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [questionStartTime, setQuestionStartTime] = useState(Date.now());
 
   useEffect(() => {
     if (!isMathChallengeActive || activeQuestions.length === 0 || currentQuestionIndex >= activeQuestions.length) {
@@ -41,7 +43,26 @@ export default function MathTrainingGym() {
 
     if (isCorrect) {
       setFeedbackState('correct');
-      recordMathAnswer(currentQ.skillId, attemptCount === 1, currentQ.difficulty || 1);
+      const responseTimeMs = Date.now() - questionStartTime;
+      const hintLevelUsed = Math.max(0, attemptCount - 1);
+      
+      recordMathAnswer({
+        skillId: currentQ.skillId,
+        firstAttemptCorrect: attemptCount === 1,
+        eventuallyCompleted: true,
+        attemptCount: attemptCount,
+        hintLevelUsed,
+        responseTimeMs,
+        difficulty: currentQ.difficulty || 1
+      });
+      recordMathAttempt({
+        question: currentQ,
+        selectedAnswer: currentQ.correctAnswer,
+        isCorrect: true,
+        attemptNumber: attemptCount,
+        hintLevel: hintLevelUsed,
+        responseTimeMs,
+      });
       
       audioEngine.playUI('correct');
 
@@ -52,12 +73,32 @@ export default function MathTrainingGym() {
         } else {
           setFeedbackState(null);
           setAttemptCount(1);
+          setQuestionStartTime(Date.now());
           nextMathQuestion();
         }
       }, 1500);
 
     } else {
-      recordMathAnswer(currentQ.skillId, false, currentQ.difficulty || 1);
+      const responseTimeMs = Date.now() - questionStartTime;
+      const hintLevelUsed = Math.max(0, attemptCount - 1);
+      
+      recordMathAnswer({
+        skillId: currentQ.skillId,
+        firstAttemptCorrect: false,
+        eventuallyCompleted: false,
+        attemptCount: attemptCount,
+        hintLevelUsed,
+        responseTimeMs,
+        difficulty: currentQ.difficulty || 1
+      });
+      recordMathAttempt({
+        question: currentQ,
+        selectedAnswer: null,
+        isCorrect: false,
+        attemptNumber: attemptCount,
+        hintLevel: hintLevelUsed,
+        responseTimeMs,
+      });
       setAttemptCount(prev => prev + 1);
       
       setFeedbackState('wrong');

@@ -6,6 +6,7 @@ import { audioEngine } from '../audio/AudioEngine';
 import { useGameStore } from '../store/gameStore';
 import { composeMathSession } from '../math/engine/difficulty';
 import { mathQuestionEngine } from '../math/engine/MathQuestionEngine';
+import { createRandom } from '../math/engine/random';
 
 export default function MathHome() {
   const navigate = useNavigate();
@@ -28,12 +29,46 @@ export default function MathHome() {
       // Use index to salt the seed
       return mathQuestionEngine.generateQuestion(p.skillId, {
         difficulty: p.difficulty,
-        random: { random: () => Math.random() } // Use Math.random since seed is hard for per-question in this UI without passing a random instance
+        random: createRandom(Date.now() + i) 
       });
     });
 
     startMathSession(questions);
     navigate('/math/daily');
+  };
+
+  const handleStartGym = () => {
+    audioEngine.playUI('pop');
+    // Find weakest skill
+    let weakestSkill = null;
+    let minScore = Infinity;
+    Object.keys(math.learningStats || {}).forEach(skillId => {
+      const stats = math.learningStats[skillId];
+      if (stats.attempts >= 3) {
+        const accuracy = stats.firstAttemptHits / stats.attempts;
+        if (accuracy < minScore) {
+          minScore = accuracy;
+          weakestSkill = skillId;
+        }
+      }
+    });
+    
+    // Fallback to first unlocked if no weak skill
+    if (!weakestSkill) {
+      weakestSkill = math.unlockedSkillIds[0];
+    }
+
+    const questions = [];
+    for(let i=0; i<5; i++) {
+      const q = mathQuestionEngine.generateQuestion(weakestSkill, {
+        difficulty: 1, // Start easy
+        random: createRandom(Date.now() + i)
+      });
+      if(q) questions.push(q);
+    }
+    
+    startMathSession(questions);
+    navigate('/math/gym');
   };
 
   return (
@@ -131,7 +166,7 @@ export default function MathHome() {
           
           <button 
             className="btn-secondary"
-            disabled
+            onClick={handleStartGym}
             style={{
               padding: '1.5rem',
               display: 'flex',
@@ -139,12 +174,12 @@ export default function MathHome() {
               alignItems: 'center',
               gap: '0.5rem',
               fontSize: '1.25rem',
-              color: '#9ca3af',
-              borderColor: '#e5e7eb',
-              background: '#f3f4f6'
+              color: '#4f46e5',
+              borderColor: '#c7d2fe',
+              background: 'white'
             }}
           >
-            <Lock size={32} />
+            <span style={{ fontSize: '32px' }}>🏋️‍♂️</span>
             Training Gym
           </button>
         </div>
