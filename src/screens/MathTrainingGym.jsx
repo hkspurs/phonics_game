@@ -5,6 +5,8 @@ import { useGameStore } from '../store/gameStore';
 import { audioEngine } from '../audio/AudioEngine';
 import MathMascot from '../math/components/MathMascot';
 import MathQuestionRenderer from '../math/renderers/MathQuestionRenderer';
+import { mathQuestionEngine } from '../math/engine/MathQuestionEngine';
+import { createRandom } from '../math/engine/random';
 
 export default function MathTrainingGym() {
   const navigate = useNavigate();
@@ -14,6 +16,7 @@ export default function MathTrainingGym() {
     recordMathAnswer,
     recordMathAttempt,
     nextMathQuestion,
+    pushMathQuestion,
     clearMathSession,
   } = useGameStore();
 
@@ -101,6 +104,20 @@ export default function MathTrainingGym() {
         hintLevel: hintLevelUsed,
         responseTimeMs,
       });
+
+      // --- Dynamic Gym Re-injection ---
+      // If they get it wrong on the first try, inject one more question of the same skill to reinforce learning
+      if (attemptCount === 1) {
+        const q = mathQuestionEngine.generateQuestion(currentQ.skillId, {
+          difficulty: currentQ.difficulty || 1,
+          random: createRandom(Date.now())
+        });
+        if (q) {
+          q.id = crypto.randomUUID();
+          pushMathQuestion(q);
+        }
+      }
+
       setAttemptCount(prev => prev + 1);
       
       setFeedbackState('wrong');

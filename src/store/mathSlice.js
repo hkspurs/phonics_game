@@ -242,6 +242,14 @@ export const createMathSlice = (set, get) => ({
     }
   })),
 
+  /** Push a new math question to the active session (for Gym re-injection) */
+  pushMathQuestion: (question) => set((state) => ({
+    math: {
+      ...state.math,
+      mathActiveQuestions: [...state.math.mathActiveQuestions, question],
+    }
+  })),
+
   /** Award math session stars */
   awardMathStars: (amount) => set((state) => ({
     math: {

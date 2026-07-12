@@ -47,6 +47,7 @@ export function generate(config) {
       count,
       theme: theme.id,
       emoji: theme.emoji,
+      imgUrl: theme.imgUrl,
       label: theme.label,
     },
     fingerprint,

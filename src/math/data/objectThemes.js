@@ -13,4 +13,7 @@ export const objectThemes = [
   { id: 'heart', emoji: '❤️', label: '心心', category: 'shape' },
   { id: 'flower', emoji: '🌸', label: '花', category: 'nature' },
   { id: 'butterfly', emoji: '🦋', label: '蝴蝶', category: 'nature' },
+  { id: 'rocket_3d', imgUrl: './assets/math/rocket.jpg', label: '火箭', category: 'toy' },
+  { id: 'candy_3d', imgUrl: './assets/math/candy.jpg', label: '糖果', category: 'toy' },
+  { id: 'teddy_3d', imgUrl: './assets/math/teddy.jpg', label: '熊仔', category: 'toy' },
 ];

@@ -43,12 +43,12 @@ export default function ChoiceQuestion({ question, onAnswer }) {
       return (
         <div style={{ display: 'flex', gap: '32px', alignItems: 'center' }}>
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
-            <ObjectGroup count={values.a} emoji="🍎" />
+            <ObjectGroup count={values.a} emoji="🍎" imgUrl={values.imgUrl} />
             <span style={{ fontSize: '32px', fontWeight: 'bold' }}>{values.a}</span>
           </div>
           <div style={{ fontSize: '48px', fontWeight: 'bold', color: '#cbd5e1' }}>?</div>
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
-            <ObjectGroup count={values.b} emoji="🍎" />
+            <ObjectGroup count={values.b} emoji="🍎" imgUrl={values.imgUrl} />
             <span style={{ fontSize: '32px', fontWeight: 'bold' }}>{values.b}</span>
           </div>
         </div>
@@ -58,7 +58,7 @@ export default function ChoiceQuestion({ question, onAnswer }) {
     if (type === 'addition') {
       return (
         <div style={{ display: 'flex', gap: '16px', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center' }}>
-          <ObjectGroup count={values.a} emoji={values.emoji || '🍎'} />
+          <ObjectGroup count={values.a} emoji={values.emoji || '🍎'} imgUrl={values.imgUrl} />
           <div style={{ fontSize: '48px', fontWeight: 'bold', color: '#3b82f6' }}>+</div>
           <ObjectGroup count={values.b} emoji={values.emoji || '🍎'} />
           <div style={{ fontSize: '48px', fontWeight: 'bold', color: '#1e293b' }}>=</div>
@@ -70,7 +70,7 @@ export default function ChoiceQuestion({ question, onAnswer }) {
     if (type === 'subtraction') {
       return (
         <div style={{ display: 'flex', gap: '16px', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center' }}>
-          <ObjectGroup count={values.a} emoji={values.emoji || '🍎'} />
+          <ObjectGroup count={values.a} emoji={values.emoji || '🍎'} imgUrl={values.imgUrl} />
           <div style={{ fontSize: '48px', fontWeight: 'bold', color: '#ef4444' }}>-</div>
           <span style={{ fontSize: '64px' }}>{values.b}</span>
           <div style={{ fontSize: '48px', fontWeight: 'bold', color: '#1e293b' }}>=</div>

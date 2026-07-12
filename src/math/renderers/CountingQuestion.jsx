@@ -129,6 +129,7 @@ export default function CountingQuestion({ question, onAnswer }) {
       <ObjectGroup 
         count={values.count} 
         emoji={values.emoji} 
+        imgUrl={values.imgUrl}
         highlightedIndices={highlighted}
         countedIndices={countedIndices}
         layout={values.count <= 5 ? 'scatter' : 'grid'}

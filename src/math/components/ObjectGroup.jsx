@@ -3,6 +3,7 @@ import React from 'react';
 export default function ObjectGroup({ 
   count, 
   emoji = '🍎', 
+  imgUrl,
   layout = 'grid', // 'grid' | 'line' | 'scatter'
   interactive = false,
   onItemClick,
@@ -69,7 +70,11 @@ export default function ObjectGroup({
               border: isCounted ? '3px solid #f59e0b' : '3px solid transparent',
             }}
           >
-            {emoji}
+            {imgUrl ? (
+              <img src={imgUrl} alt={emoji} style={{ width: '80%', height: '80%', objectFit: 'contain', borderRadius: '50%' }} />
+            ) : (
+              emoji
+            )}
             {isCounted && (
               <div style={{
                 position: 'absolute',

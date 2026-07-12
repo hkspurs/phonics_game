@@ -63,7 +63,7 @@ export default function MathHome() {
     const questions = [];
     for(let i=0; i<5; i++) {
       const q = mathQuestionEngine.generateQuestion(weakestSkill, {
-        difficulty: 1, // Start easy
+        difficulty: Math.floor(Math.random() * 3) + 1, // Start easy but allow harder
         random: createRandom(Date.now() + i)
       });
       if(q) {
