@@ -6,9 +6,11 @@ import { audioEngine } from '../audio/AudioEngine'
 import MascotRabbit from '../components/MascotRabbit'
 import MissionSun from '../components/MissionSun'
 import ParentGateModal from '../components/ParentGateModal'
+import { useTranslation } from '../hooks/useTranslation'
 
 export default function HomeDashboard() {
   const navigate = useNavigate()
+  const { t } = useTranslation()
   const [showParentGate, setShowParentGate] = useState(false);
   const [isEntering, setIsEntering] = useState(true);
   
@@ -65,7 +67,7 @@ export default function HomeDashboard() {
             fontWeight: 'bold'
           }}
         >
-          &lt; Back
+          &lt; {t('back')}
         </button>
         <div style={{ background: 'white', padding: '0.5rem 1rem', borderRadius: '100px', display: 'flex', gap: '1rem', fontWeight: 'bold', boxShadow: '0 4px 6px rgba(0,0,0,0.05)' }}>
           <span style={{ color: '#eab308' }}>⭐ {stars}</span>
@@ -117,8 +119,8 @@ export default function HomeDashboard() {
         transition: 'all 0.6s ease-out 0.4s',
         display: 'flex', flexDirection: 'column', alignItems: 'center'
       }}>
-        <h1 style={{ fontSize: '3rem', color: '#1e3a8a', marginBottom: '0.5rem', textAlign: 'center' }}>Ready to Learn?</h1>
-        <p style={{ fontSize: '1.5rem', color: '#3b82f6', marginBottom: '3rem' }}>Today's Mission is waiting for you!</p>
+        <h1 style={{ fontSize: '3rem', color: '#1e3a8a', marginBottom: '0.5rem', textAlign: 'center' }}>{t('readyToLearn')}</h1>
+        <p style={{ fontSize: '1.5rem', color: '#3b82f6', marginBottom: '3rem' }}>{t('todayMissionWaiting')}</p>
       </div>
 
       {/* Main Action */}
@@ -131,20 +133,20 @@ export default function HomeDashboard() {
           style={{ fontSize: '2rem', padding: '1.5rem 4rem', animation: 'pulse-glow 2s infinite', position: 'relative', zIndex: 1 }}
           onClick={handleStartMission}
         >
-          <Play size={32} /> Start Today's Mission
+          <Play size={32} /> {t('startTodayMission')}
         </button>
       </div>
 
       {/* Secondary Actions (QA FIX: Mobile Responsive & Gamification Lock) */}
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '2rem', marginTop: '4rem', justifyContent: 'center' }}>
         <button className="btn-secondary" onClick={() => { audioEngine.playUI('pop'); navigate('/map'); }}>
-          <Map size={24} /> Sound Map
+          <Map size={24} /> {t('soundMap')}
         </button>
         
         {/* Super Bubble Challenge */}
         {unlockedSounds.length >= 10 && (
           <button className="btn-secondary" onClick={handleStartBubble} style={{ background: '#fef08a', color: '#a16207', borderColor: '#fde047' }}>
-            <span style={{ fontSize: '24px' }}>🎈</span> Bubble Challenge
+            <span style={{ fontSize: '24px' }}>🎈</span> {t('bubbleChallenge')}
           </button>
         )}
 
@@ -163,10 +165,10 @@ export default function HomeDashboard() {
           }}
           style={{ opacity: (hasCompletedDaily || tickets > 0) ? 1 : 0.5, cursor: (hasCompletedDaily || tickets > 0) ? 'pointer' : 'default' }}
         >
-          {(hasCompletedDaily || tickets > 0) ? <Puzzle size={24} /> : <span style={{fontSize:'24px'}}>🔒</span>} Brain Games
+          {(hasCompletedDaily || tickets > 0) ? <Puzzle size={24} /> : <span style={{fontSize:'24px'}}>🔒</span>} {t('brainGames')}
         </button>
         <button className="btn-secondary" onClick={() => { audioEngine.playUI('pop'); navigate('/assignments'); }}>
-          <ClipboardList size={24} /> Assignments
+          <ClipboardList size={24} /> {t('assignments')}
         </button>
       </div>
 

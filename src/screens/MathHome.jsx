@@ -6,6 +6,7 @@ import { audioEngine } from '../audio/AudioEngine';
 import { useGameStore } from '../store/gameStore';
 import { mathQuestionEngine } from '../math/engine/MathQuestionEngine';
 import { createRandom } from '../math/engine/random';
+import { composeMathSession } from '../math/engine/difficulty';
 import { useTranslation } from '../hooks/useTranslation';
 
 export default function MathHome() {

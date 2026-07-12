@@ -9,6 +9,14 @@ export const translations = {
     maths: '數學王國',
     start: '開始',
     
+    // Phonics Home
+    todayMissionWaiting: '今日嘅任務等緊你呀！',
+    startTodayMission: '開始今日任務',
+    soundMap: '拼音地圖',
+    bubbleChallenge: '泡泡挑戰',
+    brainGames: '益智遊戲',
+    assignments: '功課任務',
+    
     // Math Home
     dailyChallenge: '每日挑戰',
     greatJobToday: '今天做得好！ 🎉',
@@ -19,9 +27,11 @@ export const translations = {
     quit: '退出',
     
     // Map Modal
-    mapMastered: '你已經精通啦！想練習下嗎？',
-    mapNeedsPractice: '需要練習下 {skill} 嗎？去健身房啦！',
-    mapLearn: '一齊學習同贏取星星啦！',
+    adventureMap: '冒險地圖',
+    underConstruction: '🚧 建設中 🚧',
+    mapMastered: '你已經精通啦！想做個極速挑戰嗎？',
+    mapNeedsPractice: '哎呀！ {skill} 有點弱。我們帶它去健身房變強吧！',
+    mapLearn: '一起學習和贏取星星吧！',
     toTheGym: '去健身房！',
     go: '開始！',
 
@@ -41,13 +51,20 @@ export const translations = {
     // Brain Games
     brainGamesIsland: '益智遊戲島',
     playToEarn: '玩遊戲賺取獎勵',
+    useTicketsToPlay: '使用門票玩有趣的迷你遊戲！',
     ticket: '門票',
     notEnoughTickets: '門票不足！完成每日挑戰來獲取更多門票吧。',
+    outOfTickets: '沒有門票了！😭 完成每日挑戰來獲得更多門票吧！',
+    playCost: '開始 (1 🎟️)',
+    needTickets: '需要門票',
     
     // Games
     soundCatcher: '聲音捕捉',
+    popBubbles: '點擊與聲音匹配的泡泡！',
     memoryMatch: '記憶配對',
+    matchSounds: '將聲音與字母配對！',
     balloonPop: '氣球爆破',
+    popBalloons: '點擊與聲音匹配的氣球！',
     
     // Profile & Rewards
     stars: '星星',
@@ -55,6 +72,14 @@ export const translations = {
     tickets: '門票',
     streak: '連勝',
     days: '天',
+    missionComplete: '任務完成！',
+    tapToOpen: '點擊打開！',
+    youEarned: '你獲得了：',
+    questionsCompleted: '完成的題目：',
+    perfectAnswerBonus: '完美答案獎勵：',
+    ticketUnlocked1: '解鎖 1 張益智遊戲門票！',
+    ticketUnlocked2: '解鎖 2 張益智遊戲門票！',
+    backToHome: '返回主頁',
     
     // Shared Buttons
     play: '遊玩',
@@ -73,6 +98,14 @@ export const translations = {
     maths: 'Math Kingdom',
     start: 'Start',
     
+    // Phonics Home
+    todayMissionWaiting: 'Today\'s Mission is waiting for you!',
+    startTodayMission: 'Start Today\'s Mission',
+    soundMap: 'Sound Map',
+    bubbleChallenge: 'Bubble Challenge',
+    brainGames: 'Brain Games',
+    assignments: 'Assignments',
+    
     // Math Home
     dailyChallenge: 'Daily Challenge',
     greatJobToday: 'Great job today! 🎉',
@@ -83,9 +116,11 @@ export const translations = {
     quit: 'Quit',
     
     // Map Modal
-    mapMastered: 'You are a master! Want to practice?',
-    mapNeedsPractice: 'Need some practice on {skill}? Let\'s go to the Gym!',
-    mapLearn: 'Let\'s learn and earn stars!',
+    adventureMap: 'Adventure Map',
+    underConstruction: '🚧 Under Construction 🚧',
+    mapMastered: 'You are a master! Want to do a Speed Run?',
+    mapNeedsPractice: 'Oh no! {skill} is feeling a bit weak. Let\'s take it to the Gym to get stronger!',
+    mapLearn: 'Let\'s play and earn stars!',
     toTheGym: 'To the Gym!',
     go: 'GO!',
 
@@ -105,13 +140,20 @@ export const translations = {
     // Brain Games
     brainGamesIsland: 'Brain Games Island',
     playToEarn: 'Play to earn rewards',
+    useTicketsToPlay: 'Use tickets to play fun mini-games!',
     ticket: 'Ticket',
     notEnoughTickets: 'Not enough tickets! Complete daily challenges to earn more.',
+    outOfTickets: 'Out of tickets! 😭 Complete a Daily Challenge to earn more!',
+    playCost: 'Play (1 🎟️)',
+    needTickets: 'Need Tickets',
     
     // Games
     soundCatcher: 'Sound Catcher',
+    popBubbles: 'Pop the bubbles that match the sound!',
     memoryMatch: 'Memory Match',
+    matchSounds: 'Match the sounds to the letters!',
     balloonPop: 'Balloon Pop',
+    popBalloons: 'Pop the balloons that match the sound!',
     
     // Profile & Rewards
     stars: 'Stars',
@@ -119,6 +161,14 @@ export const translations = {
     tickets: 'Tickets',
     streak: 'Streak',
     days: 'Days',
+    missionComplete: 'Mission Complete!',
+    tapToOpen: 'Tap to open!',
+    youEarned: 'You earned:',
+    questionsCompleted: 'Questions completed:',
+    perfectAnswerBonus: 'Perfect-answer bonus:',
+    ticketUnlocked1: '1 Brain Game Ticket Unlocked!',
+    ticketUnlocked2: '2 Brain Game Tickets Unlocked!',
+    backToHome: 'Back to Home',
     
     // Shared Buttons
     play: 'Play',

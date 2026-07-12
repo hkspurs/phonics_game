@@ -34,9 +34,9 @@ export function getMathDifficulty(skillId, mathState) {
   const lastAttempt = recentAttempts[recentAttempts.length - 1];
   let currentLevel = lastAttempt?.difficulty || 1;
   
-  // Check for 3 consecutive successes → increase
-  const lastThree = recentAttempts.slice(-3);
-  if (lastThree.length === 3 && lastThree.every(a => a.correct)) {
+  // Check for 2 consecutive successes → increase (Faster progression)
+  const lastTwo = recentAttempts.slice(-2);
+  if (lastTwo.length === 2 && lastTwo.every(a => a.correct)) {
     currentLevel = Math.min(currentLevel + 1, range.max);
   }
   
@@ -102,12 +102,16 @@ export function composeMathSession(unlockedSkillIds, mathState, getSkillStatus) 
   // Helper to pick from array cyclically
   const pickCyclic = (arr, index) => arr[index % arr.length];
   
-  // 3 current-skill questions
+  // 3 current-skill questions (add variety by occasionally bumping difficulty)
   for (let i = 0; i < 3 && currentSkills.length > 0; i++) {
     const skillId = pickCyclic(currentSkills, i);
+    const range = SKILL_DIFFICULTY_RANGE[skillId] || { min: 1, max: 3 };
+    let d = getMathDifficulty(skillId, mathState);
+    if (i === 2) d = Math.min(d + 1, range.max); // 3rd question is slightly harder
+    
     plan.push({
       skillId,
-      difficulty: getMathDifficulty(skillId, mathState),
+      difficulty: d,
       role: 'current',
     });
   }

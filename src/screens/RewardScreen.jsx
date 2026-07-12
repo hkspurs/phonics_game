@@ -6,9 +6,11 @@ import TreasureChest from '../components/TreasureChest'
 import RewardSticker from '../components/RewardSticker'
 import ConfettiSVG from '../components/ConfettiSVG'
 import { audioEngine } from '../audio/AudioEngine'
+import { useTranslation } from '../hooks/useTranslation'
 
 export default function RewardScreen() {
   const navigate = useNavigate()
+  const { t } = useTranslation()
   const [searchParams] = useSearchParams()
   const subject = searchParams.get('subject') || 'phonics'
 
@@ -41,7 +43,7 @@ export default function RewardScreen() {
       {/* Canvas Confetti Background */}
       <ConfettiSVG isVisible={chestState === 'open'} />
 
-      <h1 style={{ fontSize: '5rem', color: '#86198f', marginBottom: '1rem', textShadow: '4px 4px 0px #f0abfc', animation: 'pulse-glow 2s infinite', zIndex: 2, opacity: chestState === 'open' ? 1 : 0, transition: 'opacity 1s' }}>Mission Complete!</h1>
+      <h1 style={{ fontSize: '5rem', color: '#86198f', marginBottom: '1rem', textShadow: '4px 4px 0px #f0abfc', animation: 'pulse-glow 2s infinite', zIndex: 2, opacity: chestState === 'open' ? 1 : 0, transition: 'opacity 1s' }}>{t('missionComplete')}</h1>
       
       {chestState !== 'open' ? (
         <div 
@@ -60,7 +62,7 @@ export default function RewardScreen() {
           }}
         >
           <TreasureChest state={chestState} />
-          <div style={{ fontSize: '2rem', textAlign: 'center', color: '#a21caf', marginTop: '1rem', whiteSpace: 'nowrap' }}>Tap to open!</div>
+          <div style={{ fontSize: '2rem', textAlign: 'center', color: '#a21caf', marginTop: '1rem', whiteSpace: 'nowrap' }}>{t('tapToOpen')}</div>
         </div>
       ) : (
         <>
@@ -72,16 +74,16 @@ export default function RewardScreen() {
           </div>
 
           <div style={{ background: 'white', padding: '3rem 5rem', borderRadius: '48px', border: '6px solid #f0abfc', boxShadow: '0 16px 0 #f0abfc, 0 20px 25px rgba(0,0,0,0.1)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1.5rem', marginBottom: '4rem', zIndex: 2, animation: 'popIn 0.5s 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) both' }}>
-            <h2 style={{ color: '#a21caf', fontSize: '2.5rem' }}>You earned:</h2>
+            <h2 style={{ color: '#a21caf', fontSize: '2.5rem' }}>{t('youEarned')}</h2>
             
             {subject === 'math' ? (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', fontSize: '1.5rem', color: '#475569', marginBottom: '1rem', width: '100%', textAlign: 'left' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', gap: '2rem' }}>
-                  <span>Questions completed:</span>
+                  <span>{t('questionsCompleted')}</span>
                   <span style={{ fontWeight: 'bold' }}>+8 ⭐</span>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', gap: '2rem' }}>
-                  <span>Perfect-answer bonus:</span>
+                  <span>{t('perfectAnswerBonus')}</span>
                   <span style={{ fontWeight: 'bold', color: '#eab308' }}>+{math.mathSessionScore.stars - 8} ⭐</span>
                 </div>
                 <div style={{ height: '2px', background: '#e2e8f0', margin: '0.5rem 0' }} />
@@ -94,12 +96,12 @@ export default function RewardScreen() {
             </div>
             
             <p style={{ color: '#d946ef', fontWeight: 'bold', fontSize: '1.5rem', marginTop: '1rem', background: '#fdf4ff', padding: '1rem 2rem', borderRadius: '100px', display: 'inline-block', textAlign: 'center' }}>
-              🎟️ {subject === 'math' ? '1 Brain Game Ticket Unlocked!' : '2 Brain Game Tickets Unlocked!'}
+              🎟️ {subject === 'math' ? t('ticketUnlocked1') : t('ticketUnlocked2')}
             </p>
           </div>
 
           <button className="btn-primary" style={{ padding: '1.5rem 5rem', fontSize: '2.5rem', background: '#d946ef', boxShadow: '0 10px 0 #a21caf', zIndex: 2, transition: 'transform 0.2s', animation: 'popIn 0.5s 0.4s both' }} onClick={handleGoHome}>
-            <Home size={40} /> Back to Home
+            <Home size={40} /> {t('backToHome')}
           </button>
         </>
       )}

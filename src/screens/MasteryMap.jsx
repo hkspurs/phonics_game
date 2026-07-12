@@ -6,9 +6,11 @@ import MapNodeCloud from '../components/MapNodeCloud'
 import MascotRabbit from '../components/MascotRabbit'
 import { audioEngine } from '../audio/AudioEngine'
 import { questionEngine } from '../game/QuestionEngine'
+import { useTranslation } from '../hooks/useTranslation'
 
 export default function MasteryMap() {
   const navigate = useNavigate()
+  const { t } = useTranslation()
   const { getNodeStatus, unlockedSounds, currentNode, currentChapter = 'A Families' } = useGameStore()
   const [selectedNode, setSelectedNode] = useState(null)
   const [isSwapping, setIsSwapping] = useState(false); // QA FIX: Prevent DOM thrashing
@@ -124,11 +126,11 @@ export default function MasteryMap() {
       {/* Header */}
       <div style={{ position: 'absolute', top: '1rem', left: '1rem', zIndex: 10, display: 'flex', gap: '1rem', alignItems: 'center' }}>
         <button className="btn-secondary" style={{ padding: '0.5rem 1rem' }} onClick={() => navigate('/')}>
-          <ArrowLeft size={24} /> Back
+          <ArrowLeft size={24} /> {t('back')}
         </button>
       </div>
       <h1 style={{ textAlign: 'center', color: '#b45309', fontSize: '2.5rem', marginTop: '1rem', zIndex: 10, position: 'relative', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '1rem' }}>
-        Adventure Map
+        {t('adventureMap')}
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: 'white', padding: '0.5rem', borderRadius: '100px', border: '4px solid #fcd34d', boxShadow: '0 8px 0 #fbbf24' }}>
           <button onClick={handlePrevChapter} disabled={isSwapping || currentChapterIndex <= 0} style={{ background: currentChapterIndex <= 0 ? '#f1f5f9' : '#38bdf8', border: 'none', borderRadius: '50%', width: '48px', height: '48px', cursor: currentChapterIndex <= 0 ? 'not-allowed' : 'pointer', opacity: currentChapterIndex <= 0 ? 0.5 : 1, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: currentChapterIndex <= 0 ? 'none' : '0 4px 0 #0284c7', transform: isSwapping ? 'scale(0.95)' : 'none', transition: 'all 0.2s' }}>
             <ArrowLeft size={32} color="white" />
@@ -159,7 +161,7 @@ export default function MasteryMap() {
                 <MascotRabbit />
               </div>
               <div style={{ background: '#f1f5f9', padding: '1rem 2rem', borderRadius: '32px', border: '4px dashed #cbd5e1' }}>
-                🚧 Under Construction 🚧
+                {t('underConstruction')}
               </div>
             </div>
           )}
@@ -269,17 +271,17 @@ export default function MasteryMap() {
             {/* QA FIX: Child-friendly adaptive copy */}
             <p style={{ color: '#475569', fontSize: '1.25rem', marginBottom: '2rem', fontWeight: 'bold' }}>
               {selectedNode.status === 'mastered' 
-                ? "You are a master! Want to do a Speed Run?" 
+                ? t('mapMastered')
                 : selectedNode.status === 'weak'
-                  ? `Oh no! ${selectedNode.id} is feeling a bit weak. Let's take it to the Gym to get stronger!`
-                  : "Let's play and earn stars!"}
+                  ? t('mapNeedsPractice', { skill: selectedNode.id })
+                  : t('mapLearn')}
             </p>
 
             <button className="btn-primary" style={{ width: '100%', fontSize: '1.5rem', padding: '1rem', justifyContent: 'center' }} onClick={handlePractice}>
               {selectedNode.status === 'weak' ? (
-                <>🏋️‍♂️ To the Gym!</>
+                <>🏋️‍♂️ {t('toTheGym')}</>
               ) : (
-                <><Play size={28} fill="currentColor" /> GO!</>
+                <><Play size={28} fill="currentColor" /> {t('go')}</>
               )}
             </button>
           </div>

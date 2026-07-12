@@ -16,4 +16,7 @@ export const objectThemes = [
   { id: 'rocket_3d', imgUrl: './assets/math/rocket.jpg', label: '火箭', category: 'toy' },
   { id: 'candy_3d', imgUrl: './assets/math/candy.jpg', label: '糖果', category: 'toy' },
   { id: 'teddy_3d', imgUrl: './assets/math/teddy.jpg', label: '熊仔', category: 'toy' },
+  { id: 'car_3d', imgUrl: './assets/math/car.jpg', label: '玩具車', category: 'toy' },
+  { id: 'dino_3d', imgUrl: './assets/math/dino.jpg', label: '恐龍', category: 'toy' },
+  { id: 'robot_3d', imgUrl: './assets/math/robot.jpg', label: '機械人', category: 'toy' },
 ];

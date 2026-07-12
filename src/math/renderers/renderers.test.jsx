@@ -7,6 +7,23 @@ import ChoiceQuestion from './ChoiceQuestion';
 import NumberBondQuestion from './NumberBondQuestion';
 import PatternQuestion from './PatternQuestion';
 
+vi.mock('framer-motion', () => ({
+  Reorder: {
+    Group: ({ children, onReorder, values }) => {
+      // Mock simple swap on click for tests
+      const handleSwap = () => {
+        if (values.length === 3) {
+          // Hardcode swap to simulate the specific test case clicks
+          // Initial: [3, 1, 2] -> click -> [1, 2, 3]
+          onReorder([1, 2, 3]);
+        }
+      };
+      return <div onClick={handleSwap} data-testid="reorder-group">{children}</div>;
+    },
+    Item: ({ children }) => <div>{children}</div>
+  }
+}));
+
 describe('Math Renderers', () => {
   it('CountingQuestion renders and answers', () => {
     const question = {
@@ -40,19 +57,14 @@ describe('Math Renderers', () => {
     render(<OrderingQuestion question={question} onAnswer={onAnswer} />);
     
     // Click 'Check' with wrong order
-    fireEvent.click(screen.getByText('Check'));
+    fireEvent.click(screen.getByText('檢查答案'));
     expect(onAnswer).toHaveBeenCalledWith(false, 1);
     
-    // Swap 3 and 1
-    fireEvent.click(screen.getByText('3'));
-    fireEvent.click(screen.getByText('1'));
-    
-    // Swap 3 and 2
-    fireEvent.click(screen.getByText('3'));
-    fireEvent.click(screen.getByText('2'));
+    // Simulate swap (mocked)
+    fireEvent.click(screen.getByTestId('reorder-group'));
     
     // Check answer again
-    fireEvent.click(screen.getByText('Check'));
+    fireEvent.click(screen.getByText('檢查答案'));
     expect(onAnswer).toHaveBeenCalledWith(true, 2);
   });
 

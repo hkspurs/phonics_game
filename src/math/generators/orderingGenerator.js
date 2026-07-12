@@ -13,12 +13,12 @@ export function generate(config) {
   let numItems, rangeMax, direction;
 
   if (difficulty <= 1) {
-    numItems = 3;
-    rangeMax = 10;
+    numItems = 4;
+    rangeMax = 15;
     direction = 'ascending';
   } else if (difficulty === 2) {
     numItems = 4;
-    rangeMax = 15;
+    rangeMax = 20;
     direction = random.next() > 0.5 ? 'ascending' : 'descending';
   } else {
     numItems = random.int(5, 6);

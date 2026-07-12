@@ -13,11 +13,11 @@ export function generate(config) {
   // Determine count range based on difficulty
   let min, max;
   if (difficulty <= 1) {
-    min = 1; max = 5;
+    min = 2; max = 9;
   } else if (difficulty === 2) {
-    min = 5; max = 10;
+    min = 6; max = 15;
   } else {
-    min = 10; max = 20;
+    min = 12; max = 20;
   }
 
   const count = random.int(min, max);
