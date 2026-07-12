@@ -7,9 +7,11 @@ import MathMascot from '../math/components/MathMascot';
 import MathQuestionRenderer from '../math/renderers/MathQuestionRenderer';
 import { mathQuestionEngine } from '../math/engine/MathQuestionEngine';
 import { createRandom } from '../math/engine/random';
+import { useTranslation } from '../hooks/useTranslation';
 
 export default function MathTrainingGym() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   
   const { 
     math,
@@ -141,11 +143,11 @@ export default function MathTrainingGym() {
              clearMathSession();
              navigate('/math/map');
         }}>
-          <X size={24} /> Quit
+          <X size={24} /> {t('quit')}
         </button>
         
         <div style={{ background: 'white', padding: '0.5rem 1rem', borderRadius: '100px', fontWeight: 'bold', color: '#3b82f6' }}>
-          🏋️‍♂️ Math Gym
+          🏋️‍♂️ {t('trainingGym')}
         </div>
 
         <span style={{ fontWeight: 'bold', color: '#1e40af', fontSize: '1.25rem' }}>

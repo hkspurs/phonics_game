@@ -5,6 +5,7 @@ import { useGameStore } from '../store/gameStore'
 import { audioEngine } from '../audio/AudioEngine'
 import MascotRabbit from '../components/MascotRabbit'
 import ParentGateModal from '../components/ParentGateModal'
+import { useTranslation } from '../hooks/useTranslation'
 import { SUBJECTS } from '../platform/subjects'
 
 /**
@@ -14,6 +15,7 @@ import { SUBJECTS } from '../platform/subjects'
  */
 export default function SubjectGateway() {
   const navigate = useNavigate()
+  const { t, language, toggleLanguage } = useTranslation()
   const [showParentGate, setShowParentGate] = useState(false)
   const [isEntering, setIsEntering] = useState(true)
 
@@ -83,14 +85,14 @@ export default function SubjectGateway() {
           <div style={{ transform: 'scale(1.5)', marginBottom: '2rem' }}>
             <MascotRabbit feedbackState="happy" />
           </div>
-          <h2 style={{ fontSize: '2.5rem', color: '#b45309', marginBottom: '1rem', textAlign: 'center' }}>
-            你有一封新信件！💌
-          </h2>
+          <h1 style={{ fontSize: '2.5rem', color: '#1e293b', margin: 0, textShadow: '0 2px 4px rgba(255,255,255,0.5)', textAlign: 'center' }}>
+            {t('newLetter')}
+          </h1>
           <div style={{ background: '#fef3c7', padding: '2rem', borderRadius: '24px', maxWidth: '80%', marginBottom: '2rem', border: '2px dashed #f59e0b', fontSize: '1.5rem', color: '#92400e', textAlign: 'center' }}>
             "{currentEncouragement.message}"
           </div>
           <button className="btn-primary" style={{ fontSize: '2rem', padding: '1.5rem 3rem', animation: 'pulse-glow 2s infinite', background: '#f59e0b' }} onClick={handleClaimEncouragement}>
-            領取獎勵 🎟️
+            {t('claimReward')} 🎟️
           </button>
         </div>
       )}
@@ -124,19 +126,20 @@ export default function SubjectGateway() {
         </div>
 
         <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
-          {/* Streak badge */}
-          <div style={{
-            background: streak > 2 ? 'linear-gradient(135deg, #ef4444, #f97316)' : 'white',
-            color: streak > 2 ? 'white' : '#ef4444',
-            padding: '0.5rem 1rem',
-            borderRadius: '100px',
-            fontWeight: 'bold',
-            boxShadow: streak > 2 ? '0 4px 10px rgba(239,68,68,0.4)' : '0 4px 6px rgba(0,0,0,0.05)',
-            transform: isEntering ? 'scale(0)' : 'scale(1)',
-            transition: 'transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.4s'
-          }}>
-            {streak > 2 ? '🔥' : '⭐'} {streak}
-          </div>
+          <button 
+            onClick={toggleLanguage}
+            style={{ 
+              background: '#e2e8f0', 
+              border: 'none', 
+              padding: '0.4rem 0.8rem', 
+              borderRadius: '1rem',
+              fontWeight: 'bold',
+              cursor: 'pointer',
+              color: '#475569'
+            }}>
+            {language === 'zh' ? '中 / EN' : 'EN / 中'}
+          </button>
+
           {/* Settings gear */}
           <button
             style={{
@@ -177,14 +180,14 @@ export default function SubjectGateway() {
           marginBottom: '0.25rem',
           textAlign: 'center'
         }}>
-          Ready to Learn?
+          {t('readyToLearn')}
         </h1>
         <p style={{
           fontSize: 'clamp(1rem, 3vw, 1.25rem)',
           color: '#64748b',
           textAlign: 'center'
         }}>
-          Pick a subject to begin! 🎉
+          {t('pickSubject')}
         </p>
       </div>
 
@@ -250,7 +253,7 @@ export default function SubjectGateway() {
             margin: 0,
             textShadow: '0 2px 4px rgba(0,0,0,0.15)'
           }}>
-            Phonics Forest
+            {t('phonics')}
           </h2>
           <button
             className="btn-primary"
@@ -272,7 +275,7 @@ export default function SubjectGateway() {
             onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.boxShadow = '0 4px 10px rgba(0,0,0,0.1)'; }}
             onClick={(e) => { e.stopPropagation(); handleSubjectClick(SUBJECTS.phonics.route); }}
           >
-            Start ▶
+            {t('start')} ▶
           </button>
         </div>
 
@@ -326,7 +329,7 @@ export default function SubjectGateway() {
             margin: 0,
             textShadow: '0 2px 4px rgba(0,0,0,0.15)'
           }}>
-            Math Kingdom
+            {t('maths')}
           </h2>
           <button
             className="btn-primary"

@@ -14,6 +14,7 @@ export const useGameStore = create(
       tickets: 2, 
       streak: 5,
       isParentAuthenticated: false, // Prevents Parent Gate Bypass
+      language: 'zh', // 'zh' for Traditional Chinese, 'en' for English
       refresherMode: false, // Teacher Agent Refresher Mode
       preRefresherState: null, // Restores progression after refresher
       currentChapter: 'A Families', // Chapter Support
@@ -90,7 +91,11 @@ export const useGameStore = create(
         };
       }),
 
-      setParentAuthenticated: (status) => set({ isParentAuthenticated: status }),
+      authenticateParent: (isAuthenticated) => set({ isParentAuthenticated: isAuthenticated }),
+
+      // 14. Global Language Settings
+      setLanguage: (lang) => set({ language: lang }),
+      toggleLanguage: () => set((state) => ({ language: state.language === 'zh' ? 'en' : 'zh' })),
 
       checkDailyReset: () => set((state) => {
         // QA FIX (Challenge 16): Timezone Drift. Use Intl to get local YYYY-MM-DD reliably.

@@ -4,12 +4,13 @@ import { ArrowLeft, Play, Map as MapIcon, Lock } from 'lucide-react';
 import MathMascot from '../math/components/MathMascot';
 import { audioEngine } from '../audio/AudioEngine';
 import { useGameStore } from '../store/gameStore';
-import { composeMathSession } from '../math/engine/difficulty';
 import { mathQuestionEngine } from '../math/engine/MathQuestionEngine';
 import { createRandom } from '../math/engine/random';
+import { useTranslation } from '../hooks/useTranslation';
 
 export default function MathHome() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { 
     math, 
     startMathSession,
@@ -101,10 +102,10 @@ export default function MathHome() {
           }}
         >
           <ArrowLeft size={24} color="#f59e0b" />
-          <span style={{color: '#f59e0b', fontWeight: 'bold', marginLeft: '0.5rem'}}>Back</span>
+          <span style={{color: '#f59e0b', fontWeight: 'bold', marginLeft: '0.5rem'}}>{t('back')}</span>
         </button>
         <h1 style={{ fontSize: '2rem', color: '#92400e', margin: 0 }}>
-          Math Kingdom
+          {t('maths')}
         </h1>
         <div style={{ width: '48px' }} /> {/* Spacer */}
       </div>
@@ -126,8 +127,8 @@ export default function MathHome() {
             textAlign: 'center',
             width: '100%'
           }}>
-            <h2 style={{ color: '#d97706', marginBottom: '1rem' }}>Great job today! 🎉</h2>
-            <p style={{ color: '#92400e' }}>You completed your daily math challenge.</p>
+            <h2 style={{ color: '#d97706', marginBottom: '1rem' }}>{t('greatJobToday')}</h2>
+            <p style={{ color: '#92400e' }}>{t('completedDaily')}</p>
           </div>
         ) : (
           <button 
@@ -146,7 +147,7 @@ export default function MathHome() {
               animation: 'pulse-glow 2s infinite'
             }}
           >
-            <Play size={40} /> Daily Challenge
+            <Play size={40} /> {t('dailyChallenge')}
           </button>
         )}
 
@@ -167,7 +168,7 @@ export default function MathHome() {
             }}
           >
             <MapIcon size={32} />
-            Mastery Map
+            {t('masteryMap')}
           </button>
           
           <button 
@@ -186,7 +187,7 @@ export default function MathHome() {
             }}
           >
             <span style={{ fontSize: '32px' }}>🏋️‍♂️</span>
-            Training Gym
+            {t('trainingGym')}
           </button>
         </div>
 

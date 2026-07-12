@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Reorder } from 'framer-motion';
 import BilingualPrompt from '../components/BilingualPrompt';
+import { useTranslation } from '../../hooks/useTranslation';
 
 export default function OrderingQuestion({ question, onAnswer }) {
   const { values, answer } = question;
@@ -9,6 +10,7 @@ export default function OrderingQuestion({ question, onAnswer }) {
   const [attempts, setAttempts] = useState(0);
   const [isAnswered, setIsAnswered] = useState(false);
   const [showHint, setShowHint] = useState(false);
+  const { t } = useTranslation();
 
   useEffect(() => {
     setCurrentOrder([...question.choices]);
@@ -51,12 +53,12 @@ export default function OrderingQuestion({ question, onAnswer }) {
       <BilingualPrompt promptKey={promptKey} />
       
       <p style={{ color: '#64748b', fontSize: '18px', margin: 0, fontWeight: 'bold' }}>
-        👆 Drag and drop to order (拉動並排序)
+        {t('dragAndDrop')}
       </p>
 
       {showHint && (
         <div style={{ color: '#f59e0b', fontWeight: 'bold', fontSize: '1.2rem', animation: 'fadeIn 0.5s' }}>
-          Hint: Look for the {isAscending ? 'smallest' : 'biggest'} number first!
+          {isAscending ? t('hintOrderAsc') : t('hintOrderDesc')}
         </div>
       )}
 
@@ -134,7 +136,7 @@ export default function OrderingQuestion({ question, onAnswer }) {
         disabled={isAnswered}
         style={{ width: '200px', fontSize: '24px', padding: '16px', opacity: isAnswered ? 0.5 : 1 }}
       >
-        Check
+        {t('check')}
       </button>
     </div>
   );
