@@ -1,26 +1,23 @@
-# Project: Phonics Balloon Pop
+# Project: Phonics & Math Learning Platform
 
 ## Architecture
-- React front-end using react-router-dom, Zustand store, and existing AudioEngine/QuestionEngine.
-- New Mini-game `SoundBalloonPop.jsx` added in `src/games/`.
-- Integration in `BrainGamesIsland.jsx` (route, ticket check, UI button).
-- Navigation back to `/braingames` on complete/exit.
+- React front-end using `react-router-dom`, Zustand store, and dual domain engines (`AudioEngine`, `QuestionEngine`, `MathQuestionEngine`).
+- `SubjectGateway` serves as the entry point, dividing the app into `Phonics Forest` and `Math Kingdom`.
+- Comprehensive 60-case Playwright UAT Suite ensuring UI resilience, pedagogical integrity, and state stability.
 
 ## Milestones
-| # | Name | Scope | Dependencies | Status |
-|---|------|-------|-------------|--------|
-| 1 | Create SoundBalloonPop Game | Design and implement the balloon pop game in `src/games/SoundBalloonPop.jsx` using `useTicket`, `audioEngine`, and `questionEngine`. | None | PLANNED |
-| 2 | Integrate in BrainGamesIsland & App Router | Register route in `src/App.jsx` and add a play button in `src/screens/BrainGamesIsland.jsx` that deducts 1 ticket and routes to the game. | M1 | PLANNED |
-| 3 | Verification & UAT Testing | Run Playwright test suite and check game logic, aesthetics, ticket consumption, and navigation. | M2 | PLANNED |
-
-## Interface Contracts
-### `gameStore` ↔ `SoundBalloonPop`
-- `tickets`: number of tickets available.
-- `useTicket`: function that deducts exactly 1 ticket.
-- `questionEngine.sounds`: array of sound objects `{ sound_id, label, audio_url, family, human_review_status }`.
-- `audioEngine.play(url)`: plays a sound.
+| # | Name | Scope | Status |
+|---|------|-------|--------|
+| 1 | Phonics Core | Daily challenge, map, reward system, and audio engine. | COMPLETED |
+| 2 | Math Kingdom | Math mastery map, training gym, daily challenges, and analytics. | COMPLETED |
+| 3 | Brain Games | Sound Catcher, Memory Match, Balloon Pop mini-games. | COMPLETED |
+| 4 | Agent Review Loop | 3-Round UI/UX and Pedagogy agent iterations. Implemented strict distractor sequencing, React immutability, Contrastive Audio Feedback, EMA mastery analytics, and parallel audio prefetching. | COMPLETED |
+| 5 | Key Bug Fixes | Resolved React UUID key collisions in Math Daily/Gym generators, and fixed stranding bugs in Math Gym session completions. | COMPLETED |
 
 ## Code Layout
-- `src/games/SoundBalloonPop.jsx`: The balloon pop mini-game component.
-- `src/screens/BrainGamesIsland.jsx`: Mini-game selection screen.
-- `src/App.jsx`: Main routing.
+- `src/screens/`: Main views including Gateway, HomeDashboard, MathHome, Mastery Maps, and Gyms.
+- `src/game/`: Phonics logic (`QuestionEngine.js`).
+- `src/math/`: Math logic (`MathQuestionEngine.js`, `generators/`).
+- `src/games/`: Phonics mini-games (Brain Games).
+- `src/store/`: Zustand stores (`gameStore.js`, `mathSlice.js`, `analyticsSlice.js`).
+- `tests/`: 60-case Playwright test suite (`full-uat.spec.js`, `chaos-uat.spec.js`, etc).
