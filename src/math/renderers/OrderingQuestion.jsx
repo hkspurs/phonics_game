@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Reorder } from 'framer-motion';
 import BilingualPrompt from '../components/BilingualPrompt';
 
 export default function OrderingQuestion({ question, onAnswer }) {
@@ -6,33 +7,15 @@ export default function OrderingQuestion({ question, onAnswer }) {
   // Initialize with shuffled choices provided by engine
   const [currentOrder, setCurrentOrder] = useState([...question.choices]);
   const [attempts, setAttempts] = useState(0);
-  const [selectedIdx, setSelectedIdx] = useState(null);
   const [isAnswered, setIsAnswered] = useState(false);
   const [showHint, setShowHint] = useState(false);
 
   useEffect(() => {
     setCurrentOrder([...question.choices]);
     setAttempts(0);
-    setSelectedIdx(null);
     setIsAnswered(false);
     setShowHint(false);
   }, [question.id]);
-
-  const handleItemClick = (idx) => {
-    if (isAnswered) return;
-    if (selectedIdx === null) {
-      setSelectedIdx(idx);
-    } else {
-      if (selectedIdx !== idx) {
-        const newOrder = [...currentOrder];
-        const temp = newOrder[selectedIdx];
-        newOrder[selectedIdx] = newOrder[idx];
-        newOrder[idx] = temp;
-        setCurrentOrder(newOrder);
-      }
-      setSelectedIdx(null);
-    }
-  };
 
   const checkOrder = () => {
     if (isAnswered) return;
@@ -46,7 +29,7 @@ export default function OrderingQuestion({ question, onAnswer }) {
       if (attempts + 1 >= 2) {
         setShowHint(true);
       }
-      // On 3rd attempt, auto-solve first element
+      // On 3rd attempt, auto-solve first element to help them
       if (attempts + 1 >= 3) {
         const newOrder = [...currentOrder];
         const firstVal = answer[0];
@@ -64,11 +47,11 @@ export default function OrderingQuestion({ question, onAnswer }) {
   const promptKey = isAscending ? 'orderNumbersAsc' : 'orderNumbersDesc';
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '24px', width: '100%' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '24px', width: '100%', touchAction: 'none' }}>
       <BilingualPrompt promptKey={promptKey} />
       
-      <p style={{ color: '#64748b', fontSize: '16px', margin: 0, fontWeight: 'bold' }}>
-        Tap two numbers to swap them
+      <p style={{ color: '#64748b', fontSize: '18px', margin: 0, fontWeight: 'bold' }}>
+        👆 Drag and drop to order (拉動並排序)
       </p>
 
       {showHint && (
@@ -77,20 +60,27 @@ export default function OrderingQuestion({ question, onAnswer }) {
         </div>
       )}
 
-      <div style={{ 
-        display: 'flex', 
-        gap: '12px', 
-        flexWrap: 'wrap', 
-        justifyContent: 'center',
-        padding: '20px',
-        backgroundColor: '#f8fafc',
-        borderRadius: '16px',
-        width: '100%'
-      }}>
+      <Reorder.Group 
+        axis="x"
+        values={currentOrder} 
+        onReorder={setCurrentOrder}
+        style={{ 
+          display: 'flex', 
+          gap: '16px', 
+          flexWrap: 'wrap', 
+          justifyContent: 'center',
+          padding: '24px',
+          backgroundColor: '#f8fafc',
+          borderRadius: '16px',
+          width: '100%',
+          listStyleType: 'none',
+          margin: 0
+        }}
+      >
         {currentOrder.map((num, i) => {
-          let bg = selectedIdx === i ? '#3b82f6' : '#ffffff';
-          let border = selectedIdx === i ? '#2563eb' : '#cbd5e1';
-          let color = selectedIdx === i ? '#ffffff' : '#1e293b';
+          let bg = '#ffffff';
+          let border = '#cbd5e1';
+          let color = '#1e293b';
           
           if (isAnswered) {
             bg = '#dcfce7';
@@ -103,9 +93,9 @@ export default function OrderingQuestion({ question, onAnswer }) {
           }
 
           return (
-            <button
-              key={i}
-              onClick={() => handleItemClick(i)}
+            <Reorder.Item
+              key={num}
+              value={num}
               disabled={isAnswered}
               style={{
                 width: '80px',
@@ -116,17 +106,25 @@ export default function OrderingQuestion({ question, onAnswer }) {
                 backgroundColor: bg,
                 border: `3px solid ${border}`,
                 borderRadius: '16px',
-                cursor: isAnswered ? 'default' : 'pointer',
-                transform: selectedIdx === i ? 'translateY(-4px)' : 'none',
-                transition: 'all 0.2s',
-                boxShadow: selectedIdx === i ? '0 10px 15px -3px rgba(0,0,0,0.1)' : '0 4px 6px -1px rgba(0,0,0,0.1)'
+                cursor: isAnswered ? 'default' : 'grab',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)',
+                touchAction: 'none'
+              }}
+              whileDrag={{
+                scale: 1.15,
+                boxShadow: '0 20px 25px -5px rgba(0,0,0,0.2)',
+                cursor: 'grabbing',
+                zIndex: 10
               }}
             >
               {num}
-            </button>
+            </Reorder.Item>
           );
         })}
-      </div>
+      </Reorder.Group>
 
       <button 
         className="btn-primary" 
