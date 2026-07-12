@@ -1,10 +1,10 @@
-# Phonics Learning Platform — Project Rules
+# Phonics & Math Learning Platform — Project Rules
 
 ## Project Identity
 
-This is a KooBits-style phonics learning app for a 6-year-old child. It must feel like a real education platform, not a normal AI-generated HTML quiz. 
-It features a Home Dashboard, Daily Sound Challenge, Sound Mastery Map, Assignments, Rewards, Brain Games, Reports, and a human-reviewed Audio System.
-The daily phonics practice should feel like a small adventure, not homework.
+This is a KooBits-style phonics and math learning app for a 6-year-old child. It must feel like a real education platform, not a normal AI-generated HTML quiz. 
+It features a Home Dashboard, Daily Challenges, Subject Gateways, Mastery Maps, Assignments, Rewards, Brain Games, Reports, and a human-reviewed Audio System.
+The daily educational practice should feel like a small adventure, not homework.
 
 ## Technology Stack
 
