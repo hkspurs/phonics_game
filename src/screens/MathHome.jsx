@@ -27,11 +27,13 @@ export default function MathHome() {
     // Let's map plan to questions directly:
     const questions = plan.map((p, i) => {
       // Use index to salt the seed
-      return mathQuestionEngine.generateQuestion(p.skillId, {
+      const q = mathQuestionEngine.generateQuestion(p.skillId, {
         difficulty: p.difficulty,
         random: createRandom(Date.now() + i) 
       });
-    });
+      if (q) q.id = crypto.randomUUID();
+      return q;
+    }).filter(Boolean);
 
     startMathSession(questions);
     navigate('/math/daily');
