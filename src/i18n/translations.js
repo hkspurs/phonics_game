@@ -17,6 +17,13 @@ export const translations = {
     trainingGym: '訓練健身房',
     back: '返回',
     quit: '退出',
+    
+    // Map Modal
+    mapMastered: '你已經精通啦！想練習下嗎？',
+    mapNeedsPractice: '需要練習下 {skill} 嗎？去健身房啦！',
+    mapLearn: '一齊學習同贏取星星啦！',
+    toTheGym: '去健身房！',
+    go: '開始！',
 
     // Gym / Challenges
     check: '檢查答案',
@@ -74,6 +81,13 @@ export const translations = {
     trainingGym: 'Training Gym',
     back: 'Back',
     quit: 'Quit',
+    
+    // Map Modal
+    mapMastered: 'You are a master! Want to practice?',
+    mapNeedsPractice: 'Need some practice on {skill}? Let\'s go to the Gym!',
+    mapLearn: 'Let\'s learn and earn stars!',
+    toTheGym: 'To the Gym!',
+    go: 'GO!',
 
     // Gym / Challenges
     check: 'Check',

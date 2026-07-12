@@ -6,9 +6,11 @@ import MathMascot from '../math/components/MathMascot';
 import { mathCurriculum, SKILL_LABELS, SKILL_EMOJIS, isUnitUnlocked } from '../math/curriculum/mathCurriculum';
 import { mathQuestionEngine } from '../math/engine/MathQuestionEngine';
 import { createRandom } from '../math/engine/random';
+import { useTranslation } from '../hooks/useTranslation';
 
 export default function MathMasteryMap() {
   const navigate = useNavigate();
+  const { t, language } = useTranslation();
   const { 
     getMathSkillStatus,
     startMathSession
@@ -102,11 +104,11 @@ export default function MathMasteryMap() {
       {/* Header */}
       <div style={{ position: 'absolute', top: '1rem', left: '1rem', zIndex: 10, display: 'flex', gap: '1rem', alignItems: 'center' }}>
         <button className="btn-secondary" style={{ padding: '0.5rem 1rem' }} onClick={() => navigate('/math')}>
-          <ArrowLeft size={24} /> Back
+          <ArrowLeft size={24} /> {t('back')}
         </button>
       </div>
       <h1 style={{ textAlign: 'center', color: '#b45309', fontSize: '2.5rem', marginTop: '1rem', zIndex: 10, position: 'relative' }}>
-        Mastery Map
+        {t('masteryMap')}
       </h1>
 
       <style>{`
@@ -151,12 +153,12 @@ export default function MathMasteryMap() {
               {node.id === node.unit.skills[0] && (
                 <div style={{
                   position: 'absolute', top: '-100px',
-                  background: 'rgba(255,255,255,0.8)', padding: '0.5rem 1rem',
+                  background: 'rgba(255,255,255,0.9)', padding: '0.5rem 1rem',
                   borderRadius: '16px', fontWeight: 'bold', color: node.unit.color,
                   boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
-                  whiteSpace: 'nowrap'
+                  whiteSpace: 'nowrap', zIndex: 10
                 }}>
-                  {node.unit.emoji} {node.unit.title}
+                  {node.unit.emoji} {language === 'zh' ? node.unit.titleZh : node.unit.title}
                 </div>
               )}
 
@@ -185,7 +187,7 @@ export default function MathMasteryMap() {
                   color: node.status === 'locked' ? '#94A3B8' : '#b45309',
                   textAlign: 'center', width: '120px'
               }}>
-                {SKILL_LABELS[node.id]?.en || node.id}
+                {SKILL_LABELS[node.id]?.[language] || node.id}
               </div>
             </div>
           ))}
@@ -203,7 +205,7 @@ export default function MathMasteryMap() {
             </button>
             
             <h2 style={{ color: '#b45309', fontSize: '2.5rem', marginBottom: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
-              {SKILL_EMOJIS[selectedSkill.id]} {SKILL_LABELS[selectedSkill.id]?.en}
+              {SKILL_EMOJIS[selectedSkill.id]} {SKILL_LABELS[selectedSkill.id]?.[language]}
             </h2>
 
             <div style={{ display: 'flex', justifyContent: 'center', gap: '0.5rem', fontSize: '2rem', marginBottom: '1rem' }}>
@@ -212,17 +214,17 @@ export default function MathMasteryMap() {
 
             <p style={{ color: '#475569', fontSize: '1.25rem', marginBottom: '2rem', fontWeight: 'bold' }}>
               {selectedSkill.status === 'mastered' 
-                ? "You are a master! Want to practice?" 
+                ? t('mapMastered') 
                 : selectedSkill.status === 'weak'
-                  ? `Need some practice on ${SKILL_LABELS[selectedSkill.id]?.en}? Let's go to the Gym!`
-                  : "Let's learn and earn stars!"}
+                  ? t('mapNeedsPractice').replace('{skill}', SKILL_LABELS[selectedSkill.id]?.[language])
+                  : t('mapLearn')}
             </p>
 
             <button className="btn-primary" style={{ width: '100%', fontSize: '1.5rem', padding: '1rem', justifyContent: 'center' }} onClick={handlePractice}>
               {selectedSkill.status === 'weak' ? (
-                <>🏋️‍♂️ To the Gym!</>
+                <>🏋️‍♂️ {t('toTheGym')}</>
               ) : (
-                <><Play size={28} fill="currentColor" /> GO!</>
+                <><Play size={28} fill="currentColor" /> {t('go')}</>
               )}
             </button>
           </div>
