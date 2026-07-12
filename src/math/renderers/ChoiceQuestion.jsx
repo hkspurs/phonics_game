@@ -41,7 +41,7 @@ export default function ChoiceQuestion({ question, onAnswer }) {
   const renderVisuals = () => {
     if (type === 'comparison') {
       return (
-        <div style={{ display: 'flex', gap: '32px', alignItems: 'center' }}>
+        <div style={{ display: 'flex', gap: '32px', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center' }}>
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
             <ObjectGroup count={values.a} emoji="🍎" imgUrl={values.imgUrl} />
             <span style={{ fontSize: '32px', fontWeight: 'bold' }}>{values.a}</span>

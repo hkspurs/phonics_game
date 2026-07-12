@@ -26,7 +26,7 @@ export default function ObjectGroup({
         return { 
           display: 'grid', 
           gridTemplateColumns: `repeat(${cols}, 1fr)`,
-          gap: '12px',
+          gap: 'min(12px, 2vw)',
           justifyContent: 'center',
           justifyItems: 'center'
         };
@@ -36,12 +36,12 @@ export default function ObjectGroup({
   return (
     <div style={{
       ...getLayoutStyle(),
-      padding: '20px',
+      padding: 'min(20px, 3vw)',
       backgroundColor: '#f8fafc',
       borderRadius: '16px',
       border: '3px solid #e2e8f0',
-      minWidth: '120px',
-      minHeight: '120px',
+      minWidth: 'min(120px, 30vw)',
+      minHeight: 'min(120px, 30vw)',
       ...style
     }}>
       {items.map(i => {
@@ -54,14 +54,14 @@ export default function ObjectGroup({
             onClick={() => interactive && onItemClick && onItemClick(i)}
             style={{
               position: 'relative',
-              fontSize: '48px',
+              fontSize: 'min(48px, 8vw)',
               cursor: interactive ? 'pointer' : 'default',
               transform: isHighlighted ? 'scale(1.15)' : 'scale(1)',
               transition: 'all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
               filter: isCounted ? 'brightness(0.9) drop-shadow(0 0 8px rgba(245,158,11,0.6))' : (isHighlighted ? 'drop-shadow(0px 8px 12px rgba(0,0,0,0.15))' : 'drop-shadow(0px 2px 4px rgba(0,0,0,0.1))'),
               userSelect: 'none',
-              width: '64px',
-              height: '64px',
+              width: 'min(64px, 12vw)',
+              height: 'min(64px, 12vw)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
