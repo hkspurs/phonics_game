@@ -21,6 +21,8 @@ export const MATH_DEFAULTS = {
   isMathChallengeActive: false,
 };
 
+import { mathCurriculum } from '../math/curriculum/mathCurriculum';
+
 /**
  * Mathematics slice actions — called within the Zustand (set, get) context.
  */
@@ -168,17 +170,18 @@ export const createMathSlice = (set, get) => ({
       return 'locked';
     }
 
-    if (lastFive.length >= 5) {
+    if (lastFive.length >= 3) {
       const accuracy = lastFive.filter(a => a.correct).length / lastFive.length;
-      if (accuracy >= 0.8) return 'mastered';
-      if (accuracy < 0.6) return 'weak';
+      if (accuracy >= 0.4) return 'mastered';
+      if (accuracy < 0.4) return 'weak';
     }
 
     // Check lifetime stats too for weak detection
     const stats = state.math.learningStats[skillId];
     if (stats && stats.attempts >= 3) {
       const accuracy = stats.firstAttemptHits / stats.attempts;
-      if (accuracy < 0.6) return 'weak';
+      if (accuracy >= 0.4) return 'mastered';
+      if (accuracy < 0.4) return 'weak';
     }
 
     if (state.math.unlockedSkillIds.includes(skillId)) return 'unlocked';
@@ -186,18 +189,41 @@ export const createMathSlice = (set, get) => ({
   },
 
   /** Mark math daily as completed */
-  completeMathDaily: () => set((state) => ({
-    math: {
-      ...state.math,
-      completedToday: true,
-      isMathChallengeActive: false,
-      mathActiveQuestions: [],
-      mathCurrentQuestionIndex: 0,
-    },
-    // Award shared rewards
-    stars: state.stars + state.math.mathSessionScore.stars,
-    tickets: state.tickets + 1,
-  })),
+  completeMathDaily: () => set((state) => {
+    const flatCurriculum = mathCurriculum.flatMap(u => u.skills);
+    let newUnlockedSkillIds = [...state.math.unlockedSkillIds];
+    
+    // Auto-unlock next skills if current is mastered
+    state.math.unlockedSkillIds.forEach(skillId => {
+      const stats = state.math.learningStats[skillId];
+      if (stats && stats.attempts >= 3) {
+        const accuracy = stats.firstAttemptHits / stats.attempts;
+        if (accuracy >= 0.4) {
+          const currentIndex = flatCurriculum.indexOf(skillId);
+          if (currentIndex !== -1 && currentIndex + 1 < flatCurriculum.length) {
+            const nextSkill = flatCurriculum[currentIndex + 1];
+            if (!newUnlockedSkillIds.includes(nextSkill)) {
+              newUnlockedSkillIds.push(nextSkill);
+            }
+          }
+        }
+      }
+    });
+
+    return {
+      math: {
+        ...state.math,
+        unlockedSkillIds: newUnlockedSkillIds,
+        completedToday: true,
+        isMathChallengeActive: false,
+        mathActiveQuestions: [],
+        mathCurrentQuestionIndex: 0,
+      },
+      // Award shared rewards
+      stars: state.stars + state.math.mathSessionScore.stars,
+      tickets: state.tickets + 1,
+    };
+  }),
 
   /** Clear math session (for gym or exiting early) */
   clearMathSession: () => set((state) => ({

@@ -17,8 +17,8 @@ export default function BubbleChallenge() {
   const [showCompletion, setShowCompletion] = useState(false);
   const [mascotState, setMascotState] = useState('idle'); // idle, correct, wrong, pointing
   const [wrongBubble, setWrongBubble] = useState(null); 
-  const [flyingStars, setFlyingStars] = useState([]);
   const [isPaused, setIsPaused] = useState(false);
+  const [typedAnswer, setTypedAnswer] = useState(''); // Dictation input
   
   const playAreaRef = useRef(null);
 
@@ -47,7 +47,28 @@ export default function BubbleChallenge() {
     audioEngine.play(currentQ.targetSound.audio_url).catch(() => {}).finally(() => setIsProcessing(false));
   };
 
-  if (!currentQ) return null;
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (isProcessing || animatingOut || isPaused || !typedAnswer.trim()) return;
+    
+    const choice = typedAnswer.trim().toUpperCase();
+    const actualAnswer = currentQ.correctAnswer.toUpperCase();
+    
+    if (choice === actualAnswer) {
+      // Find the index of the correct bubble
+      const correctIndex = currentQ.choices.findIndex(c => c.toUpperCase() === actualAnswer);
+      if (correctIndex !== -1) handlePop(null, currentQ.correctAnswer, correctIndex);
+    } else {
+      // Find if they typed a valid wrong bubble
+      const wrongIndex = currentQ.choices.findIndex(c => c.toUpperCase() === choice);
+      if (wrongIndex !== -1) {
+        handlePop(null, choice, wrongIndex);
+      } else {
+        // They typed something completely wrong (not even a bubble)
+        handlePop(null, choice, -1);
+      }
+    }
+  };
 
   const handlePop = (e, choiceLabel, index) => {
     if (isProcessing || animatingOut || poppedBubbles.includes(index) || isPaused) return;
@@ -57,11 +78,15 @@ export default function BubbleChallenge() {
       setAnimatingOut(true);
       setPoppedBubbles([...poppedBubbles, index]);
       audioEngine.playUI('pop');
-      confetti({ particleCount: 50, spread: 60, origin: { x: e.clientX / window.innerWidth, y: e.clientY / window.innerHeight } });
+      if (e) {
+        confetti({ particleCount: 50, spread: 60, origin: { x: e.clientX / window.innerWidth, y: e.clientY / window.innerHeight } });
+      } else {
+        confetti({ particleCount: 50, spread: 60, origin: { y: 0.5 } });
+      }
       setMascotState('correct');
       
       // Spawn flying star
-      const newStar = { id: Date.now(), x: e.clientX, y: e.clientY };
+      const newStar = { id: Date.now(), x: e ? e.clientX : window.innerWidth/2, y: e ? e.clientY : window.innerHeight/2 };
       setFlyingStars([...flyingStars, newStar]);
 
       setTimeout(() => {
@@ -77,6 +102,7 @@ export default function BubbleChallenge() {
           setAnimatingOut(false);
           setPoppedBubbles([]);
           setMascotState('idle');
+          setTypedAnswer(''); // clear input
           nextQuestion();
         }
       }, 1500);
@@ -97,6 +123,7 @@ export default function BubbleChallenge() {
       setTimeout(() => {
         setWrongBubble(null);
         setMascotState('idle');
+        setTypedAnswer(''); // clear input
       }, 600);
       playTargetAudio(); // Replay the hint
     }
@@ -242,8 +269,8 @@ export default function BubbleChallenge() {
           <MascotRabbit feedbackState={mascotState} style={{ width: '150px', filter: 'drop-shadow(0 10px 10px rgba(0,0,0,0.3))' }} />
         </div>
 
-        {/* Audio Button - Positioned bottom right */}
-        <div style={{ position: 'absolute', bottom: '2%', right: '5%', zIndex: 15, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        {/* Audio Button - Positioned top center */}
+        <div style={{ position: 'absolute', top: '10%', left: '50%', transform: 'translateX(-50%)', zIndex: 15, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
           <button 
             onClick={playTargetAudio} 
             style={{ 
@@ -251,7 +278,6 @@ export default function BubbleChallenge() {
               display: 'flex', justifyContent: 'center', alignItems: 'center', cursor: 'pointer', 
               boxShadow: '0 10px 20px rgba(0,0,0,0.3), inset 0 -5px 10px rgba(202,138,4,0.5)', 
               animation: isProcessing ? 'pulse-glow 0.8s infinite' : 'pulse-glow 3s infinite',
-              transform: isProcessing ? 'scale(0.9)' : 'scale(1)',
               transition: 'transform 0.1s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
               pointerEvents: 'auto',
               touchAction: 'manipulation'
@@ -276,9 +302,8 @@ export default function BubbleChallenge() {
             else if (isWrong) className = 'bubble-error';
 
             return (
-              <button
+              <div
                 key={`${currentQuestionIndex}-${i}`}
-                onClick={(e) => handlePop(e, choice, i)}
                 className={className}
                 style={{
                   position: 'absolute',
@@ -302,9 +327,49 @@ export default function BubbleChallenge() {
                 {choice}
                 {/* Specular highlight */}
                 <div style={{ position: 'absolute', top: '15%', left: '20%', width: '30%', height: '30%', background: 'radial-gradient(circle, rgba(255,255,255,1) 0%, rgba(255,255,255,0) 70%)', borderRadius: '50%', opacity: 0.9, pointerEvents: 'none' }} />
-              </button>
+              </div>
             );
           })}
+        </div>
+        
+        {/* Dictation Input Form at the bottom */}
+        <div style={{ position: 'absolute', bottom: '2%', right: '5%', left: '180px', zIndex: 15, display: 'flex', justifyContent: 'center' }}>
+          <form 
+            onSubmit={handleSubmit}
+            style={{ display: 'flex', gap: '1rem', width: '100%', maxWidth: '500px', background: 'rgba(255,255,255,0.9)', padding: '1rem', borderRadius: '32px', boxShadow: '0 10px 25px rgba(0,0,0,0.2)' }}
+          >
+            <input 
+              type="text" 
+              value={typedAnswer}
+              onChange={(e) => setTypedAnswer(e.target.value.toUpperCase())}
+              disabled={isProcessing || animatingOut}
+              className={`font-phonics ${mascotState === 'wrong' ? 'wobble-wrong' : ''}`}
+              placeholder="Type to pop!"
+              style={{
+                flex: 1,
+                fontSize: '3rem',
+                textAlign: 'center',
+                padding: '0.5rem',
+                borderRadius: '24px',
+                border: '4px solid #38bdf8',
+                outline: 'none',
+                color: '#1e3a8a',
+                textTransform: 'uppercase'
+              }}
+              autoFocus
+              autoComplete="off"
+              autoCorrect="off"
+              spellCheck="false"
+            />
+            <button 
+              type="submit" 
+              className="btn-primary"
+              disabled={isProcessing || animatingOut || !typedAnswer.trim()}
+              style={{ fontSize: '1.5rem', padding: '1rem 2rem', borderRadius: '24px' }}
+            >
+              Pop!
+            </button>
+          </form>
         </div>
         
         {/* Flying Stars Animation Layer */}

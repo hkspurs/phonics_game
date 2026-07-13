@@ -27,6 +27,7 @@ export default function DailyChallenge() {
   const [feedbackState, setFeedbackState] = useState(null) // 'correct', 'wrong', null
   const [attemptCount, setAttemptCount] = useState(1) // QA FIX (Challenge 27): Track attempts for reward inflation
   const [disabledChoices, setDisabledChoices] = useState([]) // QA FIX: Track disabled choices
+  const [typedAnswer, setTypedAnswer] = useState('') // Dictation input
   const [isProcessing, setIsProcessing] = useState(false) // QA FIX: Spam-click Cooldown
   const processingRef = useRef(false);
 
@@ -136,6 +137,7 @@ export default function DailyChallenge() {
           } else {
             setFeedbackState(null)
             setSelected(null)
+            setTypedAnswer('')
             setAttemptCount(1)
             setDisabledChoices([])
             nextQuestion()
@@ -393,34 +395,59 @@ export default function DailyChallenge() {
           </div>
 
           <div style={{ display: 'flex', gap: '2rem', flexWrap: 'wrap', justifyContent: 'center' }}>
-            {currentQ.choices.map((choice, i) => {
-              const isDisabled = disabledChoices.includes(choice);
-              return (
-                <button
-                  key={i}
-                  data-testid="choice-button"
-                  onClick={() => handleAnswer(choice)}
-                  disabled={isProcessing || feedbackState !== null || isDisabled}
-                  className={`font-phonics ${feedbackState === 'correct' && choice === selected ? 'correct-sparkle' : ''} ${feedbackState === 'wrong' && choice === selected ? 'wobble-wrong' : ''}`}
-                  style={{
-                    width: '180px', minHeight: '140px', height: 'auto', padding: '1rem', // Make buttons larger for kids
-                    fontSize: '4.5rem', fontWeight: 'bold', color: isDisabled ? '#94a3b8' : '#1e3a8a',
-                    background: isDisabled ? '#f1f5f9' : 'linear-gradient(135deg, #ffffff, #f0f9ff)', 
-                    border: `4px solid ${isDisabled ? '#cbd5e1' : '#7dd3fc'}`, 
-                    borderRadius: '32px',
-                    boxShadow: isDisabled ? 'none' : '0 12px 0 #38bdf8, 0 16px 20px rgba(0,0,0,0.1)', 
-                    cursor: (feedbackState !== null || isDisabled) ? 'default' : 'pointer',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    opacity: isDisabled ? 0.6 : (feedbackState !== null && choice !== selected ? 0.3 : 1),
-                    transform: isDisabled ? 'scale(0.95)' : (choice === selected && feedbackState === 'correct' ? 'scale(1.1) translateY(-10px)' : 'none'),
-                    pointerEvents: isDisabled ? 'none' : 'auto',
-                    transition: 'opacity 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)'
-                  }}
-                >
-                  {choice}
-                </button>
-              )
-            })}
+            <form 
+              onSubmit={(e) => {
+                e.preventDefault();
+                if (!typedAnswer.trim()) return;
+                // Treat the typed answer like a clicked choice, but case-insensitive
+                const choice = typedAnswer.trim().toUpperCase();
+                const actualAnswer = currentQ.correctAnswer.toUpperCase();
+                
+                // If it doesn't match the exact answer, it's considered a wrong choice.
+                // We'll pass the exact correct string if they matched, so existing logic works perfectly.
+                if (choice === actualAnswer) {
+                  handleAnswer(currentQ.correctAnswer);
+                } else {
+                  handleAnswer(choice);
+                  setTimeout(() => setTypedAnswer(''), 1000); // clear on wrong
+                }
+              }}
+              style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem', width: '100%', maxWidth: '400px' }}
+            >
+              <input 
+                type="text" 
+                value={typedAnswer}
+                onChange={(e) => setTypedAnswer(e.target.value.toUpperCase())}
+                disabled={isProcessing || feedbackState !== null}
+                className={`font-phonics ${feedbackState === 'wrong' ? 'wobble-wrong' : ''}`}
+                placeholder="Type here..."
+                style={{
+                  width: '100%',
+                  fontSize: '4.5rem',
+                  textAlign: 'center',
+                  padding: '1rem',
+                  borderRadius: '32px',
+                  border: `4px solid ${feedbackState === 'correct' ? '#4ade80' : (feedbackState === 'wrong' ? '#f43f5e' : '#7dd3fc')}`,
+                  outline: 'none',
+                  color: '#1e3a8a',
+                  background: 'linear-gradient(135deg, #ffffff, #f0f9ff)',
+                  boxShadow: '0 12px 0 #38bdf8, 0 16px 20px rgba(0,0,0,0.1)',
+                  textTransform: 'uppercase'
+                }}
+                autoFocus
+                autoComplete="off"
+                autoCorrect="off"
+                spellCheck="false"
+              />
+              <button 
+                type="submit" 
+                className="btn-primary"
+                disabled={isProcessing || feedbackState !== null || !typedAnswer.trim()}
+                style={{ fontSize: '2rem', padding: '1rem 3rem', width: '100%', marginTop: '1rem' }}
+              >
+                Submit / 確定
+              </button>
+            </form>
           </div>
         </div>
       )}

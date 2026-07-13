@@ -121,10 +121,10 @@ export const useGameStore = create(
         if (state.currentNode === soundId && !state.gameComplete) return 'practising';
         const stats = state.learningStats[soundId];
         // Pedagogy FIX (Challenge 5): Rolling window / threshold logic.
-        if (stats && stats.attempts >= 5) {
+        if (stats && stats.attempts >= 3) {
           const accuracy = stats.firstAttemptHits / stats.attempts;
-          if (accuracy >= 0.75) return 'mastered'; // Slightly more forgiving than 0.8
-          if (accuracy < 0.6) return 'weak';
+          if (accuracy >= 0.7) return 'mastered'; // Slightly more forgiving
+          if (stats.attempts >= 5 && accuracy < 0.6) return 'weak';
         }
         if (state.unlockedSounds.includes(soundId)) return 'unlocked';
         return 'locked';
@@ -287,10 +287,10 @@ export const useGameStore = create(
         if (!state.gameComplete) {
           const stats = state.learningStats[state.currentNode];
           
-          // QA FIX: Lower mastery threshold to 75%, but require 5 attempts for statistical significance
-          if (stats && stats.attempts >= 5) {
+          // QA FIX: Guarantee progression for players who finish a challenge (40% accuracy threshold) to avoid frustration.
+          if (stats && stats.attempts >= 3) {
             const accuracy = stats.firstAttemptHits / stats.attempts;
-            if (accuracy >= 0.75) {
+            if (accuracy >= 0.4) {
               const currentIndex = questionEngine.sounds.findIndex(s => s.sound_id === state.currentNode || s.label === state.currentNode);
               if (currentIndex !== -1 && currentIndex + 1 < questionEngine.sounds.length) {
                 const nextNodeId = questionEngine.sounds[currentIndex + 1].sound_id || questionEngine.sounds[currentIndex + 1].label;

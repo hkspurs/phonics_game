@@ -12,6 +12,7 @@ export default function TrainingGym() {
   
   const [isRevealed, setIsRevealed] = useState(false);
   const [selectedId, setSelectedId] = useState(null);
+  const [typedAnswer, setTypedAnswer] = useState(''); // Added for dictation
   const [attempts, setAttempts] = useState(0);
   const [animState, setAnimState] = useState('idle'); // idle, success, fail
   const processingRef = useRef(false);
@@ -69,6 +70,7 @@ export default function TrainingGym() {
         } else {
           setIsRevealed(false);
           setSelectedId(null);
+          setTypedAnswer('');
           setAttempts(0);
           setAnimState('idle');
           processingRef.current = false;
@@ -179,34 +181,59 @@ export default function TrainingGym() {
           <Volume2 size={40} color="white" />
         </button>
 
-        {/* Choices with Dynamic Hitbox (20% larger padding) */}
-        <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '1rem', width: '100%', maxWidth: '500px' }}>
-          {currentQ.choices.map((choice, i) => {
-            const isSelected = selectedId === choice;
-            const isCorrect = choice === currentQ.correctAnswer;
-            let btnClass = 'btn-secondary';
-            if (isRevealed && isCorrect) btnClass = 'btn-primary';
-            else if (isRevealed && !isCorrect) btnClass = 'btn-secondary opacity-50';
-
-            return (
-              <button 
-                key={i} 
-                className={btnClass}
-                onClick={() => handleChoice(choice)}
-                style={{ 
-                  flex: '1 1 40%', 
-                  fontSize: '2rem', 
-                  padding: '1.5rem', // Dynamic Error Tolerance: Larger hitbox
-                  display: 'flex', justifyContent: 'center', alignItems: 'center',
-                  opacity: (animState === 'fail' && !isCorrect) ? 0 : 1, // Fade out wrong choices gently
-                  transition: 'opacity 0.3s, transform 0.2s',
-                  transform: isRevealed && isCorrect ? 'scale(1.1)' : 'none'
-                }}
-              >
-                {choice}
-              </button>
-            );
-          })}
+        {/* Dictation Input */}
+        <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '1rem', width: '100%', maxWidth: '400px' }}>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              if (processingRef.current || isRevealed || !typedAnswer.trim()) return;
+              
+              const choice = typedAnswer.trim().toUpperCase();
+              const actualAnswer = currentQ.correctAnswer.toUpperCase();
+              
+              if (choice === actualAnswer) {
+                handleChoice(currentQ.correctAnswer);
+              } else {
+                handleChoice(choice);
+                setTimeout(() => setTypedAnswer(''), 1000); // clear on wrong
+              }
+            }}
+            style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '1rem' }}
+          >
+            <input 
+              type="text" 
+              value={typedAnswer}
+              onChange={(e) => setTypedAnswer(e.target.value.toUpperCase())}
+              disabled={processingRef.current || isRevealed}
+              className={`font-phonics ${animState === 'fail' ? 'wobble-wrong' : ''}`}
+              placeholder="Type here..."
+              style={{
+                width: '100%',
+                fontSize: '4.5rem',
+                textAlign: 'center',
+                padding: '1rem',
+                borderRadius: '32px',
+                border: `4px solid ${animState === 'success' ? '#4ade80' : (animState === 'fail' ? '#f43f5e' : '#7dd3fc')}`,
+                outline: 'none',
+                color: '#1e3a8a',
+                background: 'white',
+                boxShadow: '0 12px 0 #38bdf8, 0 16px 20px rgba(0,0,0,0.1)',
+                textTransform: 'uppercase'
+              }}
+              autoFocus
+              autoComplete="off"
+              autoCorrect="off"
+              spellCheck="false"
+            />
+            <button 
+              type="submit" 
+              className="btn-primary"
+              disabled={processingRef.current || isRevealed || !typedAnswer.trim()}
+              style={{ fontSize: '2rem', padding: '1rem 3rem', width: '100%' }}
+            >
+              Submit / 確定
+            </button>
+          </form>
         </div>
       </div>
     </div>
