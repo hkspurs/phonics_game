@@ -13,11 +13,27 @@ class QuestionEngine {
    * Generates a 10-question daily challenge array.
    * QA FIX: Implements 30/30/20/10/10 Algorithm scoped to MAP PROGRESSION.
    */
-  generateDailyChallenge(unlockedSoundIds = [], currentNodeId = null, learningStats = {}) {
+  generateDailyChallenge(unlockedSoundIds = [], currentNodeId = null, learningStats = {}, gameComplete = false) {
     const questions = [];
     
     let unlockedSounds = this.sounds.filter(s => unlockedSoundIds.includes(s.sound_id) || unlockedSoundIds.includes(s.label));
-    let currentSound = this.sounds.find(s => s.sound_id === currentNodeId || s.label === currentNodeId);
+    let currentSound;
+    
+    if (gameComplete && unlockedSounds.length > 0) {
+      // If game is complete, pick a weak sound or least tested sound as the "target"
+      let sortedByAccuracy = [...unlockedSounds].sort((a, b) => {
+        const statsA = learningStats[a.sound_id];
+        const statsB = learningStats[b.sound_id];
+        const accA = statsA && statsA.attempts > 0 ? statsA.firstAttemptHits / statsA.attempts : 1;
+        const accB = statsB && statsB.attempts > 0 ? statsB.firstAttemptHits / statsB.attempts : 1;
+        return accA - accB; // Lowest accuracy first
+      });
+      // Pick randomly from the bottom 5 weakest sounds
+      const weakestPool = sortedByAccuracy.slice(0, 5);
+      currentSound = weakestPool[Math.floor(Math.random() * weakestPool.length)];
+    } else {
+      currentSound = this.sounds.find(s => s.sound_id === currentNodeId || s.label === currentNodeId);
+    }
     
     // Fallback if state is missing
     if (!currentSound || unlockedSounds.length === 0) {
@@ -25,11 +41,18 @@ class QuestionEngine {
       currentSound = unlockedSounds[0];
     }
     
+    // Sort unlocked sounds by least attempts to ensure all letters appear eventually
+    const leastTestedPool = shuffle([...unlockedSounds]).sort((a, b) => {
+      const attemptsA = learningStats[a.sound_id]?.attempts || 0;
+      const attemptsB = learningStats[b.sound_id]?.attempts || 0;
+      return attemptsA - attemptsB;
+    });
+
     // Create strictly scoped learning buckets
     const reviewSounds = [
-      unlockedSounds[Math.floor(Math.random() * unlockedSounds.length)],
-      unlockedSounds[Math.floor(Math.random() * unlockedSounds.length)],
-      unlockedSounds[Math.floor(Math.random() * unlockedSounds.length)]
+      leastTestedPool[0] || currentSound,
+      leastTestedPool[1] || currentSound,
+      leastTestedPool[2] || currentSound
     ];
     const targetSounds = [currentSound, currentSound, currentSound];
     

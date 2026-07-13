@@ -190,7 +190,7 @@ export const useGameStore = create(
           const unlockedFamilySounds = state.unlockedSounds.filter(id => familySounds.includes(id));
           questions = questionEngine.generateRefresherAssignment(unlockedFamilySounds, state.learningStats);
         } else {
-          questions = questionEngine.generateDailyChallenge(state.unlockedSounds, state.currentNode, state.learningStats);
+          questions = questionEngine.generateDailyChallenge(state.unlockedSounds, state.currentNode, state.learningStats, state.gameComplete);
         }
         
         set({
