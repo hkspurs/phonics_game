@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 
 /**
  * ParentGateModal — Shared parent-gate component.
@@ -7,6 +7,28 @@ import React, { useState } from 'react'
  */
 const ParentGateModal = ({ onClose, onSuccess }) => {
   const [pin, setPin] = useState('');
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Enter') {
+        const year = parseInt(pin, 10);
+        if (pin.length === 4 && year >= 1900 && year <= 2010) {
+          onSuccess();
+        } else {
+          setPin('');
+        }
+      } else if (e.key === 'Backspace') {
+        setPin(p => p.slice(0, -1));
+      } else if (e.key === 'Escape') {
+        onClose();
+      } else if (/^[0-9]$/.test(e.key)) {
+        setPin(p => (p + e.key).slice(0, 4));
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [pin, onSuccess, onClose]);
+
   return (
     <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.4)', backdropFilter: 'blur(8px)', zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
       <div style={{ background: 'white', padding: '2rem', borderRadius: '20px', textAlign: 'center', width: '300px' }}>
