@@ -341,8 +341,12 @@ export default function BubbleChallenge() {
             <input 
               type="text" 
               value={typedAnswer}
-              onChange={(e) => setTypedAnswer(e.target.value.toUpperCase())}
+              onChange={(e) => {
+                const val = e.target.value.replace(/[^A-Za-z]/g, '').toUpperCase();
+                if (val.length <= 2) setTypedAnswer(val);
+              }}
               disabled={isProcessing || animatingOut}
+              maxLength={2}
               className={`font-phonics ${mascotState === 'wrong' ? 'wobble-wrong' : ''}`}
               placeholder="Type to pop!"
               style={{

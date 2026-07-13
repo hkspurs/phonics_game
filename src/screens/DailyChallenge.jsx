@@ -438,8 +438,12 @@ export default function DailyChallenge() {
               <input 
                 type="text" 
                 value={typedAnswer}
-                onChange={(e) => setTypedAnswer(e.target.value.toUpperCase())}
+                onChange={(e) => {
+                  const val = e.target.value.replace(/[^A-Za-z]/g, '').toUpperCase();
+                  if (val.length <= 2) setTypedAnswer(val);
+                }}
                 disabled={isProcessing || feedbackState !== null}
+                maxLength={2}
                 className={`font-phonics ${feedbackState === 'wrong' ? 'wobble-wrong' : ''}`}
                 placeholder={attemptCount > 3 ? `Hint: Starts with ${currentQ.correctAnswer[0]}` : "Type here..."}
                 style={{
