@@ -171,29 +171,51 @@ export default function DailyChallenge() {
       setAttemptCount(prev => prev + 1)
       setDisabledChoices(prev => [...prev, choice])
       
-      setFeedbackState('wrong')
-      setTimeout(() => {
-        setFeedbackState(prev => prev === 'wrong' ? null : prev)
-      }, 1000)
-      
-      // Teacher Agent Pedagogical Fix: Contrastive Audio Feedback
-      const clickedSound = currentQ.choiceSounds?.find(s => s.label === choice);
-      
-      if (clickedSound?.audio_url) {
-        audioEngine.play(clickedSound.audio_url).catch(() => {}).finally(() => {
-          setTimeout(() => {
-            audioEngine.play(currentQ.targetSound.audio_url).catch(() => {}).finally(() => {
-              setIsProcessing(false)
-              processingRef.current = false;
-            });
-          }, 300); // Brief pause before playing the target sound
-        });
-      } else {
-        // Play target audio again as a hint, and DO NOT unlock until it finishes!
-        audioEngine.play(currentQ.targetSound.audio_url).catch(() => {}).finally(() => {
-          setIsProcessing(false)
+      if (attemptCount >= 5) {
+        // 5th wrong attempt: Mark as wrong, show correct answer, and advance
+        setTypedAnswer(currentQ.correctAnswer);
+        setFeedbackState('wrong');
+        audioEngine.playUI('error');
+        
+        setTimeout(() => {
+          setIsProcessing(false);
           processingRef.current = false;
-        })
+          if (currentQuestionIndex + 1 >= activeQuestions.length) {
+            navigate('/reward')
+          } else {
+            setFeedbackState(null)
+            setTypedAnswer('')
+            setAttemptCount(1)
+            setDisabledChoices([])
+            nextQuestion()
+          }
+        }, 3000);
+      } else {
+        setFeedbackState('wrong')
+        setTimeout(() => {
+          setFeedbackState(prev => prev === 'wrong' ? null : prev)
+          if (currentQ.type !== 'compare') setTypedAnswer('');
+        }, 1000)
+        
+        // Teacher Agent Pedagogical Fix: Contrastive Audio Feedback
+        const clickedSound = currentQ.choiceSounds?.find(s => s.label === choice);
+        
+        if (clickedSound?.audio_url) {
+          audioEngine.play(clickedSound.audio_url).catch(() => {}).finally(() => {
+            setTimeout(() => {
+              audioEngine.play(currentQ.targetSound.audio_url).catch(() => {}).finally(() => {
+                setIsProcessing(false)
+                processingRef.current = false;
+              });
+            }, 300); // Brief pause before playing the target sound
+          });
+        } else {
+          // Play target audio again as a hint, and DO NOT unlock until it finishes!
+          audioEngine.play(currentQ.targetSound.audio_url).catch(() => {}).finally(() => {
+            setIsProcessing(false)
+            processingRef.current = false;
+          })
+        }
       }
     }
   }
@@ -409,7 +431,6 @@ export default function DailyChallenge() {
                   handleAnswer(currentQ.correctAnswer);
                 } else {
                   handleAnswer(choice);
-                  setTimeout(() => setTypedAnswer(''), 1000); // clear on wrong
                 }
               }}
               style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem', width: '100%', maxWidth: '400px' }}
@@ -420,7 +441,7 @@ export default function DailyChallenge() {
                 onChange={(e) => setTypedAnswer(e.target.value.toUpperCase())}
                 disabled={isProcessing || feedbackState !== null}
                 className={`font-phonics ${feedbackState === 'wrong' ? 'wobble-wrong' : ''}`}
-                placeholder="Type here..."
+                placeholder={attemptCount > 3 ? `Hint: Starts with ${currentQ.correctAnswer[0]}` : "Type here..."}
                 style={{
                   width: '100%',
                   fontSize: '4.5rem',
