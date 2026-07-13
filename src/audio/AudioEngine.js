@@ -2,13 +2,19 @@ class AudioEngine {
   constructor() {
     this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
     
+    // Master Gain to boost overall volume
+    this.masterGain = this.audioContext.createGain();
+    this.masterGain.gain.setValueAtTime(1.5, this.audioContext.currentTime); // Boost by 50% to make it normal/louder
+    
     // Master Compressor for Volume Normalization (Challenge 14)
     this.compressor = this.audioContext.createDynamicsCompressor();
-    this.compressor.threshold.setValueAtTime(-24, this.audioContext.currentTime);
-    this.compressor.knee.setValueAtTime(30, this.audioContext.currentTime);
-    this.compressor.ratio.setValueAtTime(12, this.audioContext.currentTime);
+    this.compressor.threshold.setValueAtTime(-12, this.audioContext.currentTime); // Less aggressive threshold
+    this.compressor.knee.setValueAtTime(20, this.audioContext.currentTime);
+    this.compressor.ratio.setValueAtTime(4, this.audioContext.currentTime); // Less squashing
     this.compressor.attack.setValueAtTime(0.003, this.audioContext.currentTime);
     this.compressor.release.setValueAtTime(0.25, this.audioContext.currentTime);
+    
+    this.masterGain.connect(this.compressor);
     this.compressor.connect(this.audioContext.destination);
 
     this.preloadedBuffers = new Map(); // Use Map for LRU Cache (Challenge 11)
@@ -89,7 +95,7 @@ class AudioEngine {
       const source = this.audioContext.createBufferSource();
       source.buffer = buffer;
       source.playbackRate.value = playbackRate; // Challenge 26: Playback Speed
-      source.connect(this.compressor); // Connect to compressor instead of raw destination
+      source.connect(this.masterGain); // Connect to master gain
       this.currentSource = source;
 
       source.onended = () => {
@@ -131,7 +137,7 @@ class AudioEngine {
     gainNode.gain.value = volume;
     
     source.connect(gainNode);
-    gainNode.connect(this.compressor); // Connect to compressor
+    gainNode.connect(this.masterGain); // Connect to master gain
     
     this.bgmSource = source;
     source.start(0);
@@ -155,7 +161,7 @@ class AudioEngine {
       const osc = this.audioContext.createOscillator();
       const gain = this.audioContext.createGain();
       osc.connect(gain);
-      gain.connect(this.compressor);
+      gain.connect(this.masterGain);
       
       osc.type = 'sine';
       osc.frequency.setValueAtTime(600, t);
@@ -174,7 +180,7 @@ class AudioEngine {
         const osc = this.audioContext.createOscillator();
         const gain = this.audioContext.createGain();
         osc.connect(gain);
-        gain.connect(this.compressor);
+        gain.connect(this.masterGain);
         osc.type = 'triangle';
         osc.frequency.setValueAtTime(freq, t + delay);
         gain.gain.setValueAtTime(0, t + delay);
@@ -194,7 +200,7 @@ class AudioEngine {
         const osc = this.audioContext.createOscillator();
         const gain = this.audioContext.createGain();
         osc.connect(gain);
-        gain.connect(this.compressor);
+        gain.connect(this.masterGain);
         osc.type = 'sine';
         osc.frequency.setValueAtTime(300, t + delay);
         osc.frequency.exponentialRampToValueAtTime(150, t + delay + 0.15);
@@ -213,7 +219,7 @@ class AudioEngine {
         const osc = this.audioContext.createOscillator();
         const gain = this.audioContext.createGain();
         osc.connect(gain);
-        gain.connect(this.compressor);
+        gain.connect(this.masterGain);
         osc.type = 'square';
         
         // Add a slight vibrato
