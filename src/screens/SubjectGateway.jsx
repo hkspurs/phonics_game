@@ -20,7 +20,7 @@ export default function SubjectGateway() {
   const [isEntering, setIsEntering] = useState(true)
 
   const { 
-    stars, gems, tickets, streak, hasCompletedDaily, setParentAuthenticated, math,
+    stars, gems, tickets, streak, hasCompletedDaily, authenticateParent, math,
     encouragements, claimEncouragement, addTicket
   } = useGameStore()
   
@@ -53,7 +53,7 @@ export default function SubjectGateway() {
   };
 
   const handleParentAccess = () => {
-    setParentAuthenticated(true)
+    authenticateParent(true)
     navigate('/parent')
   }
 
