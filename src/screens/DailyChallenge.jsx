@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Volume2, X } from 'lucide-react'
+import { Volume2, X, Check } from 'lucide-react'
 import { useGameStore } from '../store/gameStore'
 import { audioEngine } from '../audio/AudioEngine'
 import ReplayHelper from '../components/ReplayHelper'
@@ -30,6 +30,7 @@ export default function DailyChallenge() {
   const [disabledChoices, setDisabledChoices] = useState([]) // QA FIX: Track disabled choices
   const [typedAnswer, setTypedAnswer] = useState('') // Dictation input
   const [isProcessing, setIsProcessing] = useState(false) // QA FIX: Spam-click Cooldown
+  const [showQuitConfirm, setShowQuitConfirm] = useState(false);
   const processingRef = useRef(false);
 
   // Redirect if no active challenge or out of bounds (QA FIX)
@@ -232,11 +233,6 @@ export default function DailyChallenge() {
     }
   }
 
-  const handlePlayAudio = () => {
-    if (isProcessing) return; // QA FIX: Prevent audio overlap spam
-    audioEngine.playAudioById(currentQ.targetSoundAudio)
-  }
-
   const progressPercent = Math.max(5, (currentQuestionIndex / activeQuestions.length) * 100)
 
   return (
@@ -257,12 +253,8 @@ export default function DailyChallenge() {
       
       {/* Header */}
       <div style={{ width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
-        <button className="btn-secondary" style={{ padding: '0.5rem' }} onClick={() => {
-          if (window.confirm("Are you sure you want to quit? You will lose today's progress!")) {
-             navigate('/');
-          }
-        }}>
-          <X size={24} />
+        <button onClick={() => setShowQuitConfirm(true)} style={{ background: 'none', border: 'none', color: '#1e3a8a', cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
+          <X size={40} />
         </button>
         
         {/* Progress Bar with Kenney Assets */}
@@ -360,7 +352,6 @@ export default function DailyChallenge() {
           <div style={{ display: 'flex', gap: '2rem', flexWrap: 'wrap', justifyContent: 'center' }}>
             {currentQ.choices.map((choice, i) => {
               const isDisabled = disabledChoices.includes(choice);
-              // QA FIX: Literacy Rule - Use visuals for Same/Different
               const isSame = choice === 'Same';
               const labelText = isSame ? 'Same' : 'Different';
 
@@ -372,7 +363,7 @@ export default function DailyChallenge() {
                   disabled={isProcessing || feedbackState !== null || isDisabled}
                   className={`btn-secondary ${feedbackState === 'correct' && choice === selected ? 'correct-sparkle' : ''} ${feedbackState === 'wrong' && choice === selected ? 'wobble-wrong' : ''}`}
                   style={{
-                    width: '240px', minHeight: '140px', height: 'auto', padding: '1rem', // QA FIX (Challenge 27)
+                    width: '240px', minHeight: '140px', height: 'auto', padding: '1rem',
                     display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
                     background: 'white', color: '#1e3a8a',
                     borderColor: '#bae6fd', borderWidth: '4px', borderStyle: 'solid', borderRadius: '24px',
@@ -383,17 +374,11 @@ export default function DailyChallenge() {
                     cursor: (feedbackState !== null || isDisabled) ? 'default' : 'pointer'
                   }}
                 >
-                  <div style={{ display: 'flex', gap: '1rem', marginBottom: '0.5rem' }}>
+                  <div style={{ display: 'flex', gap: '1rem', marginBottom: '0.5rem', alignItems: 'center' }}>
                     {isSame ? (
-                      <div style={{ display: 'flex' }}>
-                         <div style={{ width: 40, height: 40, background: '#4ade80', borderRadius: '8px' }} />
-                         <div style={{ width: 40, height: 40, background: '#4ade80', borderRadius: '8px', marginLeft: '-10px', mixBlendMode: 'multiply' }} />
-                      </div>
+                      <Check size={48} color="#22c55e" />
                     ) : (
-                      <div style={{ display: 'flex', gap: '10px' }}>
-                         <div style={{ width: 40, height: 40, background: '#38bdf8', borderRadius: '50%' }} />
-                         <div style={{ width: 40, height: 40, background: '#f472b6', transform: 'rotate(45deg)' }} />
-                      </div>
+                      <X size={48} color="#ef4444" />
                     )}
                   </div>
                   <span style={{ fontSize: '1.2rem', color: '#64748b', fontWeight: 'bold' }}>{labelText}</span>
@@ -463,12 +448,9 @@ export default function DailyChallenge() {
               onSubmit={(e) => {
                 e.preventDefault();
                 if (!typedAnswer.trim()) return;
-                // Treat the typed answer like a clicked choice, but case-insensitive
                 const choice = typedAnswer.trim().toUpperCase();
                 const actualAnswer = currentQ.correctAnswer.toUpperCase();
                 
-                // If it doesn't match the exact answer, it's considered a wrong choice.
-                // We'll pass the exact correct string if they matched, so existing logic works perfectly.
                 if (choice === actualAnswer) {
                   handleAnswer(currentQ.correctAnswer);
                 } else {
@@ -480,7 +462,7 @@ export default function DailyChallenge() {
               <input 
                 type="text" 
                 value={typedAnswer}
-                inputMode="none" // Prevent native keyboard
+                inputMode="none"
                 onChange={(e) => {
                   const val = e.target.value.replace(/[^A-Za-z]/g, '').toUpperCase();
                   if (val.length <= 2) setTypedAnswer(val);
@@ -535,7 +517,22 @@ export default function DailyChallenge() {
         </div>
       )}
 
-
+      {/* Quit Confirm Modal */}
+      {showQuitConfirm && (
+        <div style={{ position: 'fixed', inset: 0, zIndex: 1000, background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div style={{ background: 'white', padding: '2rem', borderRadius: '24px', textAlign: 'center', maxWidth: '400px', width: '90%' }}>
+            <h2 style={{ color: '#1e3a8a', marginBottom: '1rem', fontFamily: '"Comic Sans MS", cursive' }}>Quit Game?</h2>
+            <p style={{ color: '#64748b', marginBottom: '2rem', fontSize: '1.2rem' }}>Are you sure you want to quit? You will lose today's progress!</p>
+            <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
+              <button onClick={() => setShowQuitConfirm(false)} className="btn-secondary" style={{ padding: '0.75rem 1.5rem' }}>Cancel</button>
+              <button onClick={() => {
+                useGameStore.setState({ isChallengeActive: false });
+                navigate('/map');
+              }} className="btn-primary" style={{ background: '#ef4444', borderColor: '#b91c1c', padding: '0.75rem 1.5rem' }}>Yes, Quit</button>
+            </div>
+          </div>
+        </div>
+      )}
 
     </div>
   )

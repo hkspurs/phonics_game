@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Map, Play, Trophy, Puzzle, ClipboardList, Settings, X, Volume2 } from 'lucide-react'
+import { Map, Play, Trophy, Puzzle, ClipboardList, Settings, X, Volume2, ShoppingCart } from 'lucide-react'
 import { useGameStore } from '../store/gameStore'
 import { audioEngine } from '../audio/AudioEngine'
 import MascotRabbit from '../components/MascotRabbit'
@@ -103,12 +103,33 @@ export default function HomeDashboard() {
               justifyContent: 'center',
               transition: 'transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275)'
             }}
-            onMouseEnter={(e) => { e.currentTarget.style.transform = 'scale(1.1) rotate(15deg)'; }}
-            onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1) rotate(0)'; }}
-            onClick={() => { audioEngine.playUI('pop'); setShowParentGate(true); }}
+            onClick={() => {
+              if (isParentAuthenticated) {
+                navigate('/parent');
+              } else {
+                audioEngine.playUI('pop'); 
+                setShowParentGate(true);
+              }
+            }}
             aria-label="Settings"
           >
             <Settings size={28} />
+          </button>
+          
+          <button 
+            style={{
+              background: 'linear-gradient(135deg, #d946ef, #a21caf)', border: 'none', color: 'white',
+              width: '48px', height: '48px', borderRadius: '50%',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
+              boxShadow: '0 4px 10px rgba(217, 70, 239, 0.3)', flexShrink: 0,
+            }}
+            onClick={() => {
+              audioEngine.playUI('pop'); 
+              navigate('/shop');
+            }}
+            aria-label="Shop"
+          >
+            <ShoppingCart size={24} />
           </button>
         </div>
       </div>
@@ -145,9 +166,6 @@ export default function HomeDashboard() {
               boxShadow: '0 6px 12px rgba(245,158,11,0.3), 0 4px 0 #fbbf24',
               transition: 'transform 0.1s',
             }}
-            onMouseDown={(e) => { e.currentTarget.style.transform = 'translateY(4px)'; e.currentTarget.style.boxShadow = '0 2px 4px rgba(245,158,11,0.3), 0 0px 0 #fbbf24'; }}
-            onMouseUp={(e) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 6px 12px rgba(245,158,11,0.3), 0 4px 0 #fbbf24'; }}
-            onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 6px 12px rgba(245,158,11,0.3), 0 4px 0 #fbbf24'; }}
             onClick={() => audioEngine.playUI('pop')}
             aria-label="Read Aloud"
           >

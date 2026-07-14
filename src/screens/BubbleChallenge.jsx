@@ -19,7 +19,8 @@ export default function BubbleChallenge() {
   const [mascotState, setMascotState] = useState('idle'); // idle, correct, wrong, pointing
   const [wrongBubble, setWrongBubble] = useState(null); 
   const [isPaused, setIsPaused] = useState(false);
-  const [typedAnswer, setTypedAnswer] = useState(''); // Dictation input
+  const [typedAnswer, setTypedAnswer] = useState(''); // Dictation input (kept for legacy reasons but unused)
+  const [flyingStars, setFlyingStars] = useState([]);
   
   const playAreaRef = useRef(null);
 
@@ -68,6 +69,20 @@ export default function BubbleChallenge() {
         // They typed something completely wrong (not even a bubble)
         handlePop(null, choice, -1);
       }
+    }
+  };
+
+  const handlePopClick = (e, choiceLabel, index) => {
+    e.stopPropagation();
+    if (isProcessing || animatingOut || isPaused) return;
+    
+    const choice = choiceLabel.toUpperCase();
+    const actualAnswer = currentQ.correctAnswer.toUpperCase();
+    
+    if (choice === actualAnswer) {
+      handlePop(e, currentQ.correctAnswer, index);
+    } else {
+      handlePop(e, choice, index);
     }
   };
 
@@ -204,6 +219,7 @@ export default function BubbleChallenge() {
         .bubble-btn {
           animation: floatBubble 6s ease-in-out infinite alternate;
           transition: transform 0.2s;
+          animation-play-state: ${isPaused ? 'paused' : 'running'} !important;
         }
         .bubble-btn:active {
           transform: scale(0.9) !important;
@@ -329,6 +345,7 @@ export default function BubbleChallenge() {
               <div
                 key={`${currentQuestionIndex}-${i}`}
                 className={className}
+                onClick={(e) => handlePopClick(e, choice, i)}
                 style={{
                   position: 'absolute',
                   top: pos.top, left: pos.left,
@@ -356,65 +373,6 @@ export default function BubbleChallenge() {
           })}
         </div>
         
-        {/* Dictation Input Form at the bottom */}
-        <div style={{ position: 'absolute', bottom: '2%', right: '5%', left: '180px', zIndex: 15, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-end', pointerEvents: 'none' }}>
-          <form 
-            onSubmit={handleSubmit}
-            style={{ pointerEvents: 'auto', display: 'flex', gap: '1rem', width: '100%', maxWidth: '500px', background: 'rgba(255,255,255,0.9)', padding: '1rem', borderRadius: '32px', boxShadow: '0 10px 25px rgba(0,0,0,0.2)', marginBottom: '0.5rem' }}
-          >
-            <input 
-              type="text" 
-              value={typedAnswer}
-              inputMode="none" // Prevent native keyboard
-              onChange={(e) => {
-                const val = e.target.value.replace(/[^A-Za-z]/g, '').toUpperCase();
-                if (val.length <= 2) setTypedAnswer(val);
-              }}
-              disabled={isProcessing || animatingOut}
-              maxLength={2}
-              className={`font-phonics ${mascotState === 'wrong' ? 'wobble-wrong' : ''}`}
-              placeholder="Type to pop!"
-              style={{
-                flex: 1,
-                fontSize: '3rem',
-                textAlign: 'center',
-                padding: '0.5rem',
-                borderRadius: '24px',
-                border: '4px solid #38bdf8',
-                outline: 'none',
-                color: '#1e3a8a',
-                textTransform: 'uppercase'
-              }}
-              autoFocus
-              autoComplete="off"
-              autoCorrect="off"
-              spellCheck="false"
-            />
-            <button 
-              type="submit" 
-              className="btn-primary"
-              disabled={isProcessing || animatingOut || !typedAnswer.trim()}
-              style={{ fontSize: '1.5rem', padding: '1rem 2rem', borderRadius: '24px' }}
-            >
-              Pop!
-            </button>
-          </form>
-          <div style={{ width: '100%', maxWidth: '500px', display: 'flex', justifyContent: 'center' }}>
-            <VirtualKeyboard 
-              disabled={isProcessing || animatingOut}
-              onKeyPress={(key) => {
-                if (key === 'BACKSPACE') {
-                  setTypedAnswer(prev => prev.slice(0, -1));
-                } else {
-                  setTypedAnswer(prev => {
-                    const next = prev + key;
-                    return next.length <= 2 ? next : prev;
-                  });
-                }
-              }}
-            />
-          </div>
-        </div>
         
         {/* Flying Stars Animation Layer */}
         {flyingStars.map(star => {

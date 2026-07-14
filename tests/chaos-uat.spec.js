@@ -91,7 +91,7 @@ test.describe('Chaos & Exhaustive QA UAT', () => {
     // Inject tickets into localStorage to force access to SoundCatcher if needed
     await page.addInitScript(() => {
       window.localStorage.setItem('phonics-game-storage', JSON.stringify({
-        state: { tickets: 99, hasCompletedDaily: true }
+        state: { language: 'en', tickets: 99, hasCompletedDaily: true }
       }));
     });
     

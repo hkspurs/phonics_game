@@ -56,7 +56,7 @@ test.describe('Sound Balloon Pop Game UAT & Integration Tests', () => {
     // Mock Zustand store state in localStorage to have exactly 2 tickets, unlocked sounds
     await page.evaluate(() => {
       localStorage.setItem('phonics-game-storage', JSON.stringify({
-        state: {
+        state: { language: 'en',
           tickets: 2,
           stars: 45,
           gems: 12,

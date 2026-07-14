@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Play, Map as MapIcon, Lock } from 'lucide-react';
+import { ArrowLeft, Play, Map as MapIcon, Lock, ShoppingCart } from 'lucide-react';
 import MathMascot from '../math/components/MathMascot';
 import { audioEngine } from '../audio/AudioEngine';
 import { useGameStore } from '../store/gameStore';
@@ -107,7 +107,21 @@ export default function MathHome() {
         <h1 style={{ fontSize: '2rem', color: '#92400e', margin: 0 }}>
           {t('maths')}
         </h1>
-        <div style={{ width: '48px' }} /> {/* Spacer */}
+        <button 
+          style={{
+            background: 'linear-gradient(135deg, #d946ef, #a21caf)', border: 'none', color: 'white',
+            width: '48px', height: '48px', borderRadius: '50%',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
+            boxShadow: '0 4px 10px rgba(217, 70, 239, 0.3)', flexShrink: 0,
+          }}
+          onClick={() => {
+            import('../audio/AudioEngine').then(m => m.audioEngine.playUI('pop'));
+            navigate('/shop');
+          }}
+          aria-label="Shop"
+        >
+          <ShoppingCart size={24} />
+        </button>
       </div>
 
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '2rem', width: '100%', maxWidth: '600px' }}>

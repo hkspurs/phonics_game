@@ -5,7 +5,7 @@ test.describe('Expanded UI/UX Coverage Tests (32 cases)', () => {
     // Inject mock state so all features are unlocked
     await page.addInitScript(() => {
       window.localStorage.setItem('phonics-game-storage', JSON.stringify({
-        state: { 
+        state: { language: 'en', 
           tickets: 10, 
           stars: 100,
           gems: 50,
@@ -185,7 +185,7 @@ test.describe('Expanded UI/UX Coverage Tests (32 cases)', () => {
     // Skip auth by direct injecting auth state
     await page.addInitScript(() => {
       window.localStorage.setItem('phonics-game-storage', JSON.stringify({
-        state: { isParentAuthenticated: true }
+        state: { language: 'en', isParentAuthenticated: true }
       }));
     });
     await page.goto('/#/parent');

@@ -1,9 +1,11 @@
 import React from 'react';
 import './MascotRabbit.css';
+import { useGameStore } from '../store/gameStore';
 
 export default function MascotRabbit({ style, isListening = false, feedbackState = null }) {
   const isCorrect = feedbackState === 'correct';
   const isWrong = feedbackState === 'wrong';
+  const equipped = useGameStore(state => state.equipped);
 
   return (
     <div className={`mascot-rabbit-container ${isListening ? 'listening' : 'idle'}`} 
@@ -106,6 +108,16 @@ export default function MascotRabbit({ style, isListening = false, feedbackState
                 <ellipse cx="72" cy="52" rx="5" ry="2.5" fill="#FFA6A6" opacity="0.6"/>
               </g>
             </g>
+            {/* Emojis as Accessories */}
+            {equipped?.hat === 'hat_wizard' && (
+              <text x="50" y="30" fontSize="35" textAnchor="middle" style={{ transform: isCorrect ? 'translateY(-10px)' : 'none', transition: 'transform 0.2s' }}>🧙‍♂️</text>
+            )}
+            {equipped?.hat === 'hat_crown' && (
+              <text x="50" y="30" fontSize="35" textAnchor="middle" style={{ transform: isCorrect ? 'translateY(-10px)' : 'none', transition: 'transform 0.2s' }}>👑</text>
+            )}
+            {equipped?.glasses === 'glasses_cool' && (
+              <text x="50" y="52" fontSize="25" textAnchor="middle" style={{ transform: isCorrect ? 'translateY(-5px)' : 'none', transition: 'transform 0.2s' }}>🕶️</text>
+            )}
           </g>
         </g>
       </svg>

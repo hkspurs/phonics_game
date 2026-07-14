@@ -265,7 +265,7 @@ export default function MasteryMap() {
                   display: 'flex', alignItems: 'center', gap: '0.2rem', zIndex: 2
                 }}>
                   {node.id}
-                  {node.status === 'weak' && <span style={{ fontSize: '1rem' }}>🏋️‍♂️</span>}
+                  {node.status === 'weak' && <span style={{ fontSize: '1rem' }}>🧩</span>}
                 </div>
               </div>
             </div>
@@ -341,7 +341,7 @@ export default function MasteryMap() {
 
             <button className="btn-primary" style={{ width: '100%', fontSize: '1.5rem', padding: '1rem', justifyContent: 'center' }} onClick={handlePractice}>
               {selectedNode.status === 'weak' ? (
-                <>🏋️‍♂️ {t('toTheGym')}</>
+                <>🧩 {t('toTheGym')}</>
               ) : (
                 <><Play size={28} fill="currentColor" /> {t('go')}</>
               )}

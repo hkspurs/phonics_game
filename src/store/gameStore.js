@@ -14,14 +14,15 @@ export const useGameStore = create(
       tickets: 2, 
       streak: 5,
       isParentAuthenticated: false, // Prevents Parent Gate Bypass
-      language: 'zh', // 'zh' for Traditional Chinese, 'en' for English
+      language: 'en', // 'zh' for Traditional Chinese, 'en' for English
       refresherMode: false, // Teacher Agent Refresher Mode
       preRefresherState: null, // Restores progression after refresher
       currentChapter: 'A Families', // Chapter Support
       selectedSubject: 'phonics', // Current subject selection
-      
-      
-      
+      phonicsSessionTime: 0, // Track time in minutes
+      phonicsMistakeHistory: [], // Track mistakes
+      inventory: [], // Array of purchased item IDs
+      equipped: {}, // Map of category -> item ID
       // Map Progression State (QA FIX)
       unlockedSounds: ['AB', 'EB'],
       currentNode: 'IB',
@@ -57,7 +58,27 @@ export const useGameStore = create(
         lastPlayedDate: null,
         refresherMode: false,
         preRefresherState: null,
-        currentChapter: 'A Families'
+        currentChapter: 'A Families',
+        phonicsSessionTime: 0,
+        phonicsMistakeHistory: []
+      }),
+
+      addSessionTime: (minutes) => set((state) => ({
+        phonicsSessionTime: (state.phonicsSessionTime || 0) + minutes
+      })),
+
+      addPhonicsMistake: (mistake) => set((state) => {
+        const history = state.phonicsMistakeHistory || [];
+        return {
+          phonicsMistakeHistory: [mistake, ...history].slice(0, 50) // Keep last 50
+        };
+      }),
+
+      relockSound: (soundId) => set((state) => {
+        return {
+          unlockedSounds: state.unlockedSounds.filter(id => id !== soundId),
+          currentNode: soundId // Fallback current node to this locked sound
+        };
       }),
 
       toggleRefresherMode: (familyName = 'A Families') => set((state) => {
@@ -143,6 +164,8 @@ export const useGameStore = create(
           currentHits *= 0.8;
         }
         
+        let newMistakeHistory = state.phonicsMistakeHistory || [];
+
         if (isFirstAttemptSuccess) {
           // Challenge 7: Confused Pairs Decay. If they get it right on the first try, slightly decay all confusions.
           Object.keys(newConfusedWith).forEach(key => {
@@ -152,6 +175,10 @@ export const useGameStore = create(
           });
         } else if (confusedWithLabel) {
           newConfusedWith[confusedWithLabel] = (newConfusedWith[confusedWithLabel] || 0) + 1;
+          
+          // Log to Mistake History
+          const mistake = { target: soundId, choice: confusedWithLabel, type: state.currentChallengeType || 'practice', time: Date.now() };
+          newMistakeHistory = [mistake, ...newMistakeHistory].slice(0, 50);
         }
 
         const newStats = {
@@ -165,12 +192,32 @@ export const useGameStore = create(
           learningStats: {
             ...state.learningStats,
             [soundId]: newStats
-          }
+          },
+          phonicsMistakeHistory: newMistakeHistory
         };
       }),
       useTicket: () => set((state) => ({ tickets: Math.max(0, state.tickets - 1) })),
       addTicket: () => set((state) => ({ tickets: state.tickets + 1 })),
       
+      buyItem: (item, costStars, costGems) => set((state) => {
+        if (state.stars >= costStars && state.gems >= costGems && !state.inventory.includes(item.id)) {
+          return {
+            stars: state.stars - costStars,
+            gems: state.gems - costGems,
+            inventory: [...state.inventory, item.id]
+          };
+        }
+        return state;
+      }),
+      
+      equipItem: (category, itemId) => set((state) => {
+        if (state.inventory.includes(itemId)) {
+          return {
+            equipped: { ...state.equipped, [category]: itemId }
+          };
+        }
+        return state;
+      }),
       startAssignment: (soundId) => {
         const questions = questionEngine.generateAssignment(soundId);
         set({
@@ -283,8 +330,8 @@ export const useGameStore = create(
       endChallenge: () => set((state) => {
         let nextNodeUpdates = {};
         
-        // QA FIX: Allow progression on ANY challenge type if game is not complete
-        if (!state.gameComplete) {
+        // QA FIX: Allow progression ONLY on daily challenge
+        if (!state.gameComplete && state.currentChallengeType === 'daily') {
           const stats = state.learningStats[state.currentNode];
           
           // QA FIX: Guarantee progression for players who finish a challenge (40% accuracy threshold) to avoid frustration.
@@ -323,7 +370,7 @@ export const useGameStore = create(
           hasCompletedDaily: state.currentChallengeType === 'daily' ? true : state.hasCompletedDaily, // QA FIX: Unlock Brain Games only on daily
           stars: state.stars + state.sessionScore.stars,
           gems: state.gems + state.sessionScore.gems,
-          tickets: state.currentChallengeType === 'daily' ? state.tickets + 1 : state.tickets, // Award 1 ticket for daily completion
+          tickets: (state.currentChallengeType === 'daily' || state.currentChallengeType === 'gym') ? state.tickets + 1 : state.tickets, // Award 1 ticket for daily or gym completion
           streak: state.currentChallengeType === 'daily' ? state.streak + 1 : state.streak,
           activeAssignment: state.currentChallengeType === 'assignment' 
             ? { ...state.activeAssignment, completed: true } 

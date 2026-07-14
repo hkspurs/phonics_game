@@ -172,9 +172,24 @@ class AudioEngine {
 
     const url = SOUND_MAP[type];
     if (url) {
-      // Play it concurrently, don't await, so it acts like a fire-and-forget sound effect
-      this.play(url, 0, 0, 1.0);
+      this.playConcurrent(url, 1.0);
     }
+  }
+
+  async playConcurrent(url, volume = 1.0) {
+    const buffer = await this._loadBuffer(url);
+    if (!buffer) return;
+
+    const source = this.audioContext.createBufferSource();
+    const gainNode = this.audioContext.createGain();
+    
+    source.buffer = buffer;
+    gainNode.gain.value = volume;
+    
+    source.connect(gainNode);
+    gainNode.connect(this.masterGain);
+    
+    source.start(0);
   }
 
   async playAudioById(audioId, options = {}) {

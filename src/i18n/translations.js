@@ -90,13 +90,13 @@ export const translations = {
   },
   en: {
     // Subject Gateway
-    readyToLearn: 'Choose Your Adventure! 🚀',
-    pickSubject: 'Where should we go today? Let\'s play! 🎉',
+    readyToLearn: 'Ready to Learn',
+    pickSubject: 'Pick a Subject',
     newLetter: 'You have a new letter! 💌',
     claimReward: 'Claim Reward',
     phonics: 'Phonics Forest',
     maths: 'Math Kingdom',
-    start: 'Play',
+    start: 'Start',
     
     // Phonics Home
     todayMissionWaiting: 'Today\'s Mission is waiting for you!',

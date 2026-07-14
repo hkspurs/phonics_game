@@ -13,7 +13,7 @@ test.describe('Sound Balloon Pop Stress and Edge Case Tests', () => {
     // Setup state with 5 tickets and daily challenge completed to unlock Brain Games button
     await page.addInitScript(() => {
       window.localStorage.setItem('phonics-game-storage', JSON.stringify({
-        state: { tickets: 5, hasCompletedDaily: true }
+        state: { language: 'en', tickets: 5, hasCompletedDaily: true }
       }));
     });
 
@@ -48,7 +48,7 @@ test.describe('Sound Balloon Pop Stress and Edge Case Tests', () => {
 
     await page.addInitScript(() => {
       window.localStorage.setItem('phonics-game-storage', JSON.stringify({
-        state: { tickets: 5, hasCompletedDaily: true }
+        state: { language: 'en', tickets: 5, hasCompletedDaily: true }
       }));
     });
 
@@ -107,7 +107,7 @@ test.describe('Sound Balloon Pop Stress and Edge Case Tests', () => {
   test('3. Exit button X: Confirm dialog, route back, and verify ticket consumption', async ({ page }) => {
     await page.addInitScript(() => {
       window.localStorage.setItem('phonics-game-storage', JSON.stringify({
-        state: { tickets: 5, hasCompletedDaily: true }
+        state: { language: 'en', tickets: 5, hasCompletedDaily: true }
       }));
     });
 
@@ -139,7 +139,7 @@ test.describe('Sound Balloon Pop Stress and Edge Case Tests', () => {
     // Inject 0 tickets
     await page.addInitScript(() => {
       window.localStorage.setItem('phonics-game-storage', JSON.stringify({
-        state: { tickets: 0, hasCompletedDaily: true }
+        state: { language: 'en', tickets: 0, hasCompletedDaily: true }
       }));
     });
 

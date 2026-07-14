@@ -79,6 +79,7 @@ export default function TrainingGym() {
 
       answerQuestion(true, newAttempts);
 
+      const delay = currentQ.type === 'gym_sprint' ? 500 : 1200;
       setTimeout(() => {
         if (currentQuestionIndex >= activeQuestions.length - 1) {
           audioEngine.playUI('pop'); // Or cheer
@@ -95,7 +96,7 @@ export default function TrainingGym() {
           processingRef.current = false;
           nextQuestion();
         }
-      }, 2000);
+      }, delay);
     } else {
       setAnimState('fail');
       

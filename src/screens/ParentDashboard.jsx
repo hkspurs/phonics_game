@@ -15,11 +15,12 @@ import EncouragementPanel from '../parent/EncouragementPanel'
 
 export default function ParentDashboard() {
   const navigate = useNavigate()
-  const { learningStats, unlockedSounds, currentNode, activeAssignment, getNodeStatus, resetProgress, refresherMode, toggleRefresherMode, tickets, addTicket, math, resetMathProgress } = useGameStore()
+  const { learningStats, unlockedSounds, currentNode, activeAssignment, getNodeStatus, resetProgress, refresherMode, toggleRefresherMode, tickets, addTicket, math, resetMathProgress, phonicsSessionTime, phonicsMistakeHistory, relockSound } = useGameStore()
   const [toastMsg, setToastMsg] = React.useState(null);
   const [selectedChapter, setSelectedChapter] = React.useState('A Families');
   const [activeTab, setActiveTab] = React.useState('phonics'); // 'phonics' | 'math'
   const [mathSubTab, setMathSubTab] = React.useState('overview'); // 'overview' | 'skills' | 'mistakes'
+  const [showConfirmModal, setShowConfirmModal] = React.useState(null); // { title, message, onConfirm }
 
   const showToast = (msg) => {
     setToastMsg(msg);
@@ -27,12 +28,18 @@ export default function ParentDashboard() {
     setTimeout(() => setToastMsg(null), 3000);
   }
 
-  const handleReset = () => {
-    if (window.confirm("Are you sure you want to wipe all progress? This will reset the child's entire journey for both subjects. This cannot be undone.")) {
-      resetProgress();
-      resetMathProgress();
-      navigate('/');
-    }
+  const handleReset = (type) => {
+    setShowConfirmModal({
+      title: 'Wipe Progress?',
+      message: type === 'all' 
+        ? "Are you sure you want to wipe all progress? This will reset the child's entire journey for both subjects. This cannot be undone."
+        : `Are you sure you want to wipe ${type === 'phonics' ? 'Phonics' : 'Math'} progress?`,
+      onConfirm: () => {
+        if (type === 'all' || type === 'phonics') resetProgress();
+        if (type === 'all' || type === 'math') resetMathProgress();
+        navigate('/');
+      }
+    });
   }
 
   const handleAssign = (sound) => {
@@ -48,13 +55,28 @@ export default function ParentDashboard() {
   }
 
   const handleForceUnlock = (sound) => {
-    if (window.confirm(`Warning: Jumping ahead to ${sound.label} might frustrate the child if they miss foundational sounds. Proceed?`)) {
-      useGameStore.setState(state => {
-        const newUnlocked = state.unlockedSounds.includes(sound.sound_id) ? state.unlockedSounds : [...state.unlockedSounds, sound.sound_id];
-        return { currentNode: sound.label, unlockedSounds: newUnlocked };
-      });
-      showToast(`Map Current Node forcibly set to ${sound.label}.`);
-    }
+    setShowConfirmModal({
+      title: 'Force Unlock?',
+      message: `Warning: Jumping ahead to ${sound.label} might frustrate the child if they miss foundational sounds. Proceed?`,
+      onConfirm: () => {
+        useGameStore.setState(state => {
+          const newUnlocked = state.unlockedSounds.includes(sound.sound_id) ? state.unlockedSounds : [...state.unlockedSounds, sound.sound_id];
+          return { currentNode: sound.label, unlockedSounds: newUnlocked };
+        });
+        showToast(`Map Current Node forcibly set to ${sound.label}.`);
+      }
+    });
+  }
+
+  const handleRelock = (sound) => {
+    setShowConfirmModal({
+      title: 'Relock Sound?',
+      message: `Are you sure you want to relock ${sound.label}? This will force the child to replay previous levels.`,
+      onConfirm: () => {
+        relockSound(sound.sound_id);
+        showToast(`Sound ${sound.label} has been relocked.`);
+      }
+    });
   }
 
   const handleGiveTicket = () => {
@@ -261,9 +283,22 @@ export default function ParentDashboard() {
                     <span style={{ background: '#f59e0b', color: 'white', padding: '0.1rem 0.5rem', borderRadius: '100px', fontSize: '0.8rem', fontWeight: 'bold' }}>{pair.count}x</span>
                   </div>
                   <div style={{ display: 'flex', gap: '0.5rem' }}>
-                     <button onClick={() => { audioEngine.playUI('pop'); audioEngine.play(questionEngine.sounds.find(s=>s.label===pair.target)?.audio_url) }} style={{ fontSize: '0.75rem', padding: '0.25rem 0.5rem', background: '#fcd34d', border: 'none', borderRadius: '4px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.25rem' }}><Volume2 size={12}/> {pair.target}</button>
-                     <button onClick={() => { audioEngine.playUI('pop'); audioEngine.play(questionEngine.sounds.find(s=>s.label===pair.confused)?.audio_url) }} style={{ fontSize: '0.75rem', padding: '0.25rem 0.5rem', background: '#fcd34d', border: 'none', borderRadius: '4px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.25rem' }}><Volume2 size={12}/> {pair.confused}</button>
+                     <button onClick={() => { audioEngine.playUI('pop'); audioEngine.play(questionEngine.sounds.find(s=>s.label===pair.target)?.audio_url) }} style={{ fontSize: '1rem', padding: '0.5rem 1rem', background: '#fcd34d', border: 'none', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.25rem' }}><Volume2 size={16}/> {pair.target}</button>
+                     <button onClick={() => { audioEngine.playUI('pop'); audioEngine.play(questionEngine.sounds.find(s=>s.label===pair.confused)?.audio_url) }} style={{ fontSize: '1rem', padding: '0.5rem 1rem', background: '#fcd34d', border: 'none', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.25rem' }}><Volume2 size={16}/> {pair.confused}</button>
                   </div>
+                </li>
+              ))}
+            </ul>
+          )}
+          <h3 style={{ color: '#ef4444', display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '1.5rem' }}><AlertTriangle size={20}/> Mistake History</h3>
+          <p style={{ fontSize: '0.875rem', color: '#64748b', marginBottom: '0.5rem' }}>Recent mistakes made by the child.</p>
+          {phonicsMistakeHistory && phonicsMistakeHistory.length === 0 ? (
+            <p style={{ color: '#94a3b8', fontStyle: 'italic', background: '#f1f5f9', padding: '1rem', borderRadius: '8px' }}>No mistakes logged yet.</p>
+          ) : (
+            <ul style={{ padding: 0, listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.5rem', maxHeight: '200px', overflowY: 'auto' }}>
+              {(phonicsMistakeHistory || []).map((mistake, idx) => (
+                <li key={idx} style={{ background: '#fee2e2', padding: '0.5rem', borderRadius: '8px', fontSize: '0.9rem' }}>
+                  <strong>{mistake.target}</strong> (Confused with <em>{mistake.choice}</em>) - {mistake.type}
                 </li>
               ))}
             </ul>
@@ -328,6 +363,9 @@ export default function ParentDashboard() {
                           <button className="btn-secondary" aria-label={`Force Unlock ${sound.label}`} style={{ padding: '0.5rem 1rem', fontSize: '1rem', color: '#d946ef' }} onClick={() => handleForceUnlock(sound)}>
                             Force Unlock
                           </button>
+                          <button className="btn-secondary" aria-label={`Relock ${sound.label}`} style={{ padding: '0.5rem 1rem', fontSize: '1rem', color: '#64748b' }} onClick={() => handleRelock(sound)}>
+                            Relock
+                          </button>
                         </div>
                       </li>
                     )
@@ -339,14 +377,36 @@ export default function ParentDashboard() {
 
           <div style={{ marginTop: '4rem', padding: '2rem', borderTop: '2px dashed #e2e8f0', textAlign: 'center' }}>
             <h3 style={{ color: '#94a3b8', marginBottom: '1rem' }}>Advanced Settings</h3>
-            <button className="btn-secondary" style={{ color: '#ef4444', borderColor: '#ef4444', margin: '0 auto' }} onClick={handleReset}>
-              <Trash2 size={20} /> Wipe All Progress
-            </button>
+            <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
+              <button className="btn-secondary" style={{ color: '#ef4444', borderColor: '#ef4444' }} onClick={() => handleReset('phonics')}>
+                <Trash2 size={20} /> Wipe Phonics Progress
+              </button>
+              <button className="btn-secondary" style={{ color: '#ef4444', borderColor: '#ef4444' }} onClick={() => handleReset('math')}>
+                <Trash2 size={20} /> Wipe Math Progress
+              </button>
+            </div>
           </div>
         </div>
 
       </div>
       </>)}
+      
+      {/* Custom Confirm Modal */}
+      {showConfirmModal && (
+        <div style={{ position: 'fixed', inset: 0, zIndex: 1000, background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div style={{ background: 'white', padding: '2rem', borderRadius: '24px', textAlign: 'center', maxWidth: '400px', width: '90%' }}>
+            <h2 style={{ color: '#1e3a8a', marginBottom: '1rem', fontFamily: '"Comic Sans MS", cursive' }}>{showConfirmModal.title}</h2>
+            <p style={{ color: '#64748b', marginBottom: '2rem', fontSize: '1.2rem' }}>{showConfirmModal.message}</p>
+            <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
+              <button onClick={() => setShowConfirmModal(null)} className="btn-secondary" style={{ padding: '0.75rem 1.5rem' }}>Cancel</button>
+              <button onClick={() => {
+                showConfirmModal.onConfirm();
+                setShowConfirmModal(null);
+              }} className="btn-primary" style={{ background: '#ef4444', borderColor: '#b91c1c', padding: '0.75rem 1.5rem' }}>Confirm</button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {activeTab === 'math' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem', height: 'calc(100vh - 150px)', overflowY: 'auto', paddingBottom: '2rem' }}>

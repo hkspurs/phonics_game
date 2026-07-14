@@ -17,6 +17,7 @@ import SoundBalloonPop from './games/SoundBalloonPop'
 import ParentDashboard from './screens/ParentDashboard'
 import TrainingGym from './screens/TrainingGym'
 import BubbleChallenge from './screens/BubbleChallenge'
+import Shop from './screens/Shop'
 import MascotRabbit from './components/MascotRabbit'
 
 import { useGameStore } from './store/gameStore'
@@ -60,6 +61,7 @@ const ProtectedParentRoute = ({ children }) => {
 
 function App() {
   const [hydrated, setHydrated] = useState(false);
+  const equipped = useGameStore(state => state.equipped);
 
   // QA FIX (Challenge 22): Hydration FOUC prevention
   useEffect(() => {
@@ -67,6 +69,15 @@ function App() {
     setHydrated(useGameStore.persist.hasHydrated());
     return () => unsubHydrate();
   }, []);
+
+  // Time Tracker (Issue 1)
+  useEffect(() => {
+    if (!hydrated) return;
+    const interval = setInterval(() => {
+      useGameStore.getState().addSessionTime(1);
+    }, 60000); // Add 1 minute every 60 seconds
+    return () => clearInterval(interval);
+  }, [hydrated]);
 
   if (!hydrated) {
     return (
@@ -81,6 +92,20 @@ function App() {
 
   return (
     <ErrorBoundary>
+      {equipped?.background === 'bg_space' && (
+        <style>
+          {`
+            body, .screen-container {
+              background: #0f172a !important;
+              background-image: radial-gradient(circle at 50% 50%, #1e293b 0%, #020617 100%) !important;
+              color: white !important;
+            }
+            .screen-container h1, .screen-container h2, .screen-container p {
+              color: #f8fafc !important;
+            }
+          `}
+        </style>
+      )}
       <HashRouter>
       <Routes>
         <Route path="/" element={<SubjectGateway />} />
@@ -98,6 +123,7 @@ function App() {
         <Route path="/games/memorymatch" element={<MemoryMatch />} />
         <Route path="/games/soundballoonpop" element={<SoundBalloonPop />} />
         <Route path="/gym" element={<TrainingGym />} />
+        <Route path="/shop" element={<Shop />} />
         <Route path="/bubble" element={<BubbleChallenge />} />
         <Route path="/assignments" element={<AssignmentHub />} />
         <Route path="/parent" element={

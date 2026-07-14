@@ -95,9 +95,11 @@ export default function RewardScreen() {
               {subject !== 'math' && <span style={{ color: '#0ea5e9', display: 'flex', alignItems: 'center', gap: '0.5rem' }}><span>+{sessionScore.gems}</span> 💎</span>}
             </div>
             
-            <p style={{ color: '#d946ef', fontWeight: 'bold', fontSize: '1.5rem', marginTop: '1rem', background: '#fdf4ff', padding: '1rem 2rem', borderRadius: '100px', display: 'inline-block', textAlign: 'center' }}>
-              🎟️ {subject === 'math' ? t('ticketUnlocked1') : t('ticketUnlocked2')}
-            </p>
+            {(useGameStore.getState().currentChallengeType === 'daily' || useGameStore.getState().currentChallengeType === 'gym' || subject === 'math') && (
+              <p style={{ color: '#d946ef', fontWeight: 'bold', fontSize: '1.5rem', marginTop: '1rem', background: '#fdf4ff', padding: '1rem 2rem', borderRadius: '100px', display: 'inline-block', textAlign: 'center' }}>
+                🎟️ {subject === 'math' ? t('ticketUnlocked1') : t('ticketUnlocked2')}
+              </p>
+            )}
           </div>
 
           <button className="btn-primary" style={{ padding: '1.5rem 5rem', fontSize: '2.5rem', background: '#d946ef', boxShadow: '0 10px 0 #a21caf', zIndex: 2, transition: 'transform 0.2s', animation: 'popIn 0.5s 0.4s both' }} onClick={handleGoHome}>

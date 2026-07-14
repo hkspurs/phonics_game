@@ -42,8 +42,8 @@ export default function BrainGamesIsland() {
       <p style={{ textAlign: 'center', color: '#d946ef', fontSize: '1.25rem', marginBottom: '1rem' }}>{t('useTicketsToPlay')}</p>
       
       {tickets <= 0 && (
-        <div style={{ textAlign: 'center', marginBottom: '2rem', animation: 'wobble 2s infinite' }}>
-          <div style={{ display: 'inline-block', background: '#fee2e2', color: '#b91c1c', padding: '1rem 2rem', borderRadius: '100px', fontWeight: 'bold', fontSize: '1.2rem', border: '2px solid #f87171' }}>
+        <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+          <div style={{ display: 'inline-block', background: '#e0f2fe', color: '#0369a1', padding: '1rem 2rem', borderRadius: '100px', fontWeight: 'bold', fontSize: '1.2rem', border: '2px solid #7dd3fc' }}>
             {t('outOfTickets')}
           </div>
         </div>
