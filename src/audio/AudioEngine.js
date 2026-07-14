@@ -162,11 +162,12 @@ class AudioEngine {
     }
     
     // Use Kenney Interface Sounds
+    const base = import.meta.env.BASE_URL;
     const SOUND_MAP = {
-      pop: '/assets/kenney/interface-sounds/Audio/click_001.ogg',
-      correct: '/assets/kenney/interface-sounds/Audio/confirmation_001.ogg',
-      error: '/assets/kenney/interface-sounds/Audio/error_004.ogg',
-      win: '/assets/kenney/interface-sounds/Audio/maximize_006.ogg'
+      pop: `${base}assets/kenney/interface-sounds/Audio/click_001.ogg`,
+      correct: `${base}assets/kenney/interface-sounds/Audio/confirmation_001.ogg`,
+      error: `${base}assets/kenney/interface-sounds/Audio/error_004.ogg`,
+      win: `${base}assets/kenney/interface-sounds/Audio/maximize_006.ogg`
     };
 
     const url = SOUND_MAP[type];
@@ -192,7 +193,7 @@ class AudioEngine {
 
     // Try playing the file
     if (item.file) {
-      const url = `/${item.file}`; // assuming relative to public root
+      const url = import.meta.env.BASE_URL + item.file; // respect Vite base URL for Github Pages
       try {
         const buffer = await this._loadBuffer(url, 0); // 0 retries to fail fast for fallback
         if (buffer) {
