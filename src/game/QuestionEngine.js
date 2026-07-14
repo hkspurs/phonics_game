@@ -41,60 +41,29 @@ class QuestionEngine {
       currentSound = unlockedSounds[0];
     }
     
-    // Sort unlocked sounds by least attempts to ensure all letters appear eventually
-    const leastTestedPool = shuffle([...unlockedSounds]).sort((a, b) => {
+    // QA FIX (User Request): Flat Distribution
+    // The user wants EVERY sound to be tested perfectly evenly, without prioritizing "currentSound" or "weakSounds".
+    // We achieve this by sorting all unlocked sounds purely by their total attempts, ensuring a perfect rotating cycle.
+    
+    // 1. Sort unlocked sounds by least attempts
+    let sortedByAttempts = shuffle([...unlockedSounds]).sort((a, b) => {
       const attemptsA = learningStats[a.sound_id]?.attempts || 0;
       const attemptsB = learningStats[b.sound_id]?.attempts || 0;
       return attemptsA - attemptsB;
     });
 
-    // QA FIX: Prioritize actual weak sounds from learningStats
-    let actualWeakSounds = unlockedSounds.filter(s => {
-      const stats = learningStats[s.sound_id];
-      if (!stats || stats.attempts < 3) return false;
-      return (stats.firstAttemptHits / stats.attempts) < 0.6;
-    });
+    // 2. Take the top 10 unique sounds (or all of them if < 10)
+    let combinedTargets = sortedByAttempts.slice(0, 10);
     
-    // If no severely weak sounds, find moderately weak sounds (< 0.85) instead of mastered ones
-    if (actualWeakSounds.length === 0) {
-      actualWeakSounds = unlockedSounds.filter(s => {
-        const stats = learningStats[s.sound_id];
-        if (!stats || stats.attempts < 3) return false;
-        return (stats.firstAttemptHits / stats.attempts) < 0.85;
-      });
-    }
-
-    const weakPool = actualWeakSounds.length > 0 ? actualWeakSounds : unlockedSounds;
-    // QA FIX: Ensure no sound appears more than once per test (unless unlocked < 10)
-    let targetSet = new Set();
-    
-    // 1. Always include the current node sound
-    targetSet.add(currentSound);
-    
-    // 2. Add weak sounds
-    for (let w of shuffle([...weakPool])) {
-      if (targetSet.size < 10) targetSet.add(w);
+    // 3. If they have fewer than 10 sounds unlocked, we must pad with random selections
+    if (combinedTargets.length < 10) {
+      let shuffledUnlocked = shuffle([...unlockedSounds]);
+      while (combinedTargets.length < 10) {
+        combinedTargets.push(shuffledUnlocked[Math.floor(Math.random() * shuffledUnlocked.length)]);
+      }
     }
     
-    // 3. Add least tested sounds
-    for (let r of leastTestedPool) {
-      if (targetSet.size < 10) targetSet.add(r);
-    }
-    
-    // 4. Pad with random unlocked sounds if needed
-    let shuffledUnlocked = shuffle([...unlockedSounds]);
-    for (let u of shuffledUnlocked) {
-      if (targetSet.size < 10) targetSet.add(u);
-    }
-    
-    let combinedTargets = Array.from(targetSet);
-    
-    // 5. If they literally have fewer than 10 sounds unlocked, we must repeat
-    while (combinedTargets.length < 10) {
-      combinedTargets.push(shuffledUnlocked[Math.floor(Math.random() * shuffledUnlocked.length)]);
-    }
-    
-    // Shuffle the 10 questions so the currentSound isn't always first
+    // 4. Shuffle the 10 questions so the order is random
     combinedTargets = shuffle(combinedTargets);
     
     // Teacher Agent Pedagogical Fix: Strict Scope & Sequence
