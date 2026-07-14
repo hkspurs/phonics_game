@@ -16,7 +16,7 @@ export default function MascotRabbit({ style, isListening = false, feedbackState
            alignItems: 'center',
            position: 'relative'
          }}>
-      <svg viewBox="0 0 100 100" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" style={{ overflow: 'visible' }}>
+      <svg viewBox="-10 -10 120 120" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
         <g id="mascot-rabbit">
           {/* Shadow */}
           <ellipse id="shadow" cx="50" cy="92" rx="20" ry="4" fill="rgba(0,0,0,0.15)"/>

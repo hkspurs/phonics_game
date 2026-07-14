@@ -129,14 +129,39 @@ export default function MasteryMap() {
           <Home size={24} /> {t('backToHome')}
         </button>
       </div>
-      <h1 
-        style={{ textAlign: 'center', color: '#b45309', fontSize: '2.5rem', marginTop: '1rem', zIndex: 10, position: 'relative', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '1rem', cursor: 'pointer' }}
-        onClick={() => {
-          import('../audio/AudioEngine').then(m => m.audioEngine.playUI('pop'));
-        }}
-      >
-        {t('adventureMap')} <Volume2 size={32} color="#b45309" />
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: 'white', padding: '0.5rem', borderRadius: '100px', border: '4px solid #fcd34d', boxShadow: '0 8px 0 #fbbf24' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', zIndex: 10, marginTop: '1rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '0.5rem' }}>
+          <h1 
+            style={{ textAlign: 'center', color: '#b45309', fontSize: '2.5rem', margin: 0 }}
+          >
+            {t('adventureMap')}
+          </h1>
+          <button 
+            style={{
+              background: '#fcd34d',
+              border: '4px solid white',
+              borderRadius: '50%',
+              width: '48px',
+              height: '48px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+              boxShadow: '0 4px 8px rgba(245,158,11,0.3), 0 4px 0 #fbbf24',
+              transition: 'transform 0.1s',
+            }}
+            onMouseDown={(e) => { e.currentTarget.style.transform = 'translateY(4px)'; e.currentTarget.style.boxShadow = '0 2px 4px rgba(245,158,11,0.3), 0 0px 0 #fbbf24'; }}
+            onMouseUp={(e) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 8px rgba(245,158,11,0.3), 0 4px 0 #fbbf24'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 8px rgba(245,158,11,0.3), 0 4px 0 #fbbf24'; }}
+            onClick={() => {
+              import('../audio/AudioEngine').then(m => m.audioEngine.playUI('pop'));
+            }}
+            aria-label="Read Aloud"
+          >
+            <Volume2 size={24} color="#b45309" strokeWidth={3} />
+          </button>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: 'rgba(255,255,255,0.95)', padding: '0.5rem', borderRadius: '100px', border: '4px solid #fcd34d', boxShadow: '0 8px 0 #fbbf24, 0 4px 12px rgba(0,0,0,0.1)' }}>
           <button onClick={handlePrevChapter} disabled={isSwapping || currentChapterIndex <= 0} style={{ background: currentChapterIndex <= 0 ? '#f1f5f9' : '#38bdf8', border: 'none', borderRadius: '50%', width: '48px', height: '48px', cursor: currentChapterIndex <= 0 ? 'not-allowed' : 'pointer', opacity: currentChapterIndex <= 0 ? 0.5 : 1, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: currentChapterIndex <= 0 ? 'none' : '0 4px 0 #0284c7', transform: isSwapping ? 'scale(0.95)' : 'none', transition: 'all 0.2s' }}>
             <ArrowLeft size={32} color="white" />
           </button>
@@ -147,7 +172,7 @@ export default function MasteryMap() {
             <ArrowLeft size={32} color="white" style={{ transform: 'rotate(180deg)' }} />
           </button>
         </div>
-      </h1>
+      </div>
 
       {/* Scrollable Map Area */}
       <div style={{ 

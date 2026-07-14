@@ -21,7 +21,6 @@ import MascotRabbit from './components/MascotRabbit'
 
 import { useGameStore } from './store/gameStore'
 
-// QA FIX (Challenge 30): Error Boundary
 class ErrorBoundary extends React.Component {
   constructor(props) {
     super(props);
@@ -33,10 +32,17 @@ class ErrorBoundary extends React.Component {
     if (this.state.hasError) {
       return (
         <div className="screen-container" style={{ background: '#fef2f2', alignItems: 'center', justifyContent: 'center', textAlign: 'center' }}>
-          <MascotRabbit feedbackState="wrong" style={{ transform: 'scale(1.5)', marginBottom: '2rem' }} />
-          <h1 style={{ color: '#991b1b', marginBottom: '1rem' }}>Oops! The rabbit tripped!</h1>
-          <p style={{ color: '#b91c1c', marginBottom: '2rem' }}>Something went wrong. Let's try again.</p>
-          <button className="btn-primary" onClick={() => window.location.reload()}>Restart Game</button>
+          <MascotRabbit feedbackState="idle" style={{ transform: 'scale(1.5)', marginBottom: '2rem' }} />
+          <h1 style={{ color: '#991b1b', marginBottom: '1rem', fontSize: '2.5rem' }}>Oops, let's try again! 🌟</h1>
+          <p style={{ color: '#b91c1c', marginBottom: '2rem', fontSize: '1.5rem' }}>Something got a little mixed up.</p>
+          <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
+            <button className="btn-secondary" onClick={() => window.location.href = '/'}>
+              🏠 Back to Home
+            </button>
+            <button className="btn-primary" onClick={() => window.location.reload()}>
+              🔄 Restart
+            </button>
+          </div>
         </div>
       );
     }
@@ -64,10 +70,11 @@ function App() {
 
   if (!hydrated) {
     return (
-      <div className="screen-container" style={{ background: '#ecfdf5', alignItems: 'center', justifyContent: 'center' }}>
-         <div style={{ animation: 'pulse-glow 2s infinite', borderRadius: '50%' }}>
-            <MascotRabbit />
+      <div className="screen-container" style={{ background: 'linear-gradient(135deg, #ecfdf5, #dbeafe)', alignItems: 'center', justifyContent: 'center', textAlign: 'center' }}>
+         <div style={{ animation: 'pulse-glow 2s infinite', borderRadius: '50%', filter: 'drop-shadow(0 10px 15px rgba(0,0,0,0.1))' }}>
+            <MascotRabbit style={{ width: '200px', height: '200px' }} />
          </div>
+         <h1 style={{ color: '#1e3a8a', fontSize: '2.5rem', marginTop: '2rem', animation: 'pulse 1.5s infinite' }}>Loading Adventure... 🚀</h1>
       </div>
     );
   }

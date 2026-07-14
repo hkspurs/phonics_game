@@ -163,10 +163,10 @@ export const createMathSlice = (set, get) => ({
   /** Get math skill mastery status */
   getMathSkillStatus: (skillId) => {
     const state = get();
-    const recent = state.math.recentAttempts[skillId] || [];
+    const recent = state.math.recentAttempts?.[skillId] || [];
     const lastFive = recent.slice(-5);
 
-    if (state.math.currentUnitId && !state.math.unlockedSkillIds.includes(skillId)) {
+    if (state.math.currentUnitId && !state.math.unlockedSkillIds?.includes(skillId)) {
       return 'locked';
     }
 

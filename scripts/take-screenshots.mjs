@@ -17,8 +17,8 @@ async function run() {
 
   const routes = [
     { url: '/', name: 'gateway' },
-    { url: '/#/phonics/map', name: 'phonics-map' },
-    { url: '/#/phonics/challenge', name: 'phonics-challenge' },
+    { url: '/#/map', name: 'phonics-map' },
+    { url: '/#/challenge', name: 'phonics-challenge' },
     { url: '/#/math/map', name: 'math-map' },
   ];
 

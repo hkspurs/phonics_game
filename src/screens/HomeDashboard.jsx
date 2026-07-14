@@ -54,24 +54,29 @@ export default function HomeDashboard() {
         <button
           onClick={() => { audioEngine.playUI('pop'); navigate('/'); }}
           style={{
-            background: 'white',
-            border: 'none',
+            background: 'rgba(255, 255, 255, 0.95)',
+            border: '2px solid white',
             borderRadius: '100px',
-            padding: '0.5rem 1rem',
+            padding: '0.6rem 1.2rem',
             display: 'flex',
             alignItems: 'center',
             gap: '0.5rem',
             cursor: 'pointer',
-            boxShadow: '0 4px 6px rgba(0,0,0,0.05)',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.08), inset 0 -2px 0 rgba(0,0,0,0.05)',
             color: '#3b82f6',
-            fontWeight: 'bold'
+            fontWeight: '900',
+            transition: 'transform 0.1s'
           }}
+          onMouseDown={(e) => e.currentTarget.style.transform = 'translateY(2px)'}
+          onMouseUp={(e) => e.currentTarget.style.transform = 'translateY(0)'}
+          onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
         >
           &lt; {t('back')}
         </button>
-        <div style={{ background: 'white', padding: '0.5rem 1rem', borderRadius: '100px', display: 'flex', gap: '1rem', fontWeight: 'bold', boxShadow: '0 4px 6px rgba(0,0,0,0.05)' }}>
+        <div style={{ background: 'rgba(255, 255, 255, 0.95)', padding: '0.6rem 1.2rem', borderRadius: '100px', display: 'flex', gap: '1rem', fontWeight: 'bold', border: '2px solid white', boxShadow: '0 4px 12px rgba(0,0,0,0.08), inset 0 -2px 0 rgba(0,0,0,0.05)' }}>
           <span style={{ color: '#eab308' }}>⭐ {stars}</span>
           {gems > 0 && <span style={{ color: '#0ea5e9' }}>💎 {gems}</span>}
+          {tickets > 0 && <span style={{ color: '#a855f7' }}>🎟️ {tickets}</span>}
         </div>
         <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
           {activeAssignment && !activeAssignment.completed && (
@@ -94,11 +99,28 @@ export default function HomeDashboard() {
           }}>
             {streak > 2 ? '🔥' : '⭐'} Streak: {streak}
           </div>
-          <button 
-            style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: '#94a3b8', padding: '0.5rem' }} 
+          <button
+            style={{
+              background: 'rgba(255,255,255,0.95)',
+              border: '2px solid white',
+              boxShadow: '0 4px 12px rgba(0,0,0,0.08), inset 0 -2px 0 rgba(0,0,0,0.05)',
+              cursor: 'pointer',
+              color: '#64748b',
+              padding: '0.5rem',
+              minWidth: '48px',
+              minHeight: '48px',
+              borderRadius: '50%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              transition: 'transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275)'
+            }}
+            onMouseEnter={(e) => { e.currentTarget.style.transform = 'scale(1.1) rotate(15deg)'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1) rotate(0)'; }}
             onClick={() => { audioEngine.playUI('pop'); setShowParentGate(true); }}
+            aria-label="Settings"
           >
-            <Settings size={24} />
+            <Settings size={28} />
           </button>
         </div>
       </div>
@@ -119,7 +141,31 @@ export default function HomeDashboard() {
         transition: 'all 0.6s ease-out 0.4s',
         display: 'flex', flexDirection: 'column', alignItems: 'center'
       }}>
-        <h1 style={{ fontSize: '3rem', color: '#1e3a8a', marginBottom: '0.5rem', textAlign: 'center' }}>{t('readyToLearn')}</h1>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '0.5rem' }}>
+          <h1 style={{ fontSize: '3rem', color: '#1e3a8a', margin: 0, textAlign: 'center' }}>{t('readyToLearn')}</h1>
+          <button 
+            style={{
+              background: '#fcd34d',
+              border: '4px solid white',
+              borderRadius: '50%',
+              width: '56px',
+              height: '56px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+              boxShadow: '0 6px 12px rgba(245,158,11,0.3), 0 4px 0 #fbbf24',
+              transition: 'transform 0.1s',
+            }}
+            onMouseDown={(e) => { e.currentTarget.style.transform = 'translateY(4px)'; e.currentTarget.style.boxShadow = '0 2px 4px rgba(245,158,11,0.3), 0 0px 0 #fbbf24'; }}
+            onMouseUp={(e) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 6px 12px rgba(245,158,11,0.3), 0 4px 0 #fbbf24'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 6px 12px rgba(245,158,11,0.3), 0 4px 0 #fbbf24'; }}
+            onClick={() => audioEngine.playUI('pop')}
+            aria-label="Read Aloud"
+          >
+            <Volume2 size={28} color="#b45309" strokeWidth={3} />
+          </button>
+        </div>
         <p style={{ fontSize: '1.5rem', color: '#3b82f6', marginBottom: '3rem' }}>{t('todayMissionWaiting')}</p>
       </div>
 
@@ -133,7 +179,7 @@ export default function HomeDashboard() {
           style={{ fontSize: '2rem', padding: '1.5rem 4rem', animation: 'pulse-glow 2s infinite', position: 'relative', zIndex: 1 }}
           onClick={handleStartMission}
         >
-          <Play size={32} /> {t('startTodayMission')}
+          <Play size={32} /> {t('startTodayMission')} ►
         </button>
       </div>
 

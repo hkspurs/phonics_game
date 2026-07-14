@@ -1,0 +1,49 @@
+{
+  "schemaVersion": 1,
+  "packs": {
+    "kenney/ui-pack": {
+      "id": "kenney/ui-pack",
+      "to": "public/assets/kenney",
+      "installedAt": "2026-07-14T00:47:14.051Z",
+      "files": [
+        {
+          "sha256": "a8a14a234911eb648c062622915c93e79e94e97cb7f9f375a70f6617f1174318",
+          "archive": "kenney_ui-pack.zip"
+        }
+      ]
+    },
+    "kenney/platformer-characters": {
+      "id": "kenney/platformer-characters",
+      "to": "public/assets/kenney",
+      "installedAt": "2026-07-14T00:47:16.546Z",
+      "files": [
+        {
+          "sha256": "7abbee0635e83a8f223b048579c95d9d93329c00aea0b07413beb8c0add9085d",
+          "archive": "kenney_platformer-characters.zip"
+        }
+      ]
+    },
+    "kenney/game-icons": {
+      "id": "kenney/game-icons",
+      "to": "public/assets/kenney",
+      "installedAt": "2026-07-14T00:47:19.569Z",
+      "files": [
+        {
+          "sha256": "7a86d8d58e0b851e22004b3c70bf90b003632bbf9ac633424daa3bb17d9e7e4e",
+          "archive": "kenney_game-icons.zip"
+        }
+      ]
+    },
+    "kenney/interface-sounds": {
+      "id": "kenney/interface-sounds",
+      "to": "public/assets/kenney",
+      "installedAt": "2026-07-14T00:47:21.803Z",
+      "files": [
+        {
+          "sha256": "f2193d072726d6758a5f7871b2dcc54dcce0d5c35c6f0a62f92549b327c81232",
+          "archive": "kenney_interface-sounds.zip"
+        }
+      ]
+    }
+  }
+}

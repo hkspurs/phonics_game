@@ -111,13 +111,14 @@ export default function SubjectGateway() {
       }}>
         {/* Currency pills */}
         <div style={{
-          background: 'white',
-          padding: '0.5rem 1rem',
+          background: 'rgba(255, 255, 255, 0.95)',
+          padding: '0.6rem 1.2rem',
           borderRadius: '100px',
           display: 'flex',
-          gap: '0.75rem',
+          gap: '1rem',
           fontWeight: 'bold',
-          boxShadow: '0 4px 6px rgba(0,0,0,0.05)',
+          boxShadow: '0 4px 12px rgba(0,0,0,0.08), inset 0 -2px 0 rgba(0,0,0,0.05)',
+          border: '2px solid white',
           flexWrap: 'wrap'
         }}>
           <span style={{ color: '#eab308' }}>⭐ {stars}</span>
@@ -145,20 +146,20 @@ export default function SubjectGateway() {
               width: 'calc(50% - 0.25rem)',
               background: 'white',
               borderRadius: '1.5rem',
-              boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
               transition: 'left 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)'
             }} />
             <span style={{ 
               padding: '0.4rem 1rem', 
-              fontWeight: 'bold', 
-              color: language === 'zh' ? '#3b82f6' : '#64748b',
+              fontWeight: '900', 
+              color: language === 'zh' ? '#3b82f6' : '#94a3b8',
               zIndex: 1,
               transition: 'color 0.3s ease'
             }}>中</span>
             <span style={{ 
               padding: '0.4rem 1rem', 
-              fontWeight: 'bold', 
-              color: language === 'en' ? '#3b82f6' : '#64748b',
+              fontWeight: '900', 
+              color: language === 'en' ? '#3b82f6' : '#94a3b8',
               zIndex: 1,
               transition: 'color 0.3s ease'
             }}>EN</span>
@@ -167,20 +168,26 @@ export default function SubjectGateway() {
           {/* Settings gear */}
           <button
             style={{
-              background: 'transparent',
-              border: 'none',
+              background: 'rgba(255,255,255,0.95)',
+              border: '2px solid white',
+              boxShadow: '0 4px 12px rgba(0,0,0,0.08), inset 0 -2px 0 rgba(0,0,0,0.05)',
               cursor: 'pointer',
-              color: '#94a3b8',
+              color: '#64748b',
               padding: '0.5rem',
-              minWidth: '44px',
-              minHeight: '44px',
+              minWidth: '48px',
+              minHeight: '48px',
+              borderRadius: '50%',
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'center'
+              justifyContent: 'center',
+              transition: 'transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275)'
             }}
+            onMouseEnter={(e) => { e.currentTarget.style.transform = 'scale(1.1) rotate(15deg)'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1) rotate(0)'; }}
             onClick={() => { audioEngine.playUI('pop'); setShowParentGate(true); }}
+            aria-label="Settings"
           >
-            <Settings size={24} />
+            <Settings size={28} />
           </button>
         </div>
       </div>
@@ -198,28 +205,46 @@ export default function SubjectGateway() {
         <div style={{ filter: 'drop-shadow(0 8px 8px rgba(0,0,0,0.1))', marginBottom: '1rem' }}>
           <MascotRabbit style={{ width: '180px', height: '180px' }} />
         </div>
-        <h1 
-          style={{
-            fontSize: 'clamp(2rem, 6vw, 3rem)',
-            color: '#1e3a8a',
-            marginBottom: '0.25rem',
-            textAlign: 'center',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.5rem',
-            cursor: 'pointer'
-          }}
-          onClick={() => {
-            audioEngine.playUI('pop');
-            // If we had TTS, we would play the translated string here.
-            // For MVP, just play a cheerful sound.
-          }}
-        >
-          {t('readyToLearn')} <Volume2 size={32} color="#3b82f6" />
-        </h1>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '0.5rem' }}>
+          <h1 
+            style={{
+              fontSize: 'clamp(2rem, 6vw, 3rem)',
+              color: '#1e3a8a',
+              margin: 0,
+              textAlign: 'center',
+            }}
+          >
+            {t('readyToLearn')}
+          </h1>
+          <button 
+            style={{
+              background: '#fcd34d',
+              border: '4px solid white',
+              borderRadius: '50%',
+              width: '56px',
+              height: '56px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+              boxShadow: '0 6px 12px rgba(245,158,11,0.3), 0 4px 0 #fbbf24',
+              transition: 'transform 0.1s',
+            }}
+            onMouseDown={(e) => { e.currentTarget.style.transform = 'translateY(4px)'; e.currentTarget.style.boxShadow = '0 2px 4px rgba(245,158,11,0.3), 0 0px 0 #fbbf24'; }}
+            onMouseUp={(e) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 6px 12px rgba(245,158,11,0.3), 0 4px 0 #fbbf24'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 6px 12px rgba(245,158,11,0.3), 0 4px 0 #fbbf24'; }}
+            onClick={() => {
+              audioEngine.playUI('pop');
+            }}
+            aria-label="Read Aloud"
+          >
+            <Volume2 size={28} color="#b45309" strokeWidth={3} />
+          </button>
+        </div>
         <p style={{
-          fontSize: 'clamp(1rem, 3vw, 1.25rem)',
-          color: '#64748b',
+          fontSize: 'clamp(1.2rem, 3.5vw, 1.5rem)',
+          color: '#475569',
+          fontWeight: 'bold',
           textAlign: 'center'
         }}>
           {t('pickSubject')}
@@ -293,19 +318,22 @@ export default function SubjectGateway() {
             {t('phonics')}
           </h2>
           <button
-            className="btn-primary"
+            className="btn-secondary"
             style={{
-              padding: '0.6rem 2rem',
-              fontSize: '1rem',
+              padding: '0.8rem 2rem',
+              fontSize: '1.2rem',
               minWidth: '44px',
               minHeight: '44px',
-              transition: 'transform 0.2s ease'
+              boxShadow: '0 6px 0 #d97706, 0 8px 12px rgba(0,0,0,0.1)', // Override primary style to fit secondary color
+              background: '#fcd34d',
+              color: '#b45309',
+              transition: 'all 0.1s ease'
             }}
-            onMouseEnter={(e) => { e.currentTarget.style.transform = 'scale(1.1)'; }}
-            onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)'; }}
+            onMouseEnter={(e) => { e.currentTarget.style.filter = 'brightness(1.1)'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.filter = 'brightness(1)'; }}
             onClick={(e) => { e.stopPropagation(); handleSubjectClick(SUBJECTS.phonics.route); }}
           >
-            {t('start')} ▶
+            {t('start')} ►
           </button>
         </div>
 
@@ -366,17 +394,17 @@ export default function SubjectGateway() {
           <button
             className="btn-primary"
             style={{
-              padding: '0.6rem 2rem',
-              fontSize: '1rem',
+              padding: '0.8rem 2rem',
+              fontSize: '1.2rem',
               minWidth: '44px',
               minHeight: '44px',
-              transition: 'transform 0.2s ease'
+              transition: 'all 0.1s ease'
             }}
-            onMouseEnter={(e) => { e.currentTarget.style.transform = 'scale(1.1)'; }}
-            onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)'; }}
+            onMouseEnter={(e) => { e.currentTarget.style.filter = 'brightness(1.1)'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.filter = 'brightness(1)'; }}
             onClick={(e) => { e.stopPropagation(); handleSubjectClick(SUBJECTS.math.route); }}
           >
-            {t('start')}
+            {t('start')} ►
           </button>
         </div>
       </div>

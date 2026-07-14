@@ -108,14 +108,37 @@ export default function MathMasteryMap() {
           <Home size={24} /> {t('backToHome')}
         </button>
       </div>
-      <h1 
-        style={{ textAlign: 'center', color: '#b45309', fontSize: '2.5rem', marginTop: '1rem', zIndex: 10, position: 'relative', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }}
-        onClick={() => {
-          import('../audio/AudioEngine').then(m => m.audioEngine.playUI('pop'));
-        }}
-      >
-        {t('masteryMap')} <Volume2 size={32} color="#b45309" />
-      </h1>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '1rem', marginTop: '1rem', marginBottom: '0.5rem', zIndex: 10, position: 'relative' }}>
+        <h1 
+          style={{ textAlign: 'center', color: '#b45309', fontSize: '2.5rem', margin: 0 }}
+        >
+          {t('masteryMap')}
+        </h1>
+        <button 
+          style={{
+            background: '#fcd34d',
+            border: '4px solid white',
+            borderRadius: '50%',
+            width: '48px',
+            height: '48px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            cursor: 'pointer',
+            boxShadow: '0 4px 8px rgba(245,158,11,0.3), 0 4px 0 #fbbf24',
+            transition: 'transform 0.1s',
+          }}
+          onMouseDown={(e) => { e.currentTarget.style.transform = 'translateY(4px)'; e.currentTarget.style.boxShadow = '0 2px 4px rgba(245,158,11,0.3), 0 0px 0 #fbbf24'; }}
+          onMouseUp={(e) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 8px rgba(245,158,11,0.3), 0 4px 0 #fbbf24'; }}
+          onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 8px rgba(245,158,11,0.3), 0 4px 0 #fbbf24'; }}
+          onClick={() => {
+            import('../audio/AudioEngine').then(m => m.audioEngine.playUI('pop'));
+          }}
+          aria-label="Read Aloud"
+        >
+          <Volume2 size={24} color="#b45309" strokeWidth={3} />
+        </button>
+      </div>
 
       <style>{`
         @keyframes active-node-pulse {
