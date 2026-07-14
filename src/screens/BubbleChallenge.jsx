@@ -280,9 +280,9 @@ export default function BubbleChallenge() {
 
         {/* Audio Button - Positioned top center */}
         <div style={{ position: 'absolute', top: '5%', left: '50%', transform: 'translateX(-50%)', zIndex: 15, display: 'flex', gap: '1rem', alignItems: 'center' }}>
-          {currentQ.instructionAudio && (
+          {((currentQ.instructionAudio) || true) && (
             <button 
-              onClick={() => audioEngine.playAudioById(currentQ.instructionAudio)} 
+              onClick={() => audioEngine.playAudioById(currentQ.instructionAudio || 'inst_bubble_yue')} 
               style={{ 
                 background: 'linear-gradient(135deg, #a78bfa, #8b5cf6)', border: '4px solid white', borderRadius: '50%', width: '80px', height: '80px', 
                 display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', cursor: 'pointer', 

@@ -297,9 +297,12 @@ export default function DailyChallenge() {
         }}>
           {currentQ.type === 'boss' ? '⭐ Final Boss Challenge! ⭐' : 'Phonics Challenge'}
         </h2>
-        {currentQ.instructionAudio && (
+        {((currentQ.instructionAudio) || true) && (
           <button 
-            onClick={() => audioEngine.playAudioById(currentQ.instructionAudio)}
+            onClick={() => {
+              const fallback = currentQ.type === 'boss' ? 'inst_boss_yue' : (currentQ.type === 'compare' ? 'inst_compare_yue' : 'inst_listen_and_choose_yue');
+              audioEngine.playAudioById(currentQ.instructionAudio || fallback);
+            }}
             style={{ 
               background: '#8b5cf6', border: 'none', borderRadius: '12px', padding: '10px 20px', 
               color: 'white', fontWeight: 'bold', fontSize: '1.2rem', cursor: 'pointer',

@@ -47,8 +47,9 @@ export default function TrainingGym() {
   };
 
   const playInstructionAudio = () => {
-    if (!currentQ || !currentQ.instructionAudio) return;
-    audioEngine.playAudioById(currentQ.instructionAudio);
+    if (!currentQ) return;
+    const fallback = currentQ.type === 'gym_warmup' ? 'inst_gym_warmup_yue' : (currentQ.type === 'gym_lift' ? 'inst_gym_lift_yue' : 'inst_gym_sprint_yue');
+    audioEngine.playAudioById(currentQ.instructionAudio || fallback);
   };
 
   if (!currentQ) return null;
