@@ -174,6 +174,8 @@ class AudioEngine {
       // Play it concurrently, don't await, so it acts like a fire-and-forget sound effect
       this.play(url, 0, 0, 1.0);
     }
+  }
+
   async playAudioById(audioId, options = {}) {
     if (!audioId) return false;
     
