@@ -5,6 +5,7 @@ import { audioEngine } from '../audio/AudioEngine';
 import { X, Volume2, Pause, Star } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import MascotRabbit from '../components/MascotRabbit';
+import VirtualKeyboard from '../components/VirtualKeyboard';
 
 export default function BubbleChallenge() {
   const navigate = useNavigate();
@@ -333,14 +334,15 @@ export default function BubbleChallenge() {
         </div>
         
         {/* Dictation Input Form at the bottom */}
-        <div style={{ position: 'absolute', bottom: '2%', right: '5%', left: '180px', zIndex: 15, display: 'flex', justifyContent: 'center' }}>
+        <div style={{ position: 'absolute', bottom: '2%', right: '5%', left: '180px', zIndex: 15, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-end', pointerEvents: 'none' }}>
           <form 
             onSubmit={handleSubmit}
-            style={{ display: 'flex', gap: '1rem', width: '100%', maxWidth: '500px', background: 'rgba(255,255,255,0.9)', padding: '1rem', borderRadius: '32px', boxShadow: '0 10px 25px rgba(0,0,0,0.2)' }}
+            style={{ pointerEvents: 'auto', display: 'flex', gap: '1rem', width: '100%', maxWidth: '500px', background: 'rgba(255,255,255,0.9)', padding: '1rem', borderRadius: '32px', boxShadow: '0 10px 25px rgba(0,0,0,0.2)', marginBottom: '0.5rem' }}
           >
             <input 
               type="text" 
               value={typedAnswer}
+              inputMode="none" // Prevent native keyboard
               onChange={(e) => {
                 const val = e.target.value.replace(/[^A-Za-z]/g, '').toUpperCase();
                 if (val.length <= 2) setTypedAnswer(val);
@@ -374,6 +376,21 @@ export default function BubbleChallenge() {
               Pop!
             </button>
           </form>
+          <div style={{ width: '100%', maxWidth: '500px', display: 'flex', justifyContent: 'center' }}>
+            <VirtualKeyboard 
+              disabled={isProcessing || animatingOut}
+              onKeyPress={(key) => {
+                if (key === 'BACKSPACE') {
+                  setTypedAnswer(prev => prev.slice(0, -1));
+                } else {
+                  setTypedAnswer(prev => {
+                    const next = prev + key;
+                    return next.length <= 2 ? next : prev;
+                  });
+                }
+              }}
+            />
+          </div>
         </div>
         
         {/* Flying Stars Animation Layer */}

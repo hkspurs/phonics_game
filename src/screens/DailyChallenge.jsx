@@ -8,6 +8,7 @@ import CorrectFeedback from '../components/CorrectFeedback'
 import WrongFeedback from '../components/WrongFeedback'
 import AppleIcon from '../components/AppleIcon'
 import MascotRabbit from '../components/MascotRabbit'
+import VirtualKeyboard from '../components/VirtualKeyboard'
 
 export default function DailyChallenge() {
   const navigate = useNavigate()
@@ -438,6 +439,7 @@ export default function DailyChallenge() {
               <input 
                 type="text" 
                 value={typedAnswer}
+                inputMode="none" // Prevent native keyboard
                 onChange={(e) => {
                   const val = e.target.value.replace(/[^A-Za-z]/g, '').toUpperCase();
                   if (val.length <= 2) setTypedAnswer(val);
@@ -473,6 +475,21 @@ export default function DailyChallenge() {
                 Submit / 確定
               </button>
             </form>
+            <div style={{ width: '100%', maxWidth: '600px', display: 'flex', justifyContent: 'center', marginTop: '-1rem' }}>
+              <VirtualKeyboard 
+                disabled={isProcessing || feedbackState !== null}
+                onKeyPress={(key) => {
+                  if (key === 'BACKSPACE') {
+                    setTypedAnswer(prev => prev.slice(0, -1));
+                  } else {
+                    setTypedAnswer(prev => {
+                      const next = prev + key;
+                      return next.length <= 2 ? next : prev;
+                    });
+                  }
+                }}
+              />
+            </div>
           </div>
         </div>
       )}

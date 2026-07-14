@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useGameStore } from '../store/gameStore';
 import { audioEngine } from '../audio/AudioEngine';
 import MascotRabbit from '../components/MascotRabbit';
+import VirtualKeyboard from '../components/VirtualKeyboard';
 import { X, Play, Volume2 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
@@ -203,6 +204,7 @@ export default function TrainingGym() {
             <input 
               type="text" 
               value={typedAnswer}
+              inputMode="none" // Prevent native keyboard
               onChange={(e) => {
                 const val = e.target.value.replace(/[^A-Za-z]/g, '').toUpperCase();
                 if (val.length <= 2) setTypedAnswer(val);
@@ -238,6 +240,21 @@ export default function TrainingGym() {
               Submit / 確定
             </button>
           </form>
+          <div style={{ width: '100%', maxWidth: '600px', display: 'flex', justifyContent: 'center' }}>
+            <VirtualKeyboard 
+              disabled={processingRef.current || isRevealed}
+              onKeyPress={(key) => {
+                if (key === 'BACKSPACE') {
+                  setTypedAnswer(prev => prev.slice(0, -1));
+                } else {
+                  setTypedAnswer(prev => {
+                    const next = prev + key;
+                    return next.length <= 2 ? next : prev;
+                  });
+                }
+              }}
+            />
+          </div>
         </div>
       </div>
     </div>
