@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Home, Play, X, Lock } from 'lucide-react';
+import { Home, Play, X, Lock, Volume2 } from 'lucide-react';
 import { useGameStore } from '../store/gameStore';
 import MapNodeCloud from '../components/MapNodeCloud';
 import MathMascot from '../math/components/MathMascot';

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Home, Play, X, Volume2 } from 'lucide-react'
+import { Home, Play, X, Volume2, ArrowLeft } from 'lucide-react'
 import { useGameStore } from '../store/gameStore'
 import MapNodeCloud from '../components/MapNodeCloud'
 import MascotRabbit from '../components/MascotRabbit'
