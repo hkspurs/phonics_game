@@ -40,6 +40,14 @@ export default function MathTrainingGym() {
     }
   }, [isMathChallengeActive, activeQuestions, currentQuestionIndex, navigate]);
 
+  useEffect(() => {
+    setFeedbackState(null);
+    setAttemptCount(1);
+    setIsProcessing(false);
+    processingRef.current = false;
+    setQuestionStartTime(Date.now());
+  }, [currentQuestionIndex]);
+
   const currentQ = activeQuestions[currentQuestionIndex];
 
   if (!currentQ) return null;
@@ -168,7 +176,7 @@ export default function MathTrainingGym() {
 
         {/* Question Area */}
         <div style={{ width: '100%', padding: '2rem', background: 'white', borderRadius: '24px', boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)', pointerEvents: isProcessing ? 'none' : 'auto' }}>
-           <MathQuestionRenderer question={currentQ} onAnswer={handleAnswer} />
+           <MathQuestionRenderer key={currentQuestionIndex} question={currentQ} onAnswer={handleAnswer} />
         </div>
       </div>
     </div>

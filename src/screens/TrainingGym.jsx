@@ -27,6 +27,14 @@ export default function TrainingGym() {
     }
     // Auto-play audio on mount
     playQuestionAudio();
+    
+    // Reset state for new question
+    setIsRevealed(false);
+    setSelectedId(null);
+    setTypedAnswer('');
+    setAttempts(0);
+    setAnimState('idle');
+    processingRef.current = false;
   }, [currentQuestionIndex]);
 
   const playQuestionAudio = () => {

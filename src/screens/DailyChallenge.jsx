@@ -39,6 +39,17 @@ export default function DailyChallenge() {
     }
   }, [isChallengeActive, activeQuestions, currentQuestionIndex, navigate])
 
+  // QA FIX: Reset local state when moving to the next question
+  useEffect(() => {
+    setSelected(null);
+    setFeedbackState(null);
+    setAttemptCount(1);
+    setDisabledChoices([]);
+    setTypedAnswer('');
+    setIsProcessing(false);
+    processingRef.current = false;
+  }, [currentQuestionIndex]);
+
   // Preload all audio for the challenge
   useEffect(() => {
     if (activeQuestions.length > 0) {

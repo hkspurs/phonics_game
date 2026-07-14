@@ -32,6 +32,13 @@ export default function MathDailyChallenge() {
     }
   }, [isMathChallengeActive, mathActiveQuestions, mathCurrentQuestionIndex, navigate]);
 
+  useEffect(() => {
+    setFeedbackState(null);
+    setIsProcessing(false);
+    processingRef.current = false;
+    setQuestionStartTime(Date.now());
+  }, [mathCurrentQuestionIndex]);
+
   const currentQ = mathActiveQuestions[mathCurrentQuestionIndex];
 
   if (!currentQ) {
@@ -198,7 +205,7 @@ export default function MathDailyChallenge() {
           boxShadow: '0 10px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.1)',
           pointerEvents: isProcessing ? 'none' : 'auto'
         }}>
-          <MathQuestionRenderer question={currentQ} onAnswer={handleAnswer} />
+          <MathQuestionRenderer key={mathCurrentQuestionIndex} question={currentQ} onAnswer={handleAnswer} />
         </div>
       </div>
     </div>
