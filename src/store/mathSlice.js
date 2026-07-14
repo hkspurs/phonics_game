@@ -98,16 +98,28 @@ export const createMathSlice = (set, get) => ({
     let newUnlockedSkillIds = [...state.math.unlockedSkillIds];
     
     newUnlockedSkillIds.forEach(id => {
-      const s = id === skillId ? newStats : state.math.learningStats[id];
-      if (s && s.attempts >= 3) {
-        const accuracy = s.firstAttemptHits / s.attempts;
-        if (accuracy >= 0.4) {
-          const currentIndex = flatCurriculum.indexOf(id);
-          if (currentIndex !== -1 && currentIndex + 1 < flatCurriculum.length) {
-            const nextSkill = flatCurriculum[currentIndex + 1];
-            if (!newUnlockedSkillIds.includes(nextSkill)) {
-              newUnlockedSkillIds.push(nextSkill);
-            }
+      // Check recent attempts first, matching getMathSkillStatus
+      const recent = id === skillId ? recentAttempts[id] : (state.math.recentAttempts?.[id] || []);
+      const lastFive = recent.slice(-5);
+      
+      let isMastered = false;
+      if (lastFive.length >= 3) {
+        const accuracy = lastFive.filter(a => a.correct).length / lastFive.length;
+        if (accuracy >= 0.4) isMastered = true;
+      } else {
+        const s = id === skillId ? newStats : state.math.learningStats[id];
+        if (s && s.attempts >= 3) {
+          const accuracy = s.firstAttemptHits / s.attempts;
+          if (accuracy >= 0.4) isMastered = true;
+        }
+      }
+
+      if (isMastered) {
+        const currentIndex = flatCurriculum.indexOf(id);
+        if (currentIndex !== -1 && currentIndex + 1 < flatCurriculum.length) {
+          const nextSkill = flatCurriculum[currentIndex + 1];
+          if (!newUnlockedSkillIds.includes(nextSkill)) {
+            newUnlockedSkillIds.push(nextSkill);
           }
         }
       }
@@ -216,16 +228,27 @@ export const createMathSlice = (set, get) => ({
     
     // Auto-unlock next skills if current is mastered
     state.math.unlockedSkillIds.forEach(skillId => {
-      const stats = state.math.learningStats[skillId];
-      if (stats && stats.attempts >= 3) {
-        const accuracy = stats.firstAttemptHits / stats.attempts;
-        if (accuracy >= 0.4) {
-          const currentIndex = flatCurriculum.indexOf(skillId);
-          if (currentIndex !== -1 && currentIndex + 1 < flatCurriculum.length) {
-            const nextSkill = flatCurriculum[currentIndex + 1];
-            if (!newUnlockedSkillIds.includes(nextSkill)) {
-              newUnlockedSkillIds.push(nextSkill);
-            }
+      const recent = state.math.recentAttempts?.[skillId] || [];
+      const lastFive = recent.slice(-5);
+      
+      let isMastered = false;
+      if (lastFive.length >= 3) {
+        const accuracy = lastFive.filter(a => a.correct).length / lastFive.length;
+        if (accuracy >= 0.4) isMastered = true;
+      } else {
+        const stats = state.math.learningStats[skillId];
+        if (stats && stats.attempts >= 3) {
+          const accuracy = stats.firstAttemptHits / stats.attempts;
+          if (accuracy >= 0.4) isMastered = true;
+        }
+      }
+
+      if (isMastered) {
+        const currentIndex = flatCurriculum.indexOf(skillId);
+        if (currentIndex !== -1 && currentIndex + 1 < flatCurriculum.length) {
+          const nextSkill = flatCurriculum[currentIndex + 1];
+          if (!newUnlockedSkillIds.includes(nextSkill)) {
+            newUnlockedSkillIds.push(nextSkill);
           }
         }
       }
