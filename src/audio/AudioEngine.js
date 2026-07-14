@@ -1,3 +1,5 @@
+import audioManifest from '../../data/audio_manifest.json';
+
 class AudioEngine {
   constructor() {
     this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
@@ -172,6 +174,65 @@ class AudioEngine {
       // Play it concurrently, don't await, so it acts like a fire-and-forget sound effect
       this.play(url, 0, 0, 1.0);
     }
+  async playAudioById(audioId, options = {}) {
+    if (!audioId) return false;
+    
+    const item = audioManifest[audioId];
+    if (!item) {
+      console.warn(`[AudioEngine] Audio ID not found in manifest: ${audioId}`);
+      return false;
+    }
+
+    if (item.qaStatus === 'fail') {
+      console.warn(`[AudioEngine] Audio ID ${audioId} is marked as fail in QA.`);
+      return false;
+    }
+
+    // Try playing the file
+    if (item.file) {
+      const url = `/${item.file}`; // assuming relative to public root
+      try {
+        const buffer = await this._loadBuffer(url, 0); // 0 retries to fail fast for fallback
+        if (buffer) {
+          const { startTimeMs = 0, durationMs = 0, playbackRate = 1.0 } = options;
+          await this.play(url, startTimeMs, durationMs, playbackRate);
+          return true;
+        }
+      } catch (e) {
+        console.warn(`[AudioEngine] Failed to load MP3 for ${audioId}:`, e);
+      }
+    }
+
+    // File missing or failed to load. Use fallback?
+    if (item.type === 'instruction' || item.type === 'feedback') {
+      console.log(`[AudioEngine] Using Speech Synthesis fallback for ${audioId}`);
+      return this._playSpeechSynthesis(item);
+    } else {
+      console.warn(`[AudioEngine] Missing audio for strict target sound ${audioId}. No fallback allowed.`);
+      return false;
+    }
+  }
+
+  _playSpeechSynthesis(item) {
+    return new Promise((resolve) => {
+      if (!window.speechSynthesis || !item.expectedText) {
+        resolve(false);
+        return;
+      }
+      this.stop(); // Stop any other audio
+      window.speechSynthesis.cancel();
+      
+      const utterance = new SpeechSynthesisUtterance(item.expectedText);
+      if (item.language) utterance.lang = item.language;
+      
+      utterance.onend = () => resolve(true);
+      utterance.onerror = () => resolve(false);
+      
+      window.speechSynthesis.speak(utterance);
+      
+      // Safety fallback
+      setTimeout(() => resolve(true), 5000);
+    });
   }
 }
 

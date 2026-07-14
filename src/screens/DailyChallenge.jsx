@@ -76,7 +76,7 @@ export default function DailyChallenge() {
       const playTarget = () => {
         if (isCancelled || hasPlayed) return;
         hasPlayed = true;
-        audioEngine.play(currentQ.targetSound.audio_url).catch(() => {}).finally(() => {
+        audioEngine.playAudioById(currentQ.targetSoundAudio).catch(() => {}).finally(() => {
           if (!isCancelled) setIsProcessing(false);
         });
       };
@@ -213,9 +213,9 @@ export default function DailyChallenge() {
         const clickedSound = currentQ.choiceSounds?.find(s => s.label === choice);
         
         if (clickedSound?.audio_url) {
-          audioEngine.play(clickedSound.audio_url).catch(() => {}).finally(() => {
+          audioEngine.playAudioById(clickedSound.sound_id).catch(() => {}).finally(() => {
             setTimeout(() => {
-              audioEngine.play(currentQ.targetSound.audio_url).catch(() => {}).finally(() => {
+              audioEngine.playAudioById(currentQ.targetSoundAudio).catch(() => {}).finally(() => {
                 setIsProcessing(false)
                 processingRef.current = false;
               });
@@ -223,7 +223,7 @@ export default function DailyChallenge() {
           });
         } else {
           // Play target audio again as a hint, and DO NOT unlock until it finishes!
-          audioEngine.play(currentQ.targetSound.audio_url).catch(() => {}).finally(() => {
+          audioEngine.playAudioById(currentQ.targetSoundAudio).catch(() => {}).finally(() => {
             setIsProcessing(false)
             processingRef.current = false;
           })
@@ -234,7 +234,7 @@ export default function DailyChallenge() {
 
   const handlePlayAudio = () => {
     if (isProcessing) return; // QA FIX: Prevent audio overlap spam
-    audioEngine.play(currentQ.targetSound.audio_url)
+    audioEngine.playAudioById(currentQ.targetSoundAudio)
   }
 
   const progressPercent = Math.max(5, (currentQuestionIndex / activeQuestions.length) * 100)
@@ -285,17 +285,31 @@ export default function DailyChallenge() {
         </span>
       </div>
 
-      <h2 style={{ 
-        color: currentQ.type === 'boss' ? '#e11d48' : '#065f46', 
-        fontSize: currentQ.type === 'boss' ? '2.5rem' : '2rem', 
-        marginBottom: '2rem',
-        textTransform: currentQ.type === 'boss' ? 'uppercase' : 'none',
-        animation: currentQ.type === 'boss' ? 'pulse-glow 2s infinite' : 'none',
-        textAlign: 'center',
-        flexShrink: 0
-      }}>
-        {currentQ.type === 'boss' ? '⭐ Final Boss Challenge! ⭐' : 'Listen and Choose'}
-      </h2>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: '2rem' }}>
+        <h2 style={{ 
+          color: currentQ.type === 'boss' ? '#e11d48' : '#065f46', 
+          fontSize: currentQ.type === 'boss' ? '2.5rem' : '2rem', 
+          marginBottom: '1rem',
+          textTransform: currentQ.type === 'boss' ? 'uppercase' : 'none',
+          animation: currentQ.type === 'boss' ? 'pulse-glow 2s infinite' : 'none',
+          textAlign: 'center',
+          flexShrink: 0
+        }}>
+          {currentQ.type === 'boss' ? '⭐ Final Boss Challenge! ⭐' : 'Phonics Challenge'}
+        </h2>
+        {currentQ.instructionAudio && (
+          <button 
+            onClick={() => audioEngine.playAudioById(currentQ.instructionAudio)}
+            style={{ 
+              background: '#8b5cf6', border: 'none', borderRadius: '12px', padding: '10px 20px', 
+              color: 'white', fontWeight: 'bold', fontSize: '1.2rem', cursor: 'pointer',
+              display: 'flex', alignItems: 'center', gap: '0.5rem', boxShadow: '0 4px 0 #6d28d9'
+            }}
+          >
+            <Volume2 size={24} /> Listen to question
+          </button>
+        )}
+      </div>
 
       {/* QA FIX (Challenge 1 & 2): Boss Visuals */}
       {currentQ.type === 'boss' && (
@@ -324,7 +338,7 @@ export default function DailyChallenge() {
             <button 
               className="btn-primary" 
               style={{ padding: '2rem', background: '#38bdf8', borderRadius: '50%' }}
-              onClick={() => !isProcessing && audioEngine.play(currentQ.targetSound.audio_url).catch(()=>{})}
+              onClick={() => !isProcessing && audioEngine.playAudioById(currentQ.targetSoundAudio).catch(()=>{})}
             >
               <Volume2 size={48} />
               <div style={{ fontSize: '1rem', marginTop: '0.5rem' }}>Sound 1</div>
@@ -333,7 +347,7 @@ export default function DailyChallenge() {
             <button 
               className="btn-primary" 
               style={{ padding: '2rem', background: '#818cf8', borderRadius: '50%' }}
-              onClick={() => !isProcessing && audioEngine.play(currentQ.compareSound.audio_url).catch(()=>{})}
+              onClick={() => !isProcessing && audioEngine.playAudioById(currentQ.compareSoundAudio).catch(()=>{})}
             >
               <Volume2 size={48} />
               <div style={{ fontSize: '1rem', marginTop: '0.5rem' }}>Sound 2</div>
@@ -424,7 +438,7 @@ export default function DailyChallenge() {
                   transition: 'background 0.3s',
                   display: 'flex', alignItems: 'center', justifyContent: 'center'
                 }}
-                onClick={() => !isProcessing && audioEngine.play(currentQ.targetSound.audio_url).catch(()=>{})}
+                onClick={() => !isProcessing && audioEngine.playAudioById(currentQ.targetSoundAudio).catch(()=>{})}
               >
                 {isProcessing ? (
                   <div style={{ width: '64px', height: '64px', border: '6px solid #e0f2fe', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
@@ -435,7 +449,7 @@ export default function DailyChallenge() {
               <div style={{ position: 'absolute', right: '-120px', bottom: '0', width: '120px', height: '120px', padding: '10px' }}>
                 <ReplayHelper 
                   isPlaying={isProcessing} 
-                  onClick={() => !isProcessing && audioEngine.play(currentQ.targetSound.audio_url).catch(()=>{})} 
+                  onClick={() => !isProcessing && audioEngine.playAudioById(currentQ.targetSoundAudio).catch(()=>{})} 
                 />
               </div>
             </div>

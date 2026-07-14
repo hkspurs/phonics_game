@@ -181,7 +181,11 @@ class QuestionEngine {
       targetSound: targetSound,
       choices: shuffle([targetSound.label, warmupDistractor.label]),
       correctAnswer: targetSound.label,
-      choiceSounds: [targetSound, warmupDistractor]
+      choiceSounds: [targetSound, warmupDistractor],
+      instructionAudio: 'inst_listen_and_choose_yue',
+      targetSoundAudio: targetSound.sound_id,
+      correctFeedbackAudio: 'fb_correct_yue_001',
+      wrongFeedbackAudio: 'fb_wrong_yue_001'
     });
 
     // Stage 2: Heavy Lifting (Discrimination against the confused sound, 2 times)
@@ -199,7 +203,11 @@ class QuestionEngine {
         targetSound: targetSound,
         choices: shuffle([targetSound.label, confusedSound.label]),
         correctAnswer: targetSound.label,
-        choiceSounds: [targetSound, confusedSound]
+        choiceSounds: [targetSound, confusedSound],
+        instructionAudio: 'inst_listen_and_choose_yue',
+        targetSoundAudio: targetSound.sound_id,
+        correctFeedbackAudio: 'fb_correct_yue_001',
+        wrongFeedbackAudio: 'fb_wrong_yue_001'
       });
     }
 
@@ -211,7 +219,11 @@ class QuestionEngine {
       targetSound: targetSound,
       choices: shuffle([targetSound.label, ...sprintDistractors.map(d => d.label)]),
       correctAnswer: targetSound.label,
-      choiceSounds: [targetSound, ...sprintDistractors]
+      choiceSounds: [targetSound, ...sprintDistractors],
+      instructionAudio: 'inst_listen_and_choose_yue',
+      targetSoundAudio: targetSound.sound_id,
+      correctFeedbackAudio: 'fb_correct_yue_001',
+      wrongFeedbackAudio: 'fb_wrong_yue_001'
     });
 
     return questions;
@@ -245,7 +257,11 @@ class QuestionEngine {
         targetSound: targetSound,
         choices: choices,
         correctAnswer: targetSound.label,
-        choiceSounds: [targetSound, ...distractors]
+        choiceSounds: [targetSound, ...distractors],
+        instructionAudio: 'inst_listen_and_choose_yue',
+        targetSoundAudio: targetSound.sound_id,
+        correctFeedbackAudio: 'fb_correct_yue_001',
+        wrongFeedbackAudio: 'fb_wrong_yue_001'
       });
     }
 
@@ -296,7 +312,12 @@ class QuestionEngine {
           targetSound: targetSound,
           compareSound: compareSoundObj,
           choices: ['Same', 'Different'],
-          correctAnswer: isSame ? 'Same' : 'Different'
+          correctAnswer: isSame ? 'Same' : 'Different',
+          instructionAudio: 'inst_listen_and_choose_yue',
+          targetSoundAudio: targetSound.sound_id,
+          compareSoundAudio: compareSoundObj.sound_id,
+          correctFeedbackAudio: 'fb_correct_yue_001',
+          wrongFeedbackAudio: 'fb_wrong_yue_001'
         });
         lastCorrectIndex = -1; // Reset for compare
       } else {
@@ -316,7 +337,11 @@ class QuestionEngine {
           targetSound: targetSound,
           choices: choices,
           correctAnswer: targetSound.label,
-          choiceSounds: [targetSound, ...distractors]
+          choiceSounds: [targetSound, ...distractors],
+          instructionAudio: 'inst_listen_and_choose_yue',
+          targetSoundAudio: targetSound.sound_id,
+          correctFeedbackAudio: 'fb_correct_yue_001',
+          wrongFeedbackAudio: 'fb_wrong_yue_001'
         });
       }
     });

@@ -1,0 +1,1292 @@
+{
+  "inst_listen_and_choose_yue": {
+    "id": "inst_listen_and_choose_yue",
+    "file": "assets/audio/instructions/listen_choose_yue.mp3",
+    "type": "instruction",
+    "language": "yue-HK",
+    "expectedText": "聽一聽，揀啱嘅字母。",
+    "generatedBy": "gpt-sovits",
+    "qaStatus": "review_required",
+    "qaNotes": []
+  },
+  "fb_correct_yue_001": {
+    "id": "fb_correct_yue_001",
+    "file": "assets/audio/feedback/correct_yue_001.mp3",
+    "type": "feedback",
+    "language": "yue-HK",
+    "expectedText": "做得好！你答啱咗！",
+    "generatedBy": "gpt-sovits",
+    "qaStatus": "review_required",
+    "qaNotes": []
+  },
+  "fb_wrong_yue_001": {
+    "id": "fb_wrong_yue_001",
+    "file": "assets/audio/feedback/wrong_yue_001.mp3",
+    "type": "feedback",
+    "language": "yue-HK",
+    "expectedText": "差少少，再聽多一次。",
+    "generatedBy": "gpt-sovits",
+    "qaStatus": "review_required",
+    "qaNotes": []
+  },
+  "AB_01": {
+    "id": "AB_01",
+    "file": "assets/AEIOU/A/001_AB.mp3",
+    "type": "phonics_target",
+    "language": "en",
+    "expectedPhoneme": "/AB/",
+    "generatedBy": "teacher_recording",
+    "qaStatus": "pass",
+    "qaNotes": [
+      "Initial import, requires human review to ensure final consonant is preserved."
+    ]
+  },
+  "AC_01": {
+    "id": "AC_01",
+    "file": "assets/AEIOU/A/002_AC.mp3",
+    "type": "phonics_target",
+    "language": "en",
+    "expectedPhoneme": "/AC/",
+    "generatedBy": "teacher_recording",
+    "qaStatus": "pass",
+    "qaNotes": [
+      "Initial import, requires human review to ensure final consonant is preserved."
+    ]
+  },
+  "AD_01": {
+    "id": "AD_01",
+    "file": "assets/AEIOU/A/003_AD.mp3",
+    "type": "phonics_target",
+    "language": "en",
+    "expectedPhoneme": "/AD/",
+    "generatedBy": "teacher_recording",
+    "qaStatus": "pass",
+    "qaNotes": [
+      "Initial import, requires human review to ensure final consonant is preserved."
+    ]
+  },
+  "AF_01": {
+    "id": "AF_01",
+    "file": "assets/AEIOU/A/004_AF.mp3",
+    "type": "phonics_target",
+    "language": "en",
+    "expectedPhoneme": "/AF/",
+    "generatedBy": "teacher_recording",
+    "qaStatus": "pass",
+    "qaNotes": [
+      "Initial import, requires human review to ensure final consonant is preserved."
+    ]
+  },
+  "AG_01": {
+    "id": "AG_01",
+    "file": "assets/AEIOU/A/005_AG.mp3",
+    "type": "phonics_target",
+    "language": "en",
+    "expectedPhoneme": "/AG/",
+    "generatedBy": "teacher_recording",
+    "qaStatus": "pass",
+    "qaNotes": [
+      "Initial import, requires human review to ensure final consonant is preserved."
+    ]
+  },
+  "AH_01": {
+    "id": "AH_01",
+    "file": "assets/AEIOU/A/006_AH.mp3",
+    "type": "phonics_target",
+    "language": "en",
+    "expectedPhoneme": "/AH/",
+    "generatedBy": "teacher_recording",
+    "qaStatus": "pass",
+    "qaNotes": [
+      "Initial import, requires human review to ensure final consonant is preserved."
+    ]
+  },
+  "AJ_01": {
+    "id": "AJ_01",
+    "file": "assets/AEIOU/A/007_AJ.mp3",
+    "type": "phonics_target",
+    "language": "en",
+    "expectedPhoneme": "/AJ/",
+    "generatedBy": "teacher_recording",
+    "qaStatus": "pass",
+    "qaNotes": [
+      "Initial import, requires human review to ensure final consonant is preserved."
+    ]
+  },
+  "AK_01": {
+    "id": "AK_01",
+    "file": "assets/AEIOU/A/008_AK.mp3",
+    "type": "phonics_target",
+    "language": "en",
+    "expectedPhoneme": "/AK/",
+    "generatedBy": "teacher_recording",
+    "qaStatus": "pass",
+    "qaNotes": [
+      "Initial import, requires human review to ensure final consonant is preserved."
+    ]
+  },
+  "AL_01": {
+    "id": "AL_01",
+    "file": "assets/AEIOU/A/009_AL.mp3",
+    "type": "phonics_target",
+    "language": "en",
+    "expectedPhoneme": "/AL/",
+    "generatedBy": "teacher_recording",
+    "qaStatus": "pass",
+    "qaNotes": [
+      "Initial import, requires human review to ensure final consonant is preserved."
+    ]
+  },
+  "AM_01": {
+    "id": "AM_01",
+    "file": "assets/AEIOU/A/010_AM.mp3",
+    "type": "phonics_target",
+    "language": "en",
+    "expectedPhoneme": "/AM/",
+    "generatedBy": "teacher_recording",
+    "qaStatus": "pass",
+    "qaNotes": [
+      "Initial import, requires human review to ensure final consonant is preserved."
+    ]
+  },
+  "AN_01": {
+    "id": "AN_01",
+    "file": "assets/AEIOU/A/011_AN.mp3",
+    "type": "phonics_target",
+    "language": "en",
+    "expectedPhoneme": "/AN/",
+    "generatedBy": "teacher_recording",
+    "qaStatus": "pass",
+    "qaNotes": [
+      "Initial import, requires human review to ensure final consonant is preserved."
+    ]
+  },
+  "AP_01": {
+    "id": "AP_01",
+    "file": "assets/AEIOU/A/012_AP.mp3",
+    "type": "phonics_target",
+    "language": "en",
+    "expectedPhoneme": "/AP/",
+    "generatedBy": "teacher_recording",
+    "qaStatus": "pass",
+    "qaNotes": [
+      "Initial import, requires human review to ensure final consonant is preserved."
+    ]
+  },
+  "AQ_01": {
+    "id": "AQ_01",
+    "file": "assets/AEIOU/A/013_AQ.mp3",
+    "type": "phonics_target",
+    "language": "en",
+    "expectedPhoneme": "/AQ/",
+    "generatedBy": "teacher_recording",
+    "qaStatus": "pass",
+    "qaNotes": [
+      "Initial import, requires human review to ensure final consonant is preserved."
+    ]
+  },
+  "AR_01": {
+    "id": "AR_01",
+    "file": "assets/AEIOU/A/014_AR.mp3",
+    "type": "phonics_target",
+    "language": "en",
+    "expectedPhoneme": "/AR/",
+    "generatedBy": "teacher_recording",
+    "qaStatus": "pass",
+    "qaNotes": [
+      "Initial import, requires human review to ensure final consonant is preserved."
+    ]
+  },
+  "AS_01": {
+    "id": "AS_01",
+    "file": "assets/AEIOU/A/015_AS.mp3",
+    "type": "phonics_target",
+    "language": "en",
+    "expectedPhoneme": "/AS/",
+    "generatedBy": "teacher_recording",
+    "qaStatus": "pass",
+    "qaNotes": [
+      "Initial import, requires human review to ensure final consonant is preserved."
+    ]
+  },
+  "AT_01": {
+    "id": "AT_01",
+    "file": "assets/AEIOU/A/016_AT.mp3",
+    "type": "phonics_target",
+    "language": "en",
+    "expectedPhoneme": "/AT/",
+    "generatedBy": "teacher_recording",
+    "qaStatus": "pass",
+    "qaNotes": [
+      "Initial import, requires human review to ensure final consonant is preserved."
+    ]
+  },
+  "AV_01": {
+    "id": "AV_01",
+    "file": "assets/AEIOU/A/017_AV.mp3",
+    "type": "phonics_target",
+    "language": "en",
+    "expectedPhoneme": "/AV/",
+    "generatedBy": "teacher_recording",
+    "qaStatus": "pass",
+    "qaNotes": [
+      "Initial import, requires human review to ensure final consonant is preserved."
+    ]
+  },
+  "AW_01": {
+    "id": "AW_01",
+    "file": "assets/AEIOU/A/018_AW.mp3",
+    "type": "phonics_target",
+    "language": "en",
+    "expectedPhoneme": "/AW/",
+    "generatedBy": "teacher_recording",
+    "qaStatus": "pass",
+    "qaNotes": [
+      "Initial import, requires human review to ensure final consonant is preserved."
+    ]
+  },
+  "AX_01": {
+    "id": "AX_01",
+    "file": "assets/AEIOU/A/019_AX.mp3",
+    "type": "phonics_target",
+    "language": "en",
+    "expectedPhoneme": "/AX/",
+    "generatedBy": "teacher_recording",
+    "qaStatus": "pass",
+    "qaNotes": [
+      "Initial import, requires human review to ensure final consonant is preserved."
+    ]
+  },
+  "AY_01": {
+    "id": "AY_01",
+    "file": "assets/AEIOU/A/020_AY.mp3",
+    "type": "phonics_target",
+    "language": "en",
+    "expectedPhoneme": "/AY/",
+    "generatedBy": "teacher_recording",
+    "qaStatus": "pass",
+    "qaNotes": [
+      "Initial import, requires human review to ensure final consonant is preserved."
+    ]
+  },
+  "AZ_01": {
+    "id": "AZ_01",
+    "file": "assets/AEIOU/A/021_AZ.mp3",
+    "type": "phonics_target",
+    "language": "en",
+    "expectedPhoneme": "/AZ/",
+    "generatedBy": "teacher_recording",
+    "qaStatus": "pass",
+    "qaNotes": [
+      "Initial import, requires human review to ensure final consonant is preserved."
+    ]
+  },
+  "EB_01": {
+    "id": "EB_01",
+    "file": "assets/AEIOU/E/001_EB.mp3",
+    "type": "phonics_target",
+    "language": "en",
+    "expectedPhoneme": "/EB/",
+    "generatedBy": "teacher_recording",
+    "qaStatus": "pass",
+    "qaNotes": [
+      "Initial import, requires human review to ensure final consonant is preserved."
+    ]
+  },
+  "EC_01": {
+    "id": "EC_01",
+    "file": "assets/AEIOU/E/002_EC.mp3",
+    "type": "phonics_target",
+    "language": "en",
+    "expectedPhoneme": "/EC/",
+    "generatedBy": "teacher_recording",
+    "qaStatus": "pass",
+    "qaNotes": [
+      "Initial import, requires human review to ensure final consonant is preserved."
+    ]
+  },
+  "ED_01": {
+    "id": "ED_01",
+    "file": "assets/AEIOU/E/003_ED.mp3",
+    "type": "phonics_target",
+    "language": "en",
+    "expectedPhoneme": "/ED/",
+    "generatedBy": "teacher_recording",
+    "qaStatus": "pass",
+    "qaNotes": [
+      "Initial import, requires human review to ensure final consonant is preserved."
+    ]
+  },
+  "EF_01": {
+    "id": "EF_01",
+    "file": "assets/AEIOU/E/004_EF.mp3",
+    "type": "phonics_target",
+    "language": "en",
+    "expectedPhoneme": "/EF/",
+    "generatedBy": "teacher_recording",
+    "qaStatus": "pass",
+    "qaNotes": [
+      "Initial import, requires human review to ensure final consonant is preserved."
+    ]
+  },
+  "EG_01": {
+    "id": "EG_01",
+    "file": "assets/AEIOU/E/005_EG.mp3",
+    "type": "phonics_target",
+    "language": "en",
+    "expectedPhoneme": "/EG/",
+    "generatedBy": "teacher_recording",
+    "qaStatus": "pass",
+    "qaNotes": [
+      "Initial import, requires human review to ensure final consonant is preserved."
+    ]
+  },
+  "EH_01": {
+    "id": "EH_01",
+    "file": "assets/AEIOU/E/006_EH.mp3",
+    "type": "phonics_target",
+    "language": "en",
+    "expectedPhoneme": "/EH/",
+    "generatedBy": "teacher_recording",
+    "qaStatus": "pass",
+    "qaNotes": [
+      "Initial import, requires human review to ensure final consonant is preserved."
+    ]
+  },
+  "EJ_01": {
+    "id": "EJ_01",
+    "file": "assets/AEIOU/E/007_EJ.mp3",
+    "type": "phonics_target",
+    "language": "en",
+    "expectedPhoneme": "/EJ/",
+    "generatedBy": "teacher_recording",
+    "qaStatus": "pass",
+    "qaNotes": [
+      "Initial import, requires human review to ensure final consonant is preserved."
+    ]
+  },
+  "EK_01": {
+    "id": "EK_01",
+    "file": "assets/AEIOU/E/008_EK.mp3",
+    "type": "phonics_target",
+    "language": "en",
+    "expectedPhoneme": "/EK/",
+    "generatedBy": "teacher_recording",
+    "qaStatus": "pass",
+    "qaNotes": [
+      "Initial import, requires human review to ensure final consonant is preserved."
+    ]
+  },
+  "EL_01": {
+    "id": "EL_01",
+    "file": "assets/AEIOU/E/009_EL.mp3",
+    "type": "phonics_target",
+    "language": "en",
+    "expectedPhoneme": "/EL/",
+    "generatedBy": "teacher_recording",
+    "qaStatus": "pass",
+    "qaNotes": [
+      "Initial import, requires human review to ensure final consonant is preserved."
+    ]
+  },
+  "EM_01": {
+    "id": "EM_01",
+    "file": "assets/AEIOU/E/010_EM.mp3",
+    "type": "phonics_target",
+    "language": "en",
+    "expectedPhoneme": "/EM/",
+    "generatedBy": "teacher_recording",
+    "qaStatus": "pass",
+    "qaNotes": [
+      "Initial import, requires human review to ensure final consonant is preserved."
+    ]
+  },
+  "EN_01": {
+    "id": "EN_01",
+    "file": "assets/AEIOU/E/011_EN.mp3",
+    "type": "phonics_target",
+    "language": "en",
+    "expectedPhoneme": "/EN/",
+    "generatedBy": "teacher_recording",
+    "qaStatus": "pass",
+    "qaNotes": [
+      "Initial import, requires human review to ensure final consonant is preserved."
+    ]
+  },
+  "EP_01": {
+    "id": "EP_01",
+    "file": "assets/AEIOU/E/012_EP.mp3",
+    "type": "phonics_target",
+    "language": "en",
+    "expectedPhoneme": "/EP/",
+    "generatedBy": "teacher_recording",
+    "qaStatus": "pass",
+    "qaNotes": [
+      "Initial import, requires human review to ensure final consonant is preserved."
+    ]
+  },
+  "EQ_01": {
+    "id": "EQ_01",
+    "file": "assets/AEIOU/E/013_EQ.mp3",
+    "type": "phonics_target",
+    "language": "en",
+    "expectedPhoneme": "/EQ/",
+    "generatedBy": "teacher_recording",
+    "qaStatus": "pass",
+    "qaNotes": [
+      "Initial import, requires human review to ensure final consonant is preserved."
+    ]
+  },
+  "ER_01": {
+    "id": "ER_01",
+    "file": "assets/AEIOU/E/014_ER.mp3",
+    "type": "phonics_target",
+    "language": "en",
+    "expectedPhoneme": "/ER/",
+    "generatedBy": "teacher_recording",
+    "qaStatus": "pass",
+    "qaNotes": [
+      "Initial import, requires human review to ensure final consonant is preserved."
+    ]
+  },
+  "ES_01": {
+    "id": "ES_01",
+    "file": "assets/AEIOU/E/015_ES.mp3",
+    "type": "phonics_target",
+    "language": "en",
+    "expectedPhoneme": "/ES/",
+    "generatedBy": "teacher_recording",
+    "qaStatus": "pass",
+    "qaNotes": [
+      "Initial import, requires human review to ensure final consonant is preserved."
+    ]
+  },
+  "ET_01": {
+    "id": "ET_01",
+    "file": "assets/AEIOU/E/016_ET.mp3",
+    "type": "phonics_target",
+    "language": "en",
+    "expectedPhoneme": "/ET/",
+    "generatedBy": "teacher_recording",
+    "qaStatus": "pass",
+    "qaNotes": [
+      "Initial import, requires human review to ensure final consonant is preserved."
+    ]
+  },
+  "EV_01": {
+    "id": "EV_01",
+    "file": "assets/AEIOU/E/017_EV.mp3",
+    "type": "phonics_target",
+    "language": "en",
+    "expectedPhoneme": "/EV/",
+    "generatedBy": "teacher_recording",
+    "qaStatus": "pass",
+    "qaNotes": [
+      "Initial import, requires human review to ensure final consonant is preserved."
+    ]
+  },
+  "EW_01": {
+    "id": "EW_01",
+    "file": "assets/AEIOU/E/018_EW.mp3",
+    "type": "phonics_target",
+    "language": "en",
+    "expectedPhoneme": "/EW/",
+    "generatedBy": "teacher_recording",
+    "qaStatus": "pass",
+    "qaNotes": [
+      "Initial import, requires human review to ensure final consonant is preserved."
+    ]
+  },
+  "EX_01": {
+    "id": "EX_01",
+    "file": "assets/AEIOU/E/019_EX.mp3",
+    "type": "phonics_target",
+    "language": "en",
+    "expectedPhoneme": "/EX/",
+    "generatedBy": "teacher_recording",
+    "qaStatus": "pass",
+    "qaNotes": [
+      "Initial import, requires human review to ensure final consonant is preserved."
+    ]
+  },
+  "EY_01": {
+    "id": "EY_01",
+    "file": "assets/AEIOU/E/020_EY.mp3",
+    "type": "phonics_target",
+    "language": "en",
+    "expectedPhoneme": "/EY/",
+    "generatedBy": "teacher_recording",
+    "qaStatus": "pass",
+    "qaNotes": [
+      "Initial import, requires human review to ensure final consonant is preserved."
+    ]
+  },
+  "EZ_01": {
+    "id": "EZ_01",
+    "file": "assets/AEIOU/E/021_EZ.mp3",
+    "type": "phonics_target",
+    "language": "en",
+    "expectedPhoneme": "/EZ/",
+    "generatedBy": "teacher_recording",
+    "qaStatus": "pass",
+    "qaNotes": [
+      "Initial import, requires human review to ensure final consonant is preserved."
+    ]
+  },
+  "IB_01": {
+    "id": "IB_01",
+    "file": "assets/AEIOU/I/001_IB.mp3",
+    "type": "phonics_target",
+    "language": "en",
+    "expectedPhoneme": "/IB/",
+    "generatedBy": "teacher_recording",
+    "qaStatus": "pass",
+    "qaNotes": [
+      "Initial import, requires human review to ensure final consonant is preserved."
+    ]
+  },
+  "IC_01": {
+    "id": "IC_01",
+    "file": "assets/AEIOU/I/002_IC.mp3",
+    "type": "phonics_target",
+    "language": "en",
+    "expectedPhoneme": "/IC/",
+    "generatedBy": "teacher_recording",
+    "qaStatus": "pass",
+    "qaNotes": [
+      "Initial import, requires human review to ensure final consonant is preserved."
+    ]
+  },
+  "ID_01": {
+    "id": "ID_01",
+    "file": "assets/AEIOU/I/003_ID.mp3",
+    "type": "phonics_target",
+    "language": "en",
+    "expectedPhoneme": "/ID/",
+    "generatedBy": "teacher_recording",
+    "qaStatus": "pass",
+    "qaNotes": [
+      "Initial import, requires human review to ensure final consonant is preserved."
+    ]
+  },
+  "IF_01": {
+    "id": "IF_01",
+    "file": "assets/AEIOU/I/004_IF.mp3",
+    "type": "phonics_target",
+    "language": "en",
+    "expectedPhoneme": "/IF/",
+    "generatedBy": "teacher_recording",
+    "qaStatus": "pass",
+    "qaNotes": [
+      "Initial import, requires human review to ensure final consonant is preserved."
+    ]
+  },
+  "IG_01": {
+    "id": "IG_01",
+    "file": "assets/AEIOU/I/005_IG.mp3",
+    "type": "phonics_target",
+    "language": "en",
+    "expectedPhoneme": "/IG/",
+    "generatedBy": "teacher_recording",
+    "qaStatus": "pass",
+    "qaNotes": [
+      "Initial import, requires human review to ensure final consonant is preserved."
+    ]
+  },
+  "IH_01": {
+    "id": "IH_01",
+    "file": "assets/AEIOU/I/006_IH.mp3",
+    "type": "phonics_target",
+    "language": "en",
+    "expectedPhoneme": "/IH/",
+    "generatedBy": "teacher_recording",
+    "qaStatus": "pass",
+    "qaNotes": [
+      "Initial import, requires human review to ensure final consonant is preserved."
+    ]
+  },
+  "IJ_01": {
+    "id": "IJ_01",
+    "file": "assets/AEIOU/I/007_IJ.mp3",
+    "type": "phonics_target",
+    "language": "en",
+    "expectedPhoneme": "/IJ/",
+    "generatedBy": "teacher_recording",
+    "qaStatus": "pass",
+    "qaNotes": [
+      "Initial import, requires human review to ensure final consonant is preserved."
+    ]
+  },
+  "IK_01": {
+    "id": "IK_01",
+    "file": "assets/AEIOU/I/008_IK.mp3",
+    "type": "phonics_target",
+    "language": "en",
+    "expectedPhoneme": "/IK/",
+    "generatedBy": "teacher_recording",
+    "qaStatus": "pass",
+    "qaNotes": [
+      "Initial import, requires human review to ensure final consonant is preserved."
+    ]
+  },
+  "IL_01": {
+    "id": "IL_01",
+    "file": "assets/AEIOU/I/009_IL.mp3",
+    "type": "phonics_target",
+    "language": "en",
+    "expectedPhoneme": "/IL/",
+    "generatedBy": "teacher_recording",
+    "qaStatus": "pass",
+    "qaNotes": [
+      "Initial import, requires human review to ensure final consonant is preserved."
+    ]
+  },
+  "IM_01": {
+    "id": "IM_01",
+    "file": "assets/AEIOU/I/010_IM.mp3",
+    "type": "phonics_target",
+    "language": "en",
+    "expectedPhoneme": "/IM/",
+    "generatedBy": "teacher_recording",
+    "qaStatus": "pass",
+    "qaNotes": [
+      "Initial import, requires human review to ensure final consonant is preserved."
+    ]
+  },
+  "IN_01": {
+    "id": "IN_01",
+    "file": "assets/AEIOU/I/011_IN.mp3",
+    "type": "phonics_target",
+    "language": "en",
+    "expectedPhoneme": "/IN/",
+    "generatedBy": "teacher_recording",
+    "qaStatus": "pass",
+    "qaNotes": [
+      "Initial import, requires human review to ensure final consonant is preserved."
+    ]
+  },
+  "IP_01": {
+    "id": "IP_01",
+    "file": "assets/AEIOU/I/012_IP.mp3",
+    "type": "phonics_target",
+    "language": "en",
+    "expectedPhoneme": "/IP/",
+    "generatedBy": "teacher_recording",
+    "qaStatus": "pass",
+    "qaNotes": [
+      "Initial import, requires human review to ensure final consonant is preserved."
+    ]
+  },
+  "IQ_01": {
+    "id": "IQ_01",
+    "file": "assets/AEIOU/I/013_IQ.mp3",
+    "type": "phonics_target",
+    "language": "en",
+    "expectedPhoneme": "/IQ/",
+    "generatedBy": "teacher_recording",
+    "qaStatus": "pass",
+    "qaNotes": [
+      "Initial import, requires human review to ensure final consonant is preserved."
+    ]
+  },
+  "IR_01": {
+    "id": "IR_01",
+    "file": "assets/AEIOU/I/014_IR.mp3",
+    "type": "phonics_target",
+    "language": "en",
+    "expectedPhoneme": "/IR/",
+    "generatedBy": "teacher_recording",
+    "qaStatus": "pass",
+    "qaNotes": [
+      "Initial import, requires human review to ensure final consonant is preserved."
+    ]
+  },
+  "IS_01": {
+    "id": "IS_01",
+    "file": "assets/AEIOU/I/015_IS.mp3",
+    "type": "phonics_target",
+    "language": "en",
+    "expectedPhoneme": "/IS/",
+    "generatedBy": "teacher_recording",
+    "qaStatus": "pass",
+    "qaNotes": [
+      "Initial import, requires human review to ensure final consonant is preserved."
+    ]
+  },
+  "IT_01": {
+    "id": "IT_01",
+    "file": "assets/AEIOU/I/016_IT.mp3",
+    "type": "phonics_target",
+    "language": "en",
+    "expectedPhoneme": "/IT/",
+    "generatedBy": "teacher_recording",
+    "qaStatus": "pass",
+    "qaNotes": [
+      "Initial import, requires human review to ensure final consonant is preserved."
+    ]
+  },
+  "IV_01": {
+    "id": "IV_01",
+    "file": "assets/AEIOU/I/017_IV.mp3",
+    "type": "phonics_target",
+    "language": "en",
+    "expectedPhoneme": "/IV/",
+    "generatedBy": "teacher_recording",
+    "qaStatus": "pass",
+    "qaNotes": [
+      "Initial import, requires human review to ensure final consonant is preserved."
+    ]
+  },
+  "IW_01": {
+    "id": "IW_01",
+    "file": "assets/AEIOU/I/018_IW.mp3",
+    "type": "phonics_target",
+    "language": "en",
+    "expectedPhoneme": "/IW/",
+    "generatedBy": "teacher_recording",
+    "qaStatus": "pass",
+    "qaNotes": [
+      "Initial import, requires human review to ensure final consonant is preserved."
+    ]
+  },
+  "IX_01": {
+    "id": "IX_01",
+    "file": "assets/AEIOU/I/019_IX.mp3",
+    "type": "phonics_target",
+    "language": "en",
+    "expectedPhoneme": "/IX/",
+    "generatedBy": "teacher_recording",
+    "qaStatus": "pass",
+    "qaNotes": [
+      "Initial import, requires human review to ensure final consonant is preserved."
+    ]
+  },
+  "IY_01": {
+    "id": "IY_01",
+    "file": "assets/AEIOU/I/020_IY.mp3",
+    "type": "phonics_target",
+    "language": "en",
+    "expectedPhoneme": "/IY/",
+    "generatedBy": "teacher_recording",
+    "qaStatus": "pass",
+    "qaNotes": [
+      "Initial import, requires human review to ensure final consonant is preserved."
+    ]
+  },
+  "IZ_01": {
+    "id": "IZ_01",
+    "file": "assets/AEIOU/I/021_IZ.mp3",
+    "type": "phonics_target",
+    "language": "en",
+    "expectedPhoneme": "/IZ/",
+    "generatedBy": "teacher_recording",
+    "qaStatus": "pass",
+    "qaNotes": [
+      "Initial import, requires human review to ensure final consonant is preserved."
+    ]
+  },
+  "OB_01": {
+    "id": "OB_01",
+    "file": "assets/AEIOU/O/001_OB.mp3",
+    "type": "phonics_target",
+    "language": "en",
+    "expectedPhoneme": "/OB/",
+    "generatedBy": "teacher_recording",
+    "qaStatus": "pass",
+    "qaNotes": [
+      "Initial import, requires human review to ensure final consonant is preserved."
+    ]
+  },
+  "OC_01": {
+    "id": "OC_01",
+    "file": "assets/AEIOU/O/002_OC.mp3",
+    "type": "phonics_target",
+    "language": "en",
+    "expectedPhoneme": "/OC/",
+    "generatedBy": "teacher_recording",
+    "qaStatus": "pass",
+    "qaNotes": [
+      "Initial import, requires human review to ensure final consonant is preserved."
+    ]
+  },
+  "OD_01": {
+    "id": "OD_01",
+    "file": "assets/AEIOU/O/003_OD.mp3",
+    "type": "phonics_target",
+    "language": "en",
+    "expectedPhoneme": "/OD/",
+    "generatedBy": "teacher_recording",
+    "qaStatus": "pass",
+    "qaNotes": [
+      "Initial import, requires human review to ensure final consonant is preserved."
+    ]
+  },
+  "OF_01": {
+    "id": "OF_01",
+    "file": "assets/AEIOU/O/004_OF.mp3",
+    "type": "phonics_target",
+    "language": "en",
+    "expectedPhoneme": "/OF/",
+    "generatedBy": "teacher_recording",
+    "qaStatus": "pass",
+    "qaNotes": [
+      "Initial import, requires human review to ensure final consonant is preserved."
+    ]
+  },
+  "OG_01": {
+    "id": "OG_01",
+    "file": "assets/AEIOU/O/005_OG.mp3",
+    "type": "phonics_target",
+    "language": "en",
+    "expectedPhoneme": "/OG/",
+    "generatedBy": "teacher_recording",
+    "qaStatus": "pass",
+    "qaNotes": [
+      "Initial import, requires human review to ensure final consonant is preserved."
+    ]
+  },
+  "OH_01": {
+    "id": "OH_01",
+    "file": "assets/AEIOU/O/006_OH.mp3",
+    "type": "phonics_target",
+    "language": "en",
+    "expectedPhoneme": "/OH/",
+    "generatedBy": "teacher_recording",
+    "qaStatus": "pass",
+    "qaNotes": [
+      "Initial import, requires human review to ensure final consonant is preserved."
+    ]
+  },
+  "OJ_01": {
+    "id": "OJ_01",
+    "file": "assets/AEIOU/O/007_OJ.mp3",
+    "type": "phonics_target",
+    "language": "en",
+    "expectedPhoneme": "/OJ/",
+    "generatedBy": "teacher_recording",
+    "qaStatus": "pass",
+    "qaNotes": [
+      "Initial import, requires human review to ensure final consonant is preserved."
+    ]
+  },
+  "OK_01": {
+    "id": "OK_01",
+    "file": "assets/AEIOU/O/008_OK.mp3",
+    "type": "phonics_target",
+    "language": "en",
+    "expectedPhoneme": "/OK/",
+    "generatedBy": "teacher_recording",
+    "qaStatus": "pass",
+    "qaNotes": [
+      "Initial import, requires human review to ensure final consonant is preserved."
+    ]
+  },
+  "OL_01": {
+    "id": "OL_01",
+    "file": "assets/AEIOU/O/009_OL.mp3",
+    "type": "phonics_target",
+    "language": "en",
+    "expectedPhoneme": "/OL/",
+    "generatedBy": "teacher_recording",
+    "qaStatus": "pass",
+    "qaNotes": [
+      "Initial import, requires human review to ensure final consonant is preserved."
+    ]
+  },
+  "OM_01": {
+    "id": "OM_01",
+    "file": "assets/AEIOU/O/010_OM.mp3",
+    "type": "phonics_target",
+    "language": "en",
+    "expectedPhoneme": "/OM/",
+    "generatedBy": "teacher_recording",
+    "qaStatus": "pass",
+    "qaNotes": [
+      "Initial import, requires human review to ensure final consonant is preserved."
+    ]
+  },
+  "ON_01": {
+    "id": "ON_01",
+    "file": "assets/AEIOU/O/011_ON.mp3",
+    "type": "phonics_target",
+    "language": "en",
+    "expectedPhoneme": "/ON/",
+    "generatedBy": "teacher_recording",
+    "qaStatus": "pass",
+    "qaNotes": [
+      "Initial import, requires human review to ensure final consonant is preserved."
+    ]
+  },
+  "OP_01": {
+    "id": "OP_01",
+    "file": "assets/AEIOU/O/012_OP.mp3",
+    "type": "phonics_target",
+    "language": "en",
+    "expectedPhoneme": "/OP/",
+    "generatedBy": "teacher_recording",
+    "qaStatus": "pass",
+    "qaNotes": [
+      "Initial import, requires human review to ensure final consonant is preserved."
+    ]
+  },
+  "OQ_01": {
+    "id": "OQ_01",
+    "file": "assets/AEIOU/O/013_OQ.mp3",
+    "type": "phonics_target",
+    "language": "en",
+    "expectedPhoneme": "/OQ/",
+    "generatedBy": "teacher_recording",
+    "qaStatus": "pass",
+    "qaNotes": [
+      "Initial import, requires human review to ensure final consonant is preserved."
+    ]
+  },
+  "OR_01": {
+    "id": "OR_01",
+    "file": "assets/AEIOU/O/014_OR.mp3",
+    "type": "phonics_target",
+    "language": "en",
+    "expectedPhoneme": "/OR/",
+    "generatedBy": "teacher_recording",
+    "qaStatus": "pass",
+    "qaNotes": [
+      "Initial import, requires human review to ensure final consonant is preserved."
+    ]
+  },
+  "OS_01": {
+    "id": "OS_01",
+    "file": "assets/AEIOU/O/015_OS.mp3",
+    "type": "phonics_target",
+    "language": "en",
+    "expectedPhoneme": "/OS/",
+    "generatedBy": "teacher_recording",
+    "qaStatus": "pass",
+    "qaNotes": [
+      "Initial import, requires human review to ensure final consonant is preserved."
+    ]
+  },
+  "OT_01": {
+    "id": "OT_01",
+    "file": "assets/AEIOU/O/016_OT.mp3",
+    "type": "phonics_target",
+    "language": "en",
+    "expectedPhoneme": "/OT/",
+    "generatedBy": "teacher_recording",
+    "qaStatus": "pass",
+    "qaNotes": [
+      "Initial import, requires human review to ensure final consonant is preserved."
+    ]
+  },
+  "OV_01": {
+    "id": "OV_01",
+    "file": "assets/AEIOU/O/017_OV.mp3",
+    "type": "phonics_target",
+    "language": "en",
+    "expectedPhoneme": "/OV/",
+    "generatedBy": "teacher_recording",
+    "qaStatus": "pass",
+    "qaNotes": [
+      "Initial import, requires human review to ensure final consonant is preserved."
+    ]
+  },
+  "OW_01": {
+    "id": "OW_01",
+    "file": "assets/AEIOU/O/018_OW.mp3",
+    "type": "phonics_target",
+    "language": "en",
+    "expectedPhoneme": "/OW/",
+    "generatedBy": "teacher_recording",
+    "qaStatus": "pass",
+    "qaNotes": [
+      "Initial import, requires human review to ensure final consonant is preserved."
+    ]
+  },
+  "OX_01": {
+    "id": "OX_01",
+    "file": "assets/AEIOU/O/019_OX.mp3",
+    "type": "phonics_target",
+    "language": "en",
+    "expectedPhoneme": "/OX/",
+    "generatedBy": "teacher_recording",
+    "qaStatus": "pass",
+    "qaNotes": [
+      "Initial import, requires human review to ensure final consonant is preserved."
+    ]
+  },
+  "OY_01": {
+    "id": "OY_01",
+    "file": "assets/AEIOU/O/020_OY.mp3",
+    "type": "phonics_target",
+    "language": "en",
+    "expectedPhoneme": "/OY/",
+    "generatedBy": "teacher_recording",
+    "qaStatus": "pass",
+    "qaNotes": [
+      "Initial import, requires human review to ensure final consonant is preserved."
+    ]
+  },
+  "OZ_01": {
+    "id": "OZ_01",
+    "file": "assets/AEIOU/O/021_OZ.mp3",
+    "type": "phonics_target",
+    "language": "en",
+    "expectedPhoneme": "/OZ/",
+    "generatedBy": "teacher_recording",
+    "qaStatus": "pass",
+    "qaNotes": [
+      "Initial import, requires human review to ensure final consonant is preserved."
+    ]
+  },
+  "UB_01": {
+    "id": "UB_01",
+    "file": "assets/AEIOU/U/001_UB.mp3",
+    "type": "phonics_target",
+    "language": "en",
+    "expectedPhoneme": "/UB/",
+    "generatedBy": "teacher_recording",
+    "qaStatus": "pass",
+    "qaNotes": [
+      "Initial import, requires human review to ensure final consonant is preserved."
+    ]
+  },
+  "UC_01": {
+    "id": "UC_01",
+    "file": "assets/AEIOU/U/002_UC.mp3",
+    "type": "phonics_target",
+    "language": "en",
+    "expectedPhoneme": "/UC/",
+    "generatedBy": "teacher_recording",
+    "qaStatus": "pass",
+    "qaNotes": [
+      "Initial import, requires human review to ensure final consonant is preserved."
+    ]
+  },
+  "UD_01": {
+    "id": "UD_01",
+    "file": "assets/AEIOU/U/003_UD.mp3",
+    "type": "phonics_target",
+    "language": "en",
+    "expectedPhoneme": "/UD/",
+    "generatedBy": "teacher_recording",
+    "qaStatus": "pass",
+    "qaNotes": [
+      "Initial import, requires human review to ensure final consonant is preserved."
+    ]
+  },
+  "UF_01": {
+    "id": "UF_01",
+    "file": "assets/AEIOU/U/004_UF.mp3",
+    "type": "phonics_target",
+    "language": "en",
+    "expectedPhoneme": "/UF/",
+    "generatedBy": "teacher_recording",
+    "qaStatus": "pass",
+    "qaNotes": [
+      "Initial import, requires human review to ensure final consonant is preserved."
+    ]
+  },
+  "UG_01": {
+    "id": "UG_01",
+    "file": "assets/AEIOU/U/005_UG.mp3",
+    "type": "phonics_target",
+    "language": "en",
+    "expectedPhoneme": "/UG/",
+    "generatedBy": "teacher_recording",
+    "qaStatus": "pass",
+    "qaNotes": [
+      "Initial import, requires human review to ensure final consonant is preserved."
+    ]
+  },
+  "UH_01": {
+    "id": "UH_01",
+    "file": "assets/AEIOU/U/006_UH.mp3",
+    "type": "phonics_target",
+    "language": "en",
+    "expectedPhoneme": "/UH/",
+    "generatedBy": "teacher_recording",
+    "qaStatus": "pass",
+    "qaNotes": [
+      "Initial import, requires human review to ensure final consonant is preserved."
+    ]
+  },
+  "UJ_01": {
+    "id": "UJ_01",
+    "file": "assets/AEIOU/U/007_UJ.mp3",
+    "type": "phonics_target",
+    "language": "en",
+    "expectedPhoneme": "/UJ/",
+    "generatedBy": "teacher_recording",
+    "qaStatus": "pass",
+    "qaNotes": [
+      "Initial import, requires human review to ensure final consonant is preserved."
+    ]
+  },
+  "UK_01": {
+    "id": "UK_01",
+    "file": "assets/AEIOU/U/008_UK.mp3",
+    "type": "phonics_target",
+    "language": "en",
+    "expectedPhoneme": "/UK/",
+    "generatedBy": "teacher_recording",
+    "qaStatus": "pass",
+    "qaNotes": [
+      "Initial import, requires human review to ensure final consonant is preserved."
+    ]
+  },
+  "UL_01": {
+    "id": "UL_01",
+    "file": "assets/AEIOU/U/009_UL.mp3",
+    "type": "phonics_target",
+    "language": "en",
+    "expectedPhoneme": "/UL/",
+    "generatedBy": "teacher_recording",
+    "qaStatus": "pass",
+    "qaNotes": [
+      "Initial import, requires human review to ensure final consonant is preserved."
+    ]
+  },
+  "UM_01": {
+    "id": "UM_01",
+    "file": "assets/AEIOU/U/010_UM.mp3",
+    "type": "phonics_target",
+    "language": "en",
+    "expectedPhoneme": "/UM/",
+    "generatedBy": "teacher_recording",
+    "qaStatus": "pass",
+    "qaNotes": [
+      "Initial import, requires human review to ensure final consonant is preserved."
+    ]
+  },
+  "UN_01": {
+    "id": "UN_01",
+    "file": "assets/AEIOU/U/011_UN.mp3",
+    "type": "phonics_target",
+    "language": "en",
+    "expectedPhoneme": "/UN/",
+    "generatedBy": "teacher_recording",
+    "qaStatus": "pass",
+    "qaNotes": [
+      "Initial import, requires human review to ensure final consonant is preserved."
+    ]
+  },
+  "UP_01": {
+    "id": "UP_01",
+    "file": "assets/AEIOU/U/012_UP.mp3",
+    "type": "phonics_target",
+    "language": "en",
+    "expectedPhoneme": "/UP/",
+    "generatedBy": "teacher_recording",
+    "qaStatus": "pass",
+    "qaNotes": [
+      "Initial import, requires human review to ensure final consonant is preserved."
+    ]
+  },
+  "UQ_01": {
+    "id": "UQ_01",
+    "file": "assets/AEIOU/U/013_UQ.mp3",
+    "type": "phonics_target",
+    "language": "en",
+    "expectedPhoneme": "/UQ/",
+    "generatedBy": "teacher_recording",
+    "qaStatus": "pass",
+    "qaNotes": [
+      "Initial import, requires human review to ensure final consonant is preserved."
+    ]
+  },
+  "UR_01": {
+    "id": "UR_01",
+    "file": "assets/AEIOU/U/014_UR.mp3",
+    "type": "phonics_target",
+    "language": "en",
+    "expectedPhoneme": "/UR/",
+    "generatedBy": "teacher_recording",
+    "qaStatus": "pass",
+    "qaNotes": [
+      "Initial import, requires human review to ensure final consonant is preserved."
+    ]
+  },
+  "US_01": {
+    "id": "US_01",
+    "file": "assets/AEIOU/U/015_US.mp3",
+    "type": "phonics_target",
+    "language": "en",
+    "expectedPhoneme": "/US/",
+    "generatedBy": "teacher_recording",
+    "qaStatus": "pass",
+    "qaNotes": [
+      "Initial import, requires human review to ensure final consonant is preserved."
+    ]
+  },
+  "UT_01": {
+    "id": "UT_01",
+    "file": "assets/AEIOU/U/016_UT.mp3",
+    "type": "phonics_target",
+    "language": "en",
+    "expectedPhoneme": "/UT/",
+    "generatedBy": "teacher_recording",
+    "qaStatus": "pass",
+    "qaNotes": [
+      "Initial import, requires human review to ensure final consonant is preserved."
+    ]
+  },
+  "UV_01": {
+    "id": "UV_01",
+    "file": "assets/AEIOU/U/017_UV.mp3",
+    "type": "phonics_target",
+    "language": "en",
+    "expectedPhoneme": "/UV/",
+    "generatedBy": "teacher_recording",
+    "qaStatus": "pass",
+    "qaNotes": [
+      "Initial import, requires human review to ensure final consonant is preserved."
+    ]
+  },
+  "UW_01": {
+    "id": "UW_01",
+    "file": "assets/AEIOU/U/018_UW.mp3",
+    "type": "phonics_target",
+    "language": "en",
+    "expectedPhoneme": "/UW/",
+    "generatedBy": "teacher_recording",
+    "qaStatus": "pass",
+    "qaNotes": [
+      "Initial import, requires human review to ensure final consonant is preserved."
+    ]
+  },
+  "UX_01": {
+    "id": "UX_01",
+    "file": "assets/AEIOU/U/019_UX.mp3",
+    "type": "phonics_target",
+    "language": "en",
+    "expectedPhoneme": "/UX/",
+    "generatedBy": "teacher_recording",
+    "qaStatus": "pass",
+    "qaNotes": [
+      "Initial import, requires human review to ensure final consonant is preserved."
+    ]
+  },
+  "UY_01": {
+    "id": "UY_01",
+    "file": "assets/AEIOU/U/020_UY.mp3",
+    "type": "phonics_target",
+    "language": "en",
+    "expectedPhoneme": "/UY/",
+    "generatedBy": "teacher_recording",
+    "qaStatus": "pass",
+    "qaNotes": [
+      "Initial import, requires human review to ensure final consonant is preserved."
+    ]
+  },
+  "UZ_01": {
+    "id": "UZ_01",
+    "file": "assets/AEIOU/U/021_UZ.mp3",
+    "type": "phonics_target",
+    "language": "en",
+    "expectedPhoneme": "/UZ/",
+    "generatedBy": "teacher_recording",
+    "qaStatus": "pass",
+    "qaNotes": [
+      "Initial import, requires human review to ensure final consonant is preserved."
+    ]
+  }
+}

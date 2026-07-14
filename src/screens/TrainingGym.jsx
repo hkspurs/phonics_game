@@ -40,11 +40,15 @@ export default function TrainingGym() {
   const playQuestionAudio = () => {
     if (!currentQ) return;
     if (currentQ.type === 'gym_warmup') {
-      // Play slow
-      audioEngine.play(currentQ.targetSound.audio_url, 0, 0, 0.8);
+      audioEngine.playAudioById(currentQ.targetSoundAudio, { playbackRate: 0.8 });
     } else {
-      audioEngine.play(currentQ.targetSound.audio_url);
+      audioEngine.playAudioById(currentQ.targetSoundAudio);
     }
+  };
+
+  const playInstructionAudio = () => {
+    if (!currentQ || !currentQ.instructionAudio) return;
+    audioEngine.playAudioById(currentQ.instructionAudio);
   };
 
   if (!currentQ) return null;
@@ -61,7 +65,12 @@ export default function TrainingGym() {
       setIsRevealed(true);
       setSelectedId(choiceLabel);
       setAnimState('success');
-      audioEngine.playUI('correct');
+      
+      if (currentQ.correctFeedbackAudio) {
+        audioEngine.playAudioById(currentQ.correctFeedbackAudio);
+      } else {
+        audioEngine.playUI('correct');
+      }
       
       if (currentQ.type === 'gym_sprint') {
         confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
@@ -88,7 +97,12 @@ export default function TrainingGym() {
       }, 2000);
     } else {
       setAnimState('fail');
-      audioEngine.playUI('error');
+      
+      if (currentQ.wrongFeedbackAudio) {
+        audioEngine.playAudioById(currentQ.wrongFeedbackAudio);
+      } else {
+        audioEngine.playUI('error');
+      }
       setTimeout(() => {
         setAnimState('idle');
         processingRef.current = false;
@@ -179,16 +193,32 @@ export default function TrainingGym() {
         </div>
 
         {/* Big Replay Audio Button */}
-        <button 
-          onClick={playQuestionAudio} 
-          style={{ 
-            background: '#38bdf8', border: 'none', borderRadius: '50%', width: '80px', height: '80px', 
-            display: 'flex', justifyContent: 'center', alignItems: 'center', cursor: 'pointer', 
-            boxShadow: '0 8px 0 #0284c7', marginBottom: '2rem', transform: animState === 'fail' ? 'scale(1.1)' : 'none', transition: 'transform 0.2s'
-          }}
-        >
-          <Volume2 size={40} color="white" />
-        </button>
+        <div style={{ display: 'flex', gap: '1rem', marginBottom: '2rem' }}>
+          <button 
+            onClick={playInstructionAudio} 
+            style={{ 
+              background: '#8b5cf6', border: 'none', borderRadius: '50%', width: '80px', height: '80px', 
+              display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', cursor: 'pointer', 
+              boxShadow: '0 8px 0 #6d28d9', color: 'white', fontSize: '0.8rem', fontWeight: 'bold'
+            }}
+          >
+            <Volume2 size={32} color="white" />
+            Listen
+          </button>
+          
+          <button 
+            onClick={playQuestionAudio} 
+            style={{ 
+              background: '#38bdf8', border: 'none', borderRadius: '50%', width: '80px', height: '80px', 
+              display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', cursor: 'pointer', 
+              boxShadow: '0 8px 0 #0284c7', transform: animState === 'fail' ? 'scale(1.1)' : 'none', transition: 'transform 0.2s',
+              color: 'white', fontSize: '0.8rem', fontWeight: 'bold'
+            }}
+          >
+            <Volume2 size={32} color="white" />
+            Sound
+          </button>
+        </div>
 
         {/* Dictation Input */}
         <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '1rem', width: '100%', maxWidth: '400px' }}>
