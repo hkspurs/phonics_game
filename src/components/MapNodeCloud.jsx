@@ -10,7 +10,7 @@ export default function MapNodeCloud({ status, statusColor, isMastered, isLocked
   else if (isPractising) color = 'Green';
   else if (isWeak) color = 'Red';
 
-  const imgSrc = `/assets/kenney/ui-pack/Vector/${color}/button_round_depth_flat.svg`;
+  const imgSrc = `assets/kenney/ui-pack/PNG/${color}/Default/button_round_depth_flat.png`;
 
   return (
     <div 
@@ -30,7 +30,7 @@ export default function MapNodeCloud({ status, statusColor, isMastered, isLocked
     >
       <img 
         src={imgSrc} 
-        alt={status} 
+        alt=""
         style={{ 
           width: '90%', 
           height: '90%',
@@ -41,16 +41,16 @@ export default function MapNodeCloud({ status, statusColor, isMastered, isLocked
       
       {isLocked && (
         <img 
-          src="/assets/kenney/game-icons/PNG/White/2x/locked.png" 
-          alt="Locked" 
+          src="assets/kenney/game-icons/PNG/White/2x/locked.png" 
+          alt="" 
           style={{ position: 'absolute', width: '30px', opacity: 0.5, top: '40%' }}
         />
       )}
 
       {isMastered && (
         <img 
-          src="/assets/kenney/ui-pack/Vector/star.svg" 
-          alt="Mastered" 
+          src="assets/kenney/ui-pack/PNG/Yellow/Default/star.png" 
+          alt="" 
           style={{ 
             position: 'absolute', 
             width: '40px', 

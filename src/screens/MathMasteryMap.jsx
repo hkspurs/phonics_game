@@ -103,12 +103,10 @@ export default function MathMasteryMap() {
     <div className="screen-container" style={{ background: '#fef3c7', position: 'relative' }}>
       
       {/* Header */}
-      <div style={{ position: 'absolute', top: '1rem', left: '1rem', zIndex: 10, display: 'flex', gap: '1rem', alignItems: 'center' }}>
+      <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'center', gap: '1rem', padding: '1rem', zIndex: 10, position: 'relative', width: '100%' }}>
         <button className="btn-secondary" style={{ padding: '0.5rem 1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }} onClick={() => navigate('/math')}>
           <Home size={24} /> {t('backToHome')}
         </button>
-      </div>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '1rem', marginTop: '1rem', marginBottom: '0.5rem', zIndex: 10, position: 'relative' }}>
         <h1 
           style={{ textAlign: 'center', color: '#b45309', fontSize: '2.5rem', margin: 0 }}
         >
@@ -206,13 +204,14 @@ export default function MathMasteryMap() {
 
               {/* Node Button */}
               <div style={{ position: 'relative', width: '100px', height: '100px' }}>
+                <div style={{ position: 'absolute', top: '12px', left: '15px', right: '15px', bottom: '15px', background: 'white', borderRadius: '50%', zIndex: 0 }} />
                 <MapNodeCloud 
                   status={node.status}
                   statusColor={getStatusColor(node.status)}
                   isMastered={node.status === 'mastered'} 
                   isLocked={node.status === 'locked'} 
                   onClick={() => handleSkillClick(node.id, node.unit)}
-                  style={{ position: 'absolute', inset: 0 }}
+                  style={{ position: 'absolute', inset: 0, zIndex: 1 }}
                 />
                 
                 {/* Visual Math Quantity/Icon inside the node */}
@@ -243,7 +242,7 @@ export default function MathMasteryMap() {
 
       {/* Pan Affordance */}
       <div style={{
-        position: 'absolute', bottom: '1.5rem', left: '50%', transform: 'translateX(-50%)',
+        position: 'absolute', bottom: '2.5rem', left: '50%', transform: 'translateX(-50%)',
         background: 'rgba(255,255,255,0.95)', padding: '0.75rem 1.5rem', borderRadius: '100px',
         boxShadow: '0 8px 16px rgba(0,0,0,0.15)', border: '2px solid #fcd34d',
         color: '#b45309', fontWeight: 'bold', fontSize: '1.2rem',
