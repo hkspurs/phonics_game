@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Settings } from 'lucide-react'
+import { Settings, Volume2 } from 'lucide-react'
 import { useGameStore } from '../store/gameStore'
 import { audioEngine } from '../audio/AudioEngine'
 import MascotRabbit from '../components/MascotRabbit'
@@ -126,19 +126,43 @@ export default function SubjectGateway() {
         </div>
 
         <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
-          <button 
-            onClick={toggleLanguage}
+          <div 
             style={{ 
+              display: 'flex', 
               background: '#e2e8f0', 
-              border: 'none', 
-              padding: '0.4rem 0.8rem', 
-              borderRadius: '1rem',
-              fontWeight: 'bold',
+              borderRadius: '2rem', 
+              padding: '0.25rem',
               cursor: 'pointer',
-              color: '#475569'
-            }}>
-            {language === 'zh' ? '中 / EN' : 'EN / 中'}
-          </button>
+              position: 'relative'
+            }}
+            onClick={toggleLanguage}
+          >
+            <div style={{
+              position: 'absolute',
+              top: '0.25rem',
+              bottom: '0.25rem',
+              left: language === 'zh' ? '0.25rem' : '50%',
+              width: 'calc(50% - 0.25rem)',
+              background: 'white',
+              borderRadius: '1.5rem',
+              boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+              transition: 'left 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)'
+            }} />
+            <span style={{ 
+              padding: '0.4rem 1rem', 
+              fontWeight: 'bold', 
+              color: language === 'zh' ? '#3b82f6' : '#64748b',
+              zIndex: 1,
+              transition: 'color 0.3s ease'
+            }}>中</span>
+            <span style={{ 
+              padding: '0.4rem 1rem', 
+              fontWeight: 'bold', 
+              color: language === 'en' ? '#3b82f6' : '#64748b',
+              zIndex: 1,
+              transition: 'color 0.3s ease'
+            }}>EN</span>
+          </div>
 
           {/* Settings gear */}
           <button
@@ -174,13 +198,24 @@ export default function SubjectGateway() {
         <div style={{ filter: 'drop-shadow(0 8px 8px rgba(0,0,0,0.1))', marginBottom: '1rem' }}>
           <MascotRabbit style={{ width: '180px', height: '180px' }} />
         </div>
-        <h1 style={{
-          fontSize: 'clamp(2rem, 6vw, 3rem)',
-          color: '#1e3a8a',
-          marginBottom: '0.25rem',
-          textAlign: 'center'
-        }}>
-          {t('readyToLearn')}
+        <h1 
+          style={{
+            fontSize: 'clamp(2rem, 6vw, 3rem)',
+            color: '#1e3a8a',
+            marginBottom: '0.25rem',
+            textAlign: 'center',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.5rem',
+            cursor: 'pointer'
+          }}
+          onClick={() => {
+            audioEngine.playUI('pop');
+            // If we had TTS, we would play the translated string here.
+            // For MVP, just play a cheerful sound.
+          }}
+        >
+          {t('readyToLearn')} <Volume2 size={32} color="#3b82f6" />
         </h1>
         <p style={{
           fontSize: 'clamp(1rem, 3vw, 1.25rem)',
@@ -245,7 +280,9 @@ export default function SubjectGateway() {
             }}>✅</div>
           )}
 
-          <span style={{ fontSize: '3rem' }}>{SUBJECTS.phonics.emoji}</span>
+          <div style={{ display: 'flex', gap: '0.25rem', fontSize: '2.5rem' }}>
+            🐱 🐶 🐰
+          </div>
           <h2 style={{
             color: 'white',
             fontSize: 'clamp(1.3rem, 4vw, 1.6rem)',
@@ -314,7 +351,9 @@ export default function SubjectGateway() {
             }}>✅</div>
           )}
 
-          <span style={{ fontSize: '3rem' }}>{SUBJECTS.math.emoji}</span>
+          <div style={{ display: 'flex', gap: '0.25rem', fontSize: '2.5rem' }}>
+            🍎 🍎 🍎
+          </div>
           <h2 style={{
             color: 'white',
             fontSize: 'clamp(1.3rem, 4vw, 1.6rem)',
@@ -337,7 +376,7 @@ export default function SubjectGateway() {
             onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)'; }}
             onClick={(e) => { e.stopPropagation(); handleSubjectClick(SUBJECTS.math.route); }}
           >
-            Start ▶
+            {t('start')}
           </button>
         </div>
       </div>

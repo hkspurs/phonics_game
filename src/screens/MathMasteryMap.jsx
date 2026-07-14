@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Play, X, Lock } from 'lucide-react';
+import { Home, Play, X, Lock } from 'lucide-react';
 import { useGameStore } from '../store/gameStore';
+import MapNodeCloud from '../components/MapNodeCloud';
 import MathMascot from '../math/components/MathMascot';
 import { mathCurriculum, SKILL_LABELS, SKILL_EMOJIS, isUnitUnlocked } from '../math/curriculum/mathCurriculum';
 import { mathQuestionEngine } from '../math/engine/MathQuestionEngine';
@@ -103,12 +104,17 @@ export default function MathMasteryMap() {
       
       {/* Header */}
       <div style={{ position: 'absolute', top: '1rem', left: '1rem', zIndex: 10, display: 'flex', gap: '1rem', alignItems: 'center' }}>
-        <button className="btn-secondary" style={{ padding: '0.5rem 1rem' }} onClick={() => navigate('/math')}>
-          <ArrowLeft size={24} /> {t('back')}
+        <button className="btn-secondary" style={{ padding: '0.5rem 1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }} onClick={() => navigate('/math')}>
+          <Home size={24} /> {t('backToHome')}
         </button>
       </div>
-      <h1 style={{ textAlign: 'center', color: '#b45309', fontSize: '2.5rem', marginTop: '1rem', zIndex: 10, position: 'relative' }}>
-        {t('masteryMap')}
+      <h1 
+        style={{ textAlign: 'center', color: '#b45309', fontSize: '2.5rem', marginTop: '1rem', zIndex: 10, position: 'relative', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }}
+        onClick={() => {
+          import('../audio/AudioEngine').then(m => m.audioEngine.playUI('pop'));
+        }}
+      >
+        {t('masteryMap')} <Volume2 size={32} color="#b45309" />
       </h1>
 
       <style>{`
@@ -133,9 +139,20 @@ export default function MathMasteryMap() {
       }}>
         <div style={{ position: 'relative', width: `${Math.max(1200, currentX + 200)}px`, height: `${MAP_HEIGHT}px` }}>
           
+          {/* Decorative Scenery */}
+          <div style={{ position: 'absolute', top: '10%', left: '5%', fontSize: '4rem', opacity: 0.6, pointerEvents: 'none' }}>☁️</div>
+          <div style={{ position: 'absolute', top: '15%', right: '25%', fontSize: '3rem', opacity: 0.5, pointerEvents: 'none' }}>☁️</div>
+          <div style={{ position: 'absolute', bottom: '20%', left: '15%', fontSize: '3rem', opacity: 0.7, pointerEvents: 'none' }}>🌲</div>
+          <div style={{ position: 'absolute', bottom: '15%', left: '40%', fontSize: '4rem', opacity: 0.7, pointerEvents: 'none' }}>🌲</div>
+          <div style={{ position: 'absolute', top: '30%', left: '60%', fontSize: '3rem', opacity: 0.5, pointerEvents: 'none' }}>⛰️</div>
+          <div style={{ position: 'absolute', bottom: '25%', right: '10%', fontSize: '3.5rem', opacity: 0.8, pointerEvents: 'none' }}>🍄</div>
+          <div style={{ position: 'absolute', top: '40%', right: '5%', fontSize: '3rem', opacity: 0.6, pointerEvents: 'none' }}>🌲</div>
+
           <svg width="100%" height={MAP_HEIGHT} style={{ position: 'absolute', top: 0, left: 0, zIndex: 1, pointerEvents: 'none' }}>
-            <path d={generatePath()} fill="none" stroke="#cbd5e1" strokeWidth="16" strokeDasharray="1 30" strokeLinecap="round" />
-            <path d={generatePath()} fill="none" stroke="#fbbf24" strokeWidth="16" strokeDasharray="1 30" strokeLinecap="round" className="map-path-animate" />
+            {/* Outline / Shadow */}
+            <path d={generatePath()} fill="none" stroke="#fcd34d" strokeWidth="24" strokeLinecap="round" opacity="0.3" />
+            <path d={generatePath()} fill="none" stroke="#cbd5e1" strokeWidth="12" strokeDasharray="1 30" strokeLinecap="round" />
+            <path d={generatePath()} fill="none" stroke="#fbbf24" strokeWidth="12" strokeDasharray="1 30" strokeLinecap="round" className="map-path-animate" />
           </svg>
 
           {nodes.map(node => (
@@ -153,38 +170,44 @@ export default function MathMasteryMap() {
               {node.id === node.unit.skills[0] && (
                 <div style={{
                   position: 'absolute', top: '-100px',
-                  background: 'rgba(255,255,255,0.9)', padding: '0.5rem 1rem',
+                  background: 'rgba(255,255,255,0.95)', padding: '0.5rem 1rem',
                   borderRadius: '16px', fontWeight: 'bold', color: node.unit.color,
-                  boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
+                  boxShadow: '0 4px 6px rgba(0,0,0,0.1)', border: `2px solid ${node.unit.color}`,
                   whiteSpace: 'nowrap', zIndex: 10
                 }}>
                   {node.unit.emoji} {language === 'zh' ? node.unit.titleZh : node.unit.title}
+                  <div style={{ position: 'absolute', bottom: '-10px', left: '50%', transform: 'translateX(-50%)', width: 0, height: 0, borderLeft: '10px solid transparent', borderRight: '10px solid transparent', borderTop: `10px solid ${node.unit.color}` }}></div>
+                  <div style={{ position: 'absolute', bottom: '-7px', left: '50%', transform: 'translateX(-50%)', width: 0, height: 0, borderLeft: '8px solid transparent', borderRight: '8px solid transparent', borderTop: '8px solid rgba(255,255,255,0.95)' }}></div>
                 </div>
               )}
 
               {/* Node Button */}
-              <button 
-                onClick={() => handleSkillClick(node.id, node.unit)}
-                style={{
-                  width: '80px', height: '80px',
-                  borderRadius: '50%',
-                  background: node.status === 'locked' ? '#f1f5f9' : 'white',
-                  border: `6px solid ${getStatusColor(node.status)}`,
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  fontSize: '2.5rem',
-                  cursor: node.status === 'locked' ? 'not-allowed' : 'pointer',
-                  boxShadow: node.status === 'locked' ? 'none' : `0 8px 0 ${getStatusColor(node.status)}`,
-                  transform: node.status === 'locked' ? 'none' : 'translateY(-4px)',
-                  transition: 'transform 0.2s',
-                  animation: node.status === 'unlocked' ? 'active-node-pulse 2s infinite' : (node.status === 'weak' ? 'weak-node-pulse 2s infinite' : 'none')
-                }}
-              >
-                {node.status === 'locked' ? <Lock size={32} color="#9ca3b8" /> : SKILL_EMOJIS[node.id]}
-              </button>
+              <div style={{ position: 'relative', width: '100px', height: '100px' }}>
+                <MapNodeCloud 
+                  status={node.status}
+                  statusColor={getStatusColor(node.status)}
+                  isMastered={node.status === 'mastered'} 
+                  isLocked={node.status === 'locked'} 
+                  onClick={() => handleSkillClick(node.id, node.unit)}
+                  style={{ position: 'absolute', inset: 0 }}
+                />
+                
+                {/* Visual Math Quantity/Icon inside the node */}
+                {!node.status.includes('locked') && (
+                  <div style={{
+                    position: 'absolute',
+                    top: '40%', left: '50%', transform: 'translate(-50%, -50%)',
+                    fontSize: '2rem', pointerEvents: 'none',
+                    filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.2))'
+                  }}>
+                    {SKILL_EMOJIS[node.id]}
+                  </div>
+                )}
+              </div>
               <div style={{
-                  marginTop: '1rem',
+                  marginTop: '0.5rem',
                   fontSize: '1.2rem', fontWeight: 'bold', pointerEvents: 'none',
-                  color: node.status === 'locked' ? '#94A3B8' : '#b45309',
+                  color: node.status === 'locked' ? '#475569' : '#b45309',
                   textAlign: 'center', width: '120px'
               }}>
                 {SKILL_LABELS[node.id]?.[language] || node.id}
@@ -193,6 +216,18 @@ export default function MathMasteryMap() {
           ))}
 
         </div>
+      </div>
+
+      {/* Pan Affordance */}
+      <div style={{
+        position: 'absolute', bottom: '1.5rem', left: '50%', transform: 'translateX(-50%)',
+        background: 'rgba(255,255,255,0.95)', padding: '0.75rem 1.5rem', borderRadius: '100px',
+        boxShadow: '0 8px 16px rgba(0,0,0,0.15)', border: '2px solid #fcd34d',
+        color: '#b45309', fontWeight: 'bold', fontSize: '1.2rem',
+        animation: 'bounce 2s infinite', pointerEvents: 'none', zIndex: 20,
+        display: 'flex', alignItems: 'center', gap: '0.5rem'
+      }}>
+        👆 Swipe to explore ↔️
       </div>
 
       {/* Modal */}

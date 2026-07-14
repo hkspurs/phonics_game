@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ArrowLeft, Play, X, Volume2 } from 'lucide-react'
+import { Home, Play, X, Volume2 } from 'lucide-react'
 import { useGameStore } from '../store/gameStore'
 import MapNodeCloud from '../components/MapNodeCloud'
 import MascotRabbit from '../components/MascotRabbit'
@@ -125,12 +125,17 @@ export default function MasteryMap() {
       
       {/* Header */}
       <div style={{ position: 'absolute', top: '1rem', left: '1rem', zIndex: 10, display: 'flex', gap: '1rem', alignItems: 'center' }}>
-        <button className="btn-secondary" style={{ padding: '0.5rem 1rem' }} onClick={() => navigate('/')}>
-          <ArrowLeft size={24} /> {t('back')}
+        <button className="btn-secondary" style={{ padding: '0.5rem 1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }} onClick={() => navigate('/')}>
+          <Home size={24} /> {t('backToHome')}
         </button>
       </div>
-      <h1 style={{ textAlign: 'center', color: '#b45309', fontSize: '2.5rem', marginTop: '1rem', zIndex: 10, position: 'relative', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '1rem' }}>
-        {t('adventureMap')}
+      <h1 
+        style={{ textAlign: 'center', color: '#b45309', fontSize: '2.5rem', marginTop: '1rem', zIndex: 10, position: 'relative', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '1rem', cursor: 'pointer' }}
+        onClick={() => {
+          import('../audio/AudioEngine').then(m => m.audioEngine.playUI('pop'));
+        }}
+      >
+        {t('adventureMap')} <Volume2 size={32} color="#b45309" />
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: 'white', padding: '0.5rem', borderRadius: '100px', border: '4px solid #fcd34d', boxShadow: '0 8px 0 #fbbf24' }}>
           <button onClick={handlePrevChapter} disabled={isSwapping || currentChapterIndex <= 0} style={{ background: currentChapterIndex <= 0 ? '#f1f5f9' : '#38bdf8', border: 'none', borderRadius: '50%', width: '48px', height: '48px', cursor: currentChapterIndex <= 0 ? 'not-allowed' : 'pointer', opacity: currentChapterIndex <= 0 ? 0.5 : 1, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: currentChapterIndex <= 0 ? 'none' : '0 4px 0 #0284c7', transform: isSwapping ? 'scale(0.95)' : 'none', transition: 'all 0.2s' }}>
             <ArrowLeft size={32} color="white" />
@@ -155,6 +160,15 @@ export default function MasteryMap() {
         {/* Absolute Canvas */}
         <div style={{ position: 'relative', width: `${MAP_WIDTH}px`, height: `${MAP_HEIGHT}px`, opacity: isSwapping ? 0 : 1, transform: isSwapping ? 'translateY(10px)' : 'none', transition: 'opacity 0.2s, transform 0.2s' }}>
           
+          {/* Decorative Scenery */}
+          <div style={{ position: 'absolute', top: '10%', left: '5%', fontSize: '4rem', opacity: 0.6, pointerEvents: 'none' }}>☁️</div>
+          <div style={{ position: 'absolute', top: '15%', right: '25%', fontSize: '3rem', opacity: 0.5, pointerEvents: 'none' }}>☁️</div>
+          <div style={{ position: 'absolute', bottom: '20%', left: '15%', fontSize: '3rem', opacity: 0.7, pointerEvents: 'none' }}>🌲</div>
+          <div style={{ position: 'absolute', bottom: '15%', left: '40%', fontSize: '4rem', opacity: 0.7, pointerEvents: 'none' }}>🌲</div>
+          <div style={{ position: 'absolute', top: '30%', left: '60%', fontSize: '3rem', opacity: 0.5, pointerEvents: 'none' }}>⛰️</div>
+          <div style={{ position: 'absolute', bottom: '25%', right: '10%', fontSize: '3.5rem', opacity: 0.8, pointerEvents: 'none' }}>🍄</div>
+          <div style={{ position: 'absolute', top: '40%', right: '5%', fontSize: '3rem', opacity: 0.6, pointerEvents: 'none' }}>🌲</div>
+
           {!hasNodes && (
             <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: '#94a3b8', fontSize: '1.5rem', fontWeight: 'bold' }}>
               <div style={{ transform: 'scale(1.5)', marginBottom: '3rem', opacity: 0.4, filter: 'grayscale(1)' }}>
@@ -244,6 +258,20 @@ export default function MasteryMap() {
         )}
         </div>
       </div>
+
+      {/* Pan Affordance */}
+      {hasNodes && (
+        <div style={{
+          position: 'absolute', bottom: '1.5rem', left: '50%', transform: 'translateX(-50%)',
+          background: 'rgba(255,255,255,0.95)', padding: '0.75rem 1.5rem', borderRadius: '100px',
+          boxShadow: '0 8px 16px rgba(0,0,0,0.15)', border: '2px solid #fcd34d',
+          color: '#b45309', fontWeight: 'bold', fontSize: '1.2rem',
+          animation: 'bounce 2s infinite', pointerEvents: 'none', zIndex: 20,
+          display: 'flex', alignItems: 'center', gap: '0.5rem'
+        }}>
+          👆 Swipe to explore ↔️
+        </div>
+      )}
 
       {/* Accessible Interactive Modal */}
       {selectedNode && (

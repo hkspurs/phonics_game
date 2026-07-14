@@ -1,11 +1,11 @@
 export const translations = {
   zh: {
     // Subject Gateway
-    readyToLearn: '準備好學習了嗎？',
-    pickSubject: '選擇一個科目開始吧！ 🎉',
+    readyToLearn: '選擇你嘅冒險旅程！ 🚀',
+    pickSubject: '想學咩好呢？一齊出發啦！ 🎉',
     newLetter: '你有一封新信件！💌',
     claimReward: '領取獎勵',
-    phonics: '拼音森林',
+    phonics: '英語拼音森林',
     maths: '數學王國',
     start: '開始',
     
@@ -90,13 +90,13 @@ export const translations = {
   },
   en: {
     // Subject Gateway
-    readyToLearn: 'Ready to Learn?',
-    pickSubject: 'Pick a subject to begin! 🎉',
+    readyToLearn: 'Choose Your Adventure! 🚀',
+    pickSubject: 'Where should we go today? Let\'s play! 🎉',
     newLetter: 'You have a new letter! 💌',
     claimReward: 'Claim Reward',
     phonics: 'Phonics Forest',
     maths: 'Math Kingdom',
-    start: 'Start',
+    start: 'Play',
     
     // Phonics Home
     todayMissionWaiting: 'Today\'s Mission is waiting for you!',
