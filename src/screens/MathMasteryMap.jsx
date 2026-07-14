@@ -192,7 +192,7 @@ export default function MathMasteryMap() {
               {/* Unit Title (above the first skill of the unit) */}
               {node.id === node.unit.skills[0] && (
                 <div style={{
-                  position: 'absolute', top: '-100px',
+                  position: 'absolute', top: '-60px',
                   background: 'rgba(255,255,255,0.95)', padding: '0.5rem 1rem',
                   borderRadius: '16px', fontWeight: 'bold', color: node.unit.color,
                   boxShadow: '0 4px 6px rgba(0,0,0,0.1)', border: `2px solid ${node.unit.color}`,

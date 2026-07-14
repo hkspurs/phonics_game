@@ -36,7 +36,7 @@ export default function MathTrainingGym() {
 
   useEffect(() => {
     if (!isMathChallengeActive || activeQuestions.length === 0 || currentQuestionIndex >= activeQuestions.length) {
-      navigate('/math/map');
+      navigate('/math');
     }
   }, [isMathChallengeActive, activeQuestions, currentQuestionIndex, navigate]);
 

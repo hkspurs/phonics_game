@@ -88,13 +88,12 @@ export default function MathHome() {
       {/* Header */}
       <div style={{ width: '100%', padding: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <button
-          onClick={() => { audioEngine.playUI('pop'); navigate('/'); }}
+          onClick={() => { import('../audio/AudioEngine').then(m => m.audioEngine.playUI('pop')); navigate('/'); }}
           style={{
             background: 'white',
             border: 'none',
-            borderRadius: '50%',
-            width: '48px',
-            height: '48px',
+            borderRadius: '100px',
+            padding: '0.5rem 1rem',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -135,16 +134,17 @@ export default function MathHome() {
           <button 
             className="btn-primary" 
             onClick={handleStartDaily}
-            style={{ 
-              width: '100%', 
-              padding: '2rem', 
+            style={{
+              width: 'calc(100% - 2rem)',
+              margin: '0 1rem',
               fontSize: '2rem',
+              padding: '1.5rem',
+              background: '#f59e0b',
+              boxShadow: '0 8px 0 #b45309',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               gap: '1rem',
-              background: '#f59e0b',
-              boxShadow: '0 8px 0 #d97706, 0 15px 20px rgba(0,0,0,0.2)',
               animation: 'pulse-glow 2s infinite'
             }}
           >
@@ -182,8 +182,8 @@ export default function MathHome() {
               alignItems: 'center',
               gap: '0.5rem',
               fontSize: '1.25rem',
-              color: '#4f46e5',
-              borderColor: '#c7d2fe',
+              color: '#d97706',
+              borderColor: '#fde68a',
               background: 'white'
             }}
           >

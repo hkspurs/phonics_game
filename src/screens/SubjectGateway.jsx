@@ -65,7 +65,8 @@ export default function SubjectGateway() {
   return (
     <div className="screen-container" style={{
       position: 'relative',
-      overflow: 'hidden',
+      overflowX: 'hidden',
+      overflowY: 'auto',
       alignItems: 'center',
       justifyContent: 'flex-start',
       background: 'linear-gradient(to bottom, #ecfdf5, #dbeafe)',
@@ -126,15 +127,17 @@ export default function SubjectGateway() {
           {tickets > 0 && <span style={{ color: '#a855f7' }}>🎟️ {tickets}</span>}
         </div>
 
-        <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
+        <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
           <div 
             style={{ 
               display: 'flex', 
+              alignItems: 'center',
               background: '#e2e8f0', 
               borderRadius: '2rem', 
               padding: '0.25rem',
               cursor: 'pointer',
-              position: 'relative'
+              position: 'relative',
+              boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.1)'
             }}
             onClick={toggleLanguage}
           >
@@ -150,15 +153,17 @@ export default function SubjectGateway() {
               transition: 'left 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)'
             }} />
             <span style={{ 
-              padding: '0.4rem 1rem', 
+              padding: '0.4rem 0.8rem', 
               fontWeight: '900', 
+              fontSize: '1rem',
               color: language === 'zh' ? '#3b82f6' : '#94a3b8',
               zIndex: 1,
               transition: 'color 0.3s ease'
             }}>中</span>
             <span style={{ 
-              padding: '0.4rem 1rem', 
+              padding: '0.4rem 0.8rem', 
               fontWeight: '900', 
+              fontSize: '1rem',
               color: language === 'en' ? '#3b82f6' : '#94a3b8',
               zIndex: 1,
               transition: 'color 0.3s ease'
@@ -208,7 +213,7 @@ export default function SubjectGateway() {
         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '0.5rem' }}>
           <h1 
             style={{
-              fontSize: 'clamp(2rem, 6vw, 3rem)',
+              fontSize: 'clamp(1.5rem, 5vw, 2.5rem)',
               color: '#1e3a8a',
               margin: 0,
               textAlign: 'center',
@@ -409,11 +414,7 @@ export default function SubjectGateway() {
         </div>
       </div>
 
-      {/* Decorative background elements */}
-      <div style={{ position: 'absolute', top: '8%', left: '3%', fontSize: '3rem', opacity: 0.4, animation: 'float 5s ease-in-out infinite alternate', pointerEvents: 'none' }}>☁️</div>
-      <div style={{ position: 'absolute', top: '20%', right: '5%', fontSize: '4rem', opacity: 0.3, animation: 'float 7s ease-in-out infinite alternate-reverse', pointerEvents: 'none' }}>☁️</div>
-      <div style={{ position: 'absolute', bottom: '10%', left: '10%', fontSize: '2.5rem', opacity: 0.3, animation: 'float 4s ease-in-out infinite alternate', pointerEvents: 'none' }}>✨</div>
-      <div style={{ position: 'absolute', bottom: '20%', right: '8%', fontSize: '3rem', opacity: 0.3, animation: 'float 6s ease-in-out infinite alternate-reverse', pointerEvents: 'none' }}>🌈</div>
+
     </div>
   )
 }

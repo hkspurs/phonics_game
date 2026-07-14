@@ -135,7 +135,7 @@ export default function SoundCatcher() {
       <div style={{ position: 'absolute', bottom: '20%', right: '10%', fontSize: '6rem', opacity: 0.2, animation: 'wobble 3s infinite alternate-reverse' }}>🫧</div>
 
       {/* Header */}
-      <div style={{ width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center', zIndex: 10 }}>
+      <div style={{ position: 'absolute', top: 0, left: 0, right: 0, padding: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', zIndex: 10 }}>
         <button className="btn-secondary" style={{ padding: '0.5rem', background: 'white' }} onClick={() => {
           if (window.confirm("Quit game? You will lose your ticket!")) navigate('/braingames')
         }}>
@@ -155,7 +155,7 @@ export default function SoundCatcher() {
       </div>
 
       {/* Target Sound Button */}
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '2rem', zIndex: 10, position: 'relative' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '6rem', zIndex: 10, position: 'relative' }}>
         <button 
           onClick={() => audioEngine.play(targetSound.audio_url)}
           style={{

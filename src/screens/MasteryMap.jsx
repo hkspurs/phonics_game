@@ -49,8 +49,15 @@ export default function MasteryMap() {
   });
   const MAP_WIDTH = Math.max(1000, nodes.length * 150 + 200);
 
-  const handleNodeClick = (node) => {
-    if (node.status === 'locked') return;
+  const handleNodeClick = (node, e) => {
+    if (node.status === 'locked') {
+      import('../audio/AudioEngine').then(m => m.audioEngine.playUI('error'));
+      if (e && e.currentTarget) {
+        e.currentTarget.style.animation = 'shake 0.3s';
+        setTimeout(() => e.currentTarget.style.animation = '', 300);
+      }
+      return;
+    }
     audioEngine.play(node.soundData.audio_url);
     setSelectedNode(node);
   }
@@ -163,13 +170,13 @@ export default function MasteryMap() {
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: 'rgba(255,255,255,0.95)', padding: '0.5rem', borderRadius: '100px', border: '4px solid #fcd34d', boxShadow: '0 8px 0 #fbbf24, 0 4px 12px rgba(0,0,0,0.1)' }}>
           <button onClick={handlePrevChapter} disabled={isSwapping || currentChapterIndex <= 0} style={{ background: currentChapterIndex <= 0 ? '#f1f5f9' : '#38bdf8', border: 'none', borderRadius: '50%', width: '48px', height: '48px', cursor: currentChapterIndex <= 0 ? 'not-allowed' : 'pointer', opacity: currentChapterIndex <= 0 ? 0.5 : 1, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: currentChapterIndex <= 0 ? 'none' : '0 4px 0 #0284c7', transform: isSwapping ? 'scale(0.95)' : 'none', transition: 'all 0.2s' }}>
-            <ArrowLeft size={32} color="white" />
+            <ArrowLeft size={32} color={currentChapterIndex <= 0 ? "#94a3b8" : "white"} />
           </button>
           <span style={{ fontSize: '1.5rem', color: '#b45309', fontWeight: 'bold', minWidth: '120px', textAlign: 'center', textTransform: 'uppercase' }}>
             {currentChapter ? currentChapter.split(' ')[0] : '...'}
           </span>
           <button onClick={handleNextChapter} disabled={isSwapping || currentChapterIndex >= families.length - 1} style={{ background: currentChapterIndex >= families.length - 1 ? '#f1f5f9' : '#38bdf8', border: 'none', borderRadius: '50%', width: '48px', height: '48px', cursor: currentChapterIndex >= families.length - 1 ? 'not-allowed' : 'pointer', opacity: currentChapterIndex >= families.length - 1 ? 0.5 : 1, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: currentChapterIndex >= families.length - 1 ? 'none' : '0 4px 0 #0284c7', transform: isSwapping ? 'scale(0.95)' : 'none', transition: 'all 0.2s' }}>
-            <ArrowLeft size={32} color="white" style={{ transform: 'rotate(180deg)' }} />
+            <ArrowLeft size={32} color={currentChapterIndex >= families.length - 1 ? "#94a3b8" : "white"} style={{ transform: 'rotate(180deg)' }} />
           </button>
         </div>
       </div>
@@ -238,15 +245,17 @@ export default function MasteryMap() {
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'center',
-            }}>
+            }}
+            onClick={(e) => handleNodeClick(node, e)}
+            >
               <div style={{ position: 'relative', width: '120px', height: '100px' }}>
+                <div style={{ position: 'absolute', top: '15px', left: '20px', right: '20px', bottom: '15px', background: 'white', borderRadius: '50%', zIndex: 0 }} />
                 <MapNodeCloud 
                   status={node.status}
                   statusColor={getStatusColor(node.status)}
                   isMastered={node.status === 'mastered'} 
                   isLocked={node.status === 'locked'} 
-                  onClick={() => handleNodeClick(node)}
-                  style={{ position: 'absolute', inset: 0 }}
+                  style={{ position: 'absolute', inset: 0, zIndex: 1, pointerEvents: 'none' }}
                 />
                 <div style={{
                   position: 'absolute',

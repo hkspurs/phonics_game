@@ -43,20 +43,20 @@ const ParentGateModal = ({ onClose, onSuccess }) => {
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.5rem', marginBottom: '1rem' }}>
           {[1,2,3,4,5,6,7,8,9].map(num => (
-            <button key={num} className="btn-secondary" style={{ padding: '0.5rem' }} onClick={() => setPin(p => (p + num).slice(0,4))}>{num}</button>
+            <button key={num} className="btn-secondary" style={{ padding: 0, height: '4rem', fontSize: '1.5rem', borderRadius: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => setPin(p => (p + num).slice(0,4))}>{num}</button>
           ))}
-          <button className="btn-secondary" style={{ padding: '0.5rem' }} onClick={() => setPin('')}>C</button>
-          <button className="btn-secondary" style={{ padding: '0.5rem' }} onClick={() => setPin(p => (p + '0').slice(0,4))}>0</button>
-          <button className="btn-secondary" style={{ padding: '0.5rem', background: '#22c55e', color: 'white', borderColor: '#16a34a' }} onClick={() => { 
+          <button className="btn-secondary" style={{ padding: 0, height: '4rem', fontSize: '1.5rem', borderRadius: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => setPin('')}>C</button>
+          <button className="btn-secondary" style={{ padding: 0, height: '4rem', fontSize: '1.5rem', borderRadius: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => setPin(p => (p + '0').slice(0,4))}>0</button>
+          <button className="btn-secondary" style={{ padding: 0, height: '4rem', fontSize: '1.5rem', borderRadius: '1rem', background: '#22c55e', color: 'white', borderColor: '#16a34a', display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => { 
             const year = parseInt(pin, 10);
             if(pin.length === 4 && year >= 1900 && year <= 2010) {
               onSuccess();
             } else {
               setPin(''); // Reset on wrong pin
             }
-          }}>Go</button>
+          }}>GO</button>
         </div>
-        <button onClick={onClose} style={{ border: 'none', background: 'transparent', color: '#94a3b8', marginTop: '1rem', cursor: 'pointer' }}>Cancel</button>
+        <button className="btn-secondary" onClick={onClose} style={{ width: '100%', marginTop: '0.5rem', border: '2px solid #cbd5e1', background: '#f8fafc', color: '#475569' }}>Cancel</button>
       </div>
     </div>
   );

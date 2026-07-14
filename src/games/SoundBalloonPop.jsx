@@ -159,7 +159,7 @@ export default function SoundBalloonPop() {
       <div style={{ position: 'absolute', bottom: '25%', left: '20%', fontSize: '6rem', opacity: 0.2, animation: 'floatWobble 7s infinite alternate' }}>☁️</div>
 
       {/* Header Panel */}
-      <div style={{ width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center', zIndex: 10 }}>
+      <div style={{ position: 'absolute', top: 0, left: 0, right: 0, padding: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', zIndex: 10 }}>
         <button className="btn-secondary" style={{ padding: '0.5rem', background: 'white' }} onClick={() => {
           if (window.confirm("Quit game? You will lose your ticket!")) navigate('/braingames')
         }}>
@@ -179,7 +179,7 @@ export default function SoundBalloonPop() {
       </div>
 
       {/* Target Speaker Area */}
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '2rem', zIndex: 10, position: 'relative' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '6rem', zIndex: 10, position: 'relative' }}>
         <button 
           onClick={() => audioEngine.play(targetSound.audio_url)}
           style={{

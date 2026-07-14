@@ -40,7 +40,7 @@ export default function HomeDashboard() {
   };
 
   return (
-    <div className="screen-container" style={{ position: 'relative', overflow: 'hidden', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(to bottom, #bae6fd, #e0f2fe)' }}>
+    <div className="screen-container" style={{ position: 'relative', overflowX: 'hidden', overflowY: 'auto', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(to bottom, #bae6fd, #e0f2fe)' }}>
       {showParentGate && <ParentGateModal onClose={() => setShowParentGate(false)} onSuccess={handleParentAccess} />}
       
       {/* Dynamic Game World Background Elements */}
@@ -49,44 +49,32 @@ export default function HomeDashboard() {
       <div style={{ position: 'absolute', bottom: '15%', left: '15%', fontSize: '3rem', opacity: 0.5, animation: 'float 5s ease-in-out infinite alternate' }}>✨</div>
       <div style={{ position: 'absolute', bottom: '30%', right: '5%', fontSize: '4rem', opacity: 0.8, animation: 'float 4.5s ease-in-out infinite alternate-reverse' }}>🎈</div>
       
-      {/* Header / Stats - Simplified for UX */}
-      <div style={{ width: '100%', display: 'flex', flexWrap: 'wrap', gap: '1rem', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem', padding: '1rem', zIndex: 10 }}>
-        <button
-          onClick={() => { audioEngine.playUI('pop'); navigate('/'); }}
-          style={{
-            background: 'rgba(255, 255, 255, 0.95)',
-            border: '2px solid white',
-            borderRadius: '100px',
-            padding: '0.6rem 1.2rem',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.5rem',
-            cursor: 'pointer',
-            boxShadow: '0 4px 12px rgba(0,0,0,0.08), inset 0 -2px 0 rgba(0,0,0,0.05)',
-            color: '#3b82f6',
-            fontWeight: '900',
-            transition: 'transform 0.1s'
-          }}
-          onMouseDown={(e) => e.currentTarget.style.transform = 'translateY(2px)'}
-          onMouseUp={(e) => e.currentTarget.style.transform = 'translateY(0)'}
-          onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
-        >
-          &lt; {t('back')}
-        </button>
-        <div style={{ background: 'rgba(255, 255, 255, 0.95)', padding: '0.6rem 1.2rem', borderRadius: '100px', display: 'flex', gap: '1rem', fontWeight: 'bold', border: '2px solid white', boxShadow: '0 4px 12px rgba(0,0,0,0.08), inset 0 -2px 0 rgba(0,0,0,0.05)' }}>
-          <span style={{ color: '#eab308' }}>⭐ {stars}</span>
-          {gems > 0 && <span style={{ color: '#0ea5e9' }}>💎 {gems}</span>}
-          {tickets > 0 && <span style={{ color: '#a855f7' }}>🎟️ {tickets}</span>}
+      {/* Top Nav (QA FIX: Currency, Gamification, Parent Gate) */}
+      <div style={{
+        position: 'absolute',
+        top: 0, left: 0, right: 0,
+        padding: '1rem',
+        display: 'flex',
+        flexWrap: 'wrap',
+        gap: '0.5rem',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        zIndex: 100
+      }}>
+        {/* Left Side: Back + Currency */}
+        <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', alignItems: 'center' }}>
+          <button className="btn-secondary" style={{ padding: '0.6rem 1.2rem', borderRadius: '100px', display: 'flex', alignItems: 'center', gap: '0.5rem' }} onClick={() => { import('../audio/AudioEngine').then(m => m.audioEngine.playUI('pop')); navigate('/'); }}>
+            &lt; {t('back')}
+          </button>
+          <div style={{ background: 'rgba(255, 255, 255, 0.95)', padding: '0.6rem 1.2rem', borderRadius: '100px', display: 'flex', gap: '1rem', fontWeight: 'bold', border: '2px solid white', boxShadow: '0 4px 12px rgba(0,0,0,0.08), inset 0 -2px 0 rgba(0,0,0,0.05)' }}>
+            <span style={{ color: '#eab308' }}>⭐ {stars}</span>
+            {gems > 0 && <span style={{ color: '#0ea5e9' }}>💎 {gems}</span>}
+            {tickets > 0 && <span style={{ color: '#a855f7' }}>🎟️ {tickets}</span>}
+          </div>
         </div>
-        <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-          {activeAssignment && !activeAssignment.completed && (
-             <div onClick={() => { audioEngine.playUI('pop'); navigate('/assignments'); }} style={{ background: '#fef3c7', width: '40px', height: '40px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#d97706', cursor: 'pointer', boxShadow: '0 4px 6px rgba(0,0,0,0.05)', position: 'relative' }}>
-               <ClipboardList size={20} />
-               <span style={{ position: 'absolute', top: -5, right: -5, background: '#ef4444', color: 'white', fontSize: '0.7rem', width: '18px', height: '18px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>1</span>
-             </div>
-          )}
-          
-          {/* Visual Streak: More dramatic styling if streak is high */}
+
+        {/* Right Side: Streak and Settings */}
+        <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
           <div style={{ 
             background: streak > 2 ? 'linear-gradient(135deg, #ef4444, #f97316)' : 'white', 
             color: streak > 2 ? 'white' : '#ef4444',
@@ -179,7 +167,7 @@ export default function HomeDashboard() {
           style={{ fontSize: '2rem', padding: '1.5rem 4rem', animation: 'pulse-glow 2s infinite', position: 'relative', zIndex: 1 }}
           onClick={handleStartMission}
         >
-          <Play size={32} /> {t('startTodayMission')} ►
+          <Play size={32} /> {t('startTodayMission')}
         </button>
       </div>
 
