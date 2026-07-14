@@ -15,6 +15,72 @@ manifest["inst_listen_and_choose_yue"] = {
   qaNotes: []
 };
 
+manifest["inst_compare_yue"] = {
+  id: "inst_compare_yue",
+  file: "assets/audio/instructions/compare_yue.mp3",
+  type: "instruction",
+  language: "yue-HK",
+  expectedText: "聽一聽，呢兩個音係咪一樣？",
+  generatedBy: "gpt-sovits",
+  qaStatus: "review_required",
+  qaNotes: []
+};
+
+manifest["inst_boss_yue"] = {
+  id: "inst_boss_yue",
+  file: "assets/audio/instructions/boss_yue.mp3",
+  type: "instruction",
+  language: "yue-HK",
+  expectedText: "終極挑戰！聽一聽，揀啱嘅字母。",
+  generatedBy: "gpt-sovits",
+  qaStatus: "review_required",
+  qaNotes: []
+};
+
+manifest["inst_gym_warmup_yue"] = {
+  id: "inst_gym_warmup_yue",
+  file: "assets/audio/instructions/gym_warmup_yue.mp3",
+  type: "instruction",
+  language: "yue-HK",
+  expectedText: "第一關熱身！留心聽清楚。",
+  generatedBy: "gpt-sovits",
+  qaStatus: "review_required",
+  qaNotes: []
+};
+
+manifest["inst_gym_lift_yue"] = {
+  id: "inst_gym_lift_yue",
+  file: "assets/audio/instructions/gym_lift_yue.mp3",
+  type: "instruction",
+  language: "yue-HK",
+  expectedText: "第二關舉重！唔好俾相似嘅音呃到呀！",
+  generatedBy: "gpt-sovits",
+  qaStatus: "review_required",
+  qaNotes: []
+};
+
+manifest["inst_gym_sprint_yue"] = {
+  id: "inst_gym_sprint_yue",
+  file: "assets/audio/instructions/gym_sprint_yue.mp3",
+  type: "instruction",
+  language: "yue-HK",
+  expectedText: "第三關衝刺！快啲揀出正確嘅答案！",
+  generatedBy: "gpt-sovits",
+  qaStatus: "review_required",
+  qaNotes: []
+};
+
+manifest["inst_bubble_yue"] = {
+  id: "inst_bubble_yue",
+  file: "assets/audio/instructions/bubble_yue.mp3",
+  type: "instruction",
+  language: "yue-HK",
+  expectedText: "聽一聽，篤爆啱嗰個泡泡！",
+  generatedBy: "gpt-sovits",
+  qaStatus: "review_required",
+  qaNotes: []
+};
+
 manifest["fb_correct_yue_001"] = {
   id: "fb_correct_yue_001",
   file: "assets/audio/feedback/correct_yue_001.mp3",

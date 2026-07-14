@@ -182,7 +182,7 @@ class QuestionEngine {
       choices: shuffle([targetSound.label, warmupDistractor.label]),
       correctAnswer: targetSound.label,
       choiceSounds: [targetSound, warmupDistractor],
-      instructionAudio: 'inst_listen_and_choose_yue',
+      instructionAudio: 'inst_gym_warmup_yue',
       targetSoundAudio: targetSound.sound_id,
       correctFeedbackAudio: 'fb_correct_yue_001',
       wrongFeedbackAudio: 'fb_wrong_yue_001'
@@ -204,7 +204,7 @@ class QuestionEngine {
         choices: shuffle([targetSound.label, confusedSound.label]),
         correctAnswer: targetSound.label,
         choiceSounds: [targetSound, confusedSound],
-        instructionAudio: 'inst_listen_and_choose_yue',
+        instructionAudio: 'inst_gym_lift_yue',
         targetSoundAudio: targetSound.sound_id,
         correctFeedbackAudio: 'fb_correct_yue_001',
         wrongFeedbackAudio: 'fb_wrong_yue_001'
@@ -220,7 +220,7 @@ class QuestionEngine {
       choices: shuffle([targetSound.label, ...sprintDistractors.map(d => d.label)]),
       correctAnswer: targetSound.label,
       choiceSounds: [targetSound, ...sprintDistractors],
-      instructionAudio: 'inst_listen_and_choose_yue',
+      instructionAudio: 'inst_gym_sprint_yue',
       targetSoundAudio: targetSound.sound_id,
       correctFeedbackAudio: 'fb_correct_yue_001',
       wrongFeedbackAudio: 'fb_wrong_yue_001'
@@ -258,7 +258,7 @@ class QuestionEngine {
         choices: choices,
         correctAnswer: targetSound.label,
         choiceSounds: [targetSound, ...distractors],
-        instructionAudio: 'inst_listen_and_choose_yue',
+        instructionAudio: 'inst_bubble_yue',
         targetSoundAudio: targetSound.sound_id,
         correctFeedbackAudio: 'fb_correct_yue_001',
         wrongFeedbackAudio: 'fb_wrong_yue_001'
@@ -313,7 +313,7 @@ class QuestionEngine {
           compareSound: compareSoundObj,
           choices: ['Same', 'Different'],
           correctAnswer: isSame ? 'Same' : 'Different',
-          instructionAudio: 'inst_listen_and_choose_yue',
+          instructionAudio: 'inst_compare_yue',
           targetSoundAudio: targetSound.sound_id,
           compareSoundAudio: compareSoundObj.sound_id,
           correctFeedbackAudio: 'fb_correct_yue_001',
@@ -338,7 +338,7 @@ class QuestionEngine {
           choices: choices,
           correctAnswer: targetSound.label,
           choiceSounds: [targetSound, ...distractors],
-          instructionAudio: 'inst_listen_and_choose_yue',
+          instructionAudio: type === 'boss' ? 'inst_boss_yue' : 'inst_listen_and_choose_yue',
           targetSoundAudio: targetSound.sound_id,
           correctFeedbackAudio: 'fb_correct_yue_001',
           wrongFeedbackAudio: 'fb_wrong_yue_001'

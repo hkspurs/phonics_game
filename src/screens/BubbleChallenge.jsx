@@ -45,7 +45,7 @@ export default function BubbleChallenge() {
 
     setIsProcessing(true);
     setMascotState('idle');
-    audioEngine.play(currentQ.targetSound.audio_url).catch(() => {}).finally(() => setIsProcessing(false));
+    audioEngine.playAudioById(currentQ.targetSoundAudio).catch(() => {}).finally(() => setIsProcessing(false));
   };
 
   const handleSubmit = (e) => {
@@ -78,7 +78,11 @@ export default function BubbleChallenge() {
       // Correct!
       setAnimatingOut(true);
       setPoppedBubbles([...poppedBubbles, index]);
-      audioEngine.playUI('pop');
+      if (currentQ.correctFeedbackAudio) {
+        audioEngine.playAudioById(currentQ.correctFeedbackAudio);
+      } else {
+        audioEngine.playUI('pop');
+      }
       if (e) {
         confetti({ particleCount: 50, spread: 60, origin: { x: e.clientX / window.innerWidth, y: e.clientY / window.innerHeight } });
       } else {
@@ -110,7 +114,11 @@ export default function BubbleChallenge() {
 
     } else {
       // Wrong!
-      audioEngine.playUI('error');
+      if (currentQ.wrongFeedbackAudio) {
+        audioEngine.playAudioById(currentQ.wrongFeedbackAudio);
+      } else {
+        audioEngine.playUI('error');
+      }
       setMistakes(m => m + 1);
       setWrongBubble(index);
       setMascotState('wrong');
@@ -271,7 +279,22 @@ export default function BubbleChallenge() {
         </div>
 
         {/* Audio Button - Positioned top center */}
-        <div style={{ position: 'absolute', top: '10%', left: '50%', transform: 'translateX(-50%)', zIndex: 15, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        <div style={{ position: 'absolute', top: '5%', left: '50%', transform: 'translateX(-50%)', zIndex: 15, display: 'flex', gap: '1rem', alignItems: 'center' }}>
+          {currentQ.instructionAudio && (
+            <button 
+              onClick={() => audioEngine.playAudioById(currentQ.instructionAudio)} 
+              style={{ 
+                background: 'linear-gradient(135deg, #a78bfa, #8b5cf6)', border: '4px solid white', borderRadius: '50%', width: '80px', height: '80px', 
+                display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', cursor: 'pointer', 
+                boxShadow: '0 8px 15px rgba(0,0,0,0.2), inset 0 -4px 8px rgba(109,40,217,0.5)', 
+                animation: 'floatBubble 4s ease-in-out infinite alternate-reverse', color: 'white', fontWeight: 'bold', fontSize: '0.8rem'
+              }}
+            >
+              <Volume2 size={30} color="#ffffff" style={{ filter: 'drop-shadow(0 2px 2px rgba(0,0,0,0.3))' }} />
+              Listen
+            </button>
+          )}
+          
           <button 
             onClick={playTargetAudio} 
             style={{ 
