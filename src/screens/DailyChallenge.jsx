@@ -254,9 +254,19 @@ export default function DailyChallenge() {
           <X size={24} />
         </button>
         
-        {/* Progress Bar (QA FIX: A11y Contrast) */}
-        <div style={{ flex: 1, margin: '0 2rem', height: '16px', background: '#cbd5e1', borderRadius: '8px', overflow: 'hidden' }}>
-          <div style={{ width: `${progressPercent}%`, height: '100%', background: '#059669', borderRadius: '8px', transition: 'width 0.3s ease' }}></div>
+        {/* Progress Bar with Kenney Assets */}
+        <div style={{ 
+          flex: 1, margin: '0 2rem', height: '24px', 
+          borderStyle: 'solid', borderWidth: '8px', 
+          borderImage: "url('/assets/kenney/ui-pack/Vector/Grey/button_rectangle_depth_flat.svg') 8 8 12 8 fill",
+          display: 'flex', alignItems: 'center'
+        }}>
+          <div style={{ 
+            width: `${progressPercent}%`, height: '100%', 
+            borderStyle: 'solid', borderWidth: '8px',
+            borderImage: "url('/assets/kenney/ui-pack/Vector/Green/button_rectangle_flat.svg') 8 8 8 8 fill",
+            transition: 'width 0.3s ease' 
+          }}></div>
         </div>
         
         <span style={{ fontWeight: 'bold', color: '#047857', fontSize: '1.25rem' }}>

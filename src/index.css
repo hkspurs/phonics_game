@@ -54,43 +54,62 @@ body {
 
 /* Base button styles to prevent "template" look */
 .btn-primary {
-  background-color: var(--primary);
   color: white;
-  font-size: 1.5rem;
-  font-weight: 700;
   padding: 1rem 2rem;
-  border: none;
-  border-radius: 100px;
-  box-shadow: 0 6px 0 var(--primary-dark), var(--shadow-md);
+  font-size: 1.5rem;
+  font-weight: bold;
   cursor: pointer;
-  transition: all 0.1s ease;
+  border-style: solid;
+  border-width: 15px 15px 25px 15px; /* Larger bottom for depth */
+  border-image: url('/assets/kenney/ui-pack/Vector/Blue/button_rectangle_depth_flat.svg') 15 15 25 15 fill;
+  background: transparent;
+  outline: none;
+  transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 0.5rem;
-  touch-action: manipulation; /* QA FIX: Prevent iOS zoom */
+  text-transform: uppercase;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
 
-.btn-primary:active {
-  transform: translateY(4px);
-  box-shadow: 0 2px 0 var(--primary-dark), var(--shadow-press);
+.btn-primary:active:not(:disabled) {
+  transform: translateY(10px);
+  border-width: 15px 15px 15px 15px;
+  border-image: url('/assets/kenney/ui-pack/Vector/Blue/button_rectangle_flat.svg') 15 15 15 15 fill;
+  margin-bottom: 10px; /* Compensate for lost bottom border to keep layout stable */
+}
+
+.btn-primary:disabled {
+  border-image: url('/assets/kenney/ui-pack/Vector/Grey/button_rectangle_depth_flat.svg') 15 15 25 15 fill;
+  cursor: not-allowed;
+  color: #94a3b8;
+  text-shadow: none;
 }
 
 .btn-secondary {
-  background-color: var(--surface);
-  color: var(--secondary-dark);
-  font-size: 1.25rem;
-  font-weight: 700;
-  padding: 0.75rem 1.5rem;
-  border: 3px solid var(--secondary);
-  border-radius: 100px;
-  box-shadow: 0 4px 0 var(--secondary-dark), var(--shadow-sm);
+  color: #1e3a8a;
+  padding: 1rem 2rem;
+  font-size: 1.5rem;
+  font-weight: bold;
   cursor: pointer;
-  transition: all 0.1s ease;
+  border-style: solid;
+  border-width: 15px 15px 25px 15px;
+  border-image: url('/assets/kenney/ui-pack/Vector/Yellow/button_rectangle_depth_flat.svg') 15 15 25 15 fill;
+  background: transparent;
+  outline: none;
+  transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
 }
 
-.btn-secondary:active {
-  transform: translateY(2px);
-  box-shadow: 0 2px 0 var(--secondary-dark), var(--shadow-press);
+.btn-secondary:active:not(:disabled) {
+  transform: translateY(10px);
+  border-width: 15px 15px 15px 15px;
+  border-image: url('/assets/kenney/ui-pack/Vector/Yellow/button_rectangle_flat.svg') 15 15 15 15 fill;
+  margin-bottom: 10px;
 }
 
 .screen-container {

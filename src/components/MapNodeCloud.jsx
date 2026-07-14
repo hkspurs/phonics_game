@@ -4,56 +4,62 @@ export default function MapNodeCloud({ status, statusColor, isMastered, isLocked
   const isPractising = status === 'practising';
   const isWeak = status === 'weak';
 
+  let color = 'Blue';
+  if (isLocked) color = 'Grey';
+  else if (isMastered) color = 'Yellow';
+  else if (isPractising) color = 'Green';
+  else if (isWeak) color = 'Red';
+
+  const imgSrc = `/assets/kenney/ui-pack/Vector/${color}/button_round_depth_flat.svg`;
+
   return (
     <div 
       className={`map-node-container ${status}`} 
-      style={{ cursor: isLocked ? 'default' : 'pointer', ...style }}
+      style={{ 
+        cursor: isLocked ? 'default' : 'pointer', 
+        position: 'relative',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        ...style 
+      }}
       onClick={!isLocked ? onClick : undefined}
       role="button"
       tabIndex={isLocked ? -1 : 0}
       aria-label={`${status} node`}
     >
-      <svg viewBox="-10 -10 120 100" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
-        <g id="map-node">
-          {/* Shadow */}
-          <ellipse cx="50" cy="70" rx="30" ry="5" fill="#E6E0D8" opacity="0.6"/>
-          
-          <path id="cloud-base" d="M 30 55 A 15 15 0 0 1 35 30 A 20 20 0 0 1 65 25 A 15 15 0 0 1 80 45 A 15 15 0 0 1 70 65 L 30 65 A 12 12 0 0 1 30 55 Z" 
-                fill={isLocked ? "#E2E8F0" : "#FFFFFF"} 
-                stroke={isLocked ? "#94A3B8" : statusColor} 
-                strokeWidth={isPractising || isWeak ? "4" : "2"} 
-                strokeLinejoin="round"
-                vectorEffect="non-scaling-stroke"
-                filter={isPractising || isWeak ? "url(#global-glow)" : "none"}
-                style={{ transition: 'all 0.3s' }}
-          />
-          
-          {/* Face moved down to avoid text collision */}
-          {!isLocked && (
-            <g id="face-mastered" style={{ animation: 'bob 3s infinite alternate', transformOrigin: '50px 45px' }}>
-              <path d="M 42 50 Q 45 48 48 50" fill="none" stroke="#8D7A6F" strokeWidth="1.5" strokeLinecap="round"/>
-              <path d="M 52 50 Q 55 48 58 50" fill="none" stroke="#8D7A6F" strokeWidth="1.5" strokeLinecap="round"/>
-              <circle cx="40" cy="53" r="3" fill="#FFD1D1" opacity="0.8"/>
-              <circle cx="60" cy="53" r="3" fill="#FFD1D1" opacity="0.8"/>
-            </g>
-          )}
+      <img 
+        src={imgSrc} 
+        alt={status} 
+        style={{ 
+          width: '90%', 
+          height: '90%',
+          filter: isPractising || isWeak ? 'drop-shadow(0 0 15px rgba(255,255,255,0.8))' : 'drop-shadow(0 4px 6px rgba(0,0,0,0.1))',
+          transition: 'all 0.3s'
+        }} 
+      />
+      
+      {isLocked && (
+        <img 
+          src="/assets/kenney/game-icons/PNG/White/2x/locked.png" 
+          alt="Locked" 
+          style={{ position: 'absolute', width: '30px', opacity: 0.5, top: '40%' }}
+        />
+      )}
 
-          {isLocked && (
-            <g id="face-locked">
-              <path d="M 42 52 Q 45 52 48 52" fill="none" stroke="#94A3B8" strokeWidth="1.5" strokeLinecap="round"/>
-              <path d="M 52 52 Q 55 52 58 52" fill="none" stroke="#94A3B8" strokeWidth="1.5" strokeLinecap="round"/>
-            </g>
-          )}
-
-          {isMastered && (
-            <g id="mastery-star" transform="translate(75, 20)">
-              <g style={{ animation: 'spin 4s linear infinite', transformOrigin: 'center' }}>
-                <polygon points="0,-8 2,-2 8,-2 3,2 5,8 0,4 -5,8 -3,2 -8,-2 -2,-2" fill="#FFB347" stroke="#8D7A6F" strokeWidth="1"/>
-              </g>
-            </g>
-          )}
-        </g>
-      </svg>
+      {isMastered && (
+        <img 
+          src="/assets/kenney/ui-pack/Vector/star.svg" 
+          alt="Mastered" 
+          style={{ 
+            position: 'absolute', 
+            width: '40px', 
+            top: '-10px', 
+            right: '-10px',
+            filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.3))'
+          }}
+        />
+      )}
     </div>
   );
 }

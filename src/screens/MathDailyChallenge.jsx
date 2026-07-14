@@ -161,8 +161,18 @@ export default function MathDailyChallenge() {
           <X size={24} />
         </button>
         
-        <div style={{ flex: 1, margin: '0 2rem', height: '16px', background: '#fef3c7', borderRadius: '8px', overflow: 'hidden', border: '2px solid #fde68a' }}>
-          <div style={{ width: `${progressPercent}%`, height: '100%', background: '#f59e0b', borderRadius: '8px', transition: 'width 0.3s ease' }}></div>
+        <div style={{ 
+          flex: 1, margin: '0 2rem', height: '24px', 
+          borderStyle: 'solid', borderWidth: '8px', 
+          borderImage: "url('/assets/kenney/ui-pack/Vector/Grey/button_rectangle_depth_flat.svg') 8 8 12 8 fill",
+          display: 'flex', alignItems: 'center'
+        }}>
+          <div style={{ 
+            width: `${progressPercent}%`, height: '100%', 
+            borderStyle: 'solid', borderWidth: '8px',
+            borderImage: "url('/assets/kenney/ui-pack/Vector/Yellow/button_rectangle_flat.svg') 8 8 8 8 fill",
+            transition: 'width 0.3s ease' 
+          }}></div>
         </div>
         
         <span style={{ fontWeight: 'bold', color: '#b45309', fontSize: '1.25rem' }}>

@@ -49,10 +49,7 @@ const VirtualKeyboard = ({ onKeyPress, disabled }) => {
               display: 'flex',
               justifyContent: 'center',
               alignItems: 'center',
-              boxShadow: '0 4px 0 #cbd5e1',
-              border: '2px solid #e2e8f0',
               color: '#1e3a8a',
-              background: '#ffffff',
               opacity: disabled ? 0.5 : 1,
               touchAction: 'manipulation' // Prevents double-tap zoom
             }}
@@ -71,10 +68,7 @@ const VirtualKeyboard = ({ onKeyPress, disabled }) => {
           style={{
             gridColumn: 'span 2',
             padding: '0.75rem 0',
-            background: '#fef2f2',
             color: '#ef4444',
-            border: '2px solid #fecaca',
-            boxShadow: '0 4px 0 #fca5a5',
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center',

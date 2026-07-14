@@ -158,95 +158,19 @@ class AudioEngine {
     if (this.audioContext.state === 'suspended') {
       this.audioContext.resume().catch(() => {});
     }
-    const t = this.audioContext.currentTime;
+    
+    // Use Kenney Interface Sounds
+    const SOUND_MAP = {
+      pop: '/assets/kenney/interface-sounds/Audio/click_001.ogg',
+      correct: '/assets/kenney/interface-sounds/Audio/confirmation_001.ogg',
+      error: '/assets/kenney/interface-sounds/Audio/error_004.ogg',
+      win: '/assets/kenney/interface-sounds/Audio/maximize_006.ogg'
+    };
 
-    if (type === 'pop') {
-      // Bubbly marimba pop
-      const osc = this.audioContext.createOscillator();
-      const gain = this.audioContext.createGain();
-      osc.connect(gain);
-      gain.connect(this.masterGain);
-      
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(600, t);
-      osc.frequency.exponentialRampToValueAtTime(800, t + 0.05);
-      
-      gain.gain.setValueAtTime(0, t);
-      gain.gain.linearRampToValueAtTime(0.6, t + 0.01);
-      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.15);
-      
-      osc.start(t);
-      osc.stop(t + 0.2);
-
-    } else if (type === 'correct') {
-      // Cheerful magical chime (C6 - E6 - G6 - C7)
-      const playNote = (freq, delay, duration) => {
-        const osc = this.audioContext.createOscillator();
-        const gain = this.audioContext.createGain();
-        osc.connect(gain);
-        gain.connect(this.masterGain);
-        osc.type = 'triangle';
-        osc.frequency.setValueAtTime(freq, t + delay);
-        gain.gain.setValueAtTime(0, t + delay);
-        gain.gain.linearRampToValueAtTime(0.3, t + delay + 0.02);
-        gain.gain.exponentialRampToValueAtTime(0.001, t + delay + duration);
-        osc.start(t + delay);
-        osc.stop(t + delay + duration);
-      };
-      playNote(1046.50, 0.00, 0.3); // C6
-      playNote(1318.51, 0.06, 0.3); // E6
-      playNote(1567.98, 0.12, 0.4); // G6
-      playNote(2093.00, 0.18, 0.5); // C7
-      
-    } else if (type === 'error') {
-      // Soft double boop (much less harsh than square wave)
-      const playBoop = (delay) => {
-        const osc = this.audioContext.createOscillator();
-        const gain = this.audioContext.createGain();
-        osc.connect(gain);
-        gain.connect(this.masterGain);
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(300, t + delay);
-        osc.frequency.exponentialRampToValueAtTime(150, t + delay + 0.15);
-        gain.gain.setValueAtTime(0, t + delay);
-        gain.gain.linearRampToValueAtTime(0.5, t + delay + 0.02);
-        gain.gain.exponentialRampToValueAtTime(0.001, t + delay + 0.2);
-        osc.start(t + delay);
-        osc.stop(t + delay + 0.3);
-      };
-      playBoop(0);
-      playBoop(0.15);
-
-    } else if (type === 'win') {
-      // Triumphant Fanfare
-      const playNote = (freq, delay, duration) => {
-        const osc = this.audioContext.createOscillator();
-        const gain = this.audioContext.createGain();
-        osc.connect(gain);
-        gain.connect(this.masterGain);
-        osc.type = 'square';
-        
-        // Add a slight vibrato
-        const lfo = this.audioContext.createOscillator();
-        const lfoGain = this.audioContext.createGain();
-        lfo.frequency.value = 6; // 6Hz vibrato
-        lfoGain.gain.value = 10;
-        lfo.connect(lfoGain);
-        lfoGain.connect(osc.frequency);
-        lfo.start(t + delay);
-        lfo.stop(t + delay + duration);
-
-        osc.frequency.setValueAtTime(freq, t + delay);
-        gain.gain.setValueAtTime(0, t + delay);
-        gain.gain.linearRampToValueAtTime(0.15, t + delay + 0.05);
-        gain.gain.exponentialRampToValueAtTime(0.001, t + delay + duration);
-        osc.start(t + delay);
-        osc.stop(t + delay + duration);
-      };
-      playNote(523.25, 0.0, 0.2); // C5
-      playNote(523.25, 0.15, 0.2); // C5
-      playNote(523.25, 0.30, 0.2); // C5
-      playNote(659.25, 0.45, 0.8); // E5
+    const url = SOUND_MAP[type];
+    if (url) {
+      // Play it concurrently, don't await, so it acts like a fire-and-forget sound effect
+      this.play(url, 0, 0, 1.0);
     }
   }
 }

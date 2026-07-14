@@ -211,7 +211,7 @@ export default function MasteryMap() {
                 />
                 <div style={{
                   position: 'absolute',
-                  top: '30%', left: '50%', transform: 'translate(-50%, -50%)',
+                  top: '42%', left: '50%', transform: 'translate(-50%, -50%)',
                   fontSize: '1.4rem', fontWeight: 'bold', pointerEvents: 'none',
                   color: node.status === 'locked' ? '#94A3B8' : '#6b21a8',
                   display: 'flex', alignItems: 'center', gap: '0.2rem'
