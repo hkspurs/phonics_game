@@ -48,14 +48,6 @@ class QuestionEngine {
       return attemptsA - attemptsB;
     });
 
-    // Create strictly scoped learning buckets
-    const reviewSounds = [
-      leastTestedPool[0] || currentSound,
-      leastTestedPool[1] || currentSound,
-      leastTestedPool[2] || currentSound
-    ];
-    const targetSounds = [currentSound, currentSound, currentSound];
-    
     // QA FIX: Prioritize actual weak sounds from learningStats
     let actualWeakSounds = unlockedSounds.filter(s => {
       const stats = learningStats[s.sound_id];
@@ -73,22 +65,37 @@ class QuestionEngine {
     }
 
     const weakPool = actualWeakSounds.length > 0 ? actualWeakSounds : unlockedSounds;
-
-    // QA FIX: Fair selection for weak pool to prevent random skipping
-    if (!this._weakQueue || this._weakQueue.length === 0) {
-      this._weakQueue = shuffle([...weakPool]);
+    // QA FIX: Ensure no sound appears more than once per test (unless unlocked < 10)
+    let targetSet = new Set();
+    
+    // 1. Always include the current node sound
+    targetSet.add(currentSound);
+    
+    // 2. Add weak sounds
+    for (let w of shuffle([...weakPool])) {
+      if (targetSet.size < 10) targetSet.add(w);
     }
     
-    let w1 = this._weakQueue.pop();
-    if (this._weakQueue.length === 0) this._weakQueue = shuffle([...weakPool]);
-    let w2 = this._weakQueue.pop();
-
-    const weakSounds = [w1, w2];
-    const compareSound = [currentSound];
-    const bossSound = [currentSound];
+    // 3. Add least tested sounds
+    for (let r of leastTestedPool) {
+      if (targetSet.size < 10) targetSet.add(r);
+    }
     
-    const first8 = shuffle([...reviewSounds, ...targetSounds, ...weakSounds]);
-    const combinedTargets = [...first8, ...compareSound, ...bossSound];
+    // 4. Pad with random unlocked sounds if needed
+    let shuffledUnlocked = shuffle([...unlockedSounds]);
+    for (let u of shuffledUnlocked) {
+      if (targetSet.size < 10) targetSet.add(u);
+    }
+    
+    let combinedTargets = Array.from(targetSet);
+    
+    // 5. If they literally have fewer than 10 sounds unlocked, we must repeat
+    while (combinedTargets.length < 10) {
+      combinedTargets.push(shuffledUnlocked[Math.floor(Math.random() * shuffledUnlocked.length)]);
+    }
+    
+    // Shuffle the 10 questions so the currentSound isn't always first
+    combinedTargets = shuffle(combinedTargets);
     
     // Teacher Agent Pedagogical Fix: Strict Scope & Sequence
     const familySounds = currentSound.family ? this.sounds.filter(s => s.family === currentSound.family) : [];
@@ -309,11 +316,13 @@ class QuestionEngine {
       const numDistractors = type === 'boss' ? 3 : 2;
       
       // QA FIX: Fair Distractor Queue to prevent over-repetition
+      let safePool = distractorBasePool.length > numDistractors ? distractorBasePool : this.sounds;
+      
       if (!this._distractorQueue || this._distractorQueue.length === 0) {
-        this._distractorQueue = shuffle([...distractorBasePool]);
+        this._distractorQueue = shuffle([...safePool]);
       }
       
-      let potentialDistractors = distractorBasePool.filter(s => s.sound_id !== targetSound.sound_id);
+      let potentialDistractors = safePool.filter(s => s.sound_id !== targetSound.sound_id);
       let sameFamily = potentialDistractors.filter(s => s.family && targetSound.family && s.family === targetSound.family);
       
       let distractors = [];
@@ -321,13 +330,15 @@ class QuestionEngine {
         distractors.push(shuffle(sameFamily)[0]);
       }
       
-      while (distractors.length < numDistractors) {
+      let safetyCounter = 0;
+      while (distractors.length < numDistractors && safetyCounter < 50) {
+        safetyCounter++;
         if (this._distractorQueue.length === 0) {
-          this._distractorQueue = shuffle([...distractorBasePool]);
+          this._distractorQueue = shuffle([...safePool]);
         }
         let candidate = this._distractorQueue.pop();
         // Don't add if it's the target or already in distractors
-        if (candidate.sound_id !== targetSound.sound_id && !distractors.find(d => d.sound_id === candidate.sound_id)) {
+        if (candidate && candidate.sound_id !== targetSound.sound_id && !distractors.find(d => d.sound_id === candidate.sound_id)) {
           distractors.push(candidate);
         }
       }
