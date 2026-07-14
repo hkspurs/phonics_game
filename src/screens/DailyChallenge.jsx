@@ -377,9 +377,12 @@ export default function DailyChallenge() {
                   <div style={{ position: 'absolute', bottom: '-10px', left: '20px', borderLeft: '10px solid transparent', borderRight: '10px solid transparent', borderTop: '10px solid white' }}></div>
                 </div>
               )}
-              {feedbackState === 'wrong' && (
-                <div id="wrong-feedback-text" style={{ position: 'absolute', top: '-60px', right: '-60px', background: 'white', padding: '0.5rem 1rem', borderRadius: '20px', boxShadow: '0 4px 10px rgba(0,0,0,0.1)', fontWeight: 'bold', color: '#be123c', animation: 'popIn 0.3s ease-out', zIndex: 20 }}>
-                  {refresherMode && currentChallengeType === 'daily' ? "Let's dust off this sound!" : "Almost! Listen again."}
+              {(feedbackState === 'wrong' || (attemptCount > 3 && feedbackState !== 'correct')) && (
+                <div id="wrong-feedback-text" style={{ position: 'absolute', top: '-60px', right: '-80px', background: 'white', padding: '0.5rem 1rem', borderRadius: '20px', boxShadow: '0 4px 10px rgba(0,0,0,0.1)', fontWeight: 'bold', color: attemptCount > 3 ? '#0369a1' : '#be123c', animation: 'popIn 0.3s ease-out', zIndex: 20, whiteSpace: 'nowrap' }}>
+                  {attemptCount > 3 
+                    ? `💡 Hint: Starts with ${currentQ.correctAnswer[0].toUpperCase()}`
+                    : (refresherMode && currentChallengeType === 'daily' ? "Let's dust off this sound!" : "Almost! Listen again.")
+                  }
                   <div style={{ position: 'absolute', bottom: '-10px', left: '20px', borderLeft: '10px solid transparent', borderRight: '10px solid transparent', borderTop: '10px solid white' }}></div>
                 </div>
               )}
@@ -447,7 +450,7 @@ export default function DailyChallenge() {
                 disabled={isProcessing || feedbackState !== null}
                 maxLength={2}
                 className={`font-phonics ${feedbackState === 'wrong' ? 'wobble-wrong' : ''}`}
-                placeholder={attemptCount > 3 ? `Hint: Starts with ${currentQ.correctAnswer[0]}` : "Type here..."}
+                placeholder="Type here..."
                 style={{
                   width: '100%',
                   fontSize: '4.5rem',
