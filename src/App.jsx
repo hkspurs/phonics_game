@@ -32,7 +32,7 @@ class ErrorBoundary extends React.Component {
     if (this.state.hasError) {
       return (
         <div className="screen-container" style={{ background: '#fef2f2', alignItems: 'center', justifyContent: 'center', textAlign: 'center' }}>
-          <MascotRabbit feedbackState="idle" style={{ transform: 'scale(1.5)', marginBottom: '2rem' }} />
+          <MascotRabbit feedbackState="idle" style={{ width: '200px', height: '200px', transform: 'scale(1.5)', marginBottom: '2rem' }} />
           <h1 style={{ color: '#991b1b', marginBottom: '1rem', fontSize: '2.5rem' }}>Oops, let's try again! 🌟</h1>
           <p style={{ color: '#b91c1c', marginBottom: '2rem', fontSize: '1.5rem' }}>Something got a little mixed up.</p>
           <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>

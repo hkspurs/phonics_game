@@ -54,14 +54,18 @@ export default function MascotRabbit({ style, isListening = false, feedbackState
             {/* Head */}
             <g id="head-group" style={{ transform: isCorrect ? 'translateY(-2px)' : (isWrong ? 'translateY(5px) rotate(5deg)' : 'none'), transition: 'all 0.3s' }}>
               {/* Front Ear (Left Ear) */}
-              <g id="left-ear" transform="translate(35, 35) rotate(-15)">
-                <path d="M 0 0 C -15 -25 -5 -40 5 -35 C 15 -30 10 -15 0 0 Z" fill="#FFFDF8" stroke="#8D7A6F" strokeWidth="2"/>
-                <path d="M 1 -5 C -8 -20 -2 -32 3 -28 C 8 -24 6 -15 1 -5 Z" fill="#FFD1D1"/>
+              <g transform="translate(35, 35) rotate(-15)">
+                <g id="left-ear">
+                  <path d="M 0 0 C -15 -25 -5 -40 5 -35 C 15 -30 10 -15 0 0 Z" fill="#FFFDF8" stroke="#8D7A6F" strokeWidth="2"/>
+                  <path d="M 1 -5 C -8 -20 -2 -32 3 -28 C 8 -24 6 -15 1 -5 Z" fill="#FFD1D1"/>
+                </g>
               </g>
               {/* Back Ear (Right Ear) */}
-              <g id="right-ear" transform="translate(65, 35) rotate(15)">
-                <path d="M 0 0 C 15 -25 5 -40 -5 -35 C -15 -30 -10 -15 0 0 Z" fill="#FFFDF8" stroke="#8D7A6F" strokeWidth="2"/>
-                <path d="M -1 -5 C 8 -20 2 -32 -3 -28 C -8 -24 -6 -15 -1 -5 Z" fill="#FFD1D1"/>
+              <g transform="translate(65, 35) rotate(15)">
+                <g id="right-ear">
+                  <path d="M 0 0 C 15 -25 5 -40 -5 -35 C -15 -30 -10 -15 0 0 Z" fill="#FFFDF8" stroke="#8D7A6F" strokeWidth="2"/>
+                  <path d="M -1 -5 C 8 -20 2 -32 -3 -28 C -8 -24 -6 -15 -1 -5 Z" fill="#FFD1D1"/>
+                </g>
               </g>
               
               {/* Big cute squircle head */}

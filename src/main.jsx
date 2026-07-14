@@ -6,13 +6,20 @@ import './index.css'
 // Global Input Debouncer (Issue 13: Prevent button mashing)
 document.addEventListener('click', (e) => {
   const btn = e.target.closest('button, .map-node');
-  if (btn && !btn.disabled && !btn.dataset.debouncing) {
+  if (btn && !btn.disabled) {
+    if (btn.dataset.debouncing) {
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      return;
+    }
     btn.dataset.debouncing = "true";
     const originalPointerEvents = btn.style.pointerEvents;
     btn.style.pointerEvents = 'none';
     setTimeout(() => {
-      btn.style.pointerEvents = originalPointerEvents;
-      delete btn.dataset.debouncing;
+      if (document.contains(btn)) {
+        btn.style.pointerEvents = originalPointerEvents;
+        delete btn.dataset.debouncing;
+      }
     }, 500);
   }
 }, true); // Use capture phase to intercept early

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Map, Play, Trophy, Puzzle, ClipboardList, Settings, X } from 'lucide-react'
+import { Map, Play, Trophy, Puzzle, ClipboardList, Settings, X, Volume2 } from 'lucide-react'
 import { useGameStore } from '../store/gameStore'
 import { audioEngine } from '../audio/AudioEngine'
 import MascotRabbit from '../components/MascotRabbit'
