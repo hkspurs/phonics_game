@@ -24,14 +24,18 @@ class AudioEngine {
     this.bgmSource = null;
     this.playCallId = 0; // Prevent Race Conditions (Challenge 12)
 
-    // Handle background suspend/resume (Challenge 20)
-    document.addEventListener('visibilitychange', () => {
-      if (document.hidden) {
-        this.audioContext.suspend();
-      } else {
-        this.audioContext.resume();
+    // iOS Safari Fix: Do NOT manually suspend/resume on visibilitychange.
+    // iOS handles it natively. Manually resuming without user gesture breaks the context.
+    
+    // Global unlocker: Ensure context wakes up on next tap if it was suspended (e.g. returning from background)
+    const unlockAudio = () => {
+      if (this.audioContext.state === 'suspended' || this.audioContext.state === 'interrupted') {
+        this.audioContext.resume().catch(() => {});
       }
-    });
+    };
+    
+    document.addEventListener('touchstart', unlockAudio, { passive: true });
+    document.addEventListener('click', unlockAudio, { passive: true });
   }
 
   async _loadBuffer(url, retries = 2) {
