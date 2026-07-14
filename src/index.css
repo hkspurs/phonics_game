@@ -256,3 +256,4 @@ body {
     z-index: 9999;
   }
 }
+\n.hide-scrollbar::-webkit-scrollbar { display: none; }\n.hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }

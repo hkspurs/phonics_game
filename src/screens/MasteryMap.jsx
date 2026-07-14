@@ -186,8 +186,8 @@ export default function MasteryMap() {
         position: 'relative', width: '100%', flex: 1, marginTop: '1rem', 
         border: '6px solid #fcd34d', borderRadius: '32px', overflowX: 'auto', overflowY: 'auto', 
         background: 'linear-gradient(to bottom, #dbeafe, #fef3c7)',
-        boxShadow: 'inset 0 0 20px rgba(0,0,0,0.05)' 
-      }}>
+        boxShadow: 'inset 0 0 20px rgba(0,0,0,0.05)'
+      }} className="hide-scrollbar">
         
         {/* Absolute Canvas */}
         <div style={{ position: 'relative', width: `${MAP_WIDTH}px`, height: `${MAP_HEIGHT}px`, opacity: isSwapping ? 0 : 1, transform: isSwapping ? 'translateY(10px)' : 'none', transition: 'opacity 0.2s, transform 0.2s' }}>
@@ -262,7 +262,7 @@ export default function MasteryMap() {
                   top: '42%', left: '50%', transform: 'translate(-50%, -50%)',
                   fontSize: '1.4rem', fontWeight: 'bold', pointerEvents: 'none',
                   color: node.status === 'locked' ? '#94A3B8' : '#6b21a8',
-                  display: 'flex', alignItems: 'center', gap: '0.2rem'
+                  display: 'flex', alignItems: 'center', gap: '0.2rem', zIndex: 2
                 }}>
                   {node.id}
                   {node.status === 'weak' && <span style={{ fontSize: '1rem' }}>🏋️‍♂️</span>}

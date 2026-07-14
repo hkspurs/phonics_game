@@ -149,10 +149,12 @@ export default function MathMasteryMap() {
           50% { box-shadow: 0 8px 0 #8b5cf6, 0 0 0 20px rgba(139, 92, 246, 0); transform: translateY(-4px) scale(1.05); }
           100% { box-shadow: 0 8px 0 #8b5cf6, 0 0 0 0px rgba(139, 92, 246, 0); transform: translateY(-4px) scale(1); }
         }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
       `}</style>
 
       {/* Scrollable Map Area */}
-      <div style={{ 
+      <div className="hide-scrollbar" style={{ 
         position: 'relative', width: '100%', flex: 1, marginTop: '1rem', 
         border: '6px solid #fcd34d', borderRadius: '32px', overflowX: 'auto', overflowY: 'auto', 
         background: 'linear-gradient(to bottom, #dbeafe, #fef3c7)',
@@ -220,7 +222,7 @@ export default function MathMasteryMap() {
                     position: 'absolute',
                     top: '40%', left: '50%', transform: 'translate(-50%, -50%)',
                     fontSize: '2rem', pointerEvents: 'none',
-                    filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.2))'
+                    filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.2))', zIndex: 2
                   }}>
                     {SKILL_EMOJIS[node.id]}
                   </div>
