@@ -93,9 +93,30 @@ export const createMathSlice = (set, get) => ({
     if (skillRecent.length > 20) skillRecent.shift();
     recentAttempts[skillId] = skillRecent;
 
+    // Evaluate unlocks based on new stats
+    const flatCurriculum = mathCurriculum.flatMap(u => u.skills);
+    let newUnlockedSkillIds = [...state.math.unlockedSkillIds];
+    
+    newUnlockedSkillIds.forEach(id => {
+      const s = id === skillId ? newStats : state.math.learningStats[id];
+      if (s && s.attempts >= 3) {
+        const accuracy = s.firstAttemptHits / s.attempts;
+        if (accuracy >= 0.4) {
+          const currentIndex = flatCurriculum.indexOf(id);
+          if (currentIndex !== -1 && currentIndex + 1 < flatCurriculum.length) {
+            const nextSkill = flatCurriculum[currentIndex + 1];
+            if (!newUnlockedSkillIds.includes(nextSkill)) {
+              newUnlockedSkillIds.push(nextSkill);
+            }
+          }
+        }
+      }
+    });
+
     return {
       math: {
         ...state.math,
+        unlockedSkillIds: newUnlockedSkillIds,
         learningStats: {
           ...state.math.learningStats,
           [skillId]: newStats,
