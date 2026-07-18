@@ -45,6 +45,13 @@ describe('SimpleWords', () => {
     expect(screen.getByText('1 / 16')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Submit / 確定' })).toBeDisabled();
 
+    audioEngine.playAudioById.mockClear();
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'Play word' }));
+      await Promise.resolve();
+    });
+    expect(audioEngine.playAudioById).toHaveBeenCalledWith('WORD_BUS_01');
+
     for (const letter of 'ZZZ') {
       fireEvent.click(screen.getByRole('button', { name: letter }));
     }
@@ -69,5 +76,12 @@ describe('SimpleWords', () => {
 
     expect(screen.getByRole('heading', { name: 'Simple Word Complete!' })).toBeInTheDocument();
     expect(screen.getByText('First try: 15 / 16')).toBeInTheDocument();
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'Play Again' }));
+      await Promise.resolve();
+    });
+    expect(screen.getByText('1 / 16')).toBeInTheDocument();
+    expect(screen.getByLabelText('Current answer: empty')).toBeInTheDocument();
   });
 });
