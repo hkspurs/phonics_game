@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { existsSync } from 'node:fs';
 import { resolve } from 'node:path';
 import audioManifest from '../../data/audio_manifest.json';
+import { SIMPLE_WORDS, shuffleWords } from './simpleWords';
 
 const EXPECTED_WORDS = [
   'BUS', 'COT', 'DIG', 'FOG',
@@ -27,5 +28,19 @@ describe('Simple Word audio corpus', () => {
       expect(clip.sourceEndMs).toBeGreaterThan(clip.sourceStartMs);
       expect(existsSync(resolve('public', clip.file))).toBe(true);
     }
+  });
+});
+
+describe('Simple Word queue', () => {
+  it('loads all words and shuffles a copy deterministically', () => {
+    expect(SIMPLE_WORDS.map((item) => item.word)).toEqual(EXPECTED_WORDS);
+
+    const original = SIMPLE_WORDS.slice(0, 4);
+    const random = () => 0;
+    const shuffled = shuffleWords(original, random);
+
+    expect(shuffled.map((item) => item.word)).toEqual(['COT', 'DIG', 'FOG', 'BUS']);
+    expect(original.map((item) => item.word)).toEqual(['BUS', 'COT', 'DIG', 'FOG']);
+    expect(new Set(shuffleWords(SIMPLE_WORDS).map((item) => item.id)).size).toBe(16);
   });
 });
