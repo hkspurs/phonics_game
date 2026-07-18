@@ -20,10 +20,18 @@ const WORDS = [
   'RED', 'SUM', 'TUG', 'VET',
 ];
 
+function deferred() {
+  let resolve;
+  const promise = new Promise((done) => { resolve = done; });
+  return { promise, resolve };
+}
+
 describe('SimpleWords', () => {
   beforeEach(() => {
     vi.useFakeTimers();
     vi.spyOn(Math, 'random').mockReturnValue(0.999999);
+    vi.clearAllMocks();
+    audioEngine.playAudioById.mockResolvedValue(true);
   });
 
   afterEach(() => {
@@ -83,5 +91,30 @@ describe('SimpleWords', () => {
     });
     expect(screen.getByText('1 / 16')).toBeInTheDocument();
     expect(screen.getByLabelText('Current answer: empty')).toBeInTheDocument();
+  });
+
+  it('keeps replay available without enabling input for a stale audio request', async () => {
+    const firstPlay = deferred();
+    const replay = deferred();
+    audioEngine.playAudioById
+      .mockReturnValueOnce(firstPlay.promise)
+      .mockReturnValueOnce(replay.promise);
+
+    render(
+      <MemoryRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+        <SimpleWords />
+      </MemoryRouter>,
+    );
+
+    const playButton = screen.getByRole('button', { name: 'Play word' });
+    expect(playButton).toBeEnabled();
+    fireEvent.click(playButton);
+    expect(audioEngine.playAudioById).toHaveBeenCalledTimes(2);
+
+    await act(async () => firstPlay.resolve(true));
+    expect(screen.getByRole('button', { name: 'A' })).toBeDisabled();
+
+    await act(async () => replay.resolve(true));
+    expect(screen.getByRole('button', { name: 'A' })).toBeEnabled();
   });
 });

@@ -120,6 +120,7 @@ class AudioEngine {
   }
 
   stop() {
+    this.playCallId += 1;
     if (this.currentSource) {
       this.currentSource.onended = null;
       try { this.currentSource.stop(); } catch (e) {}
@@ -206,11 +207,14 @@ class AudioEngine {
       return false;
     }
 
+    const requestId = ++this.playCallId;
+
     // Try playing the file
     if (item.file) {
       const url = import.meta.env.BASE_URL + item.file; // respect Vite base URL for Github Pages
       try {
         const buffer = await this._loadBuffer(url, 0); // 0 retries to fail fast for fallback
+        if (this.playCallId !== requestId) return false;
         if (buffer) {
           const { startTimeMs = 0, durationMs = 0, playbackRate = 1.0 } = options;
           await this.play(url, startTimeMs, durationMs, playbackRate);
@@ -220,6 +224,8 @@ class AudioEngine {
         console.warn(`[AudioEngine] Failed to load MP3 for ${audioId}:`, e);
       }
     }
+
+    if (this.playCallId !== requestId) return false;
 
     // File missing or failed to load. Use fallback?
     if (item.type === 'instruction' || item.type === 'feedback') {

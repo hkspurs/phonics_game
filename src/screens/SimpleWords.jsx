@@ -9,6 +9,7 @@ import { SIMPLE_WORDS, shuffleWords } from '../game/simpleWords';
 export default function SimpleWords() {
   const navigate = useNavigate();
   const timerRef = useRef();
+  const playRequestRef = useRef(0);
   const [queue, setQueue] = useState(() => shuffleWords(SIMPLE_WORDS));
   const [index, setIndex] = useState(0);
   const [typed, setTyped] = useState('');
@@ -22,16 +23,21 @@ export default function SimpleWords() {
 
   const playCurrent = useCallback(async () => {
     if (!current) return;
+    const requestId = ++playRequestRef.current;
     setIsPlaying(true);
     setAudioFailed(false);
     const played = await audioEngine.playAudioById(current.id);
+    if (playRequestRef.current !== requestId) return;
     setAudioFailed(!played);
     setIsPlaying(false);
   }, [current]);
 
   useEffect(() => {
     if (!complete) playCurrent();
-    return () => audioEngine.stop();
+    return () => {
+      playRequestRef.current += 1;
+      audioEngine.stop();
+    };
   }, [complete, playCurrent]);
 
   useEffect(() => () => clearTimeout(timerRef.current), []);
@@ -120,7 +126,7 @@ export default function SimpleWords() {
         aria-label="Play word"
         className="btn-primary"
         onClick={playCurrent}
-        disabled={isPlaying}
+        aria-busy={isPlaying}
         style={{ width: 104, height: 104, borderRadius: '50%', justifyContent: 'center', padding: 0 }}
       >
         <Volume2 size={52} />
