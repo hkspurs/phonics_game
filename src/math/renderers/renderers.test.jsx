@@ -57,14 +57,14 @@ describe('Math Renderers', () => {
     render(<OrderingQuestion question={question} onAnswer={onAnswer} />);
     
     // Click 'Check' with wrong order
-    fireEvent.click(screen.getByText('檢查答案'));
+    fireEvent.click(screen.getByText('Check'));
     expect(onAnswer).toHaveBeenCalledWith(false, 1);
     
     // Simulate swap (mocked)
     fireEvent.click(screen.getByTestId('reorder-group'));
     
     // Check answer again
-    fireEvent.click(screen.getByText('檢查答案'));
+    fireEvent.click(screen.getByText('Check'));
     expect(onAnswer).toHaveBeenCalledWith(true, 2);
   });
 
