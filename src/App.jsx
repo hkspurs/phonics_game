@@ -18,6 +18,7 @@ import ParentDashboard from './screens/ParentDashboard'
 import TrainingGym from './screens/TrainingGym'
 import BubbleChallenge from './screens/BubbleChallenge'
 import Shop from './screens/Shop'
+import SimpleWords from './screens/SimpleWords'
 import MascotRabbit from './components/MascotRabbit'
 
 import { useGameStore } from './store/gameStore'
@@ -110,6 +111,7 @@ function App() {
       <Routes>
         <Route path="/" element={<SubjectGateway />} />
         <Route path="/phonics" element={<HomeDashboard />} />
+        <Route path="/simple-words" element={<SimpleWords />} />
         <Route path="/math" element={<MathHome />} />
         <Route path="/math/map" element={<MathMasteryMap />} />
         <Route path="/math/daily" element={<MathDailyChallenge />} />
@@ -140,4 +142,3 @@ function App() {
 }
 
 export default App
-

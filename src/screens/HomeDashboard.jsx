@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Map, Play, Trophy, Puzzle, ClipboardList, Settings, X, Volume2, ShoppingCart } from 'lucide-react'
+import { Map, Play, Trophy, Puzzle, ClipboardList, Settings, X, Volume2, ShoppingCart, SpellCheck } from 'lucide-react'
 import { useGameStore } from '../store/gameStore'
 import { audioEngine } from '../audio/AudioEngine'
 import MascotRabbit from '../components/MascotRabbit'
@@ -193,6 +193,10 @@ export default function HomeDashboard() {
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '2rem', marginTop: '4rem', justifyContent: 'center' }}>
         <button className="btn-secondary" onClick={() => { audioEngine.playUI('pop'); navigate('/map'); }}>
           <Map size={24} /> {t('soundMap')}
+        </button>
+
+        <button className="btn-secondary" onClick={() => { audioEngine.playUI('pop'); navigate('/simple-words'); }}>
+          <SpellCheck size={24} /> {t('simpleWord')}
         </button>
         
         {/* Super Bubble Challenge */}
