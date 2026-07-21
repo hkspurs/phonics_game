@@ -1465,7 +1465,7 @@
     "generatedBy": "teacher_recording",
     "qaStatus": "pass",
     "sourceFile": "videos/a8be0b54-8ab9-4f84-aec3-02b0beaa561e.mov",
-    "sourceStartMs": 32450,
+    "sourceStartMs": 32810,
     "sourceEndMs": 33550,
     "qaNotes": ["Final blended word extracted from teacher video; split phonemes excluded."]
   },
@@ -1480,7 +1480,7 @@
     "generatedBy": "teacher_recording",
     "qaStatus": "pass",
     "sourceFile": "videos/a8be0b54-8ab9-4f84-aec3-02b0beaa561e.mov",
-    "sourceStartMs": 36210,
+    "sourceStartMs": 36500,
     "sourceEndMs": 37160,
     "qaNotes": ["Final blended word extracted from teacher video; split phonemes excluded."]
   },
@@ -1495,7 +1495,7 @@
     "generatedBy": "teacher_recording",
     "qaStatus": "pass",
     "sourceFile": "videos/a8be0b54-8ab9-4f84-aec3-02b0beaa561e.mov",
-    "sourceStartMs": 39870,
+    "sourceStartMs": 40190,
     "sourceEndMs": 40940,
     "qaNotes": ["Final blended word extracted from teacher video; split phonemes excluded."]
   },
@@ -1510,7 +1510,7 @@
     "generatedBy": "teacher_recording",
     "qaStatus": "pass",
     "sourceFile": "videos/a8be0b54-8ab9-4f84-aec3-02b0beaa561e.mov",
-    "sourceStartMs": 43680,
+    "sourceStartMs": 43970,
     "sourceEndMs": 44750,
     "qaNotes": ["Final blended word extracted from teacher video; split phonemes excluded."]
   },
@@ -1555,7 +1555,7 @@
     "generatedBy": "teacher_recording",
     "qaStatus": "pass",
     "sourceFile": "videos/a8be0b54-8ab9-4f84-aec3-02b0beaa561e.mov",
-    "sourceStartMs": 55400,
+    "sourceStartMs": 55720,
     "sourceEndMs": 56480,
     "qaNotes": ["Final blended word extracted from teacher video; split phonemes excluded."]
   },
