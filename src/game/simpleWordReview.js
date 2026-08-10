@@ -1,6 +1,12 @@
 export const SIMPLE_WORD_SESSION_SIZE = 16;
 export const DAY_MS = 86400000;
 
+export function calculateSimpleWordGems(firstTryHits, totalWords) {
+  const total = Math.max(0, Math.floor(Number(totalWords) || 0));
+  const hits = Math.max(0, Math.min(total, Math.floor(Number(firstTryHits) || 0)));
+  return hits + (total > 0 && hits === total ? 2 : 0);
+}
+
 export function updateSimpleWordStats(previous = {}, firstTry, hintLevel = 0, now = Date.now()) {
   const attempts = (previous.attempts || 0) + 1;
   const firstTryHits = (previous.firstTryHits || 0) + (firstTry ? 1 : 0);
@@ -37,13 +43,4 @@ export function buildSimpleWordQueue(words, stats = {}, random = Math.random, no
 
   const ordered = buckets.flatMap((bucket) => shuffle(bucket, random));
   return ordered.slice(0, Math.min(size, ordered.length));
-}
-
-export function scheduleDelayedReview(queue, index) {
-  if (index >= queue.length - 3) return [...queue];
-  const result = [...queue];
-  const word = result[index];
-  result.splice(index + 3, 0, word);
-  result.pop();
-  return result;
 }

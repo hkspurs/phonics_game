@@ -120,6 +120,12 @@ describe('gameStore baseline — existing Phonics behaviour', () => {
     });
   });
 
+  it('awards Simple Word gems from first-try answers', () => {
+    useGameStore.setState({ gems: 12 });
+    useGameStore.getState().awardSimpleWordGems(15, 16);
+    expect(useGameStore.getState().gems).toBe(27);
+  });
+
   it('getNodeStatus returns correct states', () => {
     // Current node
     useGameStore.setState({ currentNode: 'IB', gameComplete: false });
@@ -141,10 +147,10 @@ describe('gameStore baseline — existing Phonics behaviour', () => {
     expect(state.tickets).toBe(2);
   });
 
-  it('persistence version is 5', () => {
+  it('persistence version is 6', () => {
     // Verify that the current persistence version has not changed unexpectedly
     const options = useGameStore.persist.getOptions();
-    expect(options.version).toBe(5);
+    expect(options.version).toBe(6);
   });
 
   it('partialize preserves all expected fields', () => {
@@ -158,12 +164,35 @@ describe('gameStore baseline — existing Phonics behaviour', () => {
       'learningStats', 'unlockedSounds', 'currentNode',
       'gameComplete', 'hasCompletedDaily', 'lastPlayedDate',
       'activeAssignment', 'refresherMode', 'preRefresherState',
-      'currentChapter', 'selectedSubject', 'math'
+      'currentChapter', 'selectedSubject', 'math',
+      'inventory', 'equipped'
     ];
     for (const field of requiredFields) {
       expect(partialState).toHaveProperty(field);
     }
     expect(partialState).toHaveProperty('simpleWordStats');
+
+    useGameStore.setState({
+      inventory: ['hat_wizard'],
+      equipped: { hat: 'hat_wizard' },
+    });
+    const marketState = options.partialize(useGameStore.getState());
+    expect(marketState.inventory).toEqual(['hat_wizard']);
+    expect(marketState.equipped).toEqual({ hat: 'hat_wizard' });
+  });
+
+  it('migration restores market purchases and initializes missing market state', () => {
+    const options = useGameStore.persist.getOptions();
+    const migrated = options.migrate({ stars: 10 }, 5);
+    expect(migrated.inventory).toEqual([]);
+    expect(migrated.equipped).toEqual({});
+
+    const existing = options.migrate({
+      inventory: ['hat_wizard'],
+      equipped: { hat: 'hat_wizard' },
+    }, 5);
+    expect(existing.inventory).toEqual(['hat_wizard']);
+    expect(existing.equipped).toEqual({ hat: 'hat_wizard' });
   });
 
   it('migration from version 0/1 sets activeAssignment to null', () => {

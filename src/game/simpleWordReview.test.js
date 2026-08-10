@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   buildSimpleWordQueue,
-  scheduleDelayedReview,
+  calculateSimpleWordGems,
   updateSimpleWordStats,
 } from './simpleWordReview';
 
@@ -39,10 +39,9 @@ describe('Simple Word review scheduling', () => {
     expect(queue.map((item) => item.word)).toEqual(['BAD', 'BUS', 'COT', 'DIG']);
   });
 
-  it('puts a wrong word back after two other questions without growing the session', () => {
-    const queue = scheduleDelayedReview(WORDS, 0);
-
-    expect(queue).toHaveLength(4);
-    expect(queue.map((item) => item.word)).toEqual(['BAD', 'BUS', 'COT', 'BAD']);
+  it('awards one gem per first-try answer and a perfect-session bonus', () => {
+    expect(calculateSimpleWordGems(0, 16)).toBe(0);
+    expect(calculateSimpleWordGems(15, 16)).toBe(15);
+    expect(calculateSimpleWordGems(16, 16)).toBe(18);
   });
 });

@@ -4,7 +4,7 @@ import { questionEngine } from '../game/QuestionEngine';
 import { createMathSlice, MATH_DEFAULTS } from './mathSlice';
 import { createAnalyticsSlice } from './analyticsSlice';
 import { createEncouragementSlice } from './encouragementSlice';
-import { updateSimpleWordStats } from '../game/simpleWordReview';
+import { calculateSimpleWordGems, updateSimpleWordStats } from '../game/simpleWordReview';
 
 export const useGameStore = create(
   persist(
@@ -205,6 +205,9 @@ export const useGameStore = create(
           ...(state.simpleWordStats || {}),
           [wordId]: updateSimpleWordStats(state.simpleWordStats?.[wordId], firstTry, hintLevel, now),
         },
+      })),
+      awardSimpleWordGems: (firstTryHits, totalWords) => set((state) => ({
+        gems: state.gems + calculateSimpleWordGems(firstTryHits, totalWords),
       })),
       useTicket: () => set((state) => ({ tickets: Math.max(0, state.tickets - 1) })),
       addTicket: () => set((state) => ({ tickets: state.tickets + 1 })),
@@ -420,7 +423,7 @@ export const useGameStore = create(
     }),
     {
       name: 'phonics-game-storage',
-      version: 5, // Add independent Simple Word review stats
+      version: 6, // Persist Shop inventory and equipped items
       migrate: (persistedState, version) => {
         if (!persistedState || typeof persistedState !== 'object') return {}; // Prevent hydration poisoning
         
@@ -463,6 +466,12 @@ export const useGameStore = create(
         if (!state.simpleWordStats) {
           state.simpleWordStats = {};
         }
+        if (!Array.isArray(state.inventory)) {
+          state.inventory = [];
+        }
+        if (!state.equipped || typeof state.equipped !== 'object') {
+          state.equipped = {};
+        }
         
         return state;
       },
@@ -473,6 +482,8 @@ export const useGameStore = create(
         streak: state.streak,
         learningStats: state.learningStats,
         simpleWordStats: state.simpleWordStats,
+        inventory: state.inventory,
+        equipped: state.equipped,
         unlockedSounds: state.unlockedSounds,
         currentNode: state.currentNode,
         gameComplete: state.gameComplete,

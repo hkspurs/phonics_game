@@ -5,6 +5,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import SimpleWords from './SimpleWords';
 import { audioEngine } from '../audio/AudioEngine';
 import { SIMPLE_WORDS } from '../game/simpleWords';
+import { useGameStore } from '../store/gameStore';
 
 vi.mock('../audio/AudioEngine', () => ({
   audioEngine: {
@@ -26,6 +27,7 @@ describe('SimpleWords', () => {
     vi.spyOn(Math, 'random').mockReturnValue(0.999999);
     vi.clearAllMocks();
     audioEngine.playAudioById.mockResolvedValue(true);
+    useGameStore.setState(useGameStore.getInitialState());
   });
 
   afterEach(() => {
@@ -67,10 +69,10 @@ describe('SimpleWords', () => {
     expect(screen.getByText('1 / 16')).toBeInTheDocument();
 
     const remainingWords = [
-      'BUS', 'COT', 'DIG', 'BUS', 'FOG',
+      'BUS', 'COT', 'DIG', 'FOG',
       'GOD', 'HIT', 'JET', 'KEN',
       'LIP', 'MET', 'NUT', 'POT',
-      'RED', 'SUM', 'TUG',
+      'RED', 'SUM', 'TUG', 'VET',
     ];
     for (const word of remainingWords) {
       for (const letter of word) {
@@ -84,6 +86,7 @@ describe('SimpleWords', () => {
 
     expect(screen.getByRole('heading', { name: 'Simple Word Complete!' })).toBeInTheDocument();
     expect(screen.getByText('First try: 15 / 16')).toBeInTheDocument();
+    expect(screen.getByText('Earned: +15 💎')).toBeInTheDocument();
 
     await act(async () => {
       fireEvent.click(screen.getByRole('button', { name: 'Play Again' }));

@@ -5,13 +5,14 @@ import { audioEngine } from '../audio/AudioEngine';
 import MascotRabbit from '../components/MascotRabbit';
 import VirtualKeyboard from '../components/VirtualKeyboard';
 import { SIMPLE_WORDS } from '../game/simpleWords';
-import { buildSimpleWordQueue, scheduleDelayedReview } from '../game/simpleWordReview';
+import { buildSimpleWordQueue, calculateSimpleWordGems } from '../game/simpleWordReview';
 import { useGameStore } from '../store/gameStore';
 
 export default function SimpleWords() {
   const navigate = useNavigate();
   const simpleWordStats = useGameStore((state) => state.simpleWordStats);
   const recordSimpleWordAnswer = useGameStore((state) => state.recordSimpleWordAnswer);
+  const awardSimpleWordGems = useGameStore((state) => state.awardSimpleWordGems);
   const timerRef = useRef();
   const playRequestRef = useRef(0);
   const [queue, setQueue] = useState(() => buildSimpleWordQueue(SIMPLE_WORDS, simpleWordStats));
@@ -20,6 +21,7 @@ export default function SimpleWords() {
   const [feedback, setFeedback] = useState('idle');
   const [wrongAttempts, setWrongAttempts] = useState(0);
   const [firstAttemptHits, setFirstAttemptHits] = useState(0);
+  const [earnedGems, setEarnedGems] = useState(0);
   const [complete, setComplete] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [audioFailed, setAudioFailed] = useState(false);
@@ -55,6 +57,7 @@ export default function SimpleWords() {
     setFeedback('idle');
     setWrongAttempts(0);
     setFirstAttemptHits(0);
+    setEarnedGems(0);
     setComplete(false);
   };
 
@@ -71,6 +74,7 @@ export default function SimpleWords() {
     if (typed.length !== 3 || feedback !== 'idle' || isPlaying) return;
     if (typed === current.word) {
       const firstTry = wrongAttempts === 0;
+      const nextFirstAttemptHits = firstAttemptHits + (firstTry ? 1 : 0);
       if (firstTry) setFirstAttemptHits((hits) => hits + 1);
       recordSimpleWordAnswer(current.id, firstTry, wrongAttempts);
       setFeedback('correct');
@@ -80,9 +84,11 @@ export default function SimpleWords() {
         setFeedback('idle');
         setWrongAttempts(0);
         if (index === queue.length - 1) {
+          const reward = calculateSimpleWordGems(nextFirstAttemptHits, queue.length);
+          awardSimpleWordGems(nextFirstAttemptHits, queue.length);
+          setEarnedGems(reward);
           setComplete(true);
         } else {
-          if (wrongAttempts > 0) setQueue(scheduleDelayedReview(queue, index));
           setIndex((value) => value + 1);
         }
       }, 650);
@@ -104,6 +110,7 @@ export default function SimpleWords() {
         <MascotRabbit feedbackState="correct" style={{ width: 220, height: 220 }} />
         <h1 style={{ color: '#1e3a8a', fontSize: 'clamp(2rem, 7vw, 3.5rem)' }}>Simple Word Complete!</h1>
         <p style={{ color: '#475569', fontSize: '1.5rem', fontWeight: 800 }}>First try: {firstAttemptHits} / 16</p>
+        <p style={{ color: '#0ea5e9', fontSize: '1.5rem', fontWeight: 800 }}>Earned: +{earnedGems} 💎</p>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', justifyContent: 'center' }}>
           <button className="btn-primary" onClick={restart}><RotateCcw /> Play Again</button>
           <button className="btn-secondary" onClick={() => navigate('/phonics')}><ArrowLeft /> Back to Phonics</button>
