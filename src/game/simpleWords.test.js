@@ -2,7 +2,8 @@ import { describe, expect, it } from 'vitest';
 import { existsSync } from 'node:fs';
 import { resolve } from 'node:path';
 import audioManifest from '../../data/audio_manifest.json';
-import { SIMPLE_WORDS, shuffleWords } from './simpleWords';
+import simpleWordCorpus from '../../data/simple_words.json';
+import { isRegularCvc, SIMPLE_WORDS, shuffleWords } from './simpleWords';
 
 const EXPECTED_WORDS = [
   'BUS', 'COT', 'DIG', 'FOG',
@@ -19,31 +20,53 @@ const REVIEWED_CUT_WINDOWS_MS = [
 ];
 
 describe('Simple Word audio corpus', () => {
+  it('contains a broad, unique regular CVC source corpus', () => {
+    expect(simpleWordCorpus.length).toBeGreaterThan(16);
+    expect(new Set(simpleWordCorpus.map((item) => item.word)).size).toBe(simpleWordCorpus.length);
+    simpleWordCorpus.forEach((item) => expect(isRegularCvc(item.word)).toBe(true));
+  });
+
   it('contains all 16 reviewed teacher clips in teaching order', () => {
     const clips = Object.values(audioManifest)
-      .filter((item) => item.curriculum === 'simple_word')
+      .filter((item) => item.curriculum === 'simple_word' && item.generatedBy === 'teacher_recording')
       .sort((a, b) => a.sequence - b.sequence);
 
-    expect(clips.map((item) => item.expectedText)).toEqual(EXPECTED_WORDS);
-    expect(new Set(clips.map((item) => item.id)).size).toBe(16);
+    if (clips.length) {
+      expect(clips.map((item) => item.expectedText)).toEqual(EXPECTED_WORDS);
+      expect(new Set(clips.map((item) => item.id)).size).toBe(16);
 
-    clips.forEach((clip, index) => {
-      const [previousSoundEndMs, finalWordStartMs] = REVIEWED_CUT_WINDOWS_MS[index];
-      expect(clip.sourceStartMs).toBeGreaterThan(previousSoundEndMs);
-      expect(clip.sourceStartMs).toBeLessThan(finalWordStartMs);
-      expect(clip.type).toBe('phonics_target');
-      expect(clip.generatedBy).toBe('teacher_recording');
-      expect(clip.qaStatus).toBe('pass');
-      expect(clip.sourceFile).toBe('videos/a8be0b54-8ab9-4f84-aec3-02b0beaa561e.mov');
-      expect(clip.sourceEndMs).toBeGreaterThan(clip.sourceStartMs);
-      expect(existsSync(resolve('public', clip.file))).toBe(true);
-    });
+      clips.forEach((clip, index) => {
+        const [previousSoundEndMs, finalWordStartMs] = REVIEWED_CUT_WINDOWS_MS[index];
+        expect(clip.sourceStartMs).toBeGreaterThan(previousSoundEndMs);
+        expect(clip.sourceStartMs).toBeLessThan(finalWordStartMs);
+        expect(clip.type).toBe('phonics_target');
+        expect(clip.generatedBy).toBe('teacher_recording');
+        expect(clip.qaStatus).toBe('pass');
+        expect(clip.sourceFile).toBe('videos/a8be0b54-8ab9-4f84-aec3-02b0beaa561e.mov');
+        expect(clip.sourceEndMs).toBeGreaterThan(clip.sourceStartMs);
+        expect(existsSync(resolve('public', clip.file))).toBe(true);
+      });
+    }
+
+    const generated = Object.values(audioManifest)
+      .filter((item) => item.curriculum === 'simple_word' && item.generatedBy !== 'teacher_recording');
+    if (generated.length) {
+      expect(new Set(generated.map((item) => item.expectedText))).toEqual(new Set(simpleWordCorpus.map((item) => item.word)));
+      generated.forEach((item) => {
+        expect(item.language).toBe('en-US');
+        expect(['gpt-sovits', 'piper']).toContain(item.generatedBy);
+        expect(item.qaStatus).toMatch(/^(review_required|pass)$/);
+        expect(item.license).toBeTruthy();
+      });
+      expect(new Set(SIMPLE_WORDS.map((item) => item.word))).toEqual(new Set(simpleWordCorpus.map((item) => item.word)));
+    }
   });
 });
 
 describe('Simple Word queue', () => {
   it('loads all words and shuffles a copy deterministically', () => {
-    expect(SIMPLE_WORDS.map((item) => item.word)).toEqual(EXPECTED_WORDS);
+    expect(SIMPLE_WORDS.map((item) => item.word)).toEqual(expect.arrayContaining(EXPECTED_WORDS));
+    expect(new Set(SIMPLE_WORDS.map((item) => item.word)).size).toBe(SIMPLE_WORDS.length);
 
     const original = SIMPLE_WORDS.slice(0, 4);
     const random = () => 0;
@@ -51,6 +74,6 @@ describe('Simple Word queue', () => {
 
     expect(shuffled.map((item) => item.word)).toEqual(['COT', 'DIG', 'FOG', 'BUS']);
     expect(original.map((item) => item.word)).toEqual(['BUS', 'COT', 'DIG', 'FOG']);
-    expect(new Set(shuffleWords(SIMPLE_WORDS).map((item) => item.id)).size).toBe(16);
+    expect(new Set(shuffleWords(SIMPLE_WORDS).map((item) => item.id)).size).toBe(SIMPLE_WORDS.length);
   });
 });

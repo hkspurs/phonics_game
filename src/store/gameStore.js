@@ -4,6 +4,7 @@ import { questionEngine } from '../game/QuestionEngine';
 import { createMathSlice, MATH_DEFAULTS } from './mathSlice';
 import { createAnalyticsSlice } from './analyticsSlice';
 import { createEncouragementSlice } from './encouragementSlice';
+import { updateSimpleWordStats } from '../game/simpleWordReview';
 
 export const useGameStore = create(
   persist(
@@ -33,6 +34,7 @@ export const useGameStore = create(
 
       // Learning Analytics State (QA FIX)
       learningStats: {}, // { 'AB': { attempts: 0, firstAttemptHits: 0, confusedWith: { 'EB': 2 } } }
+      simpleWordStats: {}, // { 'WORD_BUS_01': { attempts, firstTryHits, hintLevel, streak, nextDue } }
 
       // Current Challenge State
       activeQuestions: [],
@@ -53,6 +55,7 @@ export const useGameStore = create(
         currentNode: 'AB_01', // QA FIX: Use proper ID
         gameComplete: false,
         learningStats: {},
+        simpleWordStats: {},
         activeAssignment: null,
         hasCompletedDaily: false,
         lastPlayedDate: null,
@@ -196,6 +199,13 @@ export const useGameStore = create(
           phonicsMistakeHistory: newMistakeHistory
         };
       }),
+
+      recordSimpleWordAnswer: (wordId, firstTry, hintLevel = 0, now = Date.now()) => set((state) => ({
+        simpleWordStats: {
+          ...(state.simpleWordStats || {}),
+          [wordId]: updateSimpleWordStats(state.simpleWordStats?.[wordId], firstTry, hintLevel, now),
+        },
+      })),
       useTicket: () => set((state) => ({ tickets: Math.max(0, state.tickets - 1) })),
       addTicket: () => set((state) => ({ tickets: state.tickets + 1 })),
       
@@ -410,7 +420,7 @@ export const useGameStore = create(
     }),
     {
       name: 'phonics-game-storage',
-      version: 4, // Bumped for analytics & encouragements
+      version: 5, // Add independent Simple Word review stats
       migrate: (persistedState, version) => {
         if (!persistedState || typeof persistedState !== 'object') return {}; // Prevent hydration poisoning
         
@@ -450,6 +460,9 @@ export const useGameStore = create(
         if (!state.encouragements) {
           state.encouragements = [];
         }
+        if (!state.simpleWordStats) {
+          state.simpleWordStats = {};
+        }
         
         return state;
       },
@@ -459,6 +472,7 @@ export const useGameStore = create(
         tickets: state.tickets,
         streak: state.streak,
         learningStats: state.learningStats,
+        simpleWordStats: state.simpleWordStats,
         unlockedSounds: state.unlockedSounds,
         currentNode: state.currentNode,
         gameComplete: state.gameComplete,

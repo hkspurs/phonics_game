@@ -106,6 +106,20 @@ describe('gameStore baseline — existing Phonics behaviour', () => {
     expect(stats.confusedWith['EB']).toBe(1);
   });
 
+  it('records Simple Word stats independently with spaced review', () => {
+    const now = Date.parse('2026-08-10T00:00:00Z');
+    useGameStore.getState().recordSimpleWordAnswer('WORD_BUS_01', true, 0, now);
+    const state = useGameStore.getState();
+    expect(state.learningStats).toEqual({});
+    expect(state.simpleWordStats.WORD_BUS_01).toMatchObject({
+      attempts: 1,
+      firstTryHits: 1,
+      hintLevel: 0,
+      streak: 1,
+      nextDue: now + 86400000,
+    });
+  });
+
   it('getNodeStatus returns correct states', () => {
     // Current node
     useGameStore.setState({ currentNode: 'IB', gameComplete: false });
@@ -127,10 +141,10 @@ describe('gameStore baseline — existing Phonics behaviour', () => {
     expect(state.tickets).toBe(2);
   });
 
-  it('persistence version is 4', () => {
+  it('persistence version is 5', () => {
     // Verify that the current persistence version has not changed unexpectedly
     const options = useGameStore.persist.getOptions();
-    expect(options.version).toBe(4);
+    expect(options.version).toBe(5);
   });
 
   it('partialize preserves all expected fields', () => {
@@ -149,6 +163,7 @@ describe('gameStore baseline — existing Phonics behaviour', () => {
     for (const field of requiredFields) {
       expect(partialState).toHaveProperty(field);
     }
+    expect(partialState).toHaveProperty('simpleWordStats');
   });
 
   it('migration from version 0/1 sets activeAssignment to null', () => {

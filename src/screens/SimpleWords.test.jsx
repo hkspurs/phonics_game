@@ -4,6 +4,7 @@ import { MemoryRouter } from 'react-router-dom';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import SimpleWords from './SimpleWords';
 import { audioEngine } from '../audio/AudioEngine';
+import { SIMPLE_WORDS } from '../game/simpleWords';
 
 vi.mock('../audio/AudioEngine', () => ({
   audioEngine: {
@@ -12,13 +13,6 @@ vi.mock('../audio/AudioEngine', () => ({
     stop: vi.fn(),
   },
 }));
-
-const WORDS = [
-  'BUS', 'COT', 'DIG', 'FOG',
-  'GOD', 'HIT', 'JET', 'KEN',
-  'LIP', 'MET', 'NUT', 'POT',
-  'RED', 'SUM', 'TUG', 'VET',
-];
 
 function deferred() {
   let resolve;
@@ -46,7 +40,7 @@ describe('SimpleWords', () => {
       </MemoryRouter>,
     );
 
-    expect(audioEngine.playAudioById).toHaveBeenCalledWith('WORD_BUS_01');
+    expect(audioEngine.playAudioById).toHaveBeenCalledWith(SIMPLE_WORDS[0].id);
     await act(async () => {
       await Promise.resolve();
     });
@@ -58,7 +52,7 @@ describe('SimpleWords', () => {
       fireEvent.click(screen.getByRole('button', { name: 'Play word' }));
       await Promise.resolve();
     });
-    expect(audioEngine.playAudioById).toHaveBeenCalledWith('WORD_BUS_01');
+    expect(audioEngine.playAudioById).toHaveBeenCalledWith(SIMPLE_WORDS[0].id);
 
     for (const letter of 'ZZZ') {
       fireEvent.click(screen.getByRole('button', { name: letter }));
@@ -72,7 +66,13 @@ describe('SimpleWords', () => {
     expect(screen.getByLabelText('Current answer: empty')).toBeInTheDocument();
     expect(screen.getByText('1 / 16')).toBeInTheDocument();
 
-    for (const word of WORDS) {
+    const remainingWords = [
+      'BUS', 'COT', 'DIG', 'BUS', 'FOG',
+      'GOD', 'HIT', 'JET', 'KEN',
+      'LIP', 'MET', 'NUT', 'POT',
+      'RED', 'SUM', 'TUG',
+    ];
+    for (const word of remainingWords) {
       for (const letter of word) {
         fireEvent.click(screen.getByRole('button', { name: letter }));
       }
@@ -91,6 +91,38 @@ describe('SimpleWords', () => {
     });
     expect(screen.getByText('1 / 16')).toBeInTheDocument();
     expect(screen.getByLabelText('Current answer: empty')).toBeInTheDocument();
+  });
+
+  it('progresses from blanks to a partial hint to the full word', async () => {
+    render(
+      <MemoryRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+        <SimpleWords />
+      </MemoryRouter>,
+    );
+
+    await act(async () => {
+      await Promise.resolve();
+    });
+
+    for (const letter of 'ZZZ') fireEvent.click(screen.getByRole('button', { name: letter }));
+    fireEvent.click(screen.getByRole('button', { name: 'Submit / 確定' }));
+    await act(async () => vi.advanceTimersByTime(500));
+    expect(screen.getByLabelText('Hint: _ _ _')).toBeInTheDocument();
+
+    for (const letter of 'ZZZ') fireEvent.click(screen.getByRole('button', { name: letter }));
+    fireEvent.click(screen.getByRole('button', { name: 'Submit / 確定' }));
+    await act(async () => vi.advanceTimersByTime(500));
+    expect(screen.getByLabelText('Hint: BU _')).toBeInTheDocument();
+
+    for (const letter of 'ZZZ') fireEvent.click(screen.getByRole('button', { name: letter }));
+    fireEvent.click(screen.getByRole('button', { name: 'Submit / 確定' }));
+    await act(async () => vi.advanceTimersByTime(500));
+    expect(screen.getByLabelText('Hint: BUS')).toBeInTheDocument();
+
+    for (const letter of 'BUS') fireEvent.click(screen.getByRole('button', { name: letter }));
+    fireEvent.click(screen.getByRole('button', { name: 'Submit / 確定' }));
+    await act(async () => vi.advanceTimersByTime(700));
+    expect(screen.getByText('2 / 16')).toBeInTheDocument();
   });
 
   it('keeps replay available without enabling input for a stale audio request', async () => {

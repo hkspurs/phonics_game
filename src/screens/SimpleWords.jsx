@@ -4,17 +4,21 @@ import { useNavigate } from 'react-router-dom';
 import { audioEngine } from '../audio/AudioEngine';
 import MascotRabbit from '../components/MascotRabbit';
 import VirtualKeyboard from '../components/VirtualKeyboard';
-import { SIMPLE_WORDS, shuffleWords } from '../game/simpleWords';
+import { SIMPLE_WORDS } from '../game/simpleWords';
+import { buildSimpleWordQueue, scheduleDelayedReview } from '../game/simpleWordReview';
+import { useGameStore } from '../store/gameStore';
 
 export default function SimpleWords() {
   const navigate = useNavigate();
+  const simpleWordStats = useGameStore((state) => state.simpleWordStats);
+  const recordSimpleWordAnswer = useGameStore((state) => state.recordSimpleWordAnswer);
   const timerRef = useRef();
   const playRequestRef = useRef(0);
-  const [queue, setQueue] = useState(() => shuffleWords(SIMPLE_WORDS));
+  const [queue, setQueue] = useState(() => buildSimpleWordQueue(SIMPLE_WORDS, simpleWordStats));
   const [index, setIndex] = useState(0);
   const [typed, setTyped] = useState('');
   const [feedback, setFeedback] = useState('idle');
-  const [attempted, setAttempted] = useState(false);
+  const [wrongAttempts, setWrongAttempts] = useState(0);
   const [firstAttemptHits, setFirstAttemptHits] = useState(0);
   const [complete, setComplete] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -45,11 +49,11 @@ export default function SimpleWords() {
   const restart = () => {
     clearTimeout(timerRef.current);
     audioEngine.stop();
-    setQueue(shuffleWords(SIMPLE_WORDS));
+    setQueue(buildSimpleWordQueue(SIMPLE_WORDS, useGameStore.getState().simpleWordStats));
     setIndex(0);
     setTyped('');
     setFeedback('idle');
-    setAttempted(false);
+    setWrongAttempts(0);
     setFirstAttemptHits(0);
     setComplete(false);
   };
@@ -66,23 +70,26 @@ export default function SimpleWords() {
   const handleSubmit = () => {
     if (typed.length !== 3 || feedback !== 'idle' || isPlaying) return;
     if (typed === current.word) {
-      if (!attempted) setFirstAttemptHits((hits) => hits + 1);
+      const firstTry = wrongAttempts === 0;
+      if (firstTry) setFirstAttemptHits((hits) => hits + 1);
+      recordSimpleWordAnswer(current.id, firstTry, wrongAttempts);
       setFeedback('correct');
       audioEngine.playUI('correct');
       timerRef.current = setTimeout(() => {
         setTyped('');
         setFeedback('idle');
-        setAttempted(false);
+        setWrongAttempts(0);
         if (index === queue.length - 1) {
           setComplete(true);
         } else {
+          if (wrongAttempts > 0) setQueue(scheduleDelayedReview(queue, index));
           setIndex((value) => value + 1);
         }
       }, 650);
       return;
     }
 
-    setAttempted(true);
+    setWrongAttempts((attempts) => Math.min(3, attempts + 1));
     setFeedback('retry');
     timerRef.current = setTimeout(() => {
       setTyped('');
@@ -106,6 +113,11 @@ export default function SimpleWords() {
   }
 
   const disabled = feedback !== 'idle' || isPlaying;
+  const hint = wrongAttempts === 1
+    ? '_ _ _'
+    : wrongAttempts === 2
+      ? `${current.word.slice(0, 2)} _`
+      : wrongAttempts >= 3 ? current.word : null;
 
   return (
     <div className="screen-container" style={{ overflowY: 'auto', alignItems: 'center', background: 'linear-gradient(180deg, #dbeafe, #ecfeff)', padding: 'max(1rem, env(safe-area-inset-top)) 1rem max(1rem, env(safe-area-inset-bottom))' }}>
@@ -141,6 +153,12 @@ export default function SimpleWords() {
           </div>
         ))}
       </div>
+
+      {hint && (
+        <div aria-label={`Hint: ${hint}`} style={{ minHeight: 36, color: '#1d4ed8', fontSize: '1.35rem', fontWeight: 900, letterSpacing: '0.12em' }}>
+          Hint: {hint}
+        </div>
+      )}
 
       <div aria-live="polite" style={{ minHeight: 32, color: feedback === 'correct' ? '#15803d' : '#7c3aed', fontWeight: 900, fontSize: '1.2rem' }}>
         {feedback === 'correct' && '做得好！ 🎉'}
