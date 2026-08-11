@@ -13,6 +13,7 @@ describe('BlendingHub', () => {
     render(<MemoryRouter initialEntries={['/blending']}><BlendingHub /></MemoryRouter>);
     expect(screen.getAllByRole('heading', { name: 'Learn to Blend' })).toHaveLength(2);
     expect(screen.getByRole('heading', { name: 'Simple Word' })).toBeInTheDocument();
+    expect(screen.getByText('16 words')).toBeInTheDocument();
     expect(screen.getByTestId('adventure-world')).toBeInTheDocument();
     expect(screen.queryByText('英語拼音森林')).not.toBeInTheDocument();
   });

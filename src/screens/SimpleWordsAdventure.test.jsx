@@ -1,5 +1,5 @@
 import React from 'react';
-import { act, render, screen } from '@testing-library/react';
+import { act, fireEvent, render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import SimpleWords from './SimpleWords';
@@ -20,11 +20,13 @@ describe('SimpleWords adventure session', () => {
 
   afterEach(() => vi.restoreAllMocks());
 
-  it('offers a short CVC learning session while preserving the old route defaults', async () => {
+  it('offers a sixteen-question CVC level while preserving the adventure route', async () => {
     render(<MemoryRouter initialEntries={['/simple-words?mode=learn&adventure=1&sessionSize=5']}><SimpleWords /></MemoryRouter>);
     await act(async () => { await Promise.resolve(); });
+    fireEvent.click(screen.getByRole('button', { name: /Level 1/i }));
+    await act(async () => { await Promise.resolve(); });
     expect(screen.getByRole('heading', { name: 'Learn to Blend' })).toBeInTheDocument();
-    expect(screen.getByText('1 / 5')).toBeInTheDocument();
-    expect(screen.getByTestId('adventure-world')).toHaveTextContent('0/10');
+    expect(screen.getByText('1 / 16')).toBeInTheDocument();
+    expect(screen.getByTestId('adventure-world')).toHaveTextContent('0/16');
   });
 });
