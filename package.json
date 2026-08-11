@@ -13,6 +13,8 @@
     "test:coverage": "vitest run --coverage",
     "audio:simple:generate": "node scripts/generate-simple-word-audio.cjs",
     "audio:simple:qa": "node scripts/qa-simple-word-audio.cjs",
+    "audio:simple:blend:generate": "node scripts/generate-simple-word-blend-audio.cjs",
+    "audio:simple:blend:qa": "node scripts/qa-simple-word-blend-audio.cjs",
     "predeploy": "npm run build && cp dist/index.html dist/404.html",
     "deploy": "gh-pages -d dist"
   },

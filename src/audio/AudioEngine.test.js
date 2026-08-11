@@ -24,4 +24,12 @@ describe('AudioEngine cancellation', () => {
     await expect(pending).resolves.toBe(false);
     expect(play).not.toHaveBeenCalled();
   });
+
+  it('fails closed for missing phonics blend audio without TTS fallback', async () => {
+    vi.spyOn(audioEngine, '_loadBuffer').mockResolvedValue(null);
+    const fallback = vi.spyOn(audioEngine, '_playSpeechSynthesis');
+
+    await expect(audioEngine.playAudioById('BLEND_BUS_SLOW')).resolves.toBe(false);
+    expect(fallback).not.toHaveBeenCalled();
+  });
 });

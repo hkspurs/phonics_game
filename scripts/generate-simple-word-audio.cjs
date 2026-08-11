@@ -92,7 +92,7 @@ function createEntry(item, engine) {
     file,
     type: 'phonics_target',
     curriculum: 'simple_word',
-    language: 'en-US',
+    language: 'en-GB',
     expectedText: item.word,
     sequence: item.sequence,
     generatedBy: engine.name,

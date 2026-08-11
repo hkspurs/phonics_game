@@ -15,7 +15,7 @@ export default function HomeDashboard() {
   const [isEntering, setIsEntering] = useState(true);
   
   // Connect to global state
-  const { stars, gems, tickets, streak, unlockedSounds, startDailyChallenge, startBubbleChallenge, activeAssignment, hasCompletedDaily, checkDailyReset, setParentAuthenticated } = useGameStore()
+  const { stars, gems, tickets, streak, unlockedSounds, startDailyChallenge, startBubbleChallenge, activeAssignment, hasCompletedDaily, checkDailyReset, setParentAuthenticated, isParentAuthenticated } = useGameStore()
 
   useEffect(() => {
     checkDailyReset()
@@ -193,6 +193,18 @@ export default function HomeDashboard() {
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '2rem', marginTop: '4rem', justifyContent: 'center' }}>
         <button className="btn-secondary" onClick={() => { audioEngine.playUI('pop'); navigate('/map'); }}>
           <Map size={24} /> {t('soundMap')}
+        </button>
+
+        <button
+          className="btn-secondary"
+          onClick={() => { audioEngine.playUI('pop'); navigate('/simple-words?mode=learn'); }}
+          style={{ background: '#dbeafe', borderColor: '#60a5fa', color: '#1e3a8a' }}
+        >
+          <Volume2 size={24} />
+          <span>
+            {t('learnToBlend')}
+            <small style={{ display: 'block', fontSize: '0.75rem', marginTop: '0.15rem' }}>{t('learnToBlendHint')}</small>
+          </span>
         </button>
 
         <button className="btn-secondary" onClick={() => { audioEngine.playUI('pop'); navigate('/simple-words'); }}>

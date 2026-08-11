@@ -53,7 +53,7 @@ describe('Simple Word audio corpus', () => {
     if (generated.length) {
       expect(new Set(generated.map((item) => item.expectedText))).toEqual(new Set(simpleWordCorpus.map((item) => item.word)));
       generated.forEach((item) => {
-        expect(item.language).toBe('en-US');
+        expect(item.language).toBe('en-GB');
         expect(['gpt-sovits', 'piper']).toContain(item.generatedBy);
         expect(item.qaStatus).toMatch(/^(review_required|pass)$/);
         expect(item.license).toBeTruthy();

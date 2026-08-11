@@ -5,6 +5,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import SimpleWords from './SimpleWords';
 import { audioEngine } from '../audio/AudioEngine';
 import { SIMPLE_WORDS } from '../game/simpleWords';
+import { getBlendAudioId } from '../game/simpleWordLearning';
 import { useGameStore } from '../store/gameStore';
 
 vi.mock('../audio/AudioEngine', () => ({
@@ -151,5 +152,66 @@ describe('SimpleWords', () => {
 
     await act(async () => replay.resolve(true));
     expect(screen.getByRole('button', { name: 'A' })).toBeEnabled();
+  });
+
+  it('teaches a continuous blend before entering the spelling test', async () => {
+    render(
+      <MemoryRouter
+        initialEntries={['/simple-words?mode=learn']}
+        future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
+      >
+        <SimpleWords />
+      </MemoryRouter>,
+    );
+
+    expect(screen.getByRole('heading', { name: 'Learn to Blend' })).toBeInTheDocument();
+    const word = screen.getByTestId('learning-word').textContent;
+    expect(word).toMatch(/^[A-Z]{3}$/);
+    expect(audioEngine.playAudioById).toHaveBeenCalledWith(getBlendAudioId(word));
+    expect(screen.getByText(/Join the sounds/)).toBeInTheDocument();
+    await act(async () => {
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+    expect(audioEngine.playAudioById).toHaveBeenNthCalledWith(2, SIMPLE_WORDS.find((item) => item.word === word).id);
+
+    for (let index = 0; index < 16; index += 1) {
+      fireEvent.click(screen.getByRole('button', { name: index === 15 ? 'Start test' : 'Next word' }));
+      await act(async () => { await Promise.resolve(); });
+    }
+
+    expect(screen.getByRole('heading', { name: 'Test Your Blending' })).toBeInTheDocument();
+    expect(screen.getByText('1 / 16')).toBeInTheDocument();
+    expect(screen.queryByText(/First try:/)).not.toBeInTheDocument();
+  });
+
+  it('keeps a test word on screen after a wrong spelling', async () => {
+    render(
+      <MemoryRouter
+        initialEntries={['/simple-words?mode=learn']}
+        future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
+      >
+        <SimpleWords />
+      </MemoryRouter>,
+    );
+
+    await act(async () => {
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+
+    for (let index = 0; index < 16; index += 1) {
+      fireEvent.click(screen.getByRole('button', { name: index === 15 ? 'Start test' : 'Next word' }));
+      await act(async () => { await Promise.resolve(); });
+    }
+
+    const firstWord = screen.getByTestId('test-word').getAttribute('data-word');
+    for (const letter of 'ZZZ') fireEvent.click(screen.getByRole('button', { name: letter }));
+    fireEvent.click(screen.getByRole('button', { name: 'Submit / 確定' }));
+    expect(screen.getByTestId('test-word')).toHaveAttribute('data-word', firstWord);
+    expect(screen.getByText('差少少，再聽一次 🌟')).toBeInTheDocument();
+
+    await act(async () => { vi.advanceTimersByTime(500); });
+    expect(screen.getByText('1 / 16')).toBeInTheDocument();
   });
 });
