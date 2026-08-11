@@ -5,8 +5,10 @@ import audioManifest from '../../data/audio_manifest.json';
 import { SIMPLE_WORDS } from './simpleWords';
 import {
   buildBlendingSession,
+  buildBlendingTestSession,
   getBlendAudioId,
   getBlendPhonemes,
+  shuffleWordLetters,
 } from './simpleWordLearning';
 
 describe('Simple Word blending curriculum', () => {
@@ -39,5 +41,21 @@ describe('Simple Word blending curriculum', () => {
     expect(getBlendPhonemes('NUT')).toBe('[[nnnʌʌt]]');
     expect(getBlendPhonemes('CAT')).toBe('[[kææt]]');
     expect(getBlendPhonemes('DOG')).toBe('[[dɒɒɡ]]');
+  });
+
+  it('keeps transfer test words out of the learning set', () => {
+    const learning = buildBlendingSession(SIMPLE_WORDS, () => 0.999999, 16);
+    const test = buildBlendingTestSession(SIMPLE_WORDS, learning, () => 0.999999, 16);
+
+    expect(test).toHaveLength(16);
+    expect(new Set(test.map((item) => item.word)).size).toBe(16);
+    expect(test.some((item) => learning.some((learned) => learned.word === item.word))).toBe(false);
+  });
+
+  it('shuffles the graphemes while keeping every letter', () => {
+    const shuffled = shuffleWordLetters('NUT', () => 0.999999);
+
+    expect(shuffled.join('')).not.toBe('NUT');
+    expect([...shuffled].sort()).toEqual(['N', 'T', 'U'].sort());
   });
 });

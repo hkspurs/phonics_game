@@ -22,6 +22,26 @@ function deferred() {
   return { promise, resolve };
 }
 
+async function settleLearningAudio() {
+  await act(async () => {
+    await Promise.resolve();
+    await Promise.resolve();
+  });
+}
+
+async function assembleLearningWord() {
+  await settleLearningAudio();
+  const word = screen.getByTestId('learning-word').getAttribute('data-word');
+  for (const letter of word) {
+    const tile = screen.getAllByTestId('learning-letter').find((candidate) => (
+      candidate.getAttribute('data-letter') === letter && !candidate.disabled
+    ));
+    fireEvent.click(tile);
+  }
+  expect(screen.getByText('Great blending!')).toBeInTheDocument();
+  return word;
+}
+
 describe('SimpleWords', () => {
   beforeEach(() => {
     vi.useFakeTimers();
@@ -165,24 +185,50 @@ describe('SimpleWords', () => {
     );
 
     expect(screen.getByRole('heading', { name: 'Learn to Blend' })).toBeInTheDocument();
-    const word = screen.getByTestId('learning-word').textContent;
+    const word = screen.getByTestId('learning-word').getAttribute('data-word');
     expect(word).toMatch(/^[A-Z]{3}$/);
     expect(audioEngine.playAudioById).toHaveBeenCalledWith(getBlendAudioId(word));
     expect(screen.getByText(/Join the sounds/)).toBeInTheDocument();
-    await act(async () => {
-      await Promise.resolve();
-      await Promise.resolve();
-    });
+    expect(screen.getByRole('button', { name: 'Next word' })).toBeDisabled();
+    await settleLearningAudio();
     expect(audioEngine.playAudioById).toHaveBeenNthCalledWith(2, SIMPLE_WORDS.find((item) => item.word === word).id);
 
+    const learnedWords = new Set();
     for (let index = 0; index < 16; index += 1) {
+      learnedWords.add(await assembleLearningWord());
       fireEvent.click(screen.getByRole('button', { name: index === 15 ? 'Start test' : 'Next word' }));
-      await act(async () => { await Promise.resolve(); });
     }
 
+    await settleLearningAudio();
     expect(screen.getByRole('heading', { name: 'Test Your Blending' })).toBeInTheDocument();
     expect(screen.getByText('1 / 16')).toBeInTheDocument();
+    expect(learnedWords.has(screen.getByTestId('test-word').getAttribute('data-word'))).toBe(false);
     expect(screen.queryByText(/First try:/)).not.toBeInTheDocument();
+  });
+
+  it('does not advance until the child assembles the letters in order', async () => {
+    render(
+      <MemoryRouter
+        initialEntries={['/simple-words?mode=learn']}
+        future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
+      >
+        <SimpleWords />
+      </MemoryRouter>,
+    );
+
+    await settleLearningAudio();
+    const target = screen.getByTestId('learning-word').getAttribute('data-word');
+    const tiles = screen.getAllByTestId('learning-letter');
+    let wrongOrder = [...tiles].reverse();
+    if (wrongOrder.map((tile) => tile.getAttribute('data-letter')).join('') === target) {
+      wrongOrder = [wrongOrder[1], wrongOrder[0], wrongOrder[2]];
+    }
+    wrongOrder.forEach((tile) => fireEvent.click(tile));
+
+    expect(screen.getByText('Listen once more and try again 🌟')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Next word' })).toBeDisabled();
+    await act(async () => vi.advanceTimersByTime(500));
+    expect(screen.getByLabelText('Your blend: empty')).toBeInTheDocument();
   });
 
   it('keeps a test word on screen after a wrong spelling', async () => {
@@ -195,17 +241,15 @@ describe('SimpleWords', () => {
       </MemoryRouter>,
     );
 
-    await act(async () => {
-      await Promise.resolve();
-      await Promise.resolve();
-    });
-
+    const learnedWords = new Set();
     for (let index = 0; index < 16; index += 1) {
+      learnedWords.add(await assembleLearningWord());
       fireEvent.click(screen.getByRole('button', { name: index === 15 ? 'Start test' : 'Next word' }));
-      await act(async () => { await Promise.resolve(); });
     }
 
+    await settleLearningAudio();
     const firstWord = screen.getByTestId('test-word').getAttribute('data-word');
+    expect(learnedWords.has(firstWord)).toBe(false);
     for (const letter of 'ZZZ') fireEvent.click(screen.getByRole('button', { name: letter }));
     fireEvent.click(screen.getByRole('button', { name: 'Submit / 確定' }));
     expect(screen.getByTestId('test-word')).toHaveAttribute('data-word', firstWord);

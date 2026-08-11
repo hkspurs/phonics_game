@@ -6,12 +6,23 @@ import MascotRabbit from '../components/MascotRabbit';
 import VirtualKeyboard from '../components/VirtualKeyboard';
 import { SIMPLE_WORDS } from '../game/simpleWords';
 import { buildSimpleWordQueue, calculateSimpleWordGems } from '../game/simpleWordReview';
-import { buildBlendingSession, getBlendAudioId } from '../game/simpleWordLearning';
+import {
+  buildBlendingSession,
+  buildBlendingTestSession,
+  getBlendAudioId,
+  shuffleWordLetters,
+} from '../game/simpleWordLearning';
 import { useGameStore } from '../store/gameStore';
 
-function createQueue(learningMode, stats) {
+function createQueues(learningMode, stats) {
   const reviewedQueue = buildSimpleWordQueue(SIMPLE_WORDS, stats);
-  return learningMode ? buildBlendingSession(reviewedQueue, Math.random, 16) : reviewedQueue;
+  if (!learningMode) return { learningQueue: [], testQueue: reviewedQueue };
+
+  const learningQueue = buildBlendingSession(reviewedQueue, Math.random, 16);
+  return {
+    learningQueue,
+    testQueue: buildBlendingTestSession(SIMPLE_WORDS, learningQueue, Math.random, 16),
+  };
 }
 
 export default function SimpleWords() {
@@ -23,7 +34,7 @@ export default function SimpleWords() {
   const awardSimpleWordGems = useGameStore((state) => state.awardSimpleWordGems);
   const timerRef = useRef();
   const playRequestRef = useRef(0);
-  const [queue, setQueue] = useState(() => createQueue(learningMode, simpleWordStats));
+  const [queues, setQueues] = useState(() => createQueues(learningMode, simpleWordStats));
   const [stage, setStage] = useState(learningMode ? 'learn' : 'test');
   const [index, setIndex] = useState(0);
   const [typed, setTyped] = useState('');
@@ -34,7 +45,12 @@ export default function SimpleWords() {
   const [complete, setComplete] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [audioFailed, setAudioFailed] = useState(false);
+  const queue = learningMode && stage === 'learn' ? queues.learningQueue : queues.testQueue;
   const current = queue[index];
+  const [learningLetters, setLearningLetters] = useState(() => current ? shuffleWordLetters(current) : []);
+  const [selectedLearningTiles, setSelectedLearningTiles] = useState([]);
+  const [learningFeedback, setLearningFeedback] = useState('idle');
+  const learningAnswer = selectedLearningTiles.map((tileIndex) => learningLetters[tileIndex]).join('');
 
   const playAudioSequence = useCallback(async (audioIds) => {
     const requestId = ++playRequestRef.current;
@@ -72,13 +88,21 @@ export default function SimpleWords() {
     };
   }, [complete, current, playCurrent]);
 
+  useEffect(() => {
+    if (!learningMode || stage !== 'learn' || !current) return;
+    setLearningLetters(shuffleWordLetters(current));
+    setSelectedLearningTiles([]);
+    setLearningFeedback('idle');
+  }, [current, learningMode, stage]);
+
   useEffect(() => () => clearTimeout(timerRef.current), []);
 
   const restart = () => {
     clearTimeout(timerRef.current);
     playRequestRef.current += 1;
     audioEngine.stop();
-    setQueue(createQueue(learningMode, useGameStore.getState().simpleWordStats));
+    const nextQueues = createQueues(learningMode, useGameStore.getState().simpleWordStats);
+    setQueues(nextQueues);
     setStage(learningMode ? 'learn' : 'test');
     setIndex(0);
     setTyped('');
@@ -87,10 +111,13 @@ export default function SimpleWords() {
     setFirstAttemptHits(0);
     setEarnedGems(0);
     setComplete(false);
+    setLearningLetters(nextQueues.learningQueue[0] ? shuffleWordLetters(nextQueues.learningQueue[0]) : []);
+    setSelectedLearningTiles([]);
+    setLearningFeedback('idle');
   };
 
   const moveToNextLearningWord = () => {
-    if (isPlaying) return;
+    if (isPlaying || learningFeedback !== 'correct') return;
     setAudioFailed(false);
     if (index === queue.length - 1) {
       setStage('test');
@@ -98,6 +125,27 @@ export default function SimpleWords() {
     } else {
       setIndex((value) => value + 1);
     }
+  };
+
+  const handleLearningTile = (tileIndex) => {
+    if (stage !== 'learn' || isPlaying || learningFeedback !== 'idle' || selectedLearningTiles.includes(tileIndex)) return;
+
+    const nextTiles = [...selectedLearningTiles, tileIndex];
+    setSelectedLearningTiles(nextTiles);
+    if (nextTiles.length !== learningLetters.length) return;
+
+    const answer = nextTiles.map((selectedIndex) => learningLetters[selectedIndex]).join('');
+    if (answer === current.word) {
+      setLearningFeedback('correct');
+      audioEngine.playUI('correct');
+      return;
+    }
+
+    setLearningFeedback('retry');
+    timerRef.current = setTimeout(() => {
+      setSelectedLearningTiles([]);
+      setLearningFeedback('idle');
+    }, 450);
   };
 
   const handleKey = (key) => {
@@ -167,19 +215,38 @@ export default function SimpleWords() {
         </header>
         <MascotRabbit isListening={isPlaying} style={{ width: 160, height: 160, marginTop: '1rem' }} />
         <h1 style={{ color: '#1e3a8a', margin: 0, fontSize: 'clamp(2rem, 7vw, 3rem)' }}>Learn to Blend</h1>
-        <p style={{ color: '#475569', fontSize: '1.2rem', fontWeight: 800 }}>Listen → Join → Say</p>
-        <div data-testid="learning-word" style={{ color: '#1e3a8a', fontSize: 'clamp(3rem, 16vw, 6rem)', fontWeight: 900, letterSpacing: '0.18em', margin: '1rem 0' }}>
-          {current.word}
+        <p style={{ color: '#475569', fontSize: '1.2rem', fontWeight: 800 }}>Listen → Join → Build</p>
+        <div data-testid="learning-word" data-word={current.word} style={{ color: '#1e3a8a', fontSize: 'clamp(3rem, 16vw, 6rem)', fontWeight: 900, letterSpacing: '0.18em', margin: '1rem 0' }}>
+          {learningFeedback === 'correct' ? current.word : '___'}
         </div>
-        <div aria-label={`Sounds in ${current.word}`} style={{ display: 'flex', gap: '0.6rem', alignItems: 'center', marginBottom: '0.75rem' }}>
-          {current.word.split('').map((letter) => <span key={letter} style={{ minWidth: 64, minHeight: 64, display: 'grid', placeItems: 'center', borderRadius: 18, background: 'white', color: '#1d4ed8', border: '3px solid #93c5fd', fontSize: '2.5rem', fontWeight: 900 }}>{letter}</span>)}
+        <div aria-label={`Your blend: ${learningAnswer || 'empty'}`} style={{ display: 'flex', gap: '0.6rem', alignItems: 'center', marginBottom: '0.75rem' }}>
+          {[0, 1, 2].map((slot) => <span key={slot} style={{ minWidth: 64, minHeight: 64, display: 'grid', placeItems: 'center', borderRadius: 18, background: 'white', color: '#1d4ed8', border: '3px solid #93c5fd', fontSize: '2.5rem', fontWeight: 900 }}>{learningAnswer[slot] || ''}</span>)}
         </div>
-        <p style={{ color: '#2563eb', fontSize: '1.4rem', fontWeight: 900 }}>Join the sounds: {current.word.slice(0, 2)} + {current.word[2]}</p>
+        <p style={{ color: '#2563eb', fontSize: '1.4rem', fontWeight: 900 }}>Join the sounds, then build the word</p>
+        <div aria-label="Choose the letters in order" style={{ display: 'flex', gap: '0.75rem', marginBottom: '0.75rem' }}>
+          {learningLetters.map((letter, tileIndex) => (
+            <button
+              key={`${letter}-${tileIndex}`}
+              type="button"
+              data-testid="learning-letter"
+              data-letter={letter}
+              aria-label={`Choose letter ${letter}`}
+              aria-pressed={selectedLearningTiles.includes(tileIndex)}
+              disabled={isPlaying || learningFeedback !== 'idle' || selectedLearningTiles.includes(tileIndex)}
+              onClick={() => handleLearningTile(tileIndex)}
+              style={{ minWidth: 64, minHeight: 64, borderRadius: 18, background: selectedLearningTiles.includes(tileIndex) ? '#bfdbfe' : 'white', color: '#1d4ed8', border: '3px solid #60a5fa', fontSize: '2.5rem', fontWeight: 900, cursor: 'pointer' }}
+            >
+              {letter}
+            </button>
+          ))}
+        </div>
+        {learningFeedback === 'correct' && <p role="status" style={{ color: '#15803d', fontWeight: 900 }}>Great blending!</p>}
+        {learningFeedback === 'retry' && <p role="status" style={{ color: '#7c3aed', fontWeight: 900 }}>Listen once more and try again 🌟</p>}
         <button aria-label="Play blend" className="btn-primary" onClick={() => void playCurrent()} disabled={isPlaying} aria-busy={isPlaying} style={{ width: 104, height: 104, borderRadius: '50%', justifyContent: 'center', padding: 0 }}>
           <Volume2 size={52} />
         </button>
         {audioFailed && <p role="alert" style={{ color: '#b45309', fontWeight: 800 }}>Lesson audio is not installed correctly. Please check the blending audio pack.</p>}
-        <button className="btn-primary" onClick={moveToNextLearningWord} disabled={isPlaying} style={{ width: 'min(400px, 100%)', justifyContent: 'center', margin: '1.25rem 0' }}>
+        <button className="btn-primary" onClick={moveToNextLearningWord} disabled={isPlaying || learningFeedback !== 'correct'} style={{ width: 'min(400px, 100%)', justifyContent: 'center', margin: '1.25rem 0' }}>
           {index === queue.length - 1 ? 'Start test' : 'Next word'}
         </button>
       </div>

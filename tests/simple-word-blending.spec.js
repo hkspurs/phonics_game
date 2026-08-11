@@ -25,7 +25,9 @@ async function openLearnAndTest(page) {
   await expect(page).toHaveURL(/#\/simple-words\?mode=learn/);
   await expect(page.getByRole('heading', { name: 'Learn to Blend' })).toBeVisible();
 
+  const learnedWords = new Set();
   for (let index = 0; index < 16; index += 1) {
+    learnedWords.add(await assembleLearningWord(page));
     const nextLabel = index === 15 ? 'Start test' : 'Next word';
     const next = page.getByRole('button', { name: nextLabel });
     await expect(next).toBeEnabled({ timeout: 10000 });
@@ -33,6 +35,18 @@ async function openLearnAndTest(page) {
   }
 
   await expect(page.getByRole('heading', { name: 'Test Your Blending' })).toBeVisible();
+  return learnedWords;
+}
+
+async function assembleLearningWord(page) {
+  const word = await page.getByTestId('learning-word').getAttribute('data-word');
+  for (const letter of word) {
+    await page.locator(
+      `[data-testid="learning-letter"][data-letter="${letter}"]:not([disabled])`,
+    ).first().click();
+  }
+  await expect(page.getByText('Great blending!')).toBeVisible();
+  return word;
 }
 
 async function enterAnswer(page, word) {
@@ -55,7 +69,7 @@ test.describe('Simple Word continuous blending UAT', () => {
       if (request.url().includes('/assets/simple-words/')) audioRequests.push(request.url());
     });
 
-    await openLearnAndTest(page);
+    const learnedWords = await openLearnAndTest(page);
 
     const seenWords = new Set();
     for (let index = 0; index < 16; index += 1) {
@@ -63,6 +77,7 @@ test.describe('Simple Word continuous blending UAT', () => {
       const word = await testWord.getAttribute('data-word');
       expect(word).toHaveLength(3);
       expect(seenWords.has(word)).toBe(false);
+      expect(learnedWords.has(word)).toBe(false);
       seenWords.add(word);
 
       await enterAnswer(page, word);
