@@ -1,5 +1,7 @@
 import audioManifest from '../../data/audio_manifest.json';
 
+const FISH_AUDIO_CACHE_VERSION = 'fish-young-narrator-1';
+
 class AudioEngine {
   constructor() {
     this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
@@ -211,7 +213,10 @@ class AudioEngine {
 
     // Try playing the file
     if (item.file) {
-      const url = import.meta.env.BASE_URL + item.file; // respect Vite base URL for Github Pages
+      const cacheBust = item.generatedBy === 'fish-audio'
+        ? `?v=${FISH_AUDIO_CACHE_VERSION}`
+        : '';
+      const url = import.meta.env.BASE_URL + item.file + cacheBust; // respect Vite base URL for Github Pages
       try {
         const buffer = await this._loadBuffer(url, 0); // 0 retries to fail fast for fallback
         if (this.playCallId !== requestId) return false;
