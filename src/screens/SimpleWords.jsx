@@ -9,8 +9,10 @@ import { useTranslation } from '../hooks/useTranslation';
 import { SIMPLE_WORDS } from '../game/simpleWords';
 import { buildSimpleWordQueue, calculateSimpleWordGems } from '../game/simpleWordReview';
 import {
+  BLENDING_LEVELS,
   buildBlendingSession,
-  buildBlendingTestSession,
+  getLearningInputLength,
+  getLearningTarget,
   shuffleWordLetters,
 } from '../game/simpleWordLearning';
 import { useGameStore } from '../store/gameStore';
@@ -20,10 +22,7 @@ function createQueues(learningMode, stats, size = 16) {
   if (!learningMode) return { learningQueue: [], testQueue: reviewedQueue.slice(0, size) };
 
   const learningQueue = buildBlendingSession(reviewedQueue, Math.random, size);
-  return {
-    learningQueue,
-    testQueue: buildBlendingTestSession(SIMPLE_WORDS, learningQueue, Math.random, size),
-  };
+  return { learningQueue, testQueue: [] };
 }
 
 export default function SimpleWords() {
@@ -32,7 +31,7 @@ export default function SimpleWords() {
   const [searchParams] = useSearchParams();
   const learningMode = searchParams.get('mode') === 'learn';
   const adventureMode = searchParams.get('adventure') === '1';
-  const sessionSize = adventureMode
+  const sessionSize = learningMode ? 16 : adventureMode
     ? Math.max(1, Math.min(16, Number(searchParams.get('sessionSize')) || 5))
     : 16;
   const backDestination = adventureMode ? '/blending' : '/phonics';
@@ -44,6 +43,8 @@ export default function SimpleWords() {
   const playWordRef = useRef(null);
   const [queues, setQueues] = useState(() => createQueues(learningMode, simpleWordStats, sessionSize));
   const [stage, setStage] = useState(learningMode ? 'learn' : 'test');
+  const [learningLevel, setLearningLevel] = useState(null);
+  const [learningLevelComplete, setLearningLevelComplete] = useState(false);
   const [index, setIndex] = useState(0);
   const [typed, setTyped] = useState('');
   const [feedback, setFeedback] = useState('idle');
@@ -53,8 +54,13 @@ export default function SimpleWords() {
   const [complete, setComplete] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [audioFailed, setAudioFailed] = useState(false);
-  const queue = learningMode && stage === 'learn' ? queues.learningQueue : queues.testQueue;
+  const queue = learningMode
+    ? learningLevel ? queues.learningQueue : []
+    : queues.testQueue;
   const current = queue[index];
+  const learningInputLength = learningLevel ? getLearningInputLength(learningLevel) : 0;
+  const learningTarget = learningLevel && current ? getLearningTarget(current, learningLevel) : null;
+  const isLearningKeyboardLevel = learningMode && stage === 'learn' && learningLevel > 1;
   const [learningLetters, setLearningLetters] = useState(() => current ? shuffleWordLetters(current) : []);
   const [selectedLearningTiles, setSelectedLearningTiles] = useState([]);
   const [learningFeedback, setLearningFeedback] = useState('idle');
@@ -86,26 +92,64 @@ export default function SimpleWords() {
   }, [current, playAudioSequence]);
 
   useEffect(() => {
-    if (!complete && current) void playCurrent();
+    if (!complete && (!learningMode || learningLevel) && current) void playCurrent();
     return () => {
       playRequestRef.current += 1;
       audioEngine.stop();
     };
-  }, [complete, current, playCurrent]);
+  }, [complete, current, learningLevel, learningMode, playCurrent]);
 
   useEffect(() => {
-    if (!learningMode || stage !== 'learn' || !current) return;
+    if (!learningMode || stage !== 'learn' || !learningLevel || !current) return;
     setLearningLetters(shuffleWordLetters(current));
     setSelectedLearningTiles([]);
     setLearningFeedback('idle');
-  }, [current, learningMode, stage]);
+  }, [current, learningLevel, learningMode, stage]);
 
   useEffect(() => () => clearTimeout(timerRef.current), []);
 
-  const restart = () => {
+  const stopCurrentAudio = () => {
     clearTimeout(timerRef.current);
     playRequestRef.current += 1;
     audioEngine.stop();
+  };
+
+  const startLearningLevel = (level) => {
+    stopCurrentAudio();
+    const nextQueues = createQueues(true, useGameStore.getState().simpleWordStats, 16);
+    setQueues(nextQueues);
+    setLearningLevel(level);
+    setLearningLevelComplete(false);
+    setStage('learn');
+    setIndex(0);
+    setTyped('');
+    setFeedback('idle');
+    setWrongAttempts(0);
+    setFirstAttemptHits(0);
+    setEarnedGems(0);
+    setComplete(false);
+    setLearningLetters(nextQueues.learningQueue[0] ? shuffleWordLetters(nextQueues.learningQueue[0]) : []);
+    setSelectedLearningTiles([]);
+    setLearningFeedback('idle');
+  };
+
+  const showLevelPicker = () => {
+    stopCurrentAudio();
+    setLearningLevel(null);
+    setLearningLevelComplete(false);
+    setIndex(0);
+    setTyped('');
+    setSelectedLearningTiles([]);
+    setLearningFeedback('idle');
+  };
+
+  const restart = () => {
+    if (learningMode && learningLevel) {
+      startLearningLevel(learningLevel);
+      return;
+    }
+
+    stopCurrentAudio();
     const nextQueues = createQueues(learningMode, useGameStore.getState().simpleWordStats, sessionSize);
     setQueues(nextQueues);
     setStage(learningMode ? 'learn' : 'test');
@@ -122,18 +166,18 @@ export default function SimpleWords() {
   };
 
   const moveToNextLearningWord = () => {
-    if (isPlaying || learningFeedback !== 'correct') return;
+    if (isPlaying || learningFeedback !== 'correct' || !learningLevel) return;
     setAudioFailed(false);
     if (index === queue.length - 1) {
-      setStage('test');
-      setIndex(0);
+      setLearningLevelComplete(true);
     } else {
+      setTyped('');
       setIndex((value) => value + 1);
     }
   };
 
   const handleLearningTile = (tileIndex) => {
-    if (stage !== 'learn' || isPlaying || learningFeedback !== 'idle' || selectedLearningTiles.includes(tileIndex)) return;
+    if (stage !== 'learn' || learningLevel !== 1 || isPlaying || learningFeedback !== 'idle' || selectedLearningTiles.includes(tileIndex)) return;
 
     const nextTiles = [...selectedLearningTiles, tileIndex];
     setSelectedLearningTiles(nextTiles);
@@ -154,17 +198,37 @@ export default function SimpleWords() {
   };
 
   const handleKey = (key) => {
-    if (stage !== 'test' || feedback !== 'idle' || isPlaying) return;
+    const isTestInput = stage === 'test';
+    if ((!isTestInput && !isLearningKeyboardLevel)
+      || (isTestInput ? feedback : learningFeedback) !== 'idle'
+      || isPlaying) return;
+    const maxLength = isTestInput ? 3 : learningInputLength;
     if (key === 'BACKSPACE') {
       setTyped((answer) => answer.slice(0, -1));
     } else {
-      setTyped((answer) => answer.length < 3 ? answer + key : answer);
+      setTyped((answer) => answer.length < maxLength ? answer + key : answer);
     }
   };
 
   const handleSubmit = () => {
-    if (stage !== 'test' || !current || typed.length !== 3 || feedback !== 'idle' || isPlaying) return;
-    if (typed === current.word) {
+    const isLearningSubmit = isLearningKeyboardLevel;
+    const target = isLearningSubmit ? learningTarget : current?.word;
+    const expectedLength = isLearningSubmit ? learningInputLength : 3;
+    const activeFeedback = isLearningSubmit ? learningFeedback : feedback;
+    if ((!isLearningSubmit && stage !== 'test')
+      || !current
+      || !target
+      || typed.length !== expectedLength
+      || activeFeedback !== 'idle'
+      || isPlaying) return;
+
+    if (typed === target) {
+      if (isLearningSubmit) {
+        setLearningFeedback('correct');
+        audioEngine.playUI('correct');
+        return;
+      }
+
       const firstTry = wrongAttempts === 0;
       const nextFirstAttemptHits = firstAttemptHits + (firstTry ? 1 : 0);
       if (firstTry) setFirstAttemptHits((hits) => hits + 1);
@@ -188,6 +252,15 @@ export default function SimpleWords() {
       return;
     }
 
+    if (isLearningSubmit) {
+      setLearningFeedback('retry');
+      timerRef.current = setTimeout(() => {
+        setTyped('');
+        setLearningFeedback('idle');
+      }, 450);
+      return;
+    }
+
     setWrongAttempts((attempts) => Math.min(3, attempts + 1));
     setFeedback('retry');
     timerRef.current = setTimeout(() => {
@@ -198,7 +271,7 @@ export default function SimpleWords() {
   };
 
   useEffect(() => {
-    if (complete || stage !== 'test') return undefined;
+    if (complete || learningLevelComplete || (!isLearningKeyboardLevel && stage !== 'test')) return undefined;
     const handleGlobalKeyDown = (event) => {
       const target = event.target;
       if (target instanceof HTMLElement && ['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName)) return;
@@ -215,7 +288,14 @@ export default function SimpleWords() {
     };
     window.addEventListener('keydown', handleGlobalKeyDown);
     return () => window.removeEventListener('keydown', handleGlobalKeyDown);
-  }, [complete, stage, feedback, isPlaying, typed, current, wrongAttempts]);
+  }, [complete, learningLevelComplete, isLearningKeyboardLevel, stage, feedback, learningFeedback, isPlaying, typed, current, wrongAttempts]);
+
+  const selectedLevel = BLENDING_LEVELS.find((level) => level.id === learningLevel);
+  const learningSlotValue = (slot) => {
+    if (learningLevel === 1) return learningAnswer[slot] || '';
+    if (slot < learningInputLength) return typed[slot] || '';
+    return learningLevel < 4 && current ? current.word[slot] : '';
+  };
 
   if (complete) {
     return (
@@ -232,49 +312,96 @@ export default function SimpleWords() {
     );
   }
 
-  if (learningMode && stage === 'learn') {
+  if (learningMode && learningLevelComplete) {
     return (
-      <div className={`screen-container simple-words-learning ${adventureMode ? 'simple-words-learning--adventure' : ''}`} style={{ overflowY: 'auto', alignItems: 'center', background: 'linear-gradient(180deg, #dbeafe, #ecfeff)', padding: 'max(1rem, env(safe-area-inset-top)) 1rem max(1rem, env(safe-area-inset-bottom))' }}>
-        <header className="simple-words-learning__header" style={{ width: '100%', maxWidth: 760, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      <div className="screen-container" style={{ alignItems: 'center', justifyContent: 'center', textAlign: 'center', background: 'linear-gradient(180deg, #dbeafe, #fef3c7)', padding: '2rem' }}>
+        <MascotRabbit feedbackState="correct" style={{ width: 220, height: 220 }} />
+        <h1 style={{ color: '#1e3a8a', fontSize: 'clamp(2rem, 7vw, 3.5rem)' }}>{t('blendingLevelComplete')}</h1>
+        <p style={{ color: '#475569', fontSize: '1.5rem', fontWeight: 800 }}>16 / 16</p>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', justifyContent: 'center' }}>
+          <button className="btn-primary" onClick={restart}><RotateCcw /> {t('playAgain')}</button>
+          <button className="btn-secondary" onClick={showLevelPicker}><ArrowLeft /> {t('chooseLevel')}</button>
+        </div>
+      </div>
+    );
+  }
+
+  if (learningMode && !learningLevel) {
+    return (
+      <div className="screen-container simple-words-learning" style={{ overflowY: 'auto', alignItems: 'center', background: 'linear-gradient(180deg, #dbeafe, #ecfeff)', padding: 'max(1rem, env(safe-area-inset-top)) 1rem max(1rem, env(safe-area-inset-bottom))' }}>
+        <header style={{ width: '100%', maxWidth: 760, display: 'flex', justifyContent: 'flex-start', alignItems: 'center' }}>
           <button className="btn-secondary" onClick={() => navigate(backDestination)}><ArrowLeft /> {t('back')}</button>
-          <strong style={{ color: '#1e3a8a', fontSize: '1.25rem' }}>{index + 1} / {queue.length}</strong>
         </header>
-        {adventureMode && <PhaserAdventureWorld progress={index} total={queue.length + queues.testQueue.length} status={learningFeedback} word={current.word} />}
-        <MascotRabbit isListening={isPlaying} style={{ width: 160, height: 160, marginTop: '1rem' }} />
+        <MascotRabbit style={{ width: 160, height: 160, marginTop: '1rem' }} />
         <h1 className="simple-words-learning__title" style={{ color: '#1e3a8a', margin: 0 }}>{t('learnToBlend')}</h1>
-        <p className="simple-words-learning__subtitle" style={{ color: '#475569', fontWeight: 800 }}>{t('listenJoinBuild')}</p>
-        <div className="simple-words-learning__word" data-testid="learning-word" data-word={current.word} style={{ color: '#1e3a8a', fontSize: 'clamp(3rem, 16vw, 6rem)', fontWeight: 900, lineHeight: 1, letterSpacing: '0.18em', margin: '1rem 0' }}>
-          {learningFeedback === 'correct' ? current.word : '___'}
-        </div>
-        <div className="simple-words-learning__slots" aria-label={`${t('yourBlend')}: ${learningAnswer || t('empty')}`} style={{ display: 'flex', gap: '0.6rem', alignItems: 'center', marginBottom: '0.75rem' }}>
-          {[0, 1, 2].map((slot) => <span key={slot} style={{ minWidth: 64, minHeight: 64, display: 'grid', placeItems: 'center', borderRadius: 18, background: 'white', color: '#1d4ed8', border: '3px solid #93c5fd', fontSize: '2.5rem', fontWeight: 900 }}>{learningAnswer[slot] || ''}</span>)}
-        </div>
-        <p className="simple-words-learning__instruction" style={{ color: '#2563eb', fontWeight: 900 }}>{t('joinSoundsBuild')}</p>
-        <div className="simple-words-learning__tiles" aria-label={t('chooseLetters')} style={{ display: 'flex', gap: '0.75rem', marginBottom: '0.75rem' }}>
-          {learningLetters.map((letter, tileIndex) => (
+        <p className="simple-words-learning__subtitle" style={{ color: '#475569', fontWeight: 800 }}>{t('blendingLevelPicker')}</p>
+        <div style={{ display: 'grid', gap: '0.9rem', width: 'min(600px, 100%)', marginTop: '1rem' }}>
+          {BLENDING_LEVELS.map((level) => (
             <button
-              key={`${letter}-${tileIndex}`}
+              key={level.id}
               type="button"
-              data-testid="learning-letter"
-              data-letter={letter}
-              aria-label={t('chooseLetter').replace('{letter}', letter)}
-              aria-pressed={selectedLearningTiles.includes(tileIndex)}
-              disabled={isPlaying || learningFeedback !== 'idle' || selectedLearningTiles.includes(tileIndex)}
-              onClick={() => handleLearningTile(tileIndex)}
-              style={{ minWidth: 64, minHeight: 64, borderRadius: 18, background: selectedLearningTiles.includes(tileIndex) ? '#bfdbfe' : 'white', color: '#1d4ed8', border: '3px solid #60a5fa', fontSize: '2.5rem', fontWeight: 900, cursor: 'pointer' }}
+              data-testid={`learning-level-${level.id}`}
+              className="btn-secondary"
+              onClick={() => startLearningLevel(level.id)}
+              style={{ display: 'grid', gap: '0.25rem', justifyItems: 'start', textAlign: 'left', padding: '1rem 1.15rem', borderRadius: 20 }}
             >
-              {letter}
+              <strong style={{ color: '#1e3a8a', fontSize: '1.2rem' }}>{t(level.titleKey)}</strong>
+              <span style={{ color: '#475569', fontWeight: 700 }}>{t(level.descriptionKey)}</span>
             </button>
           ))}
         </div>
+      </div>
+    );
+  }
+
+  if (learningMode && stage === 'learn' && learningLevel) {
+    return (
+      <div className={`screen-container simple-words-learning ${adventureMode ? 'simple-words-learning--adventure' : ''}`} style={{ overflowY: 'auto', alignItems: 'center', background: 'linear-gradient(180deg, #dbeafe, #ecfeff)', padding: 'max(1rem, env(safe-area-inset-top)) 1rem max(1rem, env(safe-area-inset-bottom))' }}>
+        <header className="simple-words-learning__header" style={{ width: '100%', maxWidth: 760, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <button className="btn-secondary" onClick={showLevelPicker}><ArrowLeft /> {t('chooseLevel')}</button>
+          <strong style={{ color: '#1e3a8a', fontSize: '1.25rem' }}>{index + 1} / {queue.length}</strong>
+        </header>
+        {adventureMode && <PhaserAdventureWorld progress={index} total={queue.length} status={learningFeedback} word={current.word} />}
+        <MascotRabbit isListening={isPlaying} style={{ width: 160, height: 160, marginTop: '1rem' }} />
+        <h1 className="simple-words-learning__title" style={{ color: '#1e3a8a', margin: 0 }}>{t('learnToBlend')}</h1>
+        <p className="simple-words-learning__subtitle" style={{ color: '#475569', fontWeight: 800 }}>{selectedLevel ? t(selectedLevel.descriptionKey) : t('listenJoinBuild')}</p>
+        <div className="simple-words-learning__word" data-testid="learning-word" data-word={current.word} style={{ color: '#1e3a8a', fontSize: 'clamp(3rem, 16vw, 6rem)', fontWeight: 900, lineHeight: 1, letterSpacing: '0.18em', margin: '1rem 0' }}>
+          {learningFeedback === 'correct' ? current.word : '___'}
+        </div>
+        <div className="simple-words-learning__slots" aria-label={`${t('yourBlend')}: ${(learningLevel === 1 ? learningAnswer : typed) || t('empty')}`} style={{ display: 'flex', gap: '0.6rem', alignItems: 'center', marginBottom: '0.75rem' }}>
+          {[0, 1, 2].map((slot) => <span key={slot} data-testid={`learning-slot-${slot}`} style={{ minWidth: 64, minHeight: 64, display: 'grid', placeItems: 'center', borderRadius: 18, background: 'white', color: '#1d4ed8', border: '3px solid #93c5fd', fontSize: '2.5rem', fontWeight: 900 }}>{learningSlotValue(slot)}</span>)}
+        </div>
+        <p className="simple-words-learning__instruction" style={{ color: '#2563eb', fontWeight: 900 }}>{learningLevel === 1 ? t('joinSoundsBuild') : t('chooseLetters')}</p>
+        {learningLevel === 1 ? (
+          <div className="simple-words-learning__tiles" aria-label={t('chooseLetters')} style={{ display: 'flex', gap: '0.75rem', marginBottom: '0.75rem' }}>
+            {learningLetters.map((letter, tileIndex) => (
+              <button
+                key={`${letter}-${tileIndex}`}
+                type="button"
+                data-testid="learning-letter"
+                data-letter={letter}
+                aria-label={t('chooseLetter').replace('{letter}', letter)}
+                aria-pressed={selectedLearningTiles.includes(tileIndex)}
+                disabled={isPlaying || learningFeedback !== 'idle' || selectedLearningTiles.includes(tileIndex)}
+                onClick={() => handleLearningTile(tileIndex)}
+                style={{ minWidth: 64, minHeight: 64, borderRadius: 18, background: selectedLearningTiles.includes(tileIndex) ? '#bfdbfe' : 'white', color: '#1d4ed8', border: '3px solid #60a5fa', fontSize: '2.5rem', fontWeight: 900, cursor: 'pointer' }}
+              >
+                {letter}
+              </button>
+            ))}
+          </div>
+        ) : (
+          <VirtualKeyboard onKeyPress={handleKey} disabled={isPlaying || learningFeedback !== 'idle'} />
+        )}
         {learningFeedback === 'correct' && <p role="status" style={{ color: '#15803d', fontWeight: 900 }}>{t('greatBlending')}</p>}
         {learningFeedback === 'retry' && <p role="status" style={{ color: '#7c3aed', fontWeight: 900 }}>{t('listenAgain')}</p>}
         <button aria-label={t('playBlend')} className="btn-primary simple-words-learning__replay" onClick={() => void playCurrent()} disabled={isPlaying} aria-busy={isPlaying} style={{ width: 104, height: 104, borderRadius: '50%', justifyContent: 'center', padding: 0 }}>
           <Volume2 size={52} />
         </button>
         {audioFailed && <p role="alert" style={{ color: '#b45309', fontWeight: 800 }}>{t('audioError')}</p>}
+        {learningLevel > 1 && <button className="btn-primary" onClick={handleSubmit} disabled={isPlaying || learningFeedback !== 'idle' || typed.length !== learningInputLength} style={{ width: 'min(400px, 100%)', justifyContent: 'center', margin: '0.75rem 0' }}>{t('submit')}</button>}
         <button className="btn-primary simple-words-learning__next" onClick={moveToNextLearningWord} disabled={isPlaying || learningFeedback !== 'correct'} style={{ width: 'min(400px, 100%)', justifyContent: 'center', margin: '1.25rem 0' }}>
-          {index === queue.length - 1 ? t('startTest') : t('nextWord')}
+          {index === queue.length - 1 ? t('finishLevel') : t('nextWord')}
         </button>
       </div>
     );

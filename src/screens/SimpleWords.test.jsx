@@ -28,6 +28,10 @@ async function settleLearningAudio() {
   });
 }
 
+function startLearningLevel(level) {
+  fireEvent.click(screen.getByRole('button', { name: new RegExp(`Level ${level}`) }));
+}
+
 async function assembleLearningWord() {
   await settleLearningAudio();
   const word = screen.getByTestId('learning-word').getAttribute('data-word');
@@ -173,48 +177,102 @@ describe('SimpleWords', () => {
     expect(screen.getByRole('button', { name: 'A' })).toBeEnabled();
   });
 
-  it('teaches by replaying the whole word before entering the spelling test', async () => {
+  it('shows four levels before a learn session starts', () => {
     render(
-      <MemoryRouter
-        initialEntries={['/simple-words?mode=learn']}
-        future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
-      >
+      <MemoryRouter initialEntries={['/simple-words?mode=learn']}>
         <SimpleWords />
       </MemoryRouter>,
     );
 
-    expect(screen.getByRole('heading', { name: 'Learn to Blend' })).toBeInTheDocument();
-    const word = screen.getByTestId('learning-word').getAttribute('data-word');
-    expect(word).toMatch(/^[A-Z]{3}$/);
-    expect(audioEngine.playAudioById).toHaveBeenCalledWith(SIMPLE_WORDS.find((item) => item.word === word).id);
-    expect(screen.getByText(/Join the sounds/)).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Next word' })).toBeDisabled();
-    await settleLearningAudio();
-    expect(audioEngine.playAudioById).toHaveBeenCalledTimes(1);
+    expect(screen.getAllByRole('button', { name: /Level [1-4]/ })).toHaveLength(4);
+    expect(screen.queryByText('1 / 16')).not.toBeInTheDocument();
+    expect(audioEngine.playAudioById).not.toHaveBeenCalled();
+  });
 
-    const learnedWords = new Set();
+  it('keeps level one independent after all 16 questions', async () => {
+    render(
+      <MemoryRouter initialEntries={['/simple-words?mode=learn']}>
+        <SimpleWords />
+      </MemoryRouter>,
+    );
+
+    startLearningLevel(1);
     for (let index = 0; index < 16; index += 1) {
-      learnedWords.add(await assembleLearningWord());
-      fireEvent.click(screen.getByRole('button', { name: index === 15 ? 'Start test' : 'Next word' }));
+      await assembleLearningWord();
+      fireEvent.click(screen.getByRole('button', { name: index === 15 ? /Finish level/i : /Next word/i }));
     }
 
+    expect(screen.getByRole('heading', { name: /Level complete/i })).toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: 'Test Your Blending' })).not.toBeInTheDocument();
+  });
+
+  it('lets level two choose only the first letter from A-Z', async () => {
+    render(
+      <MemoryRouter initialEntries={['/simple-words?mode=learn']}>
+        <SimpleWords />
+      </MemoryRouter>,
+    );
+
+    startLearningLevel(2);
     await settleLearningAudio();
-    expect(screen.getByRole('heading', { name: 'Test Your Blending' })).toBeInTheDocument();
-    expect(screen.getByText('1 / 16')).toBeInTheDocument();
-    expect(learnedWords.has(screen.getByTestId('test-word').getAttribute('data-word'))).toBe(false);
-    expect(screen.queryByText(/First try:/)).not.toBeInTheDocument();
+    const word = screen.getByTestId('learning-word').getAttribute('data-word');
+    expect(screen.getByTestId('learning-slot-1')).toHaveTextContent(word[1]);
+    expect(screen.getByTestId('learning-slot-2')).toHaveTextContent(word[2]);
+    expect(screen.getByRole('button', { name: 'Submit' })).toBeDisabled();
+
+    fireEvent.click(screen.getByRole('button', { name: word[0] }));
+    expect(screen.getByRole('button', { name: 'Submit' })).toBeEnabled();
+  });
+
+  it('lets level three choose the first two letters and level four choose all three', async () => {
+    render(
+      <MemoryRouter initialEntries={['/simple-words?mode=learn']}>
+        <SimpleWords />
+      </MemoryRouter>,
+    );
+
+    startLearningLevel(3);
+    await settleLearningAudio();
+    let word = screen.getByTestId('learning-word').getAttribute('data-word');
+    fireEvent.click(screen.getByRole('button', { name: word[0] }));
+    fireEvent.click(screen.getByRole('button', { name: word[1] }));
+    expect(screen.getByRole('button', { name: 'Submit' })).toBeEnabled();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Back to levels' }));
+    startLearningLevel(4);
+    await settleLearningAudio();
+    word = screen.getByTestId('learning-word').getAttribute('data-word');
+    for (const letter of word) fireEvent.click(screen.getByRole('button', { name: letter }));
+    expect(screen.getByRole('button', { name: 'Submit' })).toBeEnabled();
+  });
+
+  it('retries a wrong level-four answer without changing the question', async () => {
+    render(
+      <MemoryRouter initialEntries={['/simple-words?mode=learn']}>
+        <SimpleWords />
+      </MemoryRouter>,
+    );
+
+    startLearningLevel(4);
+    await settleLearningAudio();
+    const word = screen.getByTestId('learning-word').getAttribute('data-word');
+    for (const letter of 'ZZZ') fireEvent.click(screen.getByRole('button', { name: letter }));
+    fireEvent.click(screen.getByRole('button', { name: 'Submit' }));
+
+    expect(screen.getByTestId('learning-word')).toHaveAttribute('data-word', word);
+    expect(screen.getByText('Listen once more and try again 🌟')).toBeInTheDocument();
+    await act(async () => { vi.advanceTimersByTime(500); });
+    expect(screen.getByLabelText('Your blend: empty')).toBeInTheDocument();
   });
 
   it('does not advance until the child assembles the letters in order', async () => {
     render(
-      <MemoryRouter
-        initialEntries={['/simple-words?mode=learn']}
-        future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
-      >
+      <MemoryRouter initialEntries={['/simple-words?mode=learn']}>
         <SimpleWords />
       </MemoryRouter>,
     );
 
+    startLearningLevel(1);
     await settleLearningAudio();
     const target = screen.getByTestId('learning-word').getAttribute('data-word');
     const tiles = screen.getAllByTestId('learning-letter');
@@ -230,31 +288,4 @@ describe('SimpleWords', () => {
     expect(screen.getByLabelText('Your blend: empty')).toBeInTheDocument();
   });
 
-  it('keeps a test word on screen after a wrong spelling', async () => {
-    render(
-      <MemoryRouter
-        initialEntries={['/simple-words?mode=learn']}
-        future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
-      >
-        <SimpleWords />
-      </MemoryRouter>,
-    );
-
-    const learnedWords = new Set();
-    for (let index = 0; index < 16; index += 1) {
-      learnedWords.add(await assembleLearningWord());
-      fireEvent.click(screen.getByRole('button', { name: index === 15 ? 'Start test' : 'Next word' }));
-    }
-
-    await settleLearningAudio();
-    const firstWord = screen.getByTestId('test-word').getAttribute('data-word');
-    expect(learnedWords.has(firstWord)).toBe(false);
-    for (const letter of 'ZZZ') fireEvent.click(screen.getByRole('button', { name: letter }));
-    fireEvent.click(screen.getByRole('button', { name: 'Submit' }));
-    expect(screen.getByTestId('test-word')).toHaveAttribute('data-word', firstWord);
-    expect(screen.getByText('Almost there. Listen once more 🌟')).toBeInTheDocument();
-
-    await act(async () => { vi.advanceTimersByTime(500); });
-    expect(screen.getByText('1 / 16')).toBeInTheDocument();
-  });
 });
