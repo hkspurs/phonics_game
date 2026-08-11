@@ -9,19 +9,21 @@
   border: 1px solid rgba(20, 184, 166, .18);
 }
 
-.blending-intro h2 { margin: .2rem 0 .35rem; color: #0f766e; font-size: clamp(1.35rem, 3vw, 2rem); }
-.blending-intro p { margin: 0; color: #456; font-weight: 700; }
+.blending-intro h2 { margin: .2rem 0 .35rem; color: #0f766e; font-size: clamp(1.35rem, 3vw, 2rem); line-height: 1.2; }
+.blending-intro p { max-width: 45ch; margin: 0; color: #456; font-weight: 700; line-height: 1.45; }
 .blending-intro__kicker { color: #0f766e; font-weight: 900; }
 .blending-intro__badge { flex: none; padding: .55rem .8rem; border-radius: 999px; background: #ccfbf1; color: #115e59; font-weight: 900; }
 
-.blending-path-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
+.blending-path-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; margin-top: 1.25rem; }
 .blending-path-card { display: grid; grid-template-columns: auto 1fr; gap: .8rem 1rem; align-items: center; padding: 1.15rem; border-radius: 22px; border: 2px solid transparent; background: #fff; box-shadow: 0 10px 22px rgba(15, 23, 42, .08); }
 .blending-path-card--learn { border-color: #99f6e4; }
-.blending-path-card--test { border-color: #bfdbfe; }
+.blending-path-card--test { border-color: #bfdbfe; border-style: dashed; }
 .blending-path-card__icon { display: grid; place-items: center; width: 54px; height: 54px; border-radius: 17px; color: #0f766e; background: #ccfbf1; }
 .blending-path-card--test .blending-path-card__icon { color: #1d4ed8; background: #dbeafe; }
-.blending-path-card h2 { margin: 0; color: #17324d; font-size: 1.25rem; }
-.blending-path-card p { margin: .25rem 0 0; color: #64748b; font-weight: 700; }
+.blending-path-card h2 { margin: 0; color: #17324d; font-size: 1.25rem; line-height: 1.2; }
+.blending-path-card__tag { display: block; margin-bottom: .2rem; color: var(--learn); font-size: .75rem; font-weight: 950; letter-spacing: .06em; line-height: 1.25; }
+.blending-path-card--test .blending-path-card__tag { color: var(--test); }
+.blending-path-card p { max-width: 45ch; margin: .25rem 0 0; color: #64748b; font-weight: 700; line-height: 1.45; }
 .blending-path-card__button { grid-column: 1 / -1; width: 100%; justify-content: center; min-height: 50px; }
 .blending-note { margin: 0; text-align: center; color: #64748b; font-weight: 800; }
 

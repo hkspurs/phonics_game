@@ -6,9 +6,11 @@ import { X, Volume2, Pause, Star } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import MascotRabbit from '../components/MascotRabbit';
 import VirtualKeyboard from '../components/VirtualKeyboard';
+import { useTranslation } from '../hooks/useTranslation';
 
 export default function BubbleChallenge() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { activeQuestions, currentQuestionIndex, nextQuestion, completeBubbleChallenge, isChallengeActive, currentChallengeType } = useGameStore();
   
   const [mistakes, setMistakes] = useState(0);
@@ -261,7 +263,7 @@ export default function BubbleChallenge() {
       <div style={{ flexShrink: 0, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', zIndex: 10, padding: '1rem' }}>
         
         {/* Pause Button */}
-        <button onClick={() => setIsPaused(true)} style={{
+        <button aria-label={t('pause')} onClick={() => setIsPaused(true)} style={{
           width: '50px', height: '50px', borderRadius: '50%', background: 'rgba(255,255,255,0.2)', border: '2px solid rgba(255,255,255,0.4)', 
           display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', cursor: 'pointer', backdropFilter: 'blur(4px)'
         }}>
@@ -307,7 +309,7 @@ export default function BubbleChallenge() {
               }}
             >
               <Volume2 size={30} color="#ffffff" style={{ filter: 'drop-shadow(0 2px 2px rgba(0,0,0,0.3))' }} />
-              Listen
+              {t('listen')}
             </button>
           )}
           
@@ -399,12 +401,12 @@ export default function BubbleChallenge() {
       {/* Pause Menu Overlay */}
       {isPaused && (
         <div style={{ position: 'absolute', inset: 0, zIndex: 200, background: 'rgba(2,132,199,0.8)', backdropFilter: 'blur(10px)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', animation: 'fadeIn 0.3s' }}>
-          <h2 style={{ color: 'white', fontSize: '3rem', marginBottom: '2rem', fontFamily: '"Comic Sans MS", cursive' }}>Paused</h2>
-          <button onClick={() => setIsPaused(false)} className="btn-primary" style={{ padding: '1rem 3rem', fontSize: '2rem', marginBottom: '1rem' }}>Resume</button>
+          <h2 style={{ color: 'white', fontSize: '3rem', marginBottom: '2rem', fontFamily: '"Comic Sans MS", cursive' }}>{t('pause')}</h2>
+          <button onClick={() => setIsPaused(false)} className="btn-primary" style={{ padding: '1rem 3rem', fontSize: '2rem', marginBottom: '1rem' }}>{t('resume')}</button>
           <button onClick={() => {
             useGameStore.setState({ isChallengeActive: false, currentChallengeType: null });
             navigate('/map');
-          }} className="btn-secondary" style={{ padding: '1rem 3rem', fontSize: '1.5rem', background: '#ef4444', color: 'white', borderColor: '#b91c1c' }}>Quit Game</button>
+          }} className="btn-secondary" style={{ padding: '1rem 3rem', fontSize: '1.5rem', background: '#ef4444', color: 'white', borderColor: '#b91c1c' }}>{t('quitGame')}</button>
         </div>
       )}
 
@@ -413,7 +415,7 @@ export default function BubbleChallenge() {
         <div style={{ position: 'absolute', inset: 0, zIndex: 300, background: 'rgba(2,132,199,0.9)', backdropFilter: 'blur(10px)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', animation: 'fadeIn 0.5s' }}>
           <div style={{ position: 'absolute', top: '50%', left: '50%', width: '600px', height: '600px', background: 'radial-gradient(circle, rgba(253,224,71,0.5) 0%, rgba(255,255,255,0) 70%)', transform: 'translate(-50%, -50%)', animation: 'spin 10s linear infinite', zIndex: -1 }} />
           <MascotRabbit feedbackState="correct" style={{ width: '250px', marginBottom: '2rem', animation: 'bounce 1s infinite' }} />
-          <h1 style={{ color: 'white', fontSize: '5rem', textShadow: '0 5px 15px rgba(0,0,0,0.3)', marginBottom: '1rem', animation: 'popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)' }}>Incredible!</h1>
+          <h1 style={{ color: 'white', fontSize: '5rem', textShadow: '0 5px 15px rgba(0,0,0,0.3)', marginBottom: '1rem', animation: 'popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)' }}>{t('incredible')}</h1>
           
           <div style={{ fontSize: '3.5rem', display: 'flex', gap: '2rem', fontWeight: 'bold', animation: 'popIn 0.5s 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) both', background: 'rgba(255,255,255,0.9)', padding: '1rem 3rem', borderRadius: '100px', boxShadow: '0 10px 25px rgba(0,0,0,0.3)' }}>
             <span style={{ color: '#eab308' }}>+10 ⭐</span>
@@ -421,9 +423,9 @@ export default function BubbleChallenge() {
           </div>
           
           {mistakes === 0 ? (
-            <p style={{ color: '#ef4444', fontWeight: 'bold', fontSize: '2.5rem', marginTop: '2rem', textShadow: '0 2px 5px rgba(0,0,0,0.2)', animation: 'popIn 0.5s 0.4s both' }}>Perfect Run!</p>
+            <p style={{ color: '#ef4444', fontWeight: 'bold', fontSize: '2.5rem', marginTop: '2rem', textShadow: '0 2px 5px rgba(0,0,0,0.2)', animation: 'popIn 0.5s 0.4s both' }}>{t('perfectRun')}</p>
           ) : (
-            <p style={{ color: '#bae6fd', fontWeight: 'bold', fontSize: '2rem', marginTop: '2rem', animation: 'popIn 0.5s 0.4s both' }}>Mistakes: {mistakes}</p>
+            <p style={{ color: '#bae6fd', fontWeight: 'bold', fontSize: '2rem', marginTop: '2rem', animation: 'popIn 0.5s 0.4s both' }}>{t('mistakesCount', { count: mistakes })}</p>
           )}
         </div>
       )}

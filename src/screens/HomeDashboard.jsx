@@ -12,7 +12,7 @@ import '../styles/phonics-dashboard.css';
 
 export default function HomeDashboard() {
   const navigate = useNavigate();
-  const { t, language } = useTranslation();
+  const { t } = useTranslation();
   const [showParentGate, setShowParentGate] = useState(false);
   const {
     unlockedSounds,
@@ -37,13 +37,11 @@ export default function HomeDashboard() {
     if (isParentAuthenticated) navigate('/parent');
     else setShowParentGate(true);
   };
-  const readyTitle = language === 'en' ? 'Ready to Learn?' : t('readyToLearn');
-
   return (
     <ExperienceFrame
-      world="英語拼音森林"
-      title={readyTitle}
-      subtitle="今日嘅森林任務：聽音、認音、一步一步前進"
+      world={t('phonics')}
+      title={t('readyToLearn')}
+      subtitle={t('phonicsWorldSubtitle')}
       backTo="/"
       tone="sky"
     >
@@ -51,9 +49,9 @@ export default function HomeDashboard() {
 
       <section className="phonics-hero-card">
         <div>
-          <span className="phonics-hero-card__kicker">🌲 Phonics Forest mission</span>
+          <span className="phonics-hero-card__kicker">{t('phonicsMissionKicker')}</span>
           <h2>{t('todayMissionWaiting')}</h2>
-          <p>完成一個小任務，兔仔就會向森林深處行一步。</p>
+          <p>{t('phonicsMissionDescription')}</p>
           <button type="button" className="btn-primary phonics-hero-card__button" onClick={startMission}>
             <Play size={24} /> {t('startTodayMission')}
           </button>
@@ -61,41 +59,43 @@ export default function HomeDashboard() {
         <div className="phonics-hero-card__characters"><MascotRabbit style={{ width: 120, height: 120 }} /><MissionSun /></div>
       </section>
 
-      <div className="phonics-dashboard__tools" aria-label="Phonics Forest tools">
+      <div className="phonics-dashboard__tools" aria-label={t('phonicsTools')}>
         <button type="button" className="world-tool world-tool--map" onClick={() => navigate('/map')}><Map size={22} /> {t('soundMap')}</button>
         <button type="button" className="world-tool" onClick={() => navigate('/assignments')}><ClipboardList size={22} /> {t('assignments')}</button>
-        <button type="button" className="world-tool" onClick={openParent}><Settings size={22} /> Settings</button>
-        <button type="button" className="world-tool" onClick={() => navigate('/shop')}><ShoppingCart size={22} /> Shop</button>
+        <button type="button" className="world-tool" onClick={openParent}><Settings size={22} /> {t('settingsTool')}</button>
+        <button type="button" className="world-tool" onClick={() => navigate('/shop')}><ShoppingCart size={22} /> {t('shopTool')}</button>
       </div>
 
-      <section className="phonics-learning-split" aria-label="Choose a learning world">
+      <section className="phonics-learning-split" aria-label={t('chooseLearningWorld')}>
         <article className="phonics-world-card phonics-world-card--blend">
           <span className="phonics-world-card__emoji">🐰</span>
           <div>
-            <span className="phonics-world-card__eyebrow">NEW LEARNING WORLD</span>
-            <h2>學習拼音併音</h2>
-            <p>先聽同併音，再入 Simple Word 測試。CVC 字留喺自己嘅小世界。</p>
-            <button type="button" className="btn-primary" onClick={() => navigate('/blending')}>Open blending world <span aria-hidden="true">→</span></button>
-            <div className="phonics-world-card__legacy">
-              <span>Legacy compatibility</span>
-              <button type="button" className="btn-secondary" onClick={() => { audioEngine.playUI('pop'); navigate('/simple-words?mode=learn'); }}>Learn to Blend</button>
-              <button type="button" className="btn-secondary" onClick={() => { audioEngine.playUI('pop'); navigate('/simple-words'); }}>Simple Word</button>
-            </div>
+            <span className="phonics-world-card__eyebrow">{t('newLearningWorld')}</span>
+            <h2>{t('blendingTitle')}</h2>
+            <p>{t('blendingDescription')}</p>
+            <button type="button" className="btn-secondary" onClick={() => navigate('/blending')}>{t('openBlendingWorld')} <span aria-hidden="true">→</span></button>
+            <details open className="phonics-world-card__legacy">
+              <summary>{t('legacyCompatibility')}</summary>
+              <div>
+                <button type="button" className="btn-secondary" onClick={() => { audioEngine.playUI('pop'); navigate('/simple-words?mode=learn'); }}>{t('learnToBlend')}</button>
+                <button type="button" className="btn-secondary" onClick={() => { audioEngine.playUI('pop'); navigate('/simple-words'); }}>{t('simpleWord')}</button>
+              </div>
+            </details>
           </div>
         </article>
 
         <article className="phonics-world-card phonics-world-card--forest">
           <span className="phonics-world-card__emoji">🌳</span>
           <div>
-            <span className="phonics-world-card__eyebrow">FOREST ADVENTURE</span>
-            <h2>英語拼音森林</h2>
-            <p>每日任務、Sound Map 同進階 phonics challenge。</p>
-            <button type="button" className="btn-secondary" onClick={() => navigate('/map')}><Map size={20} /> Explore the forest</button>
+            <span className="phonics-world-card__eyebrow">{t('forestAdventure')}</span>
+            <h2>{t('phonics')}</h2>
+            <p>{t('forestDescription')}</p>
+            <button type="button" className="btn-secondary" onClick={() => navigate('/map')}><Map size={20} /> {t('exploreForest')}</button>
           </div>
         </article>
       </section>
 
-      <section className="phonics-legacy-row" aria-label="Forest tools">
+      <section className="phonics-legacy-row" aria-label={t('forestTools')}>
         {unlockedSounds.length >= 10 && (
           <button type="button" className="btn-secondary phonics-legacy-row__bubble" onClick={() => { startBubbleChallenge(); navigate('/bubble'); }}><span aria-hidden="true">🎈</span> {t('bubbleChallenge')}</button>
         )}
@@ -109,8 +109,8 @@ export default function HomeDashboard() {
         </button>
       </section>
 
-      <button type="button" className="phonics-read-aloud" aria-label="Listen to instructions" onClick={() => audioEngine.playUI('pop')}>
-        <Volume2 size={18} /> Listen to instructions
+      <button type="button" className="phonics-read-aloud" aria-label={t('listenInstructions')} onClick={() => audioEngine.playUI('pop')}>
+        <Volume2 size={18} /> {t('listenInstructions')}
       </button>
     </ExperienceFrame>
   );

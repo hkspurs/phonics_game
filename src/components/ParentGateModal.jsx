@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { useTranslation } from '../hooks/useTranslation'
 
 /**
  * ParentGateModal — Shared parent-gate component.
@@ -7,6 +8,7 @@ import React, { useState, useEffect } from 'react'
  */
 const ParentGateModal = ({ onClose, onSuccess }) => {
   const [pin, setPin] = useState('');
+  const { t } = useTranslation();
 
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -32,8 +34,8 @@ const ParentGateModal = ({ onClose, onSuccess }) => {
   return (
     <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.4)', backdropFilter: 'blur(8px)', zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
       <div style={{ background: 'white', padding: '2rem', borderRadius: '20px', textAlign: 'center', width: '300px' }}>
-        <h3 style={{ color: '#1e3a8a', marginBottom: '1rem' }}>For Parents Only</h3>
-        <p style={{ color: '#64748b', marginBottom: '1rem', fontSize: '0.9rem' }}>Enter year of birth to access settings:</p>
+        <h3 style={{ color: '#1e3a8a', marginBottom: '1rem' }}>{t('parentGateTitle')}</h3>
+        <p style={{ color: '#64748b', marginBottom: '1rem', fontSize: '0.9rem' }}>{t('parentGateQuestion')}</p>
         <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'center', marginBottom: '1rem' }}>
           {[1,2,3,4].map((_, i) => (
             <div key={i} style={{ width: '40px', height: '40px', border: '2px solid #cbd5e1', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem', fontWeight: 'bold' }}>
@@ -45,7 +47,7 @@ const ParentGateModal = ({ onClose, onSuccess }) => {
           {[1,2,3,4,5,6,7,8,9].map(num => (
             <button key={num} className="btn-secondary" style={{ padding: 0, height: '4rem', fontSize: '1.5rem', borderRadius: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => setPin(p => (p + num).slice(0,4))}>{num}</button>
           ))}
-          <button className="btn-secondary" style={{ padding: 0, height: '4rem', fontSize: '1.5rem', borderRadius: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => setPin('')}>C</button>
+          <button aria-label={t('clear')} className="btn-secondary" style={{ padding: 0, height: '4rem', fontSize: '1.5rem', borderRadius: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => setPin('')}>C</button>
           <button className="btn-secondary" style={{ padding: 0, height: '4rem', fontSize: '1.5rem', borderRadius: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => setPin(p => (p + '0').slice(0,4))}>0</button>
           <button className="btn-secondary" style={{ padding: 0, height: '4rem', fontSize: '1.5rem', borderRadius: '1rem', background: '#22c55e', color: 'white', borderColor: '#16a34a', display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => { 
             const year = parseInt(pin, 10);
@@ -54,9 +56,9 @@ const ParentGateModal = ({ onClose, onSuccess }) => {
             } else {
               setPin(''); // Reset on wrong pin
             }
-          }}>GO</button>
+          }} aria-label={t('go')}>{t('go')}</button>
         </div>
-        <button className="btn-secondary" onClick={onClose} style={{ width: '100%', marginTop: '0.5rem', border: '2px solid #cbd5e1', background: '#f8fafc', color: '#475569' }}>Cancel</button>
+        <button className="btn-secondary" onClick={onClose} style={{ width: '100%', marginTop: '0.5rem', border: '2px solid #cbd5e1', background: '#f8fafc', color: '#475569' }}>{t('cancel')}</button>
       </div>
     </div>
   );

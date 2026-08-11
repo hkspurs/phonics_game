@@ -1,8 +1,10 @@
 import React from 'react';
 import { Delete } from 'lucide-react';
 import { audioEngine } from '../audio/AudioEngine';
+import { useTranslation } from '../hooks/useTranslation';
 
 const VirtualKeyboard = ({ onKeyPress, disabled }) => {
+  const { t } = useTranslation();
   // A-Z alphabetical
   const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
 
@@ -16,20 +18,20 @@ const VirtualKeyboard = ({ onKeyPress, disabled }) => {
     <div style={{
       display: 'flex',
       flexDirection: 'column',
-      gap: '0.5rem',
+      gap: '0.4rem',
       width: '100%',
       maxWidth: '600px',
       margin: '1rem auto 0',
       background: 'rgba(255, 255, 255, 0.8)',
-      padding: '1rem',
+      padding: '0.75rem',
       borderRadius: '24px',
       boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
       backdropFilter: 'blur(8px)'
     }}>
       <div style={{
         display: 'grid',
-        gridTemplateColumns: 'repeat(7, 1fr)',
-        gap: '0.5rem',
+        gridTemplateColumns: 'repeat(5, minmax(44px, 1fr))',
+        gap: '0.4rem',
         justifyContent: 'center'
       }}>
         {letters.map((letter) => (
@@ -42,8 +44,8 @@ const VirtualKeyboard = ({ onKeyPress, disabled }) => {
               handlePress(letter);
             }}
             style={{
-              padding: '0.75rem 0',
-              fontSize: '1.5rem',
+              padding: '0.6rem 0',
+              fontSize: '1.25rem',
               fontWeight: 'bold',
               minWidth: 'auto',
               display: 'flex',
@@ -60,6 +62,7 @@ const VirtualKeyboard = ({ onKeyPress, disabled }) => {
         {/* Backspace Button takes 2 column slots */}
         <button
           className="btn-secondary"
+          aria-label={t('backspace')}
           disabled={disabled}
           onClick={(e) => {
             e.preventDefault();

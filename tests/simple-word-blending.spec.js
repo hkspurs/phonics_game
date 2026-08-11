@@ -53,7 +53,7 @@ async function enterAnswer(page, word) {
   for (const letter of word) {
     await page.getByRole('button', { name: letter, exact: true }).click();
   }
-  await page.getByRole('button', { name: 'Submit / 確定' }).click();
+  await page.getByRole('button', { name: 'Submit' }).click();
 }
 
 test.describe('Simple Word continuous blending UAT', () => {
@@ -101,7 +101,7 @@ test.describe('Simple Word continuous blending UAT', () => {
     const firstWord = await testWord.getAttribute('data-word');
     await enterAnswer(page, 'QWX');
 
-    await expect(page.getByText('差少少，再聽一次 🌟')).toBeVisible();
+    await expect(page.getByText('Almost there. Listen once more 🌟')).toBeVisible();
     await expect(page.getByText(/Wrong/i)).not.toBeVisible();
     await expect(page.getByText(/-1/)).not.toBeVisible();
     await expect(testWord).toHaveAttribute('data-word', firstWord);

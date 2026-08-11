@@ -67,7 +67,7 @@ describe('SimpleWords', () => {
       await Promise.resolve();
     });
     expect(screen.getByText('1 / 16')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Submit / 確定' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Submit' })).toBeDisabled();
 
     audioEngine.playAudioById.mockClear();
     await act(async () => {
@@ -79,8 +79,8 @@ describe('SimpleWords', () => {
     for (const letter of 'ZZZ') {
       fireEvent.click(screen.getByRole('button', { name: letter }));
     }
-    fireEvent.click(screen.getByRole('button', { name: 'Submit / 確定' }));
-    expect(screen.getByText('差少少，再聽一次 🌟')).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Submit' }));
+    expect(screen.getByText('Almost there. Listen once more 🌟')).toBeInTheDocument();
 
     await act(async () => {
       vi.advanceTimersByTime(500);
@@ -98,7 +98,7 @@ describe('SimpleWords', () => {
       for (const letter of word) {
         fireEvent.click(screen.getByRole('button', { name: letter }));
       }
-      fireEvent.click(screen.getByRole('button', { name: 'Submit / 確定' }));
+      fireEvent.click(screen.getByRole('button', { name: 'Submit' }));
       await act(async () => {
         vi.advanceTimersByTime(700);
       });
@@ -128,22 +128,22 @@ describe('SimpleWords', () => {
     });
 
     for (const letter of 'ZZZ') fireEvent.click(screen.getByRole('button', { name: letter }));
-    fireEvent.click(screen.getByRole('button', { name: 'Submit / 確定' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Submit' }));
     await act(async () => vi.advanceTimersByTime(500));
     expect(screen.getByLabelText('Hint: _ _ _')).toBeInTheDocument();
 
     for (const letter of 'ZZZ') fireEvent.click(screen.getByRole('button', { name: letter }));
-    fireEvent.click(screen.getByRole('button', { name: 'Submit / 確定' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Submit' }));
     await act(async () => vi.advanceTimersByTime(500));
     expect(screen.getByLabelText('Hint: BU _')).toBeInTheDocument();
 
     for (const letter of 'ZZZ') fireEvent.click(screen.getByRole('button', { name: letter }));
-    fireEvent.click(screen.getByRole('button', { name: 'Submit / 確定' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Submit' }));
     await act(async () => vi.advanceTimersByTime(500));
     expect(screen.getByLabelText('Hint: BUS')).toBeInTheDocument();
 
     for (const letter of 'BUS') fireEvent.click(screen.getByRole('button', { name: letter }));
-    fireEvent.click(screen.getByRole('button', { name: 'Submit / 確定' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Submit' }));
     await act(async () => vi.advanceTimersByTime(700));
     expect(screen.getByText('2 / 16')).toBeInTheDocument();
   });
@@ -250,9 +250,9 @@ describe('SimpleWords', () => {
     const firstWord = screen.getByTestId('test-word').getAttribute('data-word');
     expect(learnedWords.has(firstWord)).toBe(false);
     for (const letter of 'ZZZ') fireEvent.click(screen.getByRole('button', { name: letter }));
-    fireEvent.click(screen.getByRole('button', { name: 'Submit / 確定' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Submit' }));
     expect(screen.getByTestId('test-word')).toHaveAttribute('data-word', firstWord);
-    expect(screen.getByText('差少少，再聽一次 🌟')).toBeInTheDocument();
+    expect(screen.getByText('Almost there. Listen once more 🌟')).toBeInTheDocument();
 
     await act(async () => { vi.advanceTimersByTime(500); });
     expect(screen.getByText('1 / 16')).toBeInTheDocument();

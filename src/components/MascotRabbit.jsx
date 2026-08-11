@@ -8,7 +8,7 @@ export default function MascotRabbit({ style, isListening = false, feedbackState
   const equipped = useGameStore(state => state.equipped);
 
   return (
-    <div className={`mascot-rabbit-container ${isListening ? 'listening' : 'idle'}`} 
+    <div className={`mascot-rabbit-container ${isListening ? 'listening' : 'idle'} ${isWrong ? 'feedback-wrong' : ''}`}
          style={{ 
            ...style, 
            transform: isCorrect ? 'translateY(-20px) scale(1.1)' : 'none', 

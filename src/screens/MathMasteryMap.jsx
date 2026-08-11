@@ -132,7 +132,7 @@ export default function MathMasteryMap() {
           onClick={() => {
             import('../audio/AudioEngine').then(m => m.audioEngine.playUI('pop'));
           }}
-          aria-label="Read Aloud"
+          aria-label={t('readAloud')}
         >
           <Volume2 size={24} color="#b45309" strokeWidth={3} />
         </button>
@@ -248,7 +248,7 @@ export default function MathMasteryMap() {
         animation: 'bounce 2s infinite', pointerEvents: 'none', zIndex: 20,
         display: 'flex', alignItems: 'center', gap: '0.5rem'
       }}>
-        👆 Swipe to explore ↔️
+        👆 {t('swipeToExplore')}
       </div>
 
       {/* Modal */}

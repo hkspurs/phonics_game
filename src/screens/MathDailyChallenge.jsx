@@ -7,9 +7,11 @@ import MathMascot from '../math/components/MathMascot';
 import MathQuestionRenderer from '../math/renderers/MathQuestionRenderer';
 import CorrectFeedback from '../components/CorrectFeedback';
 import WrongFeedback from '../components/WrongFeedback';
+import { useTranslation } from '../hooks/useTranslation';
 
 export default function MathDailyChallenge() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   
   const { 
     math: { mathActiveQuestions, mathCurrentQuestionIndex, isMathChallengeActive },
@@ -44,7 +46,7 @@ export default function MathDailyChallenge() {
   if (!currentQ) {
     return (
       <div className="screen-container" style={{ background: '#fef3c7', alignItems: 'center', justifyContent: 'center' }}>
-        <h2 style={{ color: '#b45309' }}>Loading Math Challenge...</h2>
+        <h2 style={{ color: '#b45309' }}>{t('mathChallengeLoading')}</h2>
       </div>
     );
   }
@@ -100,7 +102,7 @@ export default function MathDailyChallenge() {
 
       if (window.speechSynthesis) {
         window.speechSynthesis.cancel();
-        const praises = attemptsTaken === 1 ? ["Great job!", "Awesome math!"] : ["Good try, you found it!"];
+        const praises = attemptsTaken === 1 ? [t('greatWork'), t('awesome')] : [t('foundIt')];
         const utterance = new SpeechSynthesisUtterance(praises[Math.floor(Math.random() * praises.length)]);
         utterance.rate = 1.1;
         window.speechSynthesis.speak(utterance);
@@ -136,7 +138,7 @@ export default function MathDailyChallenge() {
       
       if (window.speechSynthesis) {
         window.speechSynthesis.cancel();
-        const utterance = new SpeechSynthesisUtterance("Let's try again.");
+        const utterance = new SpeechSynthesisUtterance(t('tryAgain'));
         window.speechSynthesis.speak(utterance);
       }
     }
@@ -152,16 +154,16 @@ export default function MathDailyChallenge() {
           <div style={{ transform: 'scale(1.5)', marginBottom: '2rem' }}>
             <MathMascot feedbackState="happy" />
           </div>
-          <h2 style={{ fontSize: '3rem', color: '#b45309', marginBottom: '2rem' }}>Ready for Maths?</h2>
+          <h2 style={{ fontSize: '3rem', color: '#b45309', marginBottom: '2rem' }}>{t('readyForMaths')}</h2>
           <button className="btn-primary" style={{ fontSize: '3rem', padding: '2rem 4rem', animation: 'pulse-glow 2s infinite', background: '#f59e0b' }} onClick={() => setHasStartedInteraction(true)}>
-            Let's Go!
+            {t('letsGo')}
           </button>
         </div>
       )}
       
       <div style={{ width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
         <button className="btn-secondary" style={{ padding: '0.5rem' }} onClick={() => {
-          if (window.confirm("Are you sure you want to quit? You will lose today's progress!")) {
+          if (window.confirm(t('quitGameConfirm'))) {
              navigate('/math');
           }
         }}>
@@ -175,10 +177,11 @@ export default function MathDailyChallenge() {
           display: 'flex', alignItems: 'center'
         }}>
           <div style={{ 
-            width: `${progressPercent}%`, height: '100%', 
+            width: '100%', height: '100%',
+            transform: `scaleX(${progressPercent / 100})`, transformOrigin: 'left center',
             borderStyle: 'solid', borderWidth: '8px',
             borderImage: "url('/assets/kenney/ui-pack/Vector/Yellow/button_rectangle_flat.svg') 8 8 8 8 fill",
-            transition: 'width 0.3s ease' 
+            transition: 'transform 0.3s ease'
           }}></div>
         </div>
         

@@ -4,13 +4,9 @@
   height: 100%;
 }
 
-.wrong-feedback-container.active #wrong-feedback {
+.wrong-feedback-container.active img {
   animation: gentle-tilt 1s ease-in-out;
-  transform-origin: 35px 75px;
-}
-
-.wrong-feedback-container.active #sweat-drop {
-  animation: sweat-drip 1s ease-in-out;
+  transform-origin: center;
 }
 
 @keyframes gentle-tilt {

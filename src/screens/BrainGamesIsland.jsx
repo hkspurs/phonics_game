@@ -18,8 +18,8 @@ export default function BrainGamesIsland() {
   const tickets = useGameStore((state) => state.tickets);
 
   return (
-    <ExperienceFrame world="益智遊戲島" title={t('brainGamesIsland')} subtitle="短短一局，聽音、記憶、反應都練到。" backTo="/phonics" tone="violet">
-      <div className="brain-intro"><span className="brain-intro__icon"><Brain size={34} /></span><div><strong>{t('useTicketsToPlay')}</strong><p>每局用一張門票；完成每日任務可以再拎。</p></div><span className="brain-ticket">🎟️ {tickets}</span></div>
+    <ExperienceFrame world={t('brainWorld')} title={t('brainGamesIsland')} subtitle={t('playToEarn')} backTo="/phonics" tone="violet">
+      <div className="brain-intro"><span className="brain-intro__icon"><Brain size={34} /></span><div><strong>{t('useTicketsToPlay')}</strong><p>{t('brainIntroDescription')}</p></div><span className="brain-ticket">🎟️ {tickets}</span></div>
       {tickets <= 0 && <p className="brain-empty">{t('outOfTickets')}</p>}
       <div className="brain-game-grid">
         {games.map(({ route, emoji, title, description, tone }) => {

@@ -5,9 +5,11 @@ import { useGameStore } from '../store/gameStore'
 import { questionEngine } from '../game/QuestionEngine'
 import { audioEngine } from '../audio/AudioEngine'
 import GameBubble from '../components/GameBubble'
+import { useTranslation } from '../hooks/useTranslation'
 
 export default function SoundCatcher() {
   const navigate = useNavigate()
+  const { t } = useTranslation()
   const { tickets, useTicket } = useGameStore()
   
   const [isPlaying, setIsPlaying] = useState(false)
@@ -137,7 +139,7 @@ export default function SoundCatcher() {
       {/* Header */}
       <div style={{ position: 'absolute', top: 0, left: 0, right: 0, padding: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', zIndex: 10 }}>
         <button className="btn-secondary" style={{ padding: '0.5rem', background: 'white' }} onClick={() => {
-          if (window.confirm("Quit game? You will lose your ticket!")) navigate('/braingames')
+          if (window.confirm(t('quitGameConfirm'))) navigate('/braingames')
         }}>
           <X size={24} />
         </button>
@@ -145,11 +147,11 @@ export default function SoundCatcher() {
         <div style={{ display: 'flex', gap: '1rem' }}>
           {combo > 2 && (
              <div style={{ background: '#f59e0b', padding: '0.5rem 1rem', borderRadius: '100px', fontSize: '1.2rem', fontWeight: 'bold', color: 'white', animation: 'popIn 0.3s' }}>
-               {combo} Combo! 🔥
+               {t('comboLabel', { count: combo })}
              </div>
           )}
           <div style={{ background: 'white', padding: '0.5rem 2rem', borderRadius: '100px', fontSize: '1.5rem', fontWeight: 'bold', color: '#0369a1', boxShadow: '0 4px 0 rgba(0,0,0,0.1)' }}>
-            Score: {score} / 10
+            {t('scoreLabel', { score })}
           </div>
         </div>
       </div>
@@ -168,7 +170,7 @@ export default function SoundCatcher() {
           <Volume2 size={48} />
         </button>
         <h2 style={{ color: 'white', marginTop: '1rem', textShadow: '2px 2px 0 #0369a1', fontSize: '2.5rem', animation: isWon ? 'pulse-glow 2s infinite' : 'none' }}>
-          {isWon ? '🎉 You Win! 🎉' : 'Catch the matching sound!'}
+          {isWon ? t('youWin') : t('catchMatchingSound')}
         </h2>
       </div>
 

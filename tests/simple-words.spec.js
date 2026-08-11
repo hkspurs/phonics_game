@@ -13,7 +13,7 @@ test('Simple Word is reachable and accepts a three-letter spelling', async ({ pa
   for (const letter of 'BUS') {
     await page.getByRole('button', { name: letter, exact: true }).click();
   }
-  await page.getByRole('button', { name: 'Submit / 確定' }).click();
+  await page.getByRole('button', { name: 'Submit' }).click();
   await expect(page.getByText('2 / 16')).toBeVisible();
 
   await page.setViewportSize({ width: 390, height: 844 });

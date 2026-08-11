@@ -6,9 +6,11 @@ import MascotRabbit from '../components/MascotRabbit';
 import VirtualKeyboard from '../components/VirtualKeyboard';
 import { X, Play, Volume2 } from 'lucide-react';
 import confetti from 'canvas-confetti';
+import { useTranslation } from '../hooks/useTranslation';
 
 export default function TrainingGym() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { activeQuestions, currentQuestionIndex, answerQuestion, nextQuestion, completeGymWorkout, currentNode, isChallengeActive, currentChallengeType } = useGameStore();
   
   const [isRevealed, setIsRevealed] = useState(false);
@@ -162,9 +164,9 @@ export default function TrainingGym() {
   };
 
   const stageTitles = {
-    gym_warmup: 'Stage 1: Warm-up! Listen carefully...',
-    gym_lift: 'Stage 2: Heavy Lifting! Don\'t get tricked!',
-    gym_sprint: 'Stage 3: The Sprint! Go go go!'
+    gym_warmup: t('stageWarmup'),
+    gym_lift: t('stageLift'),
+    gym_sprint: t('stageSprint')
   };
 
   return (
@@ -175,11 +177,11 @@ export default function TrainingGym() {
             useGameStore.setState({ isChallengeActive: false, currentChallengeType: null });
             navigate('/map');
         }}>
-          <X size={24} /> Quit
+          <X size={24} /> {t('quit')}
         </button>
         <div style={{ display: 'flex', gap: '0.5rem' }}>
           <div style={{ background: 'white', padding: '0.5rem 1rem', borderRadius: '100px', fontWeight: 'bold', color: '#3b82f6' }}>
-            🏋️‍♂️ Phonics Gym
+            {t('phonicsGym')}
           </div>
         </div>
       </div>
@@ -205,7 +207,7 @@ export default function TrainingGym() {
             }}
           >
             <Volume2 size={32} color="white" />
-            Listen
+            {t('listen')}
           </button>
           
           <button 
@@ -218,7 +220,7 @@ export default function TrainingGym() {
             }}
           >
             <Volume2 size={32} color="white" />
-            Sound
+            {t('sound')}
           </button>
         </div>
 
@@ -252,7 +254,7 @@ export default function TrainingGym() {
               disabled={processingRef.current || isRevealed}
               maxLength={2}
               className={`font-phonics ${animState === 'fail' ? 'wobble-wrong' : ''}`}
-              placeholder="Type here..."
+              placeholder={t('typeHere')}
               style={{
                 width: '100%',
                 fontSize: '4.5rem',
@@ -277,7 +279,7 @@ export default function TrainingGym() {
               disabled={processingRef.current || isRevealed || !typedAnswer.trim()}
               style={{ fontSize: '2rem', padding: '1rem 3rem', width: '100%' }}
             >
-              Submit / 確定
+              {t('submit')}
             </button>
           </form>
           <div style={{ width: '100%', maxWidth: '600px', display: 'flex', justifyContent: 'center' }}>

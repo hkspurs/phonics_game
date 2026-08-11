@@ -68,7 +68,7 @@ export default function MasteryMap() {
       useGameStore.getState().startGymWorkout(selectedNode.soundData.sound_id);
       navigate('/gym');
     } else {
-      useGameStore.setState({ activeAssignment: { id: 'map_practice', targetSoundId: selectedNode.soundData.label, title: `Practice: ${selectedNode.soundData.label}` } });
+      useGameStore.setState({ activeAssignment: { id: 'map_practice', targetSoundId: selectedNode.soundData.label, title: `${t('practice')}: ${selectedNode.soundData.label}` } });
       navigate('/challenge');
     }
   }
@@ -163,7 +163,7 @@ export default function MasteryMap() {
             onClick={() => {
               import('../audio/AudioEngine').then(m => m.audioEngine.playUI('pop'));
             }}
-            aria-label="Read Aloud"
+            aria-label={t('readAloud')}
           >
             <Volume2 size={24} color="#b45309" strokeWidth={3} />
           </button>
@@ -303,7 +303,7 @@ export default function MasteryMap() {
           animation: 'bounce 2s infinite', pointerEvents: 'none', zIndex: 20,
           display: 'flex', alignItems: 'center', gap: '0.5rem'
         }}>
-          👆 Swipe to explore ↔️
+          👆 {t('swipeToExplore')}
         </div>
       )}
 
@@ -313,7 +313,7 @@ export default function MasteryMap() {
           <div style={{ background: 'white', padding: '2rem', borderRadius: '32px', maxWidth: '400px', width: '90%', textAlign: 'center', animation: 'popIn 0.3s', position: 'relative', boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)' }}>
             
             {/* QA FIX: Larger Touch Target for X */}
-            <button className="btn-secondary" aria-label="Close modal" style={{ position: 'absolute', top: '1rem', right: '1rem', width: '48px', height: '48px', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0 }} onClick={() => setSelectedNode(null)}>
+            <button className="btn-secondary" aria-label={t('closeModal')} style={{ position: 'absolute', top: '1rem', right: '1rem', width: '48px', height: '48px', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0 }} onClick={() => setSelectedNode(null)}>
               <X size={28} />
             </button>
             

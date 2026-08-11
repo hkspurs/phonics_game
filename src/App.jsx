@@ -23,6 +23,27 @@ import BlendingHub from './screens/BlendingHub'
 import MascotRabbit from './components/MascotRabbit'
 
 import { useGameStore } from './store/gameStore'
+import { useTranslation } from './hooks/useTranslation'
+
+function ErrorFallback() {
+  const { t } = useTranslation();
+
+  return (
+    <div className="screen-container" style={{ background: '#fef2f2', alignItems: 'center', justifyContent: 'center', textAlign: 'center' }}>
+      <MascotRabbit feedbackState="idle" style={{ width: '200px', height: '200px', transform: 'scale(1.5)', marginBottom: '2rem' }} />
+      <h1 style={{ color: '#991b1b', marginBottom: '1rem', fontSize: '2.5rem' }}>{t('errorTitle')}</h1>
+      <p style={{ color: '#b91c1c', marginBottom: '2rem', fontSize: '1.5rem' }}>{t('errorDescription')}</p>
+      <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
+        <button className="btn-secondary" onClick={() => window.location.href = '/'}>
+          🏠 {t('backToHome')}
+        </button>
+        <button className="btn-primary" onClick={() => window.location.reload()}>
+          🔄 {t('restart')}
+        </button>
+      </div>
+    </div>
+  );
+}
 
 class ErrorBoundary extends React.Component {
   constructor(props) {
@@ -33,21 +54,7 @@ class ErrorBoundary extends React.Component {
   componentDidCatch(error, errorInfo) { console.error("App Crash:", error, errorInfo); }
   render() {
     if (this.state.hasError) {
-      return (
-        <div className="screen-container" style={{ background: '#fef2f2', alignItems: 'center', justifyContent: 'center', textAlign: 'center' }}>
-          <MascotRabbit feedbackState="idle" style={{ width: '200px', height: '200px', transform: 'scale(1.5)', marginBottom: '2rem' }} />
-          <h1 style={{ color: '#991b1b', marginBottom: '1rem', fontSize: '2.5rem' }}>Oops, let's try again! 🌟</h1>
-          <p style={{ color: '#b91c1c', marginBottom: '2rem', fontSize: '1.5rem' }}>Something got a little mixed up.</p>
-          <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
-            <button className="btn-secondary" onClick={() => window.location.href = '/'}>
-              🏠 Back to Home
-            </button>
-            <button className="btn-primary" onClick={() => window.location.reload()}>
-              🔄 Restart
-            </button>
-          </div>
-        </div>
-      );
+      return <ErrorFallback />;
     }
     return this.props.children;
   }
@@ -64,6 +71,7 @@ const ProtectedParentRoute = ({ children }) => {
 function App() {
   const [hydrated, setHydrated] = useState(false);
   const equipped = useGameStore(state => state.equipped);
+  const { t } = useTranslation();
 
   // QA FIX (Challenge 22): Hydration FOUC prevention
   useEffect(() => {
@@ -87,7 +95,7 @@ function App() {
          <div style={{ animation: 'pulse-glow 2s infinite', borderRadius: '50%', filter: 'drop-shadow(0 10px 15px rgba(0,0,0,0.1))' }}>
             <MascotRabbit style={{ width: '200px', height: '200px' }} />
          </div>
-         <h1 style={{ color: '#1e3a8a', fontSize: '2.5rem', marginTop: '2rem', animation: 'pulse 1.5s infinite' }}>Loading Adventure... 🚀</h1>
+         <h1 style={{ color: '#1e3a8a', fontSize: '2.5rem', marginTop: '2rem', animation: 'pulse 1.5s infinite' }}>{t('loadingAdventure')}</h1>
       </div>
     );
   }

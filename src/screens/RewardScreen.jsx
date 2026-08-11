@@ -35,7 +35,7 @@ export default function RewardScreen() {
   const gems = sessionScore.gems;
 
   return (
-    <ExperienceFrame world="Reward Village" title={t('missionComplete')} subtitle={opened ? 'You moved the adventure forward.' : 'Tap the chest when you are ready.'} backTo={subject === 'math' ? '/math' : '/phonics'} tone="violet">
+    <ExperienceFrame world={t('rewardVillage')} title={t('missionComplete')} subtitle={opened ? t('rewardMovedForward') : t('rewardReady')} backTo={subject === 'math' ? '/math' : '/phonics'} tone="violet">
       <ConfettiSVG isVisible={opened} />
       {!opened ? (
         <button type="button" className={`reward-chest ${chestState === 'shaking' ? 'reward-chest--shaking' : ''}`} onClick={openChest} aria-label={t('tapToOpen')}>

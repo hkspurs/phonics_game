@@ -1,17 +1,22 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { ADVENTURE_STEPS, getAdventureStep } from '../adventure/adventureEvents';
+import { useTranslation } from '../hooks/useTranslation';
 import '../styles/adventure-world.css';
 
 export default function PhaserAdventureWorld({ progress = 0, total = 5, status = 'idle', word = '', onContinue }) {
+  const { language } = useTranslation();
+  const labels = language === 'zh'
+    ? { world: '兔仔冒險世界', steps: ['兔仔屋', '河上小橋', '紅蘿蔔城堡'], adventure: '冒險', greatWork: '做得好！', keepGoing: '繼續努力！' }
+    : { world: 'Rabbit Adventure world', steps: ['Rabbit House', 'River Bridge', 'Carrot Castle'], adventure: 'Adventure', greatWork: 'Great work!', keepGoing: 'Keep going!' };
   const mountRef = useRef(null);
   const gameRef = useRef(null);
   const sceneRef = useRef(null);
-  const stateRef = useRef({ progress, total, status, word });
+  const stateRef = useRef({ progress, total, status, word, labels });
   const callbacksRef = useRef({ onContinue });
   const [loadError, setLoadError] = useState(false);
   const [sceneReady, setSceneReady] = useState(false);
   callbacksRef.current.onContinue = onContinue;
-  stateRef.current = { progress, total, status, word };
+  stateRef.current = { progress, total, status, word, labels };
 
   useEffect(() => {
     let active = true;
@@ -20,12 +25,14 @@ export default function PhaserAdventureWorld({ progress = 0, total = 5, status =
         if (!active || !mountRef.current) return;
         const Phaser = phaserModule.default || phaserModule;
         const Scene = sceneModule.createAdventureScene(Phaser, {
+          labels,
           onReady: (scene) => {
             sceneRef.current = scene;
             scene.setAdventureState({
               step: getAdventureStep(stateRef.current.progress, stateRef.current.total),
               status: stateRef.current.status,
               word: stateRef.current.word,
+              labels: stateRef.current.labels,
             });
             setSceneReady(true);
           },
@@ -57,20 +64,20 @@ export default function PhaserAdventureWorld({ progress = 0, total = 5, status =
 
   useEffect(() => {
     const scene = sceneRef.current;
-    scene?.setAdventureState({ step: getAdventureStep(progress, total), status, word });
-  }, [progress, status, total, word]);
+    scene?.setAdventureState({ step: getAdventureStep(progress, total), status, word, labels });
+  }, [progress, status, total, word, language]);
 
   const step = getAdventureStep(progress, total);
   const fallbackCaption = word
-    ? `${status === 'correct' ? 'Great work!' : 'Keep going!'} ${word}`
-    : ADVENTURE_STEPS[step]?.label || 'Adventure';
+    ? `${status === 'correct' ? labels.greatWork : labels.keepGoing} ${word}`
+    : labels.steps[step] || labels.adventure;
 
   if (loadError) {
     return <div className="adventure-world adventure-world--fallback" data-testid="adventure-world-fallback"><span>🐰</span><span>{fallbackCaption}</span></div>;
   }
 
   return (
-    <div className={`adventure-world ${sceneReady ? 'adventure-world--ready' : ''}`} data-testid="adventure-world" ref={mountRef} aria-label="Rabbit Adventure world">
+    <div className={`adventure-world ${sceneReady ? 'adventure-world--ready' : ''}`} data-testid="adventure-world" ref={mountRef} aria-label={labels.world}>
       <div className="adventure-world__fallback-state" aria-hidden={sceneReady}>
         <span className="adventure-world__fallback-landmark" aria-hidden="true">{ADVENTURE_STEPS[step]?.emoji || '🌱'}</span>
         <span>{fallbackCaption}</span>

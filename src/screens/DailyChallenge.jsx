@@ -9,9 +9,11 @@ import WrongFeedback from '../components/WrongFeedback'
 import AppleIcon from '../components/AppleIcon'
 import MascotRabbit from '../components/MascotRabbit'
 import VirtualKeyboard from '../components/VirtualKeyboard'
+import { useTranslation } from '../hooks/useTranslation'
 
 export default function DailyChallenge() {
   const navigate = useNavigate()
+  const { t } = useTranslation()
   
   const { 
     activeQuestions, 
@@ -85,7 +87,7 @@ export default function DailyChallenge() {
       // Voice-over instruction
       if (window.speechSynthesis && 'SpeechSynthesisUtterance' in window) {
         window.speechSynthesis.cancel(); // Prevent speech overlapping
-        const text = currentQ.type === 'compare' ? "Are these sounds the same, or different?" : "Listen and choose the right sound.";
+        const text = currentQ.type === 'compare' ? t('sameOrDifferent') : t('listenChooseSound');
         const utterance = new SpeechSynthesisUtterance(text);
         utterance.rate = 0.9;
         
@@ -114,7 +116,7 @@ export default function DailyChallenge() {
   if (!currentQ) {
     return (
       <div className="screen-container" style={{ background: '#ecfdf5', alignItems: 'center', justifyContent: 'center' }}>
-        <h2 style={{ color: '#065f46' }}>Loading Challenge...</h2>
+        <h2 style={{ color: '#065f46' }}>{t('challengeLoading')}</h2>
       </div>
     );
   }
@@ -162,9 +164,9 @@ export default function DailyChallenge() {
       if (window.speechSynthesis) {
         window.speechSynthesis.cancel(); // Prevent overlap
         const isTrueRemembering = refresherMode && attemptCount === 1 && currentChallengeType === 'daily';
-        const praises = isTrueRemembering 
-          ? ["You remembered it!", "Your memory is super strong!", "Great memory!"]
-          : (attemptCount === 1 ? ["Great job!", "Awesome!", "You did it!"] : ["Good try, you found it!", "Now you remember!"]);
+        const praises = isTrueRemembering
+          ? [t('rememberedIt'), t('memoryStrong'), t('greatMemory')]
+          : (attemptCount === 1 ? [t('greatWork'), t('awesome'), t('youDidIt')] : [t('foundIt'), t('keepGoing')]);
         const utterance = new SpeechSynthesisUtterance(praises[Math.floor(Math.random() * praises.length)]);
         utterance.rate = 1.1;
         window.speechSynthesis.speak(utterance);
@@ -244,9 +246,9 @@ export default function DailyChallenge() {
           <div style={{ transform: 'scale(1.5)', marginBottom: '2rem' }}>
             <MascotRabbit feedbackState="happy" />
           </div>
-          <h2 style={{ fontSize: '3rem', color: '#047857', marginBottom: '2rem' }}>Ready?</h2>
+          <h2 style={{ fontSize: '3rem', color: '#047857', marginBottom: '2rem' }}>{t('ready')}</h2>
           <button className="btn-primary" style={{ fontSize: '3rem', padding: '2rem 4rem', animation: 'pulse-glow 2s infinite' }} onClick={() => setHasStartedInteraction(true)}>
-            <Volume2 size={48} /> Let's Go!
+            <Volume2 size={48} /> {t('letsGo')}
           </button>
         </div>
       )}
@@ -265,10 +267,11 @@ export default function DailyChallenge() {
           display: 'flex', alignItems: 'center'
         }}>
           <div style={{ 
-            width: `${progressPercent}%`, height: '100%', 
+            width: '100%', height: '100%',
+            transform: `scaleX(${progressPercent / 100})`, transformOrigin: 'left center',
             borderStyle: 'solid', borderWidth: '8px',
             borderImage: "url('/assets/kenney/ui-pack/Vector/Green/button_rectangle_flat.svg') 8 8 8 8 fill",
-            transition: 'width 0.3s ease' 
+            transition: 'transform 0.3s ease'
           }}></div>
         </div>
         
@@ -287,7 +290,7 @@ export default function DailyChallenge() {
           textAlign: 'center',
           flexShrink: 0
         }}>
-          {currentQ.type === 'boss' ? '⭐ Final Boss Challenge! ⭐' : 'Phonics Challenge · Listen and Choose'}
+          {currentQ.type === 'boss' ? t('finalBossChallenge') : t('phonicsChallenge')}
         </h2>
         {((currentQ.instructionAudio) || true) && (
           <button 
@@ -301,7 +304,7 @@ export default function DailyChallenge() {
               display: 'flex', alignItems: 'center', gap: '0.5rem', boxShadow: '0 4px 0 #6d28d9'
             }}
           >
-            <Volume2 size={24} /> Listen to question
+            <Volume2 size={24} /> {t('listenToQuestion')}
           </button>
         )}
       </div>
@@ -320,7 +323,7 @@ export default function DailyChallenge() {
             <path d="M 45 70 L 45 75 M 55 70 L 55 75" stroke="white" strokeWidth="4" />
           </svg>
           <div style={{ width: '200px', height: '12px', background: '#fecdd3', borderRadius: '6px', marginTop: '1rem', overflow: 'hidden' }}>
-            <div style={{ width: attemptCount === 1 ? '100%' : (attemptCount === 2 ? '30%' : '0%'), height: '100%', background: '#e11d48', transition: 'width 0.3s' }} />
+            <div style={{ width: '100%', height: '100%', background: '#e11d48', transform: `scaleX(${attemptCount === 1 ? 1 : (attemptCount === 2 ? 0.3 : 0)})`, transformOrigin: 'left center', transition: 'transform 0.3s' }} />
           </div>
         </div>
       )}
@@ -328,7 +331,7 @@ export default function DailyChallenge() {
       {/* Question Area (QA FIX: Implement Comparison Template) */}
       {currentQ.type === 'compare' ? (
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%', maxWidth: '800px', margin: '0 auto' }}>
-          <h2 style={{ color: '#1e3a8a', marginBottom: '2rem' }}>Are these sounds the same or different?</h2>
+          <h2 style={{ color: '#1e3a8a', marginBottom: '2rem' }}>{t('sameOrDifferent')}</h2>
           <div style={{ display: 'flex', gap: '2rem', marginBottom: '3rem', flexWrap: 'wrap', justifyContent: 'center' }}>
             <button 
               className="btn-primary" 
@@ -336,7 +339,7 @@ export default function DailyChallenge() {
               onClick={() => !isProcessing && audioEngine.playAudioById(currentQ.targetSoundAudio).catch(()=>{})}
             >
               <Volume2 size={48} />
-              <div style={{ fontSize: '1rem', marginTop: '0.5rem' }}>Sound 1</div>
+              <div style={{ fontSize: '1rem', marginTop: '0.5rem' }}>{t('soundOne')}</div>
               {feedbackState && <div style={{ fontSize: '2rem', fontWeight: 'bold' }}>{currentQ.targetSound.label}</div>}
             </button>
             <button 
@@ -345,7 +348,7 @@ export default function DailyChallenge() {
               onClick={() => !isProcessing && audioEngine.playAudioById(currentQ.compareSoundAudio).catch(()=>{})}
             >
               <Volume2 size={48} />
-              <div style={{ fontSize: '1rem', marginTop: '0.5rem' }}>Sound 2</div>
+              <div style={{ fontSize: '1rem', marginTop: '0.5rem' }}>{t('soundTwo')}</div>
               {feedbackState && <div style={{ fontSize: '2rem', fontWeight: 'bold' }}>{currentQ.compareSound.label}</div>}
             </button>
           </div>
@@ -353,7 +356,7 @@ export default function DailyChallenge() {
             {currentQ.choices.map((choice, i) => {
               const isDisabled = disabledChoices.includes(choice);
               const isSame = choice === 'Same';
-              const labelText = isSame ? 'Same' : 'Different';
+              const labelText = isSame ? t('same') : t('different');
 
               return (
                 <button
@@ -390,7 +393,7 @@ export default function DailyChallenge() {
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%', maxWidth: '800px', margin: '0 auto', flexShrink: 0 }}>
           {currentQ.choices?.length > 0 && (
-            <div aria-label="Choose the sound" style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', justifyContent: 'center', marginBottom: '1rem', maxWidth: '720px' }}>
+            <div aria-label={t('chooseSound')} style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', justifyContent: 'center', marginBottom: '1rem', maxWidth: '720px' }}>
               {currentQ.choices.map((choice) => (
                 <button
                   key={choice}
@@ -413,15 +416,15 @@ export default function DailyChallenge() {
             <div style={{ position: 'relative', width: '160px', height: '160px', zIndex: 10 }}>
               {feedbackState === 'correct' && (
                 <div id="correct-feedback-text" style={{ position: 'absolute', top: '-40px', right: '-40px', background: 'white', padding: '0.5rem 1rem', borderRadius: '20px', boxShadow: '0 4px 10px rgba(0,0,0,0.1)', fontWeight: 'bold', color: '#047857', animation: 'popIn 0.3s ease-out', zIndex: 20 }}>
-                  {(refresherMode && attemptCount === 1 && currentChallengeType === 'daily') ? 'You remembered it!' : (attemptCount === 1 ? 'Great job!' : 'You found it!')}
+                  {(refresherMode && attemptCount === 1 && currentChallengeType === 'daily') ? t('rememberedIt') : (attemptCount === 1 ? t('greatWork') : t('foundIt'))}
                   <div style={{ position: 'absolute', bottom: '-10px', left: '20px', borderLeft: '10px solid transparent', borderRight: '10px solid transparent', borderTop: '10px solid white' }}></div>
                 </div>
               )}
               {(feedbackState === 'wrong' || (attemptCount > 3 && feedbackState !== 'correct')) && (
                 <div id="wrong-feedback-text" style={{ position: 'absolute', top: '-60px', right: '-80px', background: 'white', padding: '0.5rem 1rem', borderRadius: '20px', boxShadow: '0 4px 10px rgba(0,0,0,0.1)', fontWeight: 'bold', color: attemptCount > 3 ? '#0369a1' : '#be123c', animation: 'popIn 0.3s ease-out', zIndex: 20, whiteSpace: 'nowrap' }}>
                   {attemptCount > 3 
-                    ? `💡 Hint: Starts with ${currentQ.correctAnswer[0].toUpperCase()}`
-                    : (refresherMode && currentChallengeType === 'daily' ? "Let's dust off this sound!" : "Almost! Listen again.")
+                    ? t('hintStartsWith', { letter: currentQ.correctAnswer[0].toUpperCase() })
+                    : (refresherMode && currentChallengeType === 'daily' ? t('refreshSound') : t('almostListenAgain'))
                   }
                   <div style={{ position: 'absolute', bottom: '-10px', left: '20px', borderLeft: '10px solid transparent', borderRight: '10px solid transparent', borderTop: '10px solid white' }}></div>
                 </div>
@@ -487,7 +490,7 @@ export default function DailyChallenge() {
                 disabled={isProcessing || feedbackState !== null}
                 maxLength={2}
                 className={`font-phonics ${feedbackState === 'wrong' ? 'wobble-wrong' : ''}`}
-                placeholder="Type here..."
+                placeholder={t('typeHere')}
                 style={{
                   width: '100%',
                   fontSize: '4.5rem',
@@ -512,7 +515,7 @@ export default function DailyChallenge() {
                 disabled={isProcessing || feedbackState !== null || !typedAnswer.trim()}
                 style={{ fontSize: '2rem', padding: '1rem 3rem', width: '100%', marginTop: '1rem' }}
               >
-                Submit / 確定
+                {t('submitConfirm')}
               </button>
             </form>
             <div style={{ width: '100%', maxWidth: '600px', display: 'flex', justifyContent: 'center', marginTop: '-1rem' }}>
@@ -538,14 +541,14 @@ export default function DailyChallenge() {
       {showQuitConfirm && (
         <div style={{ position: 'fixed', inset: 0, zIndex: 1000, background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <div style={{ background: 'white', padding: '2rem', borderRadius: '24px', textAlign: 'center', maxWidth: '400px', width: '90%' }}>
-            <h2 style={{ color: '#1e3a8a', marginBottom: '1rem', fontFamily: '"Comic Sans MS", cursive' }}>Quit Game?</h2>
-            <p style={{ color: '#64748b', marginBottom: '2rem', fontSize: '1.2rem' }}>Are you sure you want to quit? You will lose today's progress!</p>
+            <h2 style={{ color: '#1e3a8a', marginBottom: '1rem', fontFamily: '"Comic Sans MS", cursive' }}>{t('quitGame')}?</h2>
+            <p style={{ color: '#64748b', marginBottom: '2rem', fontSize: '1.2rem' }}>{t('quitGameConfirm')}</p>
             <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
-              <button onClick={() => setShowQuitConfirm(false)} className="btn-secondary" style={{ padding: '0.75rem 1.5rem' }}>Cancel</button>
+              <button onClick={() => setShowQuitConfirm(false)} className="btn-secondary" style={{ padding: '0.75rem 1.5rem' }}>{t('cancel')}</button>
               <button onClick={() => {
                 useGameStore.setState({ isChallengeActive: false });
                 navigate('/map');
-              }} className="btn-primary" style={{ background: '#ef4444', borderColor: '#b91c1c', padding: '0.75rem 1.5rem' }}>Yes, Quit</button>
+              }} className="btn-primary" style={{ background: '#ef4444', borderColor: '#b91c1c', padding: '0.75rem 1.5rem' }}>{t('yesQuit')}</button>
             </div>
           </div>
         </div>

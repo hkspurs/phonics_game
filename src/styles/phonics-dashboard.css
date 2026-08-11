@@ -9,27 +9,29 @@
   background: linear-gradient(135deg, #eff6ff, #f0fdf4);
   border: 2px solid rgba(96, 165, 250, .32);
 }
-.phonics-hero-card__kicker, .phonics-world-card__eyebrow { color: #2563eb; font-size: .78rem; font-weight: 950; letter-spacing: .06em; }
+.phonics-hero-card__kicker, .phonics-world-card__eyebrow { color: #2563eb; font-size: .875rem; font-weight: 950; line-height: 1.25; letter-spacing: .05em; }
 .phonics-hero-card h2 { margin: .35rem 0; color: #1e3a8a; font-size: clamp(1.45rem, 4vw, 2.2rem); }
-.phonics-hero-card p { max-width: 36rem; margin: 0 0 1.1rem; color: #475569; font-weight: 750; }
+.phonics-hero-card p { max-width: 45ch; margin: 0 0 1.1rem; color: #475569; font-weight: 750; line-height: 1.45; }
 .phonics-hero-card__button { min-height: 54px; }
 .phonics-hero-card__characters { display: flex; align-items: center; gap: .25rem; flex: none; }.phonics-hero-card__characters > :last-child { width: clamp(56px, 8vw, 86px); }
 .phonics-dashboard__tools { display: grid; grid-template-columns: repeat(4, 1fr); gap: .65rem; }
 .world-tool { display: flex; align-items: center; justify-content: center; gap: .45rem; min-height: 48px; border: 1px solid #dbeafe; border-radius: 15px; background: white; color: #1e3a8a; font-weight: 850; cursor: pointer; }
 .world-tool:hover, .world-tool:focus-visible { border-color: #60a5fa; transform: translateY(-1px); }
 .world-tool--map { background: #eff6ff; }
-.phonics-learning-split { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
+.phonics-learning-split { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.25rem; margin-top: 1.25rem; }
 .phonics-world-card { display: grid; grid-template-columns: auto 1fr; gap: .9rem; align-items: start; padding: 1.25rem; border-radius: 24px; background: white; border: 2px solid #e2e8f0; box-shadow: 0 10px 24px rgba(15,23,42,.07); }
 .phonics-world-card--blend { border-color: #99f6e4; background: linear-gradient(145deg, #f0fdfa, #fff); }
 .phonics-world-card--forest { border-color: #bfdbfe; background: linear-gradient(145deg, #eff6ff, #fff); }
 .phonics-world-card__emoji { font-size: 2.6rem; }
 .phonics-world-card h2 { margin: .15rem 0 .4rem; color: #17324d; font-size: clamp(1.2rem, 3vw, 1.55rem); }
-.phonics-world-card p { margin: 0 0 1rem; color: #64748b; line-height: 1.45; font-weight: 700; }
+.phonics-world-card p { max-width: 45ch; margin: 0 0 1rem; color: #64748b; line-height: 1.45; font-weight: 700; }
 .phonics-world-card button { min-height: 46px; }
 .phonics-world-card__legacy { margin-top: .9rem; padding-top: .75rem; border-top: 1px dashed #cbd5e1; }
+.phonics-world-card__legacy summary { display: inline-flex; min-height: 40px; align-items: center; color: #64748b; cursor: pointer; font-size: .875rem; font-weight: 900; line-height: 1.25; letter-spacing: .05em; text-transform: uppercase; }
+.phonics-world-card__legacy summary:focus-visible { outline: 3px solid #60a5fa; outline-offset: 3px; border-radius: 6px; }
 .phonics-world-card__legacy > span { display: block; margin-bottom: .45rem; color: #64748b; font-size: .72rem; font-weight: 900; letter-spacing: .08em; text-transform: uppercase; }
 .phonics-world-card__legacy > div { display: flex; flex-wrap: wrap; gap: .5rem; }
-.phonics-world-card__legacy button { min-height: 40px; padding: .55rem .8rem; font-size: .85rem; }
+.phonics-world-card__legacy button { min-height: 40px; padding: .55rem .8rem; font-size: .875rem; line-height: 1.2; }
 .phonics-legacy-row { display: flex; flex-wrap: wrap; justify-content: center; gap: .7rem; }
 .phonics-legacy-row button { min-height: 48px; }
 .phonics-legacy-row__bubble { border-color: #fde68a; background: #fffbeb; color: #a16207; }

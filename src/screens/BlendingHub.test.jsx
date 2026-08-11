@@ -11,8 +11,7 @@ vi.mock('../components/PhaserAdventureWorld', () => ({
 describe('BlendingHub', () => {
   it('keeps blending and simple words together under their own learning world', () => {
     render(<MemoryRouter initialEntries={['/blending']}><BlendingHub /></MemoryRouter>);
-    expect(screen.getByRole('heading', { name: '學習拼音併音' })).toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: 'Learn to Blend' })).toBeInTheDocument();
+    expect(screen.getAllByRole('heading', { name: 'Learn to Blend' })).toHaveLength(2);
     expect(screen.getByRole('heading', { name: 'Simple Word' })).toBeInTheDocument();
     expect(screen.getByTestId('adventure-world')).toBeInTheDocument();
     expect(screen.queryByText('英語拼音森林')).not.toBeInTheDocument();

@@ -3,65 +3,68 @@ import { BookOpen, ChevronRight, Gamepad2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import ExperienceFrame from '../components/ExperienceFrame';
 import PhaserAdventureWorld from '../components/PhaserAdventureWorld';
+import { useTranslation } from '../hooks/useTranslation';
 import '../styles/blending-hub.css';
 
 const paths = [
   {
     id: 'learn',
     icon: BookOpen,
-    title: 'Learn to Blend',
-    description: 'Listen → join → build the word',
-    action: 'Start learning',
+    titleKey: 'learnToBlend',
+    descriptionKey: 'listenJoinBuild',
+    actionKey: 'startLearning',
     href: '/simple-words?mode=learn&adventure=1&sessionSize=5',
   },
   {
     id: 'test',
     icon: Gamepad2,
-    title: 'Simple Word',
-    description: 'Listen and spell the CVC word',
-    action: 'Play Simple Word',
+    titleKey: 'simpleWord',
+    descriptionKey: 'simpleWordDescription',
+    actionKey: 'playSimpleWord',
     href: '/simple-words?adventure=1&sessionSize=5',
   },
 ];
 
 export default function BlendingHub() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   return (
     <ExperienceFrame
-      world="學習拼音併音"
-      title="學習拼音併音"
-      subtitle="先聽清楚，再慢慢拼出真正嘅字"
+      world={t('blendingTitle')}
+      title={t('blendingTitle')}
+      subtitle={t('blendingIntroDescription')}
       backTo="/phonics"
       tone="mint"
     >
-      <section className="blending-intro" aria-label="Blending lesson introduction">
+      <section className="blending-intro" aria-label={t('blendingIntroLabel')}>
         <div>
-          <span className="blending-intro__kicker">🐰 Rabbit Adventure</span>
-          <h2>幫 Bunny 行到 Carrot Castle</h2>
-          <p>每次只學一小段，學完再測，唔使死背。</p>
+          <span className="blending-intro__kicker">{t('rabbitAdventure')}</span>
+          <h2>{t('carrotCastle')}</h2>
+          <p>{t('blendingIntroDescription')}</p>
         </div>
-        <span className="blending-intro__badge">5 words</span>
+        <span className="blending-intro__badge">{t('wordsCount')}</span>
       </section>
 
       <PhaserAdventureWorld progress={0} total={5} />
 
       <div className="blending-path-grid">
-        {paths.map(({ id, icon: Icon, title, description, action, href }) => (
+        {paths.map(({ id, icon: Icon, titleKey, descriptionKey, actionKey, href }) => (
           <article className={`blending-path-card blending-path-card--${id}`} key={id}>
             <div className="blending-path-card__icon"><Icon size={30} /></div>
             <div>
-              <h2>{title}</h2>
-              <p>{description}</p>
+              <span className="blending-path-card__tag">{t(id === 'learn' ? 'learnPathLabel' : 'testPathLabel')}</span>
+              <h2>{t(titleKey)}</h2>
+                <p>{t(descriptionKey)}</p>
             </div>
-            <button type="button" className="btn-primary blending-path-card__button" onClick={() => navigate(href)}>
-              {action} <ChevronRight size={20} />
+            <button type="button" className={`btn-${id === 'learn' ? 'primary' : 'secondary'} blending-path-card__button`} onClick={() => navigate(href)}>
+              {t(actionKey)} <ChevronRight size={20} />
             </button>
           </article>
         ))}
       </div>
 
-      <p className="blending-note">CVC words stay here. 英語拼音森林會有另一套冒險任務。</p>
+      <p className="blending-note">{t('blendingNote')}</p>
     </ExperienceFrame>
   );
 }

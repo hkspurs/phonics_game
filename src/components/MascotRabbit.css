@@ -34,6 +34,10 @@
   transition: transform 0.3s ease;
 }
 
+.mascot-rabbit-container.feedback-wrong #head-group {
+  animation: rabbit-think .45s ease-in-out;
+}
+
 @keyframes rabbit-bob {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(2px); }
@@ -56,4 +60,17 @@
 @keyframes rabbit-blink {
   0%, 96%, 100% { transform: scaleY(1); }
   98% { transform: scaleY(0.1); }
+}
+
+@keyframes rabbit-think {
+  0%, 100% { transform: translateY(0) rotate(0); }
+  50% { transform: translateY(4px) rotate(5deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mascot-rabbit-container.idle #head-group,
+  .mascot-rabbit-container.idle #left-ear,
+  .mascot-rabbit-container.idle #right-ear,
+  .mascot-rabbit-container.idle .eye,
+  .mascot-rabbit-container.feedback-wrong #head-group { animation: none; }
 }

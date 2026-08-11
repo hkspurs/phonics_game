@@ -1,10 +1,18 @@
 import { ADVENTURE_STEPS } from './adventureEvents';
 
+const DEFAULT_LABELS = {
+  steps: ['Rabbit House', 'River Bridge', 'Carrot Castle'],
+  adventure: 'Adventure',
+  greatWork: 'Great work!',
+  keepGoing: 'Keep going!',
+};
+
 export function createAdventureScene(Phaser, callbacks = {}) {
+  const labels = callbacks.labels || DEFAULT_LABELS;
   return class AdventureScene extends Phaser.Scene {
     constructor() {
       super('AdventureScene');
-      this.state = { step: 0, status: 'idle', word: '' };
+      this.state = { step: 0, status: 'idle', word: '', labels };
     }
 
     create() {
@@ -14,7 +22,7 @@ export function createAdventureScene(Phaser, callbacks = {}) {
       this.path = this.add.graphics();
       this.rabbit = this.add.text(0, 0, '🐰', { fontSize: '48px' }).setOrigin(0.5);
       this.landmark = this.add.text(0, 0, ADVENTURE_STEPS[this.state.step].emoji, { fontSize: '34px' }).setOrigin(0.5);
-      this.caption = this.add.text(width / 2, height - 28, ADVENTURE_STEPS[this.state.step].label, {
+      this.caption = this.add.text(width / 2, height - 28, this.captionText(), {
         color: '#164e63',
         fontFamily: 'Nunito, sans-serif',
         fontSize: '16px',
@@ -58,12 +66,17 @@ export function createAdventureScene(Phaser, callbacks = {}) {
       const y = height * 0.52;
       this.placeRabbit(left, y);
       this.landmark.setText(ADVENTURE_STEPS[this.state.step]?.emoji || '🌱');
-      this.caption.setText(this.state.word
-        ? `${this.state.status === 'correct' ? 'Great work!' : 'Keep going!'}  ${this.state.word}`
-        : ADVENTURE_STEPS[this.state.step]?.label || 'Adventure');
+      this.caption.setText(this.captionText());
       if (this.state.status === 'correct') {
         this.tweens.add({ targets: this.rabbit, y: this.rabbit.y - 12, duration: 180, yoyo: true });
       }
+    }
+
+    captionText() {
+      const labels = this.state.labels || callbacks.labels || DEFAULT_LABELS;
+      return this.state.word
+        ? `${this.state.status === 'correct' ? labels.greatWork : labels.keepGoing}  ${this.state.word}`
+        : labels.steps[this.state.step] || labels.adventure;
     }
 
     shutdown() {

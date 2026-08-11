@@ -142,8 +142,8 @@ test.describe('Mathematics Parent Report Module', () => {
     await page.goto('/');
 
     // Check if encouragement modal pops up
-    await expect(page.getByText('你有一封新信件！💌')).toBeVisible();
-    await page.click('text=領取獎勵 🎟️', { force: true });
+    await expect(page.getByText('You have a new letter! 💌')).toBeVisible();
+    await page.click('text=Claim Reward 🎟️', { force: true });
 
     // Done!
   });

@@ -43,21 +43,21 @@ export default function MathHome() {
   };
 
   return (
-    <ExperienceFrame world="數學王國" title={t('maths')} subtitle="每日一小步，數字信心行遠一步。" backTo="/" tone="sun">
+    <ExperienceFrame world={t('maths')} title={t('maths')} subtitle={t('mathWorldSubtitle')} backTo="/" tone="sun">
       <div className="math-hero">
         <MathMascot style={{ width: 150, height: 150 }} />
-        <div><span className="math-hero__kicker">🔢 NUMBER ADVENTURE</span><h2>今日去邊度？</h2><p>選 Mission、Map 或 Gym，唔同玩法都會幫你變強。</p></div>
+        <div><span className="math-hero__kicker">{t('numberAdventure')}</span><h2>{t('mathPrompt')}</h2><p>{t('mathDescription')}</p></div>
       </div>
 
       {math.completedToday ? (
-        <section className="math-complete-card"><h2>{t('greatJobToday')}</h2><p>{t('completedDaily')}</p><span>🌟 今日任務已完成</span></section>
+        <section className="math-complete-card"><h2>{t('greatJobToday')}</h2><p>{t('completedDaily')}</p><span>{t('mathCompletedLabel')}</span></section>
       ) : (
         <button type="button" className="btn-primary math-primary-action" onClick={startDaily}><Play size={27} /> {t('dailyChallenge')}</button>
       )}
 
       <div className="math-choice-grid">
-        <button type="button" className="math-choice-card" onClick={() => navigate('/math/map')}><MapIcon size={32} /><strong>{t('masteryMap')}</strong><span>睇吓你已經行到邊</span></button>
-        <button type="button" className="math-choice-card" onClick={startGym}><Dumbbell size={32} /><strong>{t('trainingGym')}</strong><span>針對需要多啲練習嘅地方</span></button>
+        <button type="button" className="math-choice-card" onClick={() => navigate('/math/map')}><MapIcon size={32} /><strong>{t('masteryMap')}</strong><span>{t('mapDescription')}</span></button>
+        <button type="button" className="math-choice-card" onClick={startGym}><Dumbbell size={32} /><strong>{t('trainingGym')}</strong><span>{t('gymDescription')}</span></button>
       </div>
     </ExperienceFrame>
   );

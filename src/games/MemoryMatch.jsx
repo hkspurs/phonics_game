@@ -4,9 +4,11 @@ import { X, Volume2 } from 'lucide-react';
 import { useGameStore } from '../store/gameStore';
 import { questionEngine } from '../game/QuestionEngine';
 import { audioEngine } from '../audio/AudioEngine';
+import { useTranslation } from '../hooks/useTranslation';
 
 export default function MemoryMatch() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { tickets, useTicket } = useGameStore();
 
   const [isPlaying, setIsPlaying] = useState(false);
@@ -105,22 +107,22 @@ export default function MemoryMatch() {
       {/* Header */}
       <div style={{ width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center', zIndex: 10, marginBottom: '2rem' }}>
         <button className="btn-secondary" style={{ padding: '0.5rem', background: 'white' }} onClick={() => {
-          if (window.confirm("Quit game? You will lose your ticket!")) navigate('/braingames');
+          if (window.confirm(t('quitGameConfirm'))) navigate('/braingames');
         }}>
           <X size={24} />
         </button>
         <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', justifyContent: 'flex-end' }}>
            <div style={{ background: 'white', padding: '0.5rem 2rem', borderRadius: '100px', fontSize: '1.25rem', fontWeight: 'bold', color: '#6d28d9', boxShadow: '0 4px 0 rgba(0,0,0,0.1)' }}>
-             Moves: {moves}
+             {t('memoryMoves', { count: moves })}
            </div>
            <div style={{ background: 'white', padding: '0.5rem 2rem', borderRadius: '100px', fontSize: '1.25rem', fontWeight: 'bold', color: '#10b981', boxShadow: '0 4px 0 rgba(0,0,0,0.1)' }}>
-             Matches: {matchedPairs.length} / 6
+             {t('memoryMatches', { count: matchedPairs.length })}
            </div>
         </div>
       </div>
 
       <h1 style={{ textAlign: 'center', color: '#7c3aed', fontSize: '2.5rem', marginBottom: '2rem', animation: matchedPairs.length === 6 ? 'pulse-glow 2s infinite' : 'none' }}>
-        {matchedPairs.length === 6 ? '🎉 You matched them all! 🎉' : 'Memory Match'}
+        {matchedPairs.length === 6 ? t('memoryComplete') : t('memoryMatch')}
       </h1>
 
       {/* QA FIX: Grid responsiveness */}
