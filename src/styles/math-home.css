@@ -1,0 +1,15 @@
+.math-hero { display: flex; align-items: center; gap: 1rem; padding: 1rem 1.2rem; border-radius: 24px; background: linear-gradient(135deg, #fffbeb, #fff7ed); border: 2px solid #fde68a; }
+.math-hero__kicker { color: #b45309; font-size: .78rem; font-weight: 950; letter-spacing: .08em; }
+.math-hero h2 { margin: .2rem 0 .35rem; color: #92400e; }
+.math-hero p { margin: 0; color: #78350f; font-weight: 700; }
+.math-primary-action { display: flex; align-items: center; justify-content: center; gap: .7rem; min-height: 68px; border: 0; border-radius: 20px; background: linear-gradient(135deg, #f59e0b, #d97706); color: #fff; font-size: 1.65rem; font-weight: 950; box-shadow: 0 7px 0 #92400e; cursor: pointer; }
+.math-complete-card { padding: 1.4rem; border: 2px solid #fcd34d; border-radius: 22px; background: #fff; text-align: center; color: #92400e; }
+.math-complete-card h2 { margin: 0 0 .35rem; color: #b45309; }
+.math-complete-card p { margin: 0 0 .7rem; }
+.math-complete-card span { font-weight: 900; }
+.math-choice-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
+.math-choice-card { display: flex; flex-direction: column; align-items: center; gap: .45rem; min-height: 150px; padding: 1.2rem; border: 2px solid #fde68a; border-radius: 22px; background: #fff; color: #b45309; font-size: 1.15rem; cursor: pointer; }
+.math-choice-card strong { color: #92400e; }
+.math-choice-card span { color: #a16207; font-size: .95rem; font-weight: 700; text-align: center; }
+.math-choice-card:hover, .math-choice-card:focus-visible { transform: translateY(-2px); border-color: #f59e0b; }
+@media (max-width: 560px) { .math-hero { align-items: flex-start; flex-direction: column; } .math-hero img { max-width: 100px; } .math-choice-grid { grid-template-columns: 1fr; } }

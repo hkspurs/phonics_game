@@ -36,7 +36,7 @@ export default function MathTrainingGym() {
 
   useEffect(() => {
     if (!isMathChallengeActive || activeQuestions.length === 0 || currentQuestionIndex >= activeQuestions.length) {
-      navigate('/math');
+      navigate('/math/map');
     }
   }, [isMathChallengeActive, activeQuestions, currentQuestionIndex, navigate]);
 
@@ -159,7 +159,7 @@ export default function MathTrainingGym() {
         </button>
         
         <div style={{ background: 'white', padding: '0.5rem 1rem', borderRadius: '100px', fontWeight: 'bold', color: '#3b82f6' }}>
-          🏋️‍♂️ {t('trainingGym')}
+          🏋️‍♂️ Math Gym · {t('trainingGym')}
         </div>
 
         <span style={{ fontWeight: 'bold', color: '#1e40af', fontSize: '1.25rem' }}>

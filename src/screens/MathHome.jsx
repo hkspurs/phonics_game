@@ -1,6 +1,6 @@
 import React from 'react';
+import { Dumbbell, Map as MapIcon, Play } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Play, Map as MapIcon, Lock, ShoppingCart } from 'lucide-react';
 import MathMascot from '../math/components/MathMascot';
 import { audioEngine } from '../audio/AudioEngine';
 import { useGameStore } from '../store/gameStore';
@@ -8,205 +8,57 @@ import { mathQuestionEngine } from '../math/engine/MathQuestionEngine';
 import { createRandom } from '../math/engine/random';
 import { composeMathSession } from '../math/engine/difficulty';
 import { useTranslation } from '../hooks/useTranslation';
+import ExperienceFrame from '../components/ExperienceFrame';
+import '../styles/math-home.css';
 
 export default function MathHome() {
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const { 
-    math, 
-    startMathSession,
-    getMathSkillStatus
-  } = useGameStore();
+  const { math, startMathSession, getMathSkillStatus } = useGameStore();
 
-  const handleStartDaily = () => {
+  const startDaily = () => {
     audioEngine.playUI('pop');
-    // Generate session
     const plan = composeMathSession(math.unlockedSkillIds, math, getMathSkillStatus);
-    const skills = plan.map(p => p.skillId);
-    
-    // The composeMathSession gives difficulty but MathQuestionEngine.generateSession needs stats
-    // Or we just generate questions individually based on the plan.
-    // Let's map plan to questions directly:
-    const questions = plan.map((p, i) => {
-      // Use index to salt the seed
-      const q = mathQuestionEngine.generateQuestion(p.skillId, {
-        difficulty: p.difficulty,
-        random: createRandom(Date.now() + i) 
-      });
-      if (q) q.id = crypto.randomUUID();
-      return q;
+    const questions = plan.map((item, index) => {
+      const question = mathQuestionEngine.generateQuestion(item.skillId, { difficulty: item.difficulty, random: createRandom(Date.now() + index) });
+      if (question) question.id = crypto.randomUUID();
+      return question;
     }).filter(Boolean);
-
     startMathSession(questions);
     navigate('/math/daily');
   };
 
-  const handleStartGym = () => {
+  const startGym = () => {
     audioEngine.playUI('pop');
-    // Find weakest skill
-    let weakestSkill = null;
-    let minScore = Infinity;
-    Object.keys(math.learningStats || {}).forEach(skillId => {
-      const stats = math.learningStats[skillId];
-      if (stats.attempts >= 3) {
-        const accuracy = stats.firstAttemptHits / stats.attempts;
-        if (accuracy < minScore) {
-          minScore = accuracy;
-          weakestSkill = skillId;
-        }
-      }
-    });
-    
-    // Fallback to first unlocked if no weak skill
-    if (!weakestSkill) {
-      weakestSkill = math.unlockedSkillIds[0];
-    }
-
-    const questions = [];
-    for(let i=0; i<5; i++) {
-      const q = mathQuestionEngine.generateQuestion(weakestSkill, {
-        difficulty: Math.floor(Math.random() * 3) + 1, // Start easy but allow harder
-        random: createRandom(Date.now() + i)
-      });
-      if(q) {
-        q.id = crypto.randomUUID();
-        questions.push(q);
-      }
-    }
-    
+    const weakestSkill = Object.entries(math.learningStats || {})
+      .filter(([, stats]) => stats.attempts >= 3)
+      .sort(([, a], [, b]) => (a.firstAttemptHits / a.attempts) - (b.firstAttemptHits / b.attempts))[0]?.[0] || math.unlockedSkillIds[0];
+    const questions = Array.from({ length: 5 }, (_, index) => {
+      const question = mathQuestionEngine.generateQuestion(weakestSkill, { difficulty: Math.floor(Math.random() * 3) + 1, random: createRandom(Date.now() + index) });
+      if (question) question.id = crypto.randomUUID();
+      return question;
+    }).filter(Boolean);
     startMathSession(questions);
     navigate('/math/gym');
   };
 
   return (
-    <div className="screen-container" style={{
-      position: 'relative',
-      overflow: 'hidden',
-      alignItems: 'center',
-      background: 'linear-gradient(to bottom, #fef3c7, #fde68a)',
-    }}>
-      {/* Header */}
-      <div style={{ width: '100%', padding: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <button
-          onClick={() => { import('../audio/AudioEngine').then(m => m.audioEngine.playUI('pop')); navigate('/'); }}
-          style={{
-            background: 'white',
-            border: 'none',
-            borderRadius: '100px',
-            padding: '0.5rem 1rem',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            cursor: 'pointer',
-            boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
-          }}
-        >
-          <ArrowLeft size={24} color="#f59e0b" />
-          <span style={{color: '#f59e0b', fontWeight: 'bold', marginLeft: '0.5rem'}}>{t('back')}</span>
-        </button>
-        <h1 style={{ fontSize: '2rem', color: '#92400e', margin: 0 }}>
-          {t('maths')}
-        </h1>
-        <button 
-          style={{
-            background: 'linear-gradient(135deg, #d946ef, #a21caf)', border: 'none', color: 'white',
-            width: '48px', height: '48px', borderRadius: '50%',
-            display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
-            boxShadow: '0 4px 10px rgba(217, 70, 239, 0.3)', flexShrink: 0,
-          }}
-          onClick={() => {
-            import('../audio/AudioEngine').then(m => m.audioEngine.playUI('pop'));
-            navigate('/shop');
-          }}
-          aria-label="Shop"
-        >
-          <ShoppingCart size={24} />
-        </button>
+    <ExperienceFrame world="數學王國" title={t('maths')} subtitle="每日一小步，數字信心行遠一步。" backTo="/" tone="sun">
+      <div className="math-hero">
+        <MathMascot style={{ width: 150, height: 150 }} />
+        <div><span className="math-hero__kicker">🔢 NUMBER ADVENTURE</span><h2>今日去邊度？</h2><p>選 Mission、Map 或 Gym，唔同玩法都會幫你變強。</p></div>
       </div>
 
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '2rem', width: '100%', maxWidth: '600px' }}>
-        
-        {/* Mascot */}
-        <div style={{ filter: 'drop-shadow(0 10px 10px rgba(0,0,0,0.15))' }}>
-          <MathMascot style={{ width: '200px', height: '200px' }} />
-        </div>
+      {math.completedToday ? (
+        <section className="math-complete-card"><h2>{t('greatJobToday')}</h2><p>{t('completedDaily')}</p><span>🌟 今日任務已完成</span></section>
+      ) : (
+        <button type="button" className="btn-primary math-primary-action" onClick={startDaily}><Play size={27} /> {t('dailyChallenge')}</button>
+      )}
 
-        {/* Daily Challenge Button */}
-        {math.completedToday ? (
-          <div style={{
-            background: 'white',
-            padding: '2rem',
-            borderRadius: '24px',
-            border: '4px solid #fcd34d',
-            textAlign: 'center',
-            width: '100%'
-          }}>
-            <h2 style={{ color: '#d97706', marginBottom: '1rem' }}>{t('greatJobToday')}</h2>
-            <p style={{ color: '#92400e' }}>{t('completedDaily')}</p>
-          </div>
-        ) : (
-          <button 
-            className="btn-primary" 
-            onClick={handleStartDaily}
-            style={{
-              width: 'calc(100% - 2rem)',
-              margin: '0 1rem',
-              fontSize: '2rem',
-              padding: '1.5rem',
-              background: '#f59e0b',
-              boxShadow: '0 8px 0 #b45309',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: '1rem',
-              animation: 'pulse-glow 2s infinite'
-            }}
-          >
-            <Play size={40} /> {t('dailyChallenge')}
-          </button>
-        )}
-
-        {/* Other Areas */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', width: '100%' }}>
-          <button 
-            className="btn-secondary"
-            onClick={() => { audioEngine.playUI('pop'); navigate('/math/map'); }}
-            style={{
-              padding: '1.5rem',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              gap: '0.5rem',
-              fontSize: '1.25rem',
-              color: '#d97706',
-              borderColor: '#fde68a'
-            }}
-          >
-            <MapIcon size={32} />
-            {t('masteryMap')}
-          </button>
-          
-          <button 
-            className="btn-secondary"
-            onClick={handleStartGym}
-            style={{
-              padding: '1.5rem',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              gap: '0.5rem',
-              fontSize: '1.25rem',
-              color: '#d97706',
-              borderColor: '#fde68a',
-              background: 'white'
-            }}
-          >
-            <span style={{ fontSize: '32px' }}>🏋️‍♂️</span>
-            {t('trainingGym')}
-          </button>
-        </div>
-
+      <div className="math-choice-grid">
+        <button type="button" className="math-choice-card" onClick={() => navigate('/math/map')}><MapIcon size={32} /><strong>{t('masteryMap')}</strong><span>睇吓你已經行到邊</span></button>
+        <button type="button" className="math-choice-card" onClick={startGym}><Dumbbell size={32} /><strong>{t('trainingGym')}</strong><span>針對需要多啲練習嘅地方</span></button>
       </div>
-    </div>
+    </ExperienceFrame>
   );
 }

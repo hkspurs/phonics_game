@@ -8,6 +8,7 @@ export const translations = {
     phonics: '英語拼音森林',
     maths: '數學王國',
     start: '開始',
+    explore: '探索',
     
     // Phonics Home
     todayMissionWaiting: '今日嘅任務等緊你呀！',
@@ -100,6 +101,7 @@ export const translations = {
     phonics: 'Phonics Forest',
     maths: 'Math Kingdom',
     start: 'Start',
+    explore: 'Explore',
     
     // Phonics Home
     todayMissionWaiting: 'Today\'s Mission is waiting for you!',

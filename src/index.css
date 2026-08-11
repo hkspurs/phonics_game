@@ -238,22 +238,9 @@ body {
   }
 }
 
-/* QA FIX (Challenge 25): Landscape Warning Overlay */
+/* Landscape remains usable on iPad and small phones; individual screens scroll when needed. */
 @media (orientation: landscape) and (max-height: 500px) {
-  body::before {
-    content: "Please rotate your device to Portrait mode for the best experience! 📱🔄";
-    position: fixed;
-    inset: 0;
-    background: var(--primary);
-    color: white;
-    font-size: 2rem;
-    font-weight: bold;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    padding: 2rem;
-    z-index: 9999;
-  }
+  .screen-container { min-height: 100dvh; padding-top: 0.6rem; padding-bottom: 0.6rem; }
+  .mascot-container { transform: scale(0.72); transform-origin: center top; margin-bottom: -2rem; }
 }
 \n.hide-scrollbar::-webkit-scrollbar { display: none; }\n.hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }

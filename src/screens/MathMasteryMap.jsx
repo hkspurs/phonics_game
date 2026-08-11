@@ -214,19 +214,16 @@ export default function MathMasteryMap() {
                   isLocked={node.status === 'locked'} 
                   onClick={() => handleSkillClick(node.id, node.unit)}
                   style={{ position: 'absolute', inset: 0, zIndex: 1 }}
-                />
-                
-                {/* Visual Math Quantity/Icon inside the node */}
-                {!node.status.includes('locked') && (
-                  <div style={{
+                >
+                  <span style={{
                     position: 'absolute',
                     top: '40%', left: '50%', transform: 'translate(-50%, -50%)',
                     fontSize: '2rem', pointerEvents: 'none',
                     filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.2))', zIndex: 2
                   }}>
                     {SKILL_EMOJIS[node.id]}
-                  </div>
-                )}
+                  </span>
+                </MapNodeCloud>
               </div>
               <div style={{
                   marginTop: '0.5rem',

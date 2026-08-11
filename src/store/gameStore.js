@@ -116,6 +116,7 @@ export const useGameStore = create(
       }),
 
       authenticateParent: (isAuthenticated) => set({ isParentAuthenticated: isAuthenticated }),
+      setParentAuthenticated: (isAuthenticated) => set({ isParentAuthenticated: isAuthenticated }),
 
       // 14. Global Language Settings
       setLanguage: (lang) => set({ language: lang }),

@@ -1,6 +1,7 @@
 import React from 'react';
+import { Lock } from 'lucide-react';
 
-export default function MapNodeCloud({ status, statusColor, isMastered, isLocked, style, onClick }) {
+export default function MapNodeCloud({ status, statusColor, isMastered, isLocked, style, onClick, children }) {
   const isPractising = status === 'practising';
   const isWeak = status === 'weak';
 
@@ -13,10 +14,15 @@ export default function MapNodeCloud({ status, statusColor, isMastered, isLocked
   const imgSrc = `assets/kenney/ui-pack/PNG/${color}/Default/button_round_depth_flat.png`;
 
   return (
-    <div 
+    <button
+      type="button"
       className={`map-node-container ${status}`} 
       style={{ 
         cursor: isLocked ? 'default' : 'pointer', 
+        border: 0,
+        padding: 0,
+        background: 'transparent',
+        font: 'inherit',
         position: 'relative',
         display: 'flex',
         alignItems: 'center',
@@ -24,8 +30,7 @@ export default function MapNodeCloud({ status, statusColor, isMastered, isLocked
         ...style 
       }}
       onClick={!isLocked ? onClick : undefined}
-      role="button"
-      tabIndex={isLocked ? -1 : 0}
+      disabled={isLocked}
       aria-label={`${status} node`}
     >
       <img 
@@ -38,13 +43,11 @@ export default function MapNodeCloud({ status, statusColor, isMastered, isLocked
           transition: 'all 0.3s'
         }} 
       />
-      
+
+      {children}
+
       {isLocked && (
-        <img 
-          src="assets/kenney/game-icons/PNG/White/2x/locked.png" 
-          alt="" 
-          style={{ position: 'absolute', width: '30px', opacity: 0.5, top: '40%' }}
-        />
+        <Lock aria-label="Locked" size={30} style={{ position: 'absolute', opacity: 0.72, top: '35%' }} />
       )}
 
       {isMastered && (
@@ -60,6 +63,6 @@ export default function MapNodeCloud({ status, statusColor, isMastered, isLocked
           }}
         />
       )}
-    </div>
+    </button>
   );
 }

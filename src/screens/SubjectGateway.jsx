@@ -1,420 +1,83 @@
-import React, { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { Settings, Volume2 } from 'lucide-react'
-import { useGameStore } from '../store/gameStore'
-import { audioEngine } from '../audio/AudioEngine'
-import MascotRabbit from '../components/MascotRabbit'
-import ParentGateModal from '../components/ParentGateModal'
-import { useTranslation } from '../hooks/useTranslation'
-import { SUBJECTS } from '../platform/subjects'
+import React, { useEffect, useState } from 'react';
+import { Globe2, Settings } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { useGameStore } from '../store/gameStore';
+import { audioEngine } from '../audio/AudioEngine';
+import ExperienceFrame from '../components/ExperienceFrame';
+import ParentGateModal from '../components/ParentGateModal';
+import MascotRabbit from '../components/MascotRabbit';
+import { useTranslation } from '../hooks/useTranslation';
+import '../styles/subject-gateway.css';
 
-/**
- * SubjectGateway — The NEW homepage ("/").
- * Displays shared currency, the mascot, and large subject cards
- * for Phonics Forest and Math Kingdom.
- */
 export default function SubjectGateway() {
-  const navigate = useNavigate()
-  const { t, language, toggleLanguage } = useTranslation()
-  const [showParentGate, setShowParentGate] = useState(false)
-  const [isEntering, setIsEntering] = useState(true)
-
-  const { 
-    stars, gems, tickets, streak, hasCompletedDaily, authenticateParent, math,
-    encouragements, claimEncouragement, addTicket
-  } = useGameStore()
-  
-  const [showEncouragement, setShowEncouragement] = useState(false)
-  const [currentEncouragement, setCurrentEncouragement] = useState(null)
+  const navigate = useNavigate();
+  const { t, language, toggleLanguage } = useTranslation();
+  const [showParentGate, setShowParentGate] = useState(false);
+  const [currentEncouragement, setCurrentEncouragement] = useState(null);
+  const { encouragements, claimEncouragement, addTicket, authenticateParent, math } = useGameStore();
 
   useEffect(() => {
-    const timer = setTimeout(() => setIsEntering(false), 600)
-    return () => clearTimeout(timer)
-  }, [])
+    const next = encouragements?.find((item) => !item.claimedAt);
+    if (next) setCurrentEncouragement(next);
+  }, [encouragements]);
 
-  useEffect(() => {
-    if (!isEntering) {
-      const unclaimed = encouragements?.filter(e => !e.claimedAt) || [];
-      if (unclaimed.length > 0) {
-        setCurrentEncouragement(unclaimed[0]);
-        setShowEncouragement(true);
-      }
-    }
-  }, [isEntering, encouragements]);
-
-  const handleClaimEncouragement = () => {
-    if (currentEncouragement) {
-      audioEngine.playUI('correct');
-      // For MVP, just give 1 ticket as a simple reward
-      addTicket();
-      claimEncouragement(currentEncouragement.id);
-      setShowEncouragement(false);
-    }
+  const claim = () => {
+    if (!currentEncouragement) return;
+    audioEngine.playUI('correct');
+    addTicket();
+    claimEncouragement(currentEncouragement.id);
+    setCurrentEncouragement(null);
   };
 
-  const handleParentAccess = () => {
-    authenticateParent(true)
-    navigate('/parent')
-  }
-
-  const handleSubjectClick = (route) => {
-    audioEngine.playUI('pop')
-    navigate(route)
-  }
-
   return (
-    <div className="screen-container" style={{
-      position: 'relative',
-      overflowX: 'hidden',
-      overflowY: 'auto',
-      alignItems: 'center',
-      justifyContent: 'flex-start',
-      background: 'linear-gradient(to bottom, #ecfdf5, #dbeafe)',
-      padding: '1rem',
-      minHeight: '100vh'
-    }}>
-      {showParentGate && (
-        <ParentGateModal
-          onClose={() => setShowParentGate(false)}
-          onSuccess={handleParentAccess}
-        />
+    <ExperienceFrame
+      world="Rabbit Academy"
+      title={language === 'en' ? 'Ready to Learn?' : t('readyToLearn')}
+      subtitle="選一個世界，完成一個小任務，再返嚟玩。"
+      showBack={false}
+      showSettings={false}
+      tone="academy"
+    >
+      {showParentGate && <ParentGateModal onClose={() => setShowParentGate(false)} onSuccess={() => { authenticateParent(true); navigate('/parent'); }} />}
+
+      {currentEncouragement && (
+        <aside className="encouragement-card" role="status">
+          <MascotRabbit feedbackState="correct" style={{ width: 72, height: 72 }} />
+          <div>
+            <strong>{t('newLetter')}</strong>
+            {language === 'en' && <span className="encouragement-card__bilingual">你有一封新信件！💌</span>}
+            <p>“{currentEncouragement.message}”</p>
+          </div>
+          <button type="button" className="btn-primary" onClick={claim}>{t('claimReward')} / 領取獎勵 🎟️</button>
+        </aside>
       )}
 
-      {/* Encouragement Modal */}
-      {showEncouragement && currentEncouragement && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(255,255,255,0.95)', zIndex: 2000, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', animation: 'fadeInWipe 0.5s' }}>
-          <div style={{ transform: 'scale(1.5)', marginBottom: '2rem' }}>
-            <MascotRabbit feedbackState="happy" />
-          </div>
-          <h1 style={{ fontSize: '2.5rem', color: '#1e293b', margin: 0, textShadow: '0 2px 4px rgba(255,255,255,0.5)', textAlign: 'center' }}>
-            {t('newLetter')}
-          </h1>
-          <div style={{ background: '#fef3c7', padding: '2rem', borderRadius: '24px', maxWidth: '80%', marginBottom: '2rem', border: '2px dashed #f59e0b', fontSize: '1.5rem', color: '#92400e', textAlign: 'center' }}>
-            "{currentEncouragement.message}"
-          </div>
-          <button className="btn-primary" style={{ fontSize: '2rem', padding: '1.5rem 3rem', animation: 'pulse-glow 2s infinite', background: '#f59e0b' }} onClick={handleClaimEncouragement}>
-            {t('claimReward')} 🎟️
-          </button>
-        </div>
-      )}
-
-      {/* ── Header Bar: Currency + Settings ── */}
-      <div style={{
-        width: '100%',
-        maxWidth: '600px',
-        display: 'flex',
-        flexWrap: 'wrap',
-        gap: '0.5rem',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginBottom: '1.5rem',
-        zIndex: 10
-      }}>
-        {/* Currency pills */}
-        <div style={{
-          background: 'rgba(255, 255, 255, 0.95)',
-          padding: '0.6rem 1.2rem',
-          borderRadius: '100px',
-          display: 'flex',
-          gap: '1rem',
-          fontWeight: 'bold',
-          boxShadow: '0 4px 12px rgba(0,0,0,0.08), inset 0 -2px 0 rgba(0,0,0,0.05)',
-          border: '2px solid white',
-          flexWrap: 'wrap'
-        }}>
-          <span style={{ color: '#eab308' }}>⭐ {stars}</span>
-          {gems > 0 && <span style={{ color: '#0ea5e9' }}>💎 {gems}</span>}
-          {tickets > 0 && <span style={{ color: '#a855f7' }}>🎟️ {tickets}</span>}
-        </div>
-
-        <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
-          <div 
-            style={{ 
-              display: 'flex', 
-              alignItems: 'center',
-              background: '#e2e8f0', 
-              borderRadius: '2rem', 
-              padding: '0.25rem',
-              cursor: 'pointer',
-              position: 'relative',
-              boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.1)'
-            }}
-            onClick={toggleLanguage}
-          >
-            <div style={{
-              position: 'absolute',
-              top: '0.25rem',
-              bottom: '0.25rem',
-              left: language === 'zh' ? '0.25rem' : '50%',
-              width: 'calc(50% - 0.25rem)',
-              background: 'white',
-              borderRadius: '1.5rem',
-              boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
-              transition: 'left 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)'
-            }} />
-            <span style={{ 
-              padding: '0.4rem 0.8rem', 
-              fontWeight: '900', 
-              fontSize: '1rem',
-              color: language === 'zh' ? '#3b82f6' : '#94a3b8',
-              zIndex: 1,
-              transition: 'color 0.3s ease'
-            }}>中</span>
-            <span style={{ 
-              padding: '0.4rem 0.8rem', 
-              fontWeight: '900', 
-              fontSize: '1rem',
-              color: language === 'en' ? '#3b82f6' : '#94a3b8',
-              zIndex: 1,
-              transition: 'color 0.3s ease'
-            }}>EN</span>
-          </div>
-
-          {/* Settings gear */}
-          <button
-            style={{
-              background: 'rgba(255,255,255,0.95)',
-              border: '2px solid white',
-              boxShadow: '0 4px 12px rgba(0,0,0,0.08), inset 0 -2px 0 rgba(0,0,0,0.05)',
-              cursor: 'pointer',
-              color: '#64748b',
-              padding: '0.5rem',
-              minWidth: '48px',
-              minHeight: '48px',
-              borderRadius: '50%',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              transition: 'transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275)'
-            }}
-            onMouseEnter={(e) => { e.currentTarget.style.transform = 'scale(1.1) rotate(15deg)'; }}
-            onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1) rotate(0)'; }}
-            onClick={() => { audioEngine.playUI('pop'); setShowParentGate(true); }}
-            aria-label="Settings"
-          >
-            <Settings size={28} />
-          </button>
-        </div>
+      <div className="academy-tools">
+        <button type="button" className="academy-language" onClick={toggleLanguage} aria-label="Change language">
+          <Globe2 size={18} /> {language === 'zh' ? '中' : 'EN'} / {language === 'zh' ? 'EN' : '中'}
+        </button>
+        <button type="button" className="academy-settings" onClick={() => setShowParentGate(true)} aria-label="Settings"><Settings size={20} /> Parents</button>
       </div>
 
-      {/* ── Mascot + Title ── */}
-      <div style={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        marginBottom: '2rem',
-        opacity: isEntering ? 0 : 1,
-        transform: isEntering ? 'translateY(30px)' : 'translateY(0)',
-        transition: 'all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.1s'
-      }}>
-        <div style={{ filter: 'drop-shadow(0 8px 8px rgba(0,0,0,0.1))', marginBottom: '1rem' }}>
-          <MascotRabbit style={{ width: '180px', height: '180px' }} />
-        </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '0.5rem' }}>
-          <h1 
-            style={{
-              fontSize: 'clamp(1.5rem, 5vw, 2.5rem)',
-              color: '#1e3a8a',
-              margin: 0,
-              textAlign: 'center',
-            }}
-          >
-            {t('readyToLearn')}
-          </h1>
-          <button 
-            style={{
-              background: '#fcd34d',
-              border: '4px solid white',
-              borderRadius: '50%',
-              width: '56px',
-              height: '56px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              cursor: 'pointer',
-              boxShadow: '0 6px 12px rgba(245,158,11,0.3), 0 4px 0 #fbbf24',
-              transition: 'transform 0.1s',
-            }}
-            onMouseDown={(e) => { e.currentTarget.style.transform = 'translateY(4px)'; e.currentTarget.style.boxShadow = '0 2px 4px rgba(245,158,11,0.3), 0 0px 0 #fbbf24'; }}
-            onMouseUp={(e) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 6px 12px rgba(245,158,11,0.3), 0 4px 0 #fbbf24'; }}
-            onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 6px 12px rgba(245,158,11,0.3), 0 4px 0 #fbbf24'; }}
-            onClick={() => {
-              audioEngine.playUI('pop');
-            }}
-            aria-label="Read Aloud"
-          >
-            <Volume2 size={28} color="#b45309" strokeWidth={3} />
-          </button>
-        </div>
-        <p style={{
-          fontSize: 'clamp(1.2rem, 3.5vw, 1.5rem)',
-          color: '#475569',
-          fontWeight: 'bold',
-          textAlign: 'center'
-        }}>
-          {t('pickSubject')}
-        </p>
-      </div>
+      <section className="subject-grid" aria-label="Choose a subject">
+        <button type="button" className="subject-card subject-card--phonics" onClick={() => navigate('/phonics')}>
+          <span className="subject-card__art" aria-hidden="true">🌲 🌱 ✨</span>
+          <span className="subject-card__eyebrow">LANGUAGE ADVENTURE</span>
+          <h2>{t('phonics')}</h2>
+          <p>Hear sounds, follow the path, and unlock the forest.</p>
+          <span className="subject-card__cta">{t('explore')} <span aria-hidden="true">→</span></span>
+        </button>
+        <button type="button" className="subject-card subject-card--math" onClick={() => navigate('/math')}>
+          <span className="subject-card__art" aria-hidden="true">🔢 🍎 ⭐</span>
+          <span className="subject-card__eyebrow">NUMBER ADVENTURE</span>
+          <h2>{t('maths')}</h2>
+          <p>Build number confidence through daily missions and practice.</p>
+          <span className="subject-card__cta">{t('start')} <span aria-hidden="true">→</span></span>
+          {math?.completedToday && <span className="subject-card__complete">✅</span>}
+        </button>
+      </section>
 
-      {/* ── Subject Cards ── */}
-      <div style={{
-        display: 'flex',
-        flexWrap: 'wrap',
-        gap: '1.5rem',
-        justifyContent: 'center',
-        width: '100%',
-        maxWidth: '600px',
-        opacity: isEntering ? 0 : 1,
-        transform: isEntering ? 'translateY(40px)' : 'translateY(0)',
-        transition: 'all 0.6s ease-out 0.3s'
-      }}>
-        {/* Phonics Card */}
-        <div
-          onClick={() => handleSubjectClick(SUBJECTS.phonics.route)}
-          style={{
-            background: SUBJECTS.phonics.gradient,
-            borderRadius: '24px',
-            padding: '1.5rem',
-            flex: '1 1 240px',
-            minWidth: '240px',
-            maxWidth: '300px',
-            minHeight: '180px',
-            cursor: 'pointer',
-            boxShadow: '0 8px 25px rgba(59,130,246,0.3)',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: '0.75rem',
-            transition: 'transform 0.2s ease, box-shadow 0.2s ease',
-            position: 'relative',
-            overflow: 'hidden'
-          }}
-          onMouseEnter={(e) => { e.currentTarget.style.transform = 'scale(1.03)'; e.currentTarget.style.boxShadow = '0 12px 35px rgba(59,130,246,0.4)'; }}
-          onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.boxShadow = '0 8px 25px rgba(59,130,246,0.3)'; }}
-        >
-          {/* Completion badge */}
-          {hasCompletedDaily && (
-            <div style={{
-              position: 'absolute',
-              top: '12px',
-              right: '12px',
-              background: 'rgba(255,255,255,0.9)',
-              borderRadius: '50%',
-              width: '32px',
-              height: '32px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontSize: '1.1rem'
-            }}>✅</div>
-          )}
-
-          <div style={{ display: 'flex', gap: '0.25rem', fontSize: '2.5rem' }}>
-            🐱 🐶 🐰
-          </div>
-          <h2 style={{
-            color: 'white',
-            fontSize: 'clamp(1.3rem, 4vw, 1.6rem)',
-            fontWeight: 'bold',
-            margin: 0,
-            textShadow: '0 2px 4px rgba(0,0,0,0.15)'
-          }}>
-            {t('phonics')}
-          </h2>
-          <button
-            className="btn-secondary"
-            style={{
-              padding: '0.8rem 2rem',
-              fontSize: '1.2rem',
-              minWidth: '44px',
-              minHeight: '44px',
-              boxShadow: '0 6px 0 #d97706, 0 8px 12px rgba(0,0,0,0.1)', // Override primary style to fit secondary color
-              background: '#fcd34d',
-              color: '#b45309',
-              transition: 'all 0.1s ease'
-            }}
-            onMouseEnter={(e) => { e.currentTarget.style.filter = 'brightness(1.1)'; }}
-            onMouseLeave={(e) => { e.currentTarget.style.filter = 'brightness(1)'; }}
-            onClick={(e) => { e.stopPropagation(); handleSubjectClick(SUBJECTS.phonics.route); }}
-          >
-            {t('start')} ►
-          </button>
-        </div>
-
-        {/* Maths Card */}
-        <div
-          onClick={() => handleSubjectClick(SUBJECTS.math.route)}
-          style={{
-            background: SUBJECTS.math.gradient,
-            borderRadius: '24px',
-            padding: '1.5rem',
-            flex: '1 1 240px',
-            minWidth: '240px',
-            maxWidth: '300px',
-            minHeight: '180px',
-            cursor: 'pointer',
-            boxShadow: '0 8px 25px rgba(245,158,11,0.3)',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: '0.75rem',
-            transition: 'transform 0.2s ease, box-shadow 0.2s ease',
-            position: 'relative',
-            overflow: 'hidden'
-          }}
-          onMouseEnter={(e) => { e.currentTarget.style.transform = 'scale(1.03)'; e.currentTarget.style.boxShadow = '0 12px 35px rgba(245,158,11,0.4)'; }}
-          onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.boxShadow = '0 8px 25px rgba(245,158,11,0.3)'; }}
-        >
-          {/* Completion badge for math */}
-          {math.hasCompletedDaily && (
-            <div style={{
-              position: 'absolute',
-              top: '12px',
-              right: '12px',
-              background: 'rgba(255,255,255,0.9)',
-              borderRadius: '50%',
-              width: '32px',
-              height: '32px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontSize: '1.1rem'
-            }}>✅</div>
-          )}
-
-          <div style={{ display: 'flex', gap: '0.25rem', fontSize: '2.5rem' }}>
-            🍎 🍎 🍎
-          </div>
-          <h2 style={{
-            color: 'white',
-            fontSize: 'clamp(1.3rem, 4vw, 1.6rem)',
-            fontWeight: 'bold',
-            margin: 0,
-            textShadow: '0 2px 4px rgba(0,0,0,0.15)'
-          }}>
-            {t('maths')}
-          </h2>
-          <button
-            className="btn-primary"
-            style={{
-              padding: '0.8rem 2rem',
-              fontSize: '1.2rem',
-              minWidth: '44px',
-              minHeight: '44px',
-              transition: 'all 0.1s ease'
-            }}
-            onMouseEnter={(e) => { e.currentTarget.style.filter = 'brightness(1.1)'; }}
-            onMouseLeave={(e) => { e.currentTarget.style.filter = 'brightness(1)'; }}
-            onClick={(e) => { e.stopPropagation(); handleSubjectClick(SUBJECTS.math.route); }}
-          >
-            {t('start')} ►
-          </button>
-        </div>
-      </div>
-
-
-    </div>
-  )
+      <p className="academy-footer">Rabbit Adventure keeps learning, practice and rewards in one place.</p>
+    </ExperienceFrame>
+  );
 }

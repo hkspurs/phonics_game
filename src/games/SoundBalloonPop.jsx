@@ -255,8 +255,8 @@ export default function SoundBalloonPop() {
         .balloon-item {
           transform-origin: center bottom;
         }
-        .balloon-item:hover, .balloon-item:active { 
-          animation-play-state: paused !important; 
+        .balloon-item:hover, .balloon-item:active {
+          animation-play-state: paused !important;
         }
         @keyframes floatUp {
           0% { top: 110%; opacity: 0; }

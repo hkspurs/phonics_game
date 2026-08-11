@@ -115,8 +115,20 @@ export default function MascotRabbit({ style, isListening = false, feedbackState
             {equipped?.hat === 'hat_crown' && (
               <text x="50" y="30" fontSize="35" textAnchor="middle" style={{ transform: isCorrect ? 'translateY(-10px)' : 'none', transition: 'transform 0.2s' }}>👑</text>
             )}
+            {equipped?.hat === 'hat_flower' && (
+              <text x="50" y="30" fontSize="35" textAnchor="middle" style={{ transform: isCorrect ? 'translateY(-10px)' : 'none', transition: 'transform 0.2s' }}>🌸</text>
+            )}
+            {equipped?.hat === 'hat_party' && (
+              <text x="50" y="30" fontSize="35" textAnchor="middle" style={{ transform: isCorrect ? 'translateY(-10px)' : 'none', transition: 'transform 0.2s' }}>🥳</text>
+            )}
             {equipped?.glasses === 'glasses_cool' && (
               <text x="50" y="52" fontSize="25" textAnchor="middle" style={{ transform: isCorrect ? 'translateY(-5px)' : 'none', transition: 'transform 0.2s' }}>🕶️</text>
+            )}
+            {equipped?.glasses === 'glasses_star' && (
+              <text x="50" y="52" fontSize="25" textAnchor="middle" style={{ transform: isCorrect ? 'translateY(-5px)' : 'none', transition: 'transform 0.2s' }}>🤩</text>
+            )}
+            {equipped?.glasses === 'glasses_heart' && (
+              <text x="50" y="52" fontSize="25" textAnchor="middle" style={{ transform: isCorrect ? 'translateY(-5px)' : 'none', transition: 'transform 0.2s' }}>💖</text>
             )}
           </g>
         </g>

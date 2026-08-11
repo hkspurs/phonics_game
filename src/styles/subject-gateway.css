@@ -1,0 +1,27 @@
+.academy-tools { display: flex; justify-content: flex-end; gap: .6rem; }
+.academy-language, .academy-settings { display: inline-flex; align-items: center; gap: .35rem; min-height: 44px; padding: .55rem .8rem; border: 1px solid #dbeafe; border-radius: 14px; background: #fff; color: #334155; font-weight: 850; cursor: pointer; }
+.academy-language:hover, .academy-settings:hover, .academy-language:focus-visible, .academy-settings:focus-visible { border-color: #60a5fa; }
+.subject-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
+.subject-card { position: relative; display: flex; flex-direction: column; align-items: flex-start; gap: .45rem; min-height: 250px; padding: clamp(1.2rem, 4vw, 1.8rem); border: 0; border-radius: 28px; text-align: left; color: #fff; box-shadow: 0 16px 30px rgba(15,23,42,.12); cursor: pointer; transition: transform .18s ease, box-shadow .18s ease; }
+.subject-card:hover, .subject-card:focus-visible { transform: translateY(-3px); box-shadow: 0 20px 36px rgba(15,23,42,.18); }
+.subject-card--phonics { background: linear-gradient(145deg, #0f766e, #0891b2); }
+.subject-card--math { background: linear-gradient(145deg, #d97706, #f59e0b); }
+.subject-card__art { font-size: 2.3rem; letter-spacing: .08em; }
+.subject-card__eyebrow { margin-top: .6rem; font-size: .76rem; font-weight: 950; letter-spacing: .08em; opacity: .86; }
+.subject-card h2 { margin: 0; font-size: clamp(1.45rem, 4vw, 2rem); }
+.subject-card p { max-width: 26rem; margin: 0; line-height: 1.45; font-weight: 700; opacity: .93; }
+.subject-card__cta { display: inline-flex; gap: .45rem; align-items: center; margin-top: auto; padding: .6rem .85rem; border-radius: 999px; background: rgba(255,255,255,.2); font-weight: 950; }
+.subject-card__complete { position: absolute; top: 1rem; right: 1rem; padding: .35rem .5rem; border-radius: 999px; background: rgba(255,255,255,.9); }
+.encouragement-card { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: .8rem; padding: .85rem 1rem; border-radius: 20px; background: #fffbeb; border: 2px dashed #f59e0b; color: #78350f; }
+.encouragement-card strong { font-size: 1rem; }
+.encouragement-card__bilingual { display: block; color: #92400e; font-size: .85rem; font-weight: 850; }
+.encouragement-card p { margin: .2rem 0 0; }
+.encouragement-card .btn-primary { min-height: 44px; padding: .6rem .9rem; }
+.academy-footer { margin: 0; text-align: center; color: #64748b; font-weight: 750; }
+
+@media (max-width: 640px) {
+  .subject-grid { grid-template-columns: 1fr; }
+  .subject-card { min-height: 210px; }
+  .encouragement-card { grid-template-columns: auto 1fr; }
+  .encouragement-card .btn-primary { grid-column: 1 / -1; width: 100%; }
+}

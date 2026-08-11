@@ -1,0 +1,63 @@
+.adventure-world {
+  position: relative;
+  width: min(900px, 100%);
+  height: clamp(150px, 24vw, 210px);
+  overflow: hidden;
+  border: 2px solid rgba(14, 116, 144, 0.14);
+  border-radius: 28px;
+  background: linear-gradient(180deg, rgba(255,255,255,.72), rgba(220,252,231,.74));
+  box-shadow: 0 12px 28px rgba(15, 118, 110, .12);
+}
+
+.adventure-world canvas { display: block; width: 100%; height: 100%; }
+
+.adventure-world__fallback-state {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: .55rem;
+  color: #155e75;
+  font-weight: 900;
+}
+
+.adventure-world__fallback-landmark { font-size: 2rem; }
+.adventure-world--ready .adventure-world__fallback-state { display: none; }
+
+.adventure-world--fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: .5rem;
+  color: #155e75;
+  font-weight: 900;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .adventure-world { scroll-behavior: auto; }
+}
+
+@media (max-width: 480px) {
+  .simple-words-learning--adventure { gap: .1rem; padding: .45rem .7rem .7rem !important; }
+  .simple-words-learning--adventure .adventure-world { height: 84px; border-radius: 18px; }
+  .simple-words-learning--adventure .mascot-rabbit-container { width: 56px !important; height: 56px !important; margin-top: 0 !important; }
+  .simple-words-learning--adventure .simple-words-learning__title { font-size: 1.8rem !important; }
+  .simple-words-learning--adventure .simple-words-learning__subtitle { margin: .1rem 0; font-size: 1rem !important; }
+  .simple-words-learning--adventure .simple-words-learning__word { margin: .1rem 0 !important; font-size: 3rem !important; }
+  .simple-words-learning--adventure .simple-words-learning__slots { gap: .4rem !important; margin-bottom: .25rem !important; }
+  .simple-words-learning--adventure .simple-words-learning__slots span { min-width: 52px !important; min-height: 52px !important; font-size: 2rem !important; border-radius: 14px !important; }
+  .simple-words-learning--adventure .simple-words-learning__instruction { margin: .15rem 0 .3rem; font-size: 1rem !important; }
+  .simple-words-learning--adventure .simple-words-learning__tiles { gap: .45rem !important; margin-bottom: .25rem !important; }
+  .simple-words-learning--adventure .simple-words-learning__tiles button { min-width: 56px !important; min-height: 56px !important; font-size: 2rem !important; border-radius: 14px !important; }
+  .simple-words-learning--adventure .simple-words-learning__replay { width: 72px !important; height: 72px !important; }
+  .simple-words-learning--adventure .simple-words-learning__replay svg { width: 38px; height: 38px; }
+  .simple-words-learning--adventure .simple-words-learning__next { margin: .1rem 0 !important; }
+}
+
+@media (max-width: 360px) {
+  .simple-words-learning--adventure .simple-words-learning__slots span { min-width: 48px !important; min-height: 48px !important; }
+  .simple-words-learning--adventure .simple-words-learning__tiles button { min-width: 50px !important; min-height: 50px !important; }
+  .simple-words-learning--adventure .simple-words-learning__replay { width: 64px !important; height: 64px !important; }
+}

@@ -287,7 +287,7 @@ export default function DailyChallenge() {
           textAlign: 'center',
           flexShrink: 0
         }}>
-          {currentQ.type === 'boss' ? '⭐ Final Boss Challenge! ⭐' : 'Phonics Challenge'}
+          {currentQ.type === 'boss' ? '⭐ Final Boss Challenge! ⭐' : 'Phonics Challenge · Listen and Choose'}
         </h2>
         {((currentQ.instructionAudio) || true) && (
           <button 
@@ -389,6 +389,23 @@ export default function DailyChallenge() {
         </div>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%', maxWidth: '800px', margin: '0 auto', flexShrink: 0 }}>
+          {currentQ.choices?.length > 0 && (
+            <div aria-label="Choose the sound" style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', justifyContent: 'center', marginBottom: '1rem', maxWidth: '720px' }}>
+              {currentQ.choices.map((choice) => (
+                <button
+                  key={choice}
+                  type="button"
+                  data-testid="choice-button"
+                  className="btn-secondary font-phonics"
+                  disabled={isProcessing || feedbackState !== null || disabledChoices.includes(choice)}
+                  onClick={() => handleAnswer(choice)}
+                  style={{ minWidth: '92px', minHeight: '58px', padding: '.65rem 1rem', fontSize: '1.35rem', color: '#1e3a8a', background: '#fff', borderColor: '#bae6fd' }}
+                >
+                  {choice}
+                </button>
+              ))}
+            </div>
+          )}
           
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '2rem', marginBottom: '3rem', flexWrap: 'wrap' }}>
             

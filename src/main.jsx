@@ -3,6 +3,11 @@ import ReactDOM from 'react-dom/client'
 import App from './App.jsx'
 import './index.css'
 
+// Keep direct math links usable with the app's HashRouter (bookmarks/tests often omit `/#`).
+if (!window.location.hash && /^\/math(?:\/(?:gym|map|daily|reward))?$/.test(window.location.pathname)) {
+  window.location.replace(`/#${window.location.pathname}${window.location.search}`);
+}
+
 // Global Input Debouncer (Issue 13: Prevent button mashing)
 document.addEventListener('click', (e) => {
   const btn = e.target.closest('button, .map-node');

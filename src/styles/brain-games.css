@@ -1,0 +1,15 @@
+.brain-intro { display: flex; align-items: center; gap: .8rem; padding: 1rem 1.15rem; border-radius: 22px; background: rgba(255,255,255,.78); border: 2px solid #f0abfc; }
+.brain-intro__icon { display: grid; place-items: center; width: 56px; height: 56px; border-radius: 18px; background: #fae8ff; color: #a21caf; }
+.brain-intro strong { color: #86198f; }
+.brain-intro p { margin: .2rem 0 0; color: #7e22ce; font-weight: 700; }
+.brain-ticket { margin-left: auto; padding: .55rem .75rem; border-radius: 999px; background: #fae8ff; color: #86198f; font-weight: 950; white-space: nowrap; }
+.brain-empty { margin: 0; padding: .8rem; border-radius: 14px; background: #e0f2fe; color: #0369a1; text-align: center; font-weight: 850; }
+.brain-game-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; }
+.brain-game-card { display: flex; flex-direction: column; align-items: center; gap: .55rem; min-height: 250px; padding: 1.2rem; border: 2px solid; border-radius: 24px; background: #fff; text-align: center; }
+.brain-game-card--pink { border-color: #f0abfc; }.brain-game-card--purple { border-color: #c4b5fd; }.brain-game-card--blue { border-color: #bae6fd; }
+.brain-game-card__emoji { font-size: 3.5rem; }
+.brain-game-card h2 { margin: 0; color: #7e22ce; font-size: 1.25rem; }
+.brain-game-card p { flex: 1; margin: 0; color: #64748b; font-weight: 700; }
+.brain-game-card .btn-primary { width: 100%; justify-content: center; min-height: 48px; }
+@media (max-width: 700px) { .brain-game-grid { grid-template-columns: 1fr; } .brain-game-card { min-height: 190px; } }
+@media (max-width: 480px) { .brain-intro { align-items: flex-start; flex-wrap: wrap; } .brain-ticket { margin-left: 0; } }

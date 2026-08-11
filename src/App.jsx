@@ -19,6 +19,7 @@ import TrainingGym from './screens/TrainingGym'
 import BubbleChallenge from './screens/BubbleChallenge'
 import Shop from './screens/Shop'
 import SimpleWords from './screens/SimpleWords'
+import BlendingHub from './screens/BlendingHub'
 import MascotRabbit from './components/MascotRabbit'
 
 import { useGameStore } from './store/gameStore'
@@ -93,17 +94,12 @@ function App() {
 
   return (
     <ErrorBoundary>
-      {equipped?.background === 'bg_space' && (
+      {equipped?.background && (
         <style>
           {`
-            body, .screen-container {
-              background: #0f172a !important;
-              background-image: radial-gradient(circle at 50% 50%, #1e293b 0%, #020617 100%) !important;
-              color: white !important;
-            }
-            .screen-container h1, .screen-container h2, .screen-container p {
-              color: #f8fafc !important;
-            }
+            ${equipped.background === 'bg_space' ? `body, .screen-container { background: #0f172a !important; background-image: radial-gradient(circle at 50% 50%, #1e293b 0%, #020617 100%) !important; color: white !important; } .screen-container h1, .screen-container h2, .screen-container p { color: #f8fafc !important; }` : ''}
+            ${equipped.background === 'bg_ocean' ? `body, .screen-container { background: #cffafe !important; background-image: linear-gradient(160deg, #cffafe, #dbeafe) !important; }` : ''}
+            ${equipped.background === 'bg_candy' ? `body, .screen-container { background: #fce7f3 !important; background-image: linear-gradient(160deg, #fce7f3, #fef3c7) !important; }` : ''}
           `}
         </style>
       )}
@@ -111,6 +107,7 @@ function App() {
       <Routes>
         <Route path="/" element={<SubjectGateway />} />
         <Route path="/phonics" element={<HomeDashboard />} />
+        <Route path="/blending" element={<BlendingHub />} />
         <Route path="/simple-words" element={<SimpleWords />} />
         <Route path="/math" element={<MathHome />} />
         <Route path="/math/map" element={<MathMasteryMap />} />

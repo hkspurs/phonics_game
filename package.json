@@ -13,6 +13,7 @@
     "test:coverage": "vitest run --coverage",
     "audio:simple:generate": "node scripts/generate-simple-word-audio.cjs",
     "audio:simple:qa": "node scripts/qa-simple-word-audio.cjs",
+    "qa:capture": "./qa-playwright-capture.sh http://localhost:5173 public/qa-screenshots",
     "predeploy": "npm run build && cp dist/index.html dist/404.html",
     "deploy": "gh-pages -d dist"
   },
@@ -20,6 +21,7 @@
     "canvas-confetti": "^1.9.4",
     "framer-motion": "^12.42.2",
     "lucide-react": "^0.400.0",
+    "phaser": "^4.2.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.24.1",
