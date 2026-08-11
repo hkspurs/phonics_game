@@ -187,11 +187,11 @@ describe('SimpleWords', () => {
     expect(screen.getByRole('heading', { name: 'Learn to Blend' })).toBeInTheDocument();
     const word = screen.getByTestId('learning-word').getAttribute('data-word');
     expect(word).toMatch(/^[A-Z]{3}$/);
-    expect(audioEngine.playAudioById).toHaveBeenCalledWith(getBlendAudioId(word));
+    expect(audioEngine.playAudioById).toHaveBeenCalledWith(getBlendAudioId(word), { playbackRate: 0.7 });
     expect(screen.getByText(/Join the sounds/)).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Next word' })).toBeDisabled();
     await settleLearningAudio();
-    expect(audioEngine.playAudioById).toHaveBeenNthCalledWith(2, SIMPLE_WORDS.find((item) => item.word === word).id);
+    expect(audioEngine.playAudioById).toHaveBeenCalledTimes(1);
 
     const learnedWords = new Set();
     for (let index = 0; index < 16; index += 1) {
