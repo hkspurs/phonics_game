@@ -69,7 +69,7 @@ export default function PhaserAdventureWorld({ progress = 0, total = 5, status =
 
   const step = getAdventureStep(progress, total);
   const fallbackCaption = word
-    ? `${status === 'correct' ? labels.greatWork : labels.keepGoing} ${word}`
+    ? status === 'correct' ? `${labels.greatWork} ${word}` : labels.keepGoing
     : labels.steps[step] || labels.adventure;
 
   if (loadError) {

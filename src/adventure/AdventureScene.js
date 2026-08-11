@@ -74,9 +74,10 @@ export function createAdventureScene(Phaser, callbacks = {}) {
 
     captionText() {
       const labels = this.state.labels || callbacks.labels || DEFAULT_LABELS;
-      return this.state.word
-        ? `${this.state.status === 'correct' ? labels.greatWork : labels.keepGoing}  ${this.state.word}`
-        : labels.steps[this.state.step] || labels.adventure;
+      if (!this.state.word) return labels.steps[this.state.step] || labels.adventure;
+      return this.state.status === 'correct'
+        ? `${labels.greatWork}  ${this.state.word}`
+        : labels.keepGoing;
     }
 
     shutdown() {
