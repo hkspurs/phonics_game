@@ -2,6 +2,11 @@ const fs = require('fs');
 const os = require('os');
 const path = require('path');
 const { execFileSync, spawnSync } = require('child_process');
+const {
+  FISH_MODEL,
+  FISH_REFERENCE_ID,
+  requestFishAudio,
+} = require('./fish-audio.cjs');
 
 const root = path.resolve(__dirname, '..');
 const corpus = JSON.parse(fs.readFileSync(path.join(root, 'data/simple_words.json'), 'utf8'));
@@ -11,6 +16,10 @@ const cvcPattern = /^[B-DF-HJ-NP-TV-XZ][AEIOU][B-DF-HJ-NP-TV-XZ]$/;
 
 function help() {
   console.log(`Generate reviewed-later MP3s for the real CVC corpus.
+
+Fish Audio (selected voice by default):
+  FISH_API_KEY=... node scripts/generate-simple-word-audio.cjs [--word MAP|--missing]
+  FISH_REFERENCE_ID=... overrides the selected young-narrator voice.
 
 GPT-SoVITS (preferred):
   GPT_SOVITS_COMMAND='your-command --text {text} --output {output}'
@@ -40,6 +49,19 @@ function renderCommand(template, word, output, model) {
 }
 
 function selectEngine() {
+  if (process.env.FISH_API_KEY) {
+    return {
+      name: 'fish-audio',
+      model: FISH_MODEL,
+      voice: 'young-narrator',
+      referenceId: FISH_REFERENCE_ID,
+      source: 'Fish Audio API',
+      async run(word, output) {
+        await requestFishAudio(word.toLowerCase(), output, { speed: 0.8 });
+      },
+    };
+  }
+
   const gptModel = process.env.GPT_SOVITS_MODEL || '';
   if (process.env.GPT_SOVITS_COMMAND && (!gptModel || fs.existsSync(gptModel))) {
     return {
@@ -92,20 +114,40 @@ function createEntry(item, engine) {
     file,
     type: 'phonics_target',
     curriculum: 'simple_word',
-    language: 'en-GB',
+    language: 'en',
     expectedText: item.word,
     sequence: item.sequence,
     generatedBy: engine.name,
     voice: engine.voice,
     model: engine.model || 'configured command/model',
     source: engine.name === 'piper' ? 'Piper local neural TTS' : 'GPT-SoVITS local TTS',
+    ...(engine.source ? { source: engine.source } : {}),
+    ...(engine.referenceId ? { referenceId: engine.referenceId } : {}),
     license: process.env.TTS_LICENSE || 'verify the selected model license before publishing',
     qaStatus: 'review_required',
     qaNotes: ['Generated as one complete word; manual listening QA is required before use.'],
   };
 }
 
-function generate() {
+function selectedCorpus() {
+  const wordIndex = process.argv.indexOf('--word');
+  if (wordIndex === -1 && !process.argv.includes('--missing')) return corpus;
+  if (wordIndex === -1 && process.argv.includes('--missing')) {
+    const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+    return corpus.filter((item) => {
+      const id = item.id ? `${item.id.replace(/_01$/, '')}_GEN_01` : `WORD_${item.word}_GEN_01`;
+      const file = path.join(root, 'public', `assets/simple-words/generated/${String(item.sequence).padStart(3, '0')}_${item.word.toLowerCase()}.mp3`);
+      const entry = manifest[id];
+      return !fs.existsSync(file) || entry?.generatedBy !== 'fish-audio' || entry?.referenceId !== FISH_REFERENCE_ID;
+    });
+  }
+  const word = String(process.argv[wordIndex + 1] || '').toUpperCase();
+  const item = corpus.find((candidate) => candidate.word === word);
+  if (!item) throw new Error(`Unknown corpus word: ${word || '(missing)'}`);
+  return [item];
+}
+
+async function generate() {
   if (process.argv.includes('--help')) {
     help();
     return;
@@ -116,16 +158,17 @@ function generate() {
   }
 
   const engine = selectEngine();
+  const items = selectedCorpus();
   fs.mkdirSync(outputDir, { recursive: true });
   const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'simple-word-audio-'));
   const entries = {};
 
   try {
-    for (const item of corpus) {
+    for (const item of items) {
       const entry = createEntry(item, engine);
       const output = path.join(root, 'public', entry.file);
       const source = path.join(tempDir, `${item.word.toLowerCase()}.wav`);
-      engine.run(item.word, source);
+      await engine.run(item.word, source);
       if (!fs.existsSync(source)) throw new Error(`${engine.name} did not create ${source}`);
       normalizeToMp3(source, output);
       entries[entry.id] = entry;
@@ -137,14 +180,12 @@ function generate() {
 
   const oldManifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
   const preserved = Object.fromEntries(Object.entries(oldManifest).filter(([, item]) => item.curriculum !== 'simple_word'));
-  const teacherEntries = Object.fromEntries(Object.entries(oldManifest).filter(([, item]) => item.curriculum === 'simple_word'));
-  fs.writeFileSync(manifestPath, `${JSON.stringify({ ...preserved, ...teacherEntries, ...entries }, null, 2)}\n`);
+  const existingGenerated = Object.fromEntries(Object.entries(oldManifest).filter(([, item]) => item.curriculum === 'simple_word' && item.generatedBy !== 'teacher_recording'));
+  fs.writeFileSync(manifestPath, `${JSON.stringify({ ...preserved, ...existingGenerated, ...entries }, null, 2)}\n`);
   console.log(`Wrote ${Object.keys(entries).length} generated entries as review_required.`);
 }
 
-try {
-  generate();
-} catch (error) {
+generate().catch((error) => {
   console.error(`Audio generation failed: ${error.message}`);
   process.exitCode = 1;
-}
+});

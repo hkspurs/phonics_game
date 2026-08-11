@@ -6,8 +6,6 @@ import { SIMPLE_WORDS } from './simpleWords';
 import {
   buildBlendingSession,
   buildBlendingTestSession,
-  getBlendAudioId,
-  getBlendPhonemes,
   shuffleWordLetters,
 } from './simpleWordLearning';
 
@@ -20,27 +18,19 @@ describe('Simple Word blending curriculum', () => {
     session.forEach((item) => expect(item.word).toMatch(/^[B-DF-HJ-NP-TV-XZ][AEIOU][B-DF-HJ-NP-TV-XZ]$/));
   });
 
-  it('maps every CVC word to dedicated blend and whole-word audio', () => {
+  it('maps every CVC word to Fish whole-word audio and no blend audio', () => {
     for (const word of SIMPLE_WORDS) {
-      const blend = audioManifest[getBlendAudioId(word.word)];
-      expect(blend).toEqual(expect.objectContaining({
-        type: 'phonics_blend',
-        curriculum: 'simple_word_blend',
+      const audio = audioManifest[word.id];
+      expect(audio).toEqual(expect.objectContaining({
+        type: 'phonics_target',
+        curriculum: 'simple_word',
         expectedText: word.word,
-        qaStatus: expect.stringMatching(/^(review_required|pass)$/),
+        generatedBy: 'fish-audio',
+        voice: 'young-narrator',
       }));
-      expect(existsSync(resolve('public', blend.file))).toBe(true);
-      expect(audioManifest[word.id]).toEqual(expect.objectContaining({
-        expectedText: word.word,
-      }));
+      expect(existsSync(resolve('public', audio.file))).toBe(true);
     }
-  });
-
-  it('holds continuous initial sounds but not stop consonants', () => {
-    expect(getBlendPhonemes('MAP')).toBe('[[mmmææp]]');
-    expect(getBlendPhonemes('NUT')).toBe('[[nnnʌʌt]]');
-    expect(getBlendPhonemes('CAT')).toBe('[[kææt]]');
-    expect(getBlendPhonemes('DOG')).toBe('[[dɒɒɡ]]');
+    expect(Object.values(audioManifest).filter((item) => item.curriculum === 'simple_word_blend')).toHaveLength(0);
   });
 
   it('keeps transfer test words out of the learning set', () => {

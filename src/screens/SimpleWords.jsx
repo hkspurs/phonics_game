@@ -9,7 +9,6 @@ import { buildSimpleWordQueue, calculateSimpleWordGems } from '../game/simpleWor
 import {
   buildBlendingSession,
   buildBlendingTestSession,
-  getBlendAudioId,
   shuffleWordLetters,
 } from '../game/simpleWordLearning';
 import { useGameStore } from '../store/gameStore';
@@ -74,9 +73,8 @@ export default function SimpleWords() {
 
   const playCurrent = useCallback(() => {
     if (!current) return Promise.resolve(false);
-    const isLearningBlend = learningMode && stage === 'learn';
-    return playAudioSequence(isLearningBlend ? [getBlendAudioId(current)] : [current.id]);
-  }, [current, learningMode, playAudioSequence, stage]);
+    return playAudioSequence([current.id]);
+  }, [current, playAudioSequence]);
 
   useEffect(() => {
     if (!complete && current) void playCurrent();

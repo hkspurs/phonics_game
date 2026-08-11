@@ -62,7 +62,7 @@ test.describe('Simple Word continuous blending UAT', () => {
     await installShortAudio(page);
   });
 
-  test('teaches, tests 16 unique words, requests dedicated blend audio, and awards diamonds', async ({ page }) => {
+  test('teaches, tests 16 unique words with whole-word audio, and awards diamonds', async ({ page }) => {
     test.setTimeout(120000);
     const audioRequests = [];
     page.on('request', (request) => {
@@ -89,8 +89,8 @@ test.describe('Simple Word continuous blending UAT', () => {
     expect(seenWords.size).toBe(16);
     await expect(page.getByRole('heading', { name: 'Learn & Test Complete!' })).toBeVisible();
     await expect(page.getByText('Earned: +18 💎')).toBeVisible();
-    expect(audioRequests.some((url) => url.includes('/blends/'))).toBe(true);
     expect(audioRequests.some((url) => url.includes('/generated/'))).toBe(true);
+    expect(audioRequests.some((url) => url.includes('/blends/'))).toBe(false);
   });
 
   test('keeps the same word after an incorrect test answer without negative scoring', async ({ page }) => {
