@@ -1360,14 +1360,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[bʌʌs]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 648,
+    "durationMs": 720,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -1383,14 +1384,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[kɒɒt]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 576,
+    "durationMs": 672,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -1406,14 +1408,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[dɪɪɡ]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 552,
+    "durationMs": 672,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -1429,14 +1432,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[fffɒɒɡ]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 744,
+    "durationMs": 864,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -1452,14 +1456,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[ɡɒɒd]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 600,
+    "durationMs": 672,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -1475,14 +1480,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[hhhɪɪt]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 552,
+    "durationMs": 696,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -1498,14 +1504,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[dʒɛɛt]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 720,
+    "durationMs": 792,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -1521,14 +1528,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[kɛɛn]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 624,
+    "durationMs": 792,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -1544,14 +1552,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[lllɪɪp]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 744,
+    "durationMs": 840,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -1567,14 +1576,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[mmmɛɛt]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 672,
+    "durationMs": 840,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -1590,14 +1600,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[nnnʌʌt]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 840,
+    "durationMs": 912,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -1613,14 +1624,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[pɒɒt]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 600,
+    "durationMs": 624,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -1636,14 +1648,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[ɹɛɛd]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 648,
+    "durationMs": 768,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -1659,14 +1672,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[sssʌʌm]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 840,
+    "durationMs": 1128,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -1682,14 +1696,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[tʌʌɡ]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 648,
+    "durationMs": 816,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -1705,14 +1720,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[vvvɛɛt]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 816,
+    "durationMs": 1056,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -1728,14 +1744,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[bææd]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 696,
+    "durationMs": 864,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -1751,14 +1768,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[bææɡ]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 792,
+    "durationMs": 888,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -1774,14 +1792,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[bææn]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 648,
+    "durationMs": 768,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -1797,14 +1816,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[bææt]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 648,
+    "durationMs": 816,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -1820,14 +1840,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[kææb]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 696,
+    "durationMs": 768,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -1843,14 +1864,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[kææn]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 696,
+    "durationMs": 840,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -1866,14 +1888,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[kææp]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 696,
+    "durationMs": 864,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -1889,14 +1912,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[kææt]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 600,
+    "durationMs": 768,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -1912,14 +1936,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[dææd]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 672,
+    "durationMs": 792,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -1935,14 +1960,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[dææm]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 696,
+    "durationMs": 816,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -1958,14 +1984,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[fffææn]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 768,
+    "durationMs": 936,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -1981,14 +2008,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[fffææt]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 696,
+    "durationMs": 864,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -2004,14 +2032,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[hhhææd]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 600,
+    "durationMs": 696,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -2027,14 +2056,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[hhhææm]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 624,
+    "durationMs": 720,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -2050,14 +2080,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[hhhææt]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 576,
+    "durationMs": 648,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -2073,14 +2104,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[dʒææm]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 696,
+    "durationMs": 840,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -2096,14 +2128,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[lllææp]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 792,
+    "durationMs": 960,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -2119,14 +2152,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[mmmææd]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 768,
+    "durationMs": 936,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -2142,14 +2176,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[mmmææn]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 744,
+    "durationMs": 840,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -2165,14 +2200,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[mmmææp]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 792,
+    "durationMs": 888,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -2188,14 +2224,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[mmmææt]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 768,
+    "durationMs": 936,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -2211,14 +2248,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[nnnææp]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 768,
+    "durationMs": 936,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -2234,14 +2272,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[pææn]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 648,
+    "durationMs": 720,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -2257,14 +2296,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[pææt]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 648,
+    "durationMs": 696,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -2280,14 +2320,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[ɹææɡ]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 672,
+    "durationMs": 816,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -2303,14 +2344,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[ɹææm]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 696,
+    "durationMs": 792,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -2326,14 +2368,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[ɹææn]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 696,
+    "durationMs": 816,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -2349,14 +2392,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[ɹææt]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 672,
+    "durationMs": 792,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -2372,14 +2416,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[sssææd]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 744,
+    "durationMs": 1104,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -2395,14 +2440,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[sssææt]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 816,
+    "durationMs": 1152,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -2418,14 +2464,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[tææb]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 672,
+    "durationMs": 768,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -2441,14 +2488,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[tææɡ]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 744,
+    "durationMs": 864,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -2464,14 +2512,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[tææp]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 696,
+    "durationMs": 720,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -2487,14 +2536,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[vvvææn]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 816,
+    "durationMs": 840,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -2510,14 +2560,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[bɛɛd]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 552,
+    "durationMs": 648,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -2533,14 +2584,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[bɛɛɡ]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 576,
+    "durationMs": 672,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -2556,14 +2608,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[bɛɛt]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 576,
+    "durationMs": 624,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -2579,14 +2632,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[dɛɛn]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 672,
+    "durationMs": 792,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -2602,14 +2656,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[fffɛɛd]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 696,
+    "durationMs": 816,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -2625,14 +2680,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[ɡɛɛm]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 648,
+    "durationMs": 792,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -2648,14 +2704,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[ɡɛɛt]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 624,
+    "durationMs": 720,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -2671,14 +2728,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[hhhɛɛm]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 648,
+    "durationMs": 696,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -2694,14 +2752,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[hhhɛɛn]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 600,
+    "durationMs": 744,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -2717,14 +2776,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[lllɛɛɡ]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 648,
+    "durationMs": 816,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -2740,14 +2800,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[lllɛɛt]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 720,
+    "durationMs": 936,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -2763,14 +2824,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[mmmɛɛn]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 768,
+    "durationMs": 840,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -2786,14 +2848,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[nnnɛɛt]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 672,
+    "durationMs": 816,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -2809,14 +2872,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[pɛɛɡ]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 552,
+    "durationMs": 672,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -2832,14 +2896,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[pɛɛn]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 648,
+    "durationMs": 744,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -2855,14 +2920,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[pɛɛt]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 552,
+    "durationMs": 672,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -2878,14 +2944,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[sssɛɛt]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 936,
+    "durationMs": 1128,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -2901,14 +2968,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[tɛɛn]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 648,
+    "durationMs": 744,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -2924,14 +2992,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[wwwɛɛb]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 600,
+    "durationMs": 768,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -2947,14 +3016,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[wwwɛɛt]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 600,
+    "durationMs": 720,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -2970,14 +3040,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[bɪɪd]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 552,
+    "durationMs": 720,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -2993,14 +3064,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[bɪɪɡ]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 576,
+    "durationMs": 744,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -3016,14 +3088,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[bɪɪn]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 696,
+    "durationMs": 768,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -3039,14 +3112,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[bɪɪt]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 552,
+    "durationMs": 624,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -3062,14 +3136,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[dɪɪd]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 528,
+    "durationMs": 792,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -3085,14 +3160,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[dɪɪm]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 696,
+    "durationMs": 792,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -3108,14 +3184,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[fffɪɪn]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 744,
+    "durationMs": 864,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -3131,14 +3208,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[fffɪɪt]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 672,
+    "durationMs": 792,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -3154,14 +3232,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[hhhɪɪd]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 600,
+    "durationMs": 696,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -3177,14 +3256,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[hhhɪɪm]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 624,
+    "durationMs": 720,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -3200,14 +3280,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[hhhɪɪp]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 552,
+    "durationMs": 696,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -3223,14 +3304,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[kɪɪd]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 576,
+    "durationMs": 720,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -3246,14 +3328,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[kɪɪn]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 648,
+    "durationMs": 816,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -3269,14 +3352,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[kɪɪt]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 576,
+    "durationMs": 720,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -3292,14 +3376,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[lllɪɪd]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 672,
+    "durationMs": 864,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -3315,14 +3400,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[lllɪɪt]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 696,
+    "durationMs": 864,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -3338,14 +3424,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[nnnɪɪb]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 696,
+    "durationMs": 840,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -3361,14 +3448,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[nnnɪɪp]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 648,
+    "durationMs": 816,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -3384,14 +3472,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[pɪɪɡ]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 576,
+    "durationMs": 624,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -3407,14 +3496,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[pɪɪn]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 672,
+    "durationMs": 792,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -3430,14 +3520,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[pɪɪt]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 552,
+    "durationMs": 624,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -3453,14 +3544,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[ɹɪɪb]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 552,
+    "durationMs": 696,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -3476,14 +3568,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[ɹɪɪd]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 624,
+    "durationMs": 744,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -3499,14 +3592,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[ɹɪɪm]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 624,
+    "durationMs": 768,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -3522,14 +3616,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[ɹɪɪp]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 576,
+    "durationMs": 672,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -3545,14 +3640,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[sssɪɪn]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 912,
+    "durationMs": 1368,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -3568,14 +3664,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[sssɪɪt]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 672,
+    "durationMs": 1080,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -3591,14 +3688,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[tɪɪn]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 624,
+    "durationMs": 768,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -3614,14 +3712,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[tɪɪp]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 528,
+    "durationMs": 648,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -3637,14 +3736,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[wwwɪɪɡ]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 648,
+    "durationMs": 744,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -3660,14 +3760,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[wwwɪɪn]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 720,
+    "durationMs": 792,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -3683,14 +3784,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[bɒɒb]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 648,
+    "durationMs": 840,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -3706,14 +3808,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[bɒɒɡ]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 648,
+    "durationMs": 768,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -3729,14 +3832,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[kɒɒp]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 624,
+    "durationMs": 768,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -3752,14 +3856,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[dɒɒɡ]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 552,
+    "durationMs": 696,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -3775,14 +3880,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[dɒɒt]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 576,
+    "durationMs": 672,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -3798,14 +3904,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[ɡɒɒt]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 552,
+    "durationMs": 648,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -3821,14 +3928,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[hhhɒɒɡ]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 624,
+    "durationMs": 720,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -3844,14 +3952,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[hhhɒɒp]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 576,
+    "durationMs": 720,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -3867,14 +3976,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[hhhɒɒt]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 576,
+    "durationMs": 648,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -3890,14 +4000,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[dʒɒɒb]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 720,
+    "durationMs": 768,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -3913,14 +4024,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[dʒɒɒɡ]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 720,
+    "durationMs": 888,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -3936,14 +4048,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[lllɒɒɡ]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 672,
+    "durationMs": 840,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -3959,14 +4072,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[lllɒɒt]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 600,
+    "durationMs": 720,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -3982,14 +4096,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[mmmɒɒb]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 744,
+    "durationMs": 840,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -4005,14 +4120,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[mmmɒɒp]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 696,
+    "durationMs": 912,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -4028,14 +4144,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[nnnɒɒd]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 792,
+    "durationMs": 888,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -4051,14 +4168,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[nnnɒɒt]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 768,
+    "durationMs": 888,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -4074,14 +4192,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[pɒɒd]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 600,
+    "durationMs": 696,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -4097,14 +4216,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[pɒɒp]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 576,
+    "durationMs": 1008,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -4120,14 +4240,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[ɹɒɒd]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 552,
+    "durationMs": 600,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -4143,14 +4264,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[ɹɒɒt]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 528,
+    "durationMs": 696,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -4166,14 +4288,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[sssɒɒb]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 1104,
+    "durationMs": 1176,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -4189,14 +4312,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[sssɒɒd]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 1056,
+    "durationMs": 1320,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -4212,14 +4336,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[tɒɒp]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 672,
+    "durationMs": 1248,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -4235,14 +4360,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[bʌʌd]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 576,
+    "durationMs": 720,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -4258,14 +4384,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[bʌʌɡ]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 576,
+    "durationMs": 648,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -4281,14 +4408,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[bʌʌn]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 576,
+    "durationMs": 720,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -4304,14 +4432,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[bʌʌt]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 552,
+    "durationMs": 696,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -4327,14 +4456,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[kʌʌb]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 1032,
+    "durationMs": 768,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -4350,14 +4480,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[kʌʌp]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 600,
+    "durationMs": 720,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -4373,14 +4504,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[kʌʌt]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 576,
+    "durationMs": 720,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -4396,14 +4528,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[dʌʌɡ]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 600,
+    "durationMs": 696,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -4419,14 +4552,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[fffʌʌn]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 744,
+    "durationMs": 888,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -4442,14 +4576,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[ɡʌʌm]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 624,
+    "durationMs": 768,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -4465,14 +4600,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[ɡʌʌn]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 648,
+    "durationMs": 744,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -4488,14 +4624,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[hhhʌʌɡ]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 624,
+    "durationMs": 864,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -4511,14 +4648,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[hhhʌʌt]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 576,
+    "durationMs": 648,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -4534,14 +4672,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[dʒʌʌɡ]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 720,
+    "durationMs": 840,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -4557,14 +4696,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[mmmʌʌd]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 768,
+    "durationMs": 864,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -4580,14 +4720,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[mmmʌʌɡ]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 720,
+    "durationMs": 864,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -4603,14 +4744,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[pʌʌn]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 600,
+    "durationMs": 744,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -4626,14 +4768,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[ɹʌʌn]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 624,
+    "durationMs": 720,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -4649,14 +4792,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[ɹʌʌɡ]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 648,
+    "durationMs": 816,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -4672,14 +4816,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[ɹʌʌt]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 576,
+    "durationMs": 720,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -4695,14 +4840,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[sssʌʌn]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 1032,
+    "durationMs": 1248,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"
@@ -4718,14 +4864,15 @@
     "generatedBy": "piper",
     "voice": "en_GB-alan-medium",
     "model": "/tmp/phonics-piper-voices/en_GB-alan-medium.onnx",
-    "source": "Piper local neural TTS using raw IPA phonemes",
+    "source": "Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved",
+    "tempo": 0.8,
     "license": "verify the selected model license before publishing",
     "blendText": "[[tʌʌb]]",
     "qaStatus": "review_required",
     "qaNotes": [
       "Generated as one dedicated continuous-blend utterance; manual listening QA is required before use."
     ],
-    "durationMs": 888,
+    "durationMs": 696,
     "sampleRate": 24000,
     "channels": 1,
     "format": "mp3"

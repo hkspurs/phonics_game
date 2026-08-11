@@ -14,8 +14,6 @@ import {
 } from '../game/simpleWordLearning';
 import { useGameStore } from '../store/gameStore';
 
-const LEARNING_BLEND_PLAYBACK_RATE = 0.7;
-
 function createQueues(learningMode, stats) {
   const reviewedQueue = buildSimpleWordQueue(SIMPLE_WORDS, stats);
   if (!learningMode) return { learningQueue: [], testQueue: reviewedQueue };
@@ -54,15 +52,13 @@ export default function SimpleWords() {
   const [learningFeedback, setLearningFeedback] = useState('idle');
   const learningAnswer = selectedLearningTiles.map((tileIndex) => learningLetters[tileIndex]).join('');
 
-  const playAudioSequence = useCallback(async (audioIds, playbackRate = 1) => {
+  const playAudioSequence = useCallback(async (audioIds) => {
     const requestId = ++playRequestRef.current;
     setIsPlaying(true);
     setAudioFailed(false);
 
     for (const audioId of audioIds) {
-      const played = playbackRate === 1
-        ? await audioEngine.playAudioById(audioId)
-        : await audioEngine.playAudioById(audioId, { playbackRate });
+      const played = await audioEngine.playAudioById(audioId);
       if (playRequestRef.current !== requestId) return false;
       if (!played) {
         setAudioFailed(true);
@@ -79,10 +75,7 @@ export default function SimpleWords() {
   const playCurrent = useCallback(() => {
     if (!current) return Promise.resolve(false);
     const isLearningBlend = learningMode && stage === 'learn';
-    return playAudioSequence(
-      isLearningBlend ? [getBlendAudioId(current)] : [current.id],
-      isLearningBlend ? LEARNING_BLEND_PLAYBACK_RATE : 1,
-    );
+    return playAudioSequence(isLearningBlend ? [getBlendAudioId(current)] : [current.id]);
   }, [current, learningMode, playAudioSequence, stage]);
 
   useEffect(() => {

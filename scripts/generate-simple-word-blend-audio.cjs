@@ -8,6 +8,7 @@ const corpus = JSON.parse(fs.readFileSync(path.join(root, 'data/simple_words.jso
 const manifestPath = path.join(root, 'data/audio_manifest.json');
 const outputDir = path.join(root, 'public/assets/simple-words/blends');
 const cvcPattern = /^[B-DF-HJ-NP-TV-XZ][AEIOU][B-DF-HJ-NP-TV-XZ]$/;
+const BLEND_TEMPO = 0.8;
 
 const VOWEL_PHONEMES = { A: 'æ', E: 'ɛ', I: 'ɪ', O: 'ɒ', U: 'ʌ' };
 const CONSONANT_PHONEMES = {
@@ -50,6 +51,7 @@ function selectEngine() {
 function normalizeToMp3(source, output) {
   execFileSync('ffmpeg', [
     '-y', '-hide_banner', '-loglevel', 'error', '-i', source, '-vn', '-ac', '1', '-ar', '24000',
+    '-af', `atempo=${BLEND_TEMPO}`,
     '-map_metadata', '-1', '-codec:a', 'libmp3lame', '-b:a', '96k', output,
   ], { cwd: root, stdio: 'inherit' });
 }
@@ -67,12 +69,23 @@ function createEntry(item, engine) {
     generatedBy: engine.name,
     voice: engine.voice,
     model: engine.model,
-    source: 'Piper local neural TTS using raw IPA phonemes',
+    source: 'Piper local neural TTS using raw IPA phonemes, slowed offline with pitch preserved',
+    tempo: BLEND_TEMPO,
     license: process.env.TTS_LICENSE || 'verify the selected model license before publishing',
     blendText: buildRawBlendText(word),
     qaStatus: 'review_required',
     qaNotes: ['Generated as one dedicated continuous-blend utterance; manual listening QA is required before use.'],
   };
+}
+
+function mergeManifest(oldManifest, entries) {
+  const merged = Object.fromEntries(
+    Object.entries(oldManifest).map(([id, item]) => [id, entries[id] || item])
+  );
+  for (const [id, item] of Object.entries(entries)) {
+    if (!merged[id]) merged[id] = item;
+  }
+  return merged;
 }
 
 function generate() {
@@ -105,8 +118,7 @@ function generate() {
   }
 
   const oldManifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
-  const preserved = Object.fromEntries(Object.entries(oldManifest).filter(([, item]) => item.curriculum !== 'simple_word_blend'));
-  fs.writeFileSync(manifestPath, `${JSON.stringify({ ...preserved, ...entries }, null, 2)}\n`);
+  fs.writeFileSync(manifestPath, `${JSON.stringify(mergeManifest(oldManifest, entries), null, 2)}\n`);
   console.log(`Wrote ${Object.keys(entries).length} dedicated blend entries as review_required.`);
 }
 
@@ -119,4 +131,4 @@ if (require.main === module) {
   }
 }
 
-module.exports = { buildRawBlendText };
+module.exports = { BLEND_TEMPO, buildRawBlendText, mergeManifest };
