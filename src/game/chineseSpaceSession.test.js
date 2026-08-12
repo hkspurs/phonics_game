@@ -58,6 +58,12 @@ describe('Chinese space session reducer', () => {
     expect(resolveChineseSpaceTimeout(state, 28000)).toMatchObject({ event: 'gameOver', state: { phase: 'gameOver', hp: 0 } });
   });
 
+  it.each([8000, 9000])('turns a target at or after the time limit into timeout (%ims)', (elapsed) => {
+    const state = beginChineseSpaceCountdown(createChineseSpaceSession(questions), 0);
+    const result = resolveChineseSpaceTarget(state, 'a1', elapsed);
+    expect(result).toMatchObject({ event: 'timeout', state: { phase: 'audio', hp: 2, activeTimeMs: 8000 } });
+  });
+
   it('completes after the last question is answered correctly', () => {
     let state = createChineseSpaceSession([questions[0]]);
     state = beginChineseSpaceCountdown(state, 0);

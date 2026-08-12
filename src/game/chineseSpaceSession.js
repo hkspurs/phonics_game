@@ -27,6 +27,7 @@ function result(state, event) {
 
 export function resolveChineseSpaceTarget(state, targetId, now, timeLimitMs = 8000) {
   if (state.phase !== 'active') return result(state, 'ignored');
+  if (activeElapsed(state, now) >= timeLimitMs) return resolveChineseSpaceTimeout(state, now, timeLimitMs);
 
   const question = state.questions[state.questionIndex];
   const targets = [question.answer, ...question.distractors];
