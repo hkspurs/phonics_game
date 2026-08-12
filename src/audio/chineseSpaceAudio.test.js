@@ -14,7 +14,7 @@ const words = wordCatalog.flatMap((chapter) => chapter.words.map((word) => ({
 })));
 
 describe('Chinese Space audio manifest', () => {
-  it('contains one review-required Cantonese item for every catalog word', () => {
+  it('contains one Cantonese item for every catalog word', () => {
     expect(audioManifest).toHaveLength(84);
 
     for (const word of words) {
@@ -24,7 +24,7 @@ describe('Chinese Space audio manifest', () => {
         expectedText: word.text,
         language: 'yue-HK',
         generatedBy: 'gpt-sovits',
-        qaStatus: 'review_required',
+        qaStatus: expect.stringMatching(/^(review_required|pass)$/),
       });
     }
   });

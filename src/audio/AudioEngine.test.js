@@ -33,6 +33,12 @@ describe('AudioEngine cancellation', () => {
     expect(fallback).not.toHaveBeenCalled();
   });
 
+  it('reports a direct clip load failure to strict game flows', async () => {
+    vi.spyOn(audioEngine, '_loadBuffer').mockResolvedValue(null);
+
+    await expect(audioEngine.play('/missing-word.mp3')).resolves.toBe(false);
+  });
+
   it('cache-busts Fish word audio after a replacement', async () => {
     const load = vi.spyOn(audioEngine, '_loadBuffer').mockResolvedValue({});
     vi.spyOn(audioEngine, 'play').mockResolvedValue();

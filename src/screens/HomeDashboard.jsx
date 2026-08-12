@@ -93,6 +93,16 @@ export default function HomeDashboard() {
             <button type="button" className="btn-secondary" onClick={() => navigate('/map')}><Map size={20} /> {t('exploreForest')}</button>
           </div>
         </article>
+
+        <article className="phonics-world-card phonics-world-card--space">
+          <span className="phonics-world-card__emoji">🚀</span>
+          <div>
+            <span className="phonics-world-card__eyebrow">{t('newChineseSpaceWorld')}</span>
+            <h2>{t('chineseSpaceTitle')}</h2>
+            <p>{t('chineseSpaceDescription')}</p>
+            <button type="button" className="btn-secondary" onClick={() => navigate('/chinese-space')}>{t('openChineseSpace')} <span aria-hidden="true">→</span></button>
+          </div>
+        </article>
       </section>
 
       <section className="phonics-legacy-row" aria-label={t('forestTools')}>

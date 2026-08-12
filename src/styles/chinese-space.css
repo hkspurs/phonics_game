@@ -1,0 +1,92 @@
+.chinese-space-shell {
+  position: relative;
+  display: grid;
+  min-height: 100dvh;
+  place-items: center;
+  overflow: hidden;
+  background: #020617;
+  color: #f8fafc;
+}
+
+.chinese-space-canvas {
+  width: min(1280px, 100vw);
+  height: min(720px, calc(100dvh - 2.75rem));
+  overflow: hidden;
+  touch-action: none;
+}
+
+.chinese-space-canvas canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.chinese-space-shell__back {
+  position: absolute;
+  z-index: 3;
+  top: max(.7rem, env(safe-area-inset-top));
+  left: max(.7rem, env(safe-area-inset-left));
+  min-height: 40px;
+  padding: .55rem .9rem;
+  border: 1px solid rgba(186, 230, 253, .5);
+  border-radius: 999px;
+  background: rgba(15, 23, 42, .8);
+  color: #e0f2fe;
+  font-weight: 850;
+  cursor: pointer;
+}
+
+.chinese-space-shell__back:focus-visible,
+.chinese-space-shell__error button:focus-visible {
+  outline: 3px solid #fef08a;
+  outline-offset: 3px;
+}
+
+.chinese-space-shell__rotate {
+  display: none;
+}
+
+.chinese-space-shell__error {
+  padding: 2rem;
+  border: 1px solid #475569;
+  border-radius: 1rem;
+  background: #0f172a;
+  text-align: center;
+}
+
+.chinese-space-shell__error button {
+  min-height: 44px;
+  padding: .6rem 1.1rem;
+  border: 0;
+  border-radius: .7rem;
+  background: #2563eb;
+  color: #fff;
+  font-weight: 850;
+  cursor: pointer;
+}
+
+.chinese-space-status {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+@media (orientation: portrait) {
+  .chinese-space-shell__rotate {
+    position: absolute;
+    z-index: 2;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    padding: 2rem;
+    background: rgba(2, 6, 23, .9);
+    color: #fef08a;
+    font-size: clamp(1.4rem, 6vw, 2.4rem);
+    font-weight: 950;
+    text-align: center;
+  }
+}

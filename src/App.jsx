@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { lazy, Suspense, useState, useEffect } from 'react'
 import { HashRouter, Routes, Route, Navigate } from 'react-router-dom'
 import SubjectGateway from './screens/SubjectGateway'
 import HomeDashboard from './screens/HomeDashboard'
@@ -21,6 +21,8 @@ import Shop from './screens/Shop'
 import SimpleWords from './screens/SimpleWords'
 import BlendingHub from './screens/BlendingHub'
 import MascotRabbit from './components/MascotRabbit'
+
+const ChineseSpaceGame = lazy(() => import('./screens/ChineseSpaceGame'))
 
 import { useGameStore } from './store/gameStore'
 import { useTranslation } from './hooks/useTranslation'
@@ -117,6 +119,7 @@ function App() {
         <Route path="/phonics" element={<HomeDashboard />} />
         <Route path="/blending" element={<BlendingHub />} />
         <Route path="/simple-words" element={<SimpleWords />} />
+        <Route path="/chinese-space" element={<Suspense fallback={<div className="screen-container">載入中文字太空保衛戰⋯⋯</div>}><ChineseSpaceGame /></Suspense>} />
         <Route path="/math" element={<MathHome />} />
         <Route path="/math/map" element={<MathMasteryMap />} />
         <Route path="/math/daily" element={<MathDailyChallenge />} />

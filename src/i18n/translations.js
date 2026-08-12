@@ -135,6 +135,10 @@ export const translations = {
     forestAdventure: '森林冒險',
     forestDescription: '每日任務、拼音地圖同進階拼音挑戰。',
     exploreForest: '探索森林',
+    newChineseSpaceWorld: '新學習世界',
+    chineseSpaceTitle: '常用中文字',
+    chineseSpaceDescription: '聽粵語，控制戰機射中啱嘅中文字。',
+    openChineseSpace: '開始太空保衛戰',
     forestTools: '森林工具',
     listenInstructions: '聽指示',
 
@@ -437,6 +441,10 @@ export const translations = {
     forestAdventure: 'FOREST ADVENTURE',
     forestDescription: 'Daily missions, Sound Map, and phonics challenges.',
     exploreForest: 'Explore the forest',
+    newChineseSpaceWorld: 'NEW LEARNING WORLD',
+    chineseSpaceTitle: 'Common Chinese characters',
+    chineseSpaceDescription: 'Listen in Cantonese and shoot the correct Chinese character.',
+    openChineseSpace: 'Start space mission',
     forestTools: 'Forest tools',
     listenInstructions: 'Listen to instructions',
 

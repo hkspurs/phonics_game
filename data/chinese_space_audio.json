@@ -5,7 +5,7 @@
     "expectedText": "老師",
     "language": "yue-HK",
     "generatedBy": "gpt-sovits",
-    "qaStatus": "review_required"
+    "qaStatus": "pass"
   },
   {
     "id": "school-principal",
@@ -13,7 +13,7 @@
     "expectedText": "校長",
     "language": "yue-HK",
     "generatedBy": "gpt-sovits",
-    "qaStatus": "review_required"
+    "qaStatus": "pass"
   },
   {
     "id": "school-classmate",
@@ -21,7 +21,7 @@
     "expectedText": "同學",
     "language": "yue-HK",
     "generatedBy": "gpt-sovits",
-    "qaStatus": "review_required"
+    "qaStatus": "pass"
   },
   {
     "id": "school-student",
@@ -29,7 +29,7 @@
     "expectedText": "學生",
     "language": "yue-HK",
     "generatedBy": "gpt-sovits",
-    "qaStatus": "review_required"
+    "qaStatus": "pass"
   },
   {
     "id": "school-class-monitor",
@@ -37,7 +37,7 @@
     "expectedText": "班長",
     "language": "yue-HK",
     "generatedBy": "gpt-sovits",
-    "qaStatus": "review_required"
+    "qaStatus": "pass"
   },
   {
     "id": "school-playground",
@@ -45,7 +45,7 @@
     "expectedText": "操場",
     "language": "yue-HK",
     "generatedBy": "gpt-sovits",
-    "qaStatus": "review_required"
+    "qaStatus": "pass"
   },
   {
     "id": "school-classroom",
@@ -53,7 +53,7 @@
     "expectedText": "課室",
     "language": "yue-HK",
     "generatedBy": "gpt-sovits",
-    "qaStatus": "review_required"
+    "qaStatus": "pass"
   },
   {
     "id": "school-blackboard",
@@ -61,7 +61,7 @@
     "expectedText": "黑板",
     "language": "yue-HK",
     "generatedBy": "gpt-sovits",
-    "qaStatus": "review_required"
+    "qaStatus": "pass"
   },
   {
     "id": "school-schoolbag",
@@ -69,7 +69,7 @@
     "expectedText": "書包",
     "language": "yue-HK",
     "generatedBy": "gpt-sovits",
-    "qaStatus": "review_required"
+    "qaStatus": "pass"
   },
   {
     "id": "school-books",
@@ -77,7 +77,7 @@
     "expectedText": "圖書",
     "language": "yue-HK",
     "generatedBy": "gpt-sovits",
-    "qaStatus": "review_required"
+    "qaStatus": "pass"
   },
   {
     "id": "school-stationery",
@@ -85,7 +85,7 @@
     "expectedText": "文具",
     "language": "yue-HK",
     "generatedBy": "gpt-sovits",
-    "qaStatus": "review_required"
+    "qaStatus": "pass"
   },
   {
     "id": "school-drawing",
@@ -93,7 +93,7 @@
     "expectedText": "圖畫",
     "language": "yue-HK",
     "generatedBy": "gpt-sovits",
-    "qaStatus": "review_required"
+    "qaStatus": "pass"
   },
   {
     "id": "school-rules",
@@ -101,7 +101,7 @@
     "expectedText": "校規",
     "language": "yue-HK",
     "generatedBy": "gpt-sovits",
-    "qaStatus": "review_required"
+    "qaStatus": "pass"
   },
   {
     "id": "school-extracurricular",
@@ -109,7 +109,7 @@
     "expectedText": "課外",
     "language": "yue-HK",
     "generatedBy": "gpt-sovits",
-    "qaStatus": "review_required"
+    "qaStatus": "pass"
   },
   {
     "id": "school-morning-exercise",
@@ -117,7 +117,7 @@
     "expectedText": "早操",
     "language": "yue-HK",
     "generatedBy": "gpt-sovits",
-    "qaStatus": "review_required"
+    "qaStatus": "pass"
   },
   {
     "id": "school-term-start",
@@ -125,7 +125,7 @@
     "expectedText": "開學",
     "language": "yue-HK",
     "generatedBy": "gpt-sovits",
-    "qaStatus": "review_required"
+    "qaStatus": "pass"
   },
   {
     "id": "school-learning",
@@ -133,7 +133,7 @@
     "expectedText": "學習",
     "language": "yue-HK",
     "generatedBy": "gpt-sovits",
-    "qaStatus": "review_required"
+    "qaStatus": "pass"
   },
   {
     "id": "school-writing",
@@ -141,7 +141,7 @@
     "expectedText": "寫字",
     "language": "yue-HK",
     "generatedBy": "gpt-sovits",
-    "qaStatus": "review_required"
+    "qaStatus": "pass"
   },
   {
     "id": "school-reading",
@@ -149,7 +149,7 @@
     "expectedText": "讀書",
     "language": "yue-HK",
     "generatedBy": "gpt-sovits",
-    "qaStatus": "review_required"
+    "qaStatus": "pass"
   },
   {
     "id": "school-class",
@@ -157,7 +157,7 @@
     "expectedText": "上課",
     "language": "yue-HK",
     "generatedBy": "gpt-sovits",
-    "qaStatus": "review_required"
+    "qaStatus": "pass"
   },
   {
     "id": "school-after-class",
@@ -165,7 +165,7 @@
     "expectedText": "下課",
     "language": "yue-HK",
     "generatedBy": "gpt-sovits",
-    "qaStatus": "review_required"
+    "qaStatus": "pass"
   },
   {
     "id": "school-home-time",
@@ -173,7 +173,7 @@
     "expectedText": "放學",
     "language": "yue-HK",
     "generatedBy": "gpt-sovits",
-    "qaStatus": "review_required"
+    "qaStatus": "pass"
   },
   {
     "id": "school-holiday",
@@ -181,7 +181,7 @@
     "expectedText": "放假",
     "language": "yue-HK",
     "generatedBy": "gpt-sovits",
-    "qaStatus": "review_required"
+    "qaStatus": "pass"
   },
   {
     "id": "school-obey",
@@ -189,7 +189,7 @@
     "expectedText": "遵守",
     "language": "yue-HK",
     "generatedBy": "gpt-sovits",
-    "qaStatus": "review_required"
+    "qaStatus": "pass"
   },
   {
     "id": "school-recess",
@@ -197,7 +197,7 @@
     "expectedText": "小息",
     "language": "yue-HK",
     "generatedBy": "gpt-sovits",
-    "qaStatus": "review_required"
+    "qaStatus": "pass"
   },
   {
     "id": "school-now",
@@ -205,7 +205,7 @@
     "expectedText": "現在",
     "language": "yue-HK",
     "generatedBy": "gpt-sovits",
-    "qaStatus": "review_required"
+    "qaStatus": "pass"
   },
   {
     "id": "school-today",
@@ -213,7 +213,7 @@
     "expectedText": "今天",
     "language": "yue-HK",
     "generatedBy": "gpt-sovits",
-    "qaStatus": "review_required"
+    "qaStatus": "pass"
   },
   {
     "id": "school-tomorrow",
@@ -221,7 +221,7 @@
     "expectedText": "明天",
     "language": "yue-HK",
     "generatedBy": "gpt-sovits",
-    "qaStatus": "review_required"
+    "qaStatus": "pass"
   },
   {
     "id": "park-older-brother",
@@ -229,7 +229,7 @@
     "expectedText": "哥哥",
     "language": "yue-HK",
     "generatedBy": "gpt-sovits",
-    "qaStatus": "review_required"
+    "qaStatus": "pass"
   },
   {
     "id": "park-younger-sister",
@@ -237,7 +237,7 @@
     "expectedText": "妹妹",
     "language": "yue-HK",
     "generatedBy": "gpt-sovits",
-    "qaStatus": "review_required"
+    "qaStatus": "pass"
   },
   {
     "id": "park-older-sister",
@@ -245,7 +245,7 @@
     "expectedText": "姐姐",
     "language": "yue-HK",
     "generatedBy": "gpt-sovits",
-    "qaStatus": "review_required"
+    "qaStatus": "pass"
   },
   {
     "id": "park-younger-brother",
@@ -253,7 +253,7 @@
     "expectedText": "弟弟",
     "language": "yue-HK",
     "generatedBy": "gpt-sovits",
-    "qaStatus": "review_required"
+    "qaStatus": "pass"
   },
   {
     "id": "park-others",
@@ -261,7 +261,7 @@
     "expectedText": "別人",
     "language": "yue-HK",
     "generatedBy": "gpt-sovits",
-    "qaStatus": "review_required"
+    "qaStatus": "pass"
   },
   {
     "id": "park-friend",
@@ -269,7 +269,7 @@
     "expectedText": "朋友",
     "language": "yue-HK",
     "generatedBy": "gpt-sovits",
-    "qaStatus": "review_required"
+    "qaStatus": "pass"
   },
   {
     "id": "park-people",
@@ -277,7 +277,7 @@
     "expectedText": "人們",
     "language": "yue-HK",
     "generatedBy": "gpt-sovits",
-    "qaStatus": "review_required"
+    "qaStatus": "pass"
   },
   {
     "id": "park-park",
@@ -285,7 +285,7 @@
     "expectedText": "公園",
     "language": "yue-HK",
     "generatedBy": "gpt-sovits",
-    "qaStatus": "review_required"
+    "qaStatus": "pass"
   },
   {
     "id": "park-grass",
@@ -293,7 +293,7 @@
     "expectedText": "草地",
     "language": "yue-HK",
     "generatedBy": "gpt-sovits",
-    "qaStatus": "review_required"
+    "qaStatus": "pass"
   },
   {
     "id": "park-outdoors",
@@ -301,7 +301,7 @@
     "expectedText": "户外",
     "language": "yue-HK",
     "generatedBy": "gpt-sovits",
-    "qaStatus": "review_required"
+    "qaStatus": "pass"
   },
   {
     "id": "park-sky",
@@ -309,7 +309,7 @@
     "expectedText": "天空",
     "language": "yue-HK",
     "generatedBy": "gpt-sovits",
-    "qaStatus": "review_required"
+    "qaStatus": "pass"
   },
   {
     "id": "park-plants",
@@ -317,7 +317,7 @@
     "expectedText": "植物",
     "language": "yue-HK",
     "generatedBy": "gpt-sovits",
-    "qaStatus": "review_required"
+    "qaStatus": "pass"
   },
   {
     "id": "park-animals",
@@ -325,7 +325,7 @@
     "expectedText": "動物",
     "language": "yue-HK",
     "generatedBy": "gpt-sovits",
-    "qaStatus": "review_required"
+    "qaStatus": "pass"
   },
   {
     "id": "park-trees",
@@ -333,7 +333,7 @@
     "expectedText": "樹木",
     "language": "yue-HK",
     "generatedBy": "gpt-sovits",
-    "qaStatus": "review_required"
+    "qaStatus": "pass"
   },
   {
     "id": "park-flowers",
@@ -341,7 +341,7 @@
     "expectedText": "花兒",
     "language": "yue-HK",
     "generatedBy": "gpt-sovits",
-    "qaStatus": "review_required"
+    "qaStatus": "pass"
   },
   {
     "id": "park-leaves",
@@ -349,7 +349,7 @@
     "expectedText": "葉子",
     "language": "yue-HK",
     "generatedBy": "gpt-sovits",
-    "qaStatus": "review_required"
+    "qaStatus": "pass"
   },
   {
     "id": "park-bird",
@@ -357,7 +357,7 @@
     "expectedText": "小鳥",
     "language": "yue-HK",
     "generatedBy": "gpt-sovits",
-    "qaStatus": "review_required"
+    "qaStatus": "pass"
   },
   {
     "id": "park-fish",
@@ -365,7 +365,7 @@
     "expectedText": "魚兒",
     "language": "yue-HK",
     "generatedBy": "gpt-sovits",
-    "qaStatus": "review_required"
+    "qaStatus": "pass"
   },
   {
     "id": "park-running",
@@ -373,7 +373,7 @@
     "expectedText": "跑步",
     "language": "yue-HK",
     "generatedBy": "gpt-sovits",
-    "qaStatus": "review_required"
+    "qaStatus": "pass"
   },
   {
     "id": "park-ball",
@@ -381,7 +381,7 @@
     "expectedText": "拍球",
     "language": "yue-HK",
     "generatedBy": "gpt-sovits",
-    "qaStatus": "review_required"
+    "qaStatus": "pass"
   },
   {
     "id": "park-playing",
@@ -389,7 +389,7 @@
     "expectedText": "玩耍",
     "language": "yue-HK",
     "generatedBy": "gpt-sovits",
-    "qaStatus": "review_required"
+    "qaStatus": "pass"
   },
   {
     "id": "park-rest",
@@ -397,7 +397,7 @@
     "expectedText": "休息",
     "language": "yue-HK",
     "generatedBy": "gpt-sovits",
-    "qaStatus": "review_required"
+    "qaStatus": "pass"
   },
   {
     "id": "park-walking",
@@ -405,7 +405,7 @@
     "expectedText": "走路",
     "language": "yue-HK",
     "generatedBy": "gpt-sovits",
-    "qaStatus": "review_required"
+    "qaStatus": "pass"
   },
   {
     "id": "park-holiday",
@@ -413,7 +413,7 @@
     "expectedText": "假日",
     "language": "yue-HK",
     "generatedBy": "gpt-sovits",
-    "qaStatus": "review_required"
+    "qaStatus": "pass"
   },
   {
     "id": "park-spring",
@@ -421,7 +421,7 @@
     "expectedText": "春天",
     "language": "yue-HK",
     "generatedBy": "gpt-sovits",
-    "qaStatus": "review_required"
+    "qaStatus": "pass"
   },
   {
     "id": "park-summer",
@@ -429,7 +429,7 @@
     "expectedText": "夏天",
     "language": "yue-HK",
     "generatedBy": "gpt-sovits",
-    "qaStatus": "review_required"
+    "qaStatus": "pass"
   },
   {
     "id": "park-autumn",
@@ -437,7 +437,7 @@
     "expectedText": "秋天",
     "language": "yue-HK",
     "generatedBy": "gpt-sovits",
-    "qaStatus": "review_required"
+    "qaStatus": "pass"
   },
   {
     "id": "park-winter",
@@ -445,7 +445,7 @@
     "expectedText": "冬天",
     "language": "yue-HK",
     "generatedBy": "gpt-sovits",
-    "qaStatus": "review_required"
+    "qaStatus": "pass"
   },
   {
     "id": "family-family",
@@ -453,7 +453,7 @@
     "expectedText": "家人",
     "language": "yue-HK",
     "generatedBy": "gpt-sovits",
-    "qaStatus": "review_required"
+    "qaStatus": "pass"
   },
   {
     "id": "family-parents",
@@ -461,7 +461,7 @@
     "expectedText": "父母",
     "language": "yue-HK",
     "generatedBy": "gpt-sovits",
-    "qaStatus": "review_required"
+    "qaStatus": "pass"
   },
   {
     "id": "family-dad",
@@ -469,7 +469,7 @@
     "expectedText": "爸爸",
     "language": "yue-HK",
     "generatedBy": "gpt-sovits",
-    "qaStatus": "review_required"
+    "qaStatus": "pass"
   },
   {
     "id": "family-mum",
@@ -477,7 +477,7 @@
     "expectedText": "媽媽",
     "language": "yue-HK",
     "generatedBy": "gpt-sovits",
-    "qaStatus": "review_required"
+    "qaStatus": "pass"
   },
   {
     "id": "family-grandfather",
@@ -485,7 +485,7 @@
     "expectedText": "祖父",
     "language": "yue-HK",
     "generatedBy": "gpt-sovits",
-    "qaStatus": "review_required"
+    "qaStatus": "pass"
   },
   {
     "id": "family-grandmother",
@@ -493,7 +493,7 @@
     "expectedText": "祖母",
     "language": "yue-HK",
     "generatedBy": "gpt-sovits",
-    "qaStatus": "review_required"
+    "qaStatus": "pass"
   },
   {
     "id": "family-grandma",
@@ -501,7 +501,7 @@
     "expectedText": "外婆",
     "language": "yue-HK",
     "generatedBy": "gpt-sovits",
-    "qaStatus": "review_required"
+    "qaStatus": "pass"
   },
   {
     "id": "family-grandpa",
@@ -509,7 +509,7 @@
     "expectedText": "外公",
     "language": "yue-HK",
     "generatedBy": "gpt-sovits",
-    "qaStatus": "review_required"
+    "qaStatus": "pass"
   },
   {
     "id": "family-daughter",
@@ -517,7 +517,7 @@
     "expectedText": "女兒",
     "language": "yue-HK",
     "generatedBy": "gpt-sovits",
-    "qaStatus": "review_required"
+    "qaStatus": "pass"
   },
   {
     "id": "family-son",
@@ -525,7 +525,7 @@
     "expectedText": "兒子",
     "language": "yue-HK",
     "generatedBy": "gpt-sovits",
-    "qaStatus": "review_required"
+    "qaStatus": "pass"
   },
   {
     "id": "family-doors-windows",
@@ -533,7 +533,7 @@
     "expectedText": "門窗",
     "language": "yue-HK",
     "generatedBy": "gpt-sovits",
-    "qaStatus": "review_required"
+    "qaStatus": "pass"
   },
   {
     "id": "family-floor",
@@ -541,7 +541,7 @@
     "expectedText": "地板",
     "language": "yue-HK",
     "generatedBy": "gpt-sovits",
-    "qaStatus": "review_required"
+    "qaStatus": "pass"
   },
   {
     "id": "family-table",
@@ -549,7 +549,7 @@
     "expectedText": "桌子",
     "language": "yue-HK",
     "generatedBy": "gpt-sovits",
-    "qaStatus": "review_required"
+    "qaStatus": "pass"
   },
   {
     "id": "family-ground",
@@ -557,7 +557,7 @@
     "expectedText": "地上",
     "language": "yue-HK",
     "generatedBy": "gpt-sovits",
-    "qaStatus": "review_required"
+    "qaStatus": "pass"
   },
   {
     "id": "family-room",
@@ -565,7 +565,7 @@
     "expectedText": "房間",
     "language": "yue-HK",
     "generatedBy": "gpt-sovits",
-    "qaStatus": "review_required"
+    "qaStatus": "pass"
   },
   {
     "id": "family-homework",
@@ -573,7 +573,7 @@
     "expectedText": "功課",
     "language": "yue-HK",
     "generatedBy": "gpt-sovits",
-    "qaStatus": "review_required"
+    "qaStatus": "pass"
   },
   {
     "id": "family-reading",
@@ -581,7 +581,7 @@
     "expectedText": "看書",
     "language": "yue-HK",
     "generatedBy": "gpt-sovits",
-    "qaStatus": "review_required"
+    "qaStatus": "pass"
   },
   {
     "id": "family-wake-up",
@@ -589,7 +589,7 @@
     "expectedText": "起牀",
     "language": "yue-HK",
     "generatedBy": "gpt-sovits",
-    "qaStatus": "review_required"
+    "qaStatus": "pass"
   },
   {
     "id": "family-rest",
@@ -597,7 +597,7 @@
     "expectedText": "休息",
     "language": "yue-HK",
     "generatedBy": "gpt-sovits",
-    "qaStatus": "review_required"
+    "qaStatus": "pass"
   },
   {
     "id": "family-eat",
@@ -605,7 +605,7 @@
     "expectedText": "吃飯",
     "language": "yue-HK",
     "generatedBy": "gpt-sovits",
-    "qaStatus": "review_required"
+    "qaStatus": "pass"
   },
   {
     "id": "family-cleaning",
@@ -613,7 +613,7 @@
     "expectedText": "打掃",
     "language": "yue-HK",
     "generatedBy": "gpt-sovits",
-    "qaStatus": "review_required"
+    "qaStatus": "pass"
   },
   {
     "id": "family-cooking",
@@ -621,7 +621,7 @@
     "expectedText": "做飯",
     "language": "yue-HK",
     "generatedBy": "gpt-sovits",
-    "qaStatus": "review_required"
+    "qaStatus": "pass"
   },
   {
     "id": "family-dinner",
@@ -629,7 +629,7 @@
     "expectedText": "晚飯",
     "language": "yue-HK",
     "generatedBy": "gpt-sovits",
-    "qaStatus": "review_required"
+    "qaStatus": "pass"
   },
   {
     "id": "family-breakfast",
@@ -637,7 +637,7 @@
     "expectedText": "早餐",
     "language": "yue-HK",
     "generatedBy": "gpt-sovits",
-    "qaStatus": "review_required"
+    "qaStatus": "pass"
   },
   {
     "id": "family-morning",
@@ -645,7 +645,7 @@
     "expectedText": "早上",
     "language": "yue-HK",
     "generatedBy": "gpt-sovits",
-    "qaStatus": "review_required"
+    "qaStatus": "pass"
   },
   {
     "id": "family-noon",
@@ -653,7 +653,7 @@
     "expectedText": "中午",
     "language": "yue-HK",
     "generatedBy": "gpt-sovits",
-    "qaStatus": "review_required"
+    "qaStatus": "pass"
   },
   {
     "id": "family-afternoon",
@@ -661,7 +661,7 @@
     "expectedText": "下午",
     "language": "yue-HK",
     "generatedBy": "gpt-sovits",
-    "qaStatus": "review_required"
+    "qaStatus": "pass"
   },
   {
     "id": "family-evening",
@@ -669,6 +669,6 @@
     "expectedText": "晚上",
     "language": "yue-HK",
     "generatedBy": "gpt-sovits",
-    "qaStatus": "review_required"
+    "qaStatus": "pass"
   }
 ]

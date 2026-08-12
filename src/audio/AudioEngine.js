@@ -96,7 +96,7 @@ class AudioEngine {
       
       // If a new play call was made while we were fetching, abort this one (Challenge 12)
       if (this.playCallId !== currentCallId || !buffer) {
-        resolve();
+        resolve(false);
         return;
       }
 
@@ -107,7 +107,7 @@ class AudioEngine {
       this.currentSource = source;
 
       source.onended = () => {
-        resolve();
+        resolve(true);
       };
 
       const startOffset = startTimeMs / 1000;

@@ -22,6 +22,7 @@
 .phonics-world-card { display: grid; grid-template-columns: auto 1fr; gap: .9rem; align-items: start; padding: 1.25rem; border-radius: 24px; background: white; border: 2px solid #e2e8f0; box-shadow: 0 10px 24px rgba(15,23,42,.07); }
 .phonics-world-card--blend { border-color: #99f6e4; background: linear-gradient(145deg, #f0fdfa, #fff); }
 .phonics-world-card--forest { border-color: #bfdbfe; background: linear-gradient(145deg, #eff6ff, #fff); }
+.phonics-world-card--space { border-color: #c4b5fd; background: linear-gradient(145deg, #f5f3ff, #fff); }
 .phonics-world-card__emoji { font-size: 2.6rem; }
 .phonics-world-card h2 { margin: .15rem 0 .4rem; color: #17324d; font-size: clamp(1.2rem, 3vw, 1.55rem); }
 .phonics-world-card p { max-width: 45ch; margin: 0 0 1rem; color: #64748b; line-height: 1.45; font-weight: 700; }
