@@ -147,10 +147,10 @@ describe('gameStore baseline — existing Phonics behaviour', () => {
     expect(state.tickets).toBe(2);
   });
 
-  it('persistence version is 6', () => {
+  it('persistence version is 7', () => {
     // Verify that the current persistence version has not changed unexpectedly
     const options = useGameStore.persist.getOptions();
-    expect(options.version).toBe(6);
+    expect(options.version).toBe(7);
   });
 
   it('partialize preserves all expected fields', () => {

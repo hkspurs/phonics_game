@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { questionEngine } from '../game/QuestionEngine';
 import { createMathSlice, MATH_DEFAULTS } from './mathSlice';
+import { createChineseSpaceSlice, CHINESE_SPACE_DEFAULTS } from './chineseSpaceSlice';
 import { createAnalyticsSlice } from './analyticsSlice';
 import { createEncouragementSlice } from './encouragementSlice';
 import { calculateSimpleWordGems, updateSimpleWordStats } from '../game/simpleWordReview';
@@ -63,7 +64,8 @@ export const useGameStore = create(
         preRefresherState: null,
         currentChapter: 'A Families',
         phonicsSessionTime: 0,
-        phonicsMistakeHistory: []
+        phonicsMistakeHistory: [],
+        chineseSpace: { ...CHINESE_SPACE_DEFAULTS },
       }),
 
       addSessionTime: (minutes) => set((state) => ({
@@ -416,6 +418,9 @@ export const useGameStore = create(
       // ---- Mathematics Slice ----
       ...createMathSlice(set, get),
 
+      // ---- Chinese Space Slice ----
+      ...createChineseSpaceSlice(set, get),
+
       // ---- Analytics Slice ----
       ...createAnalyticsSlice(set, get),
 
@@ -424,7 +429,7 @@ export const useGameStore = create(
     }),
     {
       name: 'phonics-game-storage',
-      version: 6, // Persist Shop inventory and equipped items
+      version: 7, // Persist Chinese space progress
       migrate: (persistedState, version) => {
         if (!persistedState || typeof persistedState !== 'object') return {}; // Prevent hydration poisoning
         
@@ -440,6 +445,9 @@ export const useGameStore = create(
         // V3 Migration: Add mathematics state if missing
         if (!state.math) {
           state.math = { ...MATH_DEFAULTS };
+        }
+        if (!state.chineseSpace) {
+          state.chineseSpace = { ...CHINESE_SPACE_DEFAULTS };
         }
         if (!state.selectedSubject) {
           state.selectedSubject = 'phonics';
@@ -496,6 +504,7 @@ export const useGameStore = create(
         currentChapter: state.currentChapter, // Persist chapter
         selectedSubject: state.selectedSubject, // Persist subject selection
         math: state.math, // Persist entire math slice
+        chineseSpace: state.chineseSpace,
         analytics: state.analytics, // Persist analytics
         encouragements: state.encouragements, // Persist encouragements
       })
