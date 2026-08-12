@@ -1,0 +1,674 @@
+[
+  {
+    "id": "school-teacher",
+    "file": "assets/chinese-space/audio/school/school-teacher.mp3",
+    "expectedText": "老師",
+    "language": "yue-HK",
+    "generatedBy": "gpt-sovits",
+    "qaStatus": "review_required"
+  },
+  {
+    "id": "school-principal",
+    "file": "assets/chinese-space/audio/school/school-principal.mp3",
+    "expectedText": "校長",
+    "language": "yue-HK",
+    "generatedBy": "gpt-sovits",
+    "qaStatus": "review_required"
+  },
+  {
+    "id": "school-classmate",
+    "file": "assets/chinese-space/audio/school/school-classmate.mp3",
+    "expectedText": "同學",
+    "language": "yue-HK",
+    "generatedBy": "gpt-sovits",
+    "qaStatus": "review_required"
+  },
+  {
+    "id": "school-student",
+    "file": "assets/chinese-space/audio/school/school-student.mp3",
+    "expectedText": "學生",
+    "language": "yue-HK",
+    "generatedBy": "gpt-sovits",
+    "qaStatus": "review_required"
+  },
+  {
+    "id": "school-class-monitor",
+    "file": "assets/chinese-space/audio/school/school-class-monitor.mp3",
+    "expectedText": "班長",
+    "language": "yue-HK",
+    "generatedBy": "gpt-sovits",
+    "qaStatus": "review_required"
+  },
+  {
+    "id": "school-playground",
+    "file": "assets/chinese-space/audio/school/school-playground.mp3",
+    "expectedText": "操場",
+    "language": "yue-HK",
+    "generatedBy": "gpt-sovits",
+    "qaStatus": "review_required"
+  },
+  {
+    "id": "school-classroom",
+    "file": "assets/chinese-space/audio/school/school-classroom.mp3",
+    "expectedText": "課室",
+    "language": "yue-HK",
+    "generatedBy": "gpt-sovits",
+    "qaStatus": "review_required"
+  },
+  {
+    "id": "school-blackboard",
+    "file": "assets/chinese-space/audio/school/school-blackboard.mp3",
+    "expectedText": "黑板",
+    "language": "yue-HK",
+    "generatedBy": "gpt-sovits",
+    "qaStatus": "review_required"
+  },
+  {
+    "id": "school-schoolbag",
+    "file": "assets/chinese-space/audio/school/school-schoolbag.mp3",
+    "expectedText": "書包",
+    "language": "yue-HK",
+    "generatedBy": "gpt-sovits",
+    "qaStatus": "review_required"
+  },
+  {
+    "id": "school-books",
+    "file": "assets/chinese-space/audio/school/school-books.mp3",
+    "expectedText": "圖書",
+    "language": "yue-HK",
+    "generatedBy": "gpt-sovits",
+    "qaStatus": "review_required"
+  },
+  {
+    "id": "school-stationery",
+    "file": "assets/chinese-space/audio/school/school-stationery.mp3",
+    "expectedText": "文具",
+    "language": "yue-HK",
+    "generatedBy": "gpt-sovits",
+    "qaStatus": "review_required"
+  },
+  {
+    "id": "school-drawing",
+    "file": "assets/chinese-space/audio/school/school-drawing.mp3",
+    "expectedText": "圖畫",
+    "language": "yue-HK",
+    "generatedBy": "gpt-sovits",
+    "qaStatus": "review_required"
+  },
+  {
+    "id": "school-rules",
+    "file": "assets/chinese-space/audio/school/school-rules.mp3",
+    "expectedText": "校規",
+    "language": "yue-HK",
+    "generatedBy": "gpt-sovits",
+    "qaStatus": "review_required"
+  },
+  {
+    "id": "school-extracurricular",
+    "file": "assets/chinese-space/audio/school/school-extracurricular.mp3",
+    "expectedText": "課外",
+    "language": "yue-HK",
+    "generatedBy": "gpt-sovits",
+    "qaStatus": "review_required"
+  },
+  {
+    "id": "school-morning-exercise",
+    "file": "assets/chinese-space/audio/school/school-morning-exercise.mp3",
+    "expectedText": "早操",
+    "language": "yue-HK",
+    "generatedBy": "gpt-sovits",
+    "qaStatus": "review_required"
+  },
+  {
+    "id": "school-term-start",
+    "file": "assets/chinese-space/audio/school/school-term-start.mp3",
+    "expectedText": "開學",
+    "language": "yue-HK",
+    "generatedBy": "gpt-sovits",
+    "qaStatus": "review_required"
+  },
+  {
+    "id": "school-learning",
+    "file": "assets/chinese-space/audio/school/school-learning.mp3",
+    "expectedText": "學習",
+    "language": "yue-HK",
+    "generatedBy": "gpt-sovits",
+    "qaStatus": "review_required"
+  },
+  {
+    "id": "school-writing",
+    "file": "assets/chinese-space/audio/school/school-writing.mp3",
+    "expectedText": "寫字",
+    "language": "yue-HK",
+    "generatedBy": "gpt-sovits",
+    "qaStatus": "review_required"
+  },
+  {
+    "id": "school-reading",
+    "file": "assets/chinese-space/audio/school/school-reading.mp3",
+    "expectedText": "讀書",
+    "language": "yue-HK",
+    "generatedBy": "gpt-sovits",
+    "qaStatus": "review_required"
+  },
+  {
+    "id": "school-class",
+    "file": "assets/chinese-space/audio/school/school-class.mp3",
+    "expectedText": "上課",
+    "language": "yue-HK",
+    "generatedBy": "gpt-sovits",
+    "qaStatus": "review_required"
+  },
+  {
+    "id": "school-after-class",
+    "file": "assets/chinese-space/audio/school/school-after-class.mp3",
+    "expectedText": "下課",
+    "language": "yue-HK",
+    "generatedBy": "gpt-sovits",
+    "qaStatus": "review_required"
+  },
+  {
+    "id": "school-home-time",
+    "file": "assets/chinese-space/audio/school/school-home-time.mp3",
+    "expectedText": "放學",
+    "language": "yue-HK",
+    "generatedBy": "gpt-sovits",
+    "qaStatus": "review_required"
+  },
+  {
+    "id": "school-holiday",
+    "file": "assets/chinese-space/audio/school/school-holiday.mp3",
+    "expectedText": "放假",
+    "language": "yue-HK",
+    "generatedBy": "gpt-sovits",
+    "qaStatus": "review_required"
+  },
+  {
+    "id": "school-obey",
+    "file": "assets/chinese-space/audio/school/school-obey.mp3",
+    "expectedText": "遵守",
+    "language": "yue-HK",
+    "generatedBy": "gpt-sovits",
+    "qaStatus": "review_required"
+  },
+  {
+    "id": "school-recess",
+    "file": "assets/chinese-space/audio/school/school-recess.mp3",
+    "expectedText": "小息",
+    "language": "yue-HK",
+    "generatedBy": "gpt-sovits",
+    "qaStatus": "review_required"
+  },
+  {
+    "id": "school-now",
+    "file": "assets/chinese-space/audio/school/school-now.mp3",
+    "expectedText": "現在",
+    "language": "yue-HK",
+    "generatedBy": "gpt-sovits",
+    "qaStatus": "review_required"
+  },
+  {
+    "id": "school-today",
+    "file": "assets/chinese-space/audio/school/school-today.mp3",
+    "expectedText": "今天",
+    "language": "yue-HK",
+    "generatedBy": "gpt-sovits",
+    "qaStatus": "review_required"
+  },
+  {
+    "id": "school-tomorrow",
+    "file": "assets/chinese-space/audio/school/school-tomorrow.mp3",
+    "expectedText": "明天",
+    "language": "yue-HK",
+    "generatedBy": "gpt-sovits",
+    "qaStatus": "review_required"
+  },
+  {
+    "id": "park-older-brother",
+    "file": "assets/chinese-space/audio/park/park-older-brother.mp3",
+    "expectedText": "哥哥",
+    "language": "yue-HK",
+    "generatedBy": "gpt-sovits",
+    "qaStatus": "review_required"
+  },
+  {
+    "id": "park-younger-sister",
+    "file": "assets/chinese-space/audio/park/park-younger-sister.mp3",
+    "expectedText": "妹妹",
+    "language": "yue-HK",
+    "generatedBy": "gpt-sovits",
+    "qaStatus": "review_required"
+  },
+  {
+    "id": "park-older-sister",
+    "file": "assets/chinese-space/audio/park/park-older-sister.mp3",
+    "expectedText": "姐姐",
+    "language": "yue-HK",
+    "generatedBy": "gpt-sovits",
+    "qaStatus": "review_required"
+  },
+  {
+    "id": "park-younger-brother",
+    "file": "assets/chinese-space/audio/park/park-younger-brother.mp3",
+    "expectedText": "弟弟",
+    "language": "yue-HK",
+    "generatedBy": "gpt-sovits",
+    "qaStatus": "review_required"
+  },
+  {
+    "id": "park-others",
+    "file": "assets/chinese-space/audio/park/park-others.mp3",
+    "expectedText": "別人",
+    "language": "yue-HK",
+    "generatedBy": "gpt-sovits",
+    "qaStatus": "review_required"
+  },
+  {
+    "id": "park-friend",
+    "file": "assets/chinese-space/audio/park/park-friend.mp3",
+    "expectedText": "朋友",
+    "language": "yue-HK",
+    "generatedBy": "gpt-sovits",
+    "qaStatus": "review_required"
+  },
+  {
+    "id": "park-people",
+    "file": "assets/chinese-space/audio/park/park-people.mp3",
+    "expectedText": "人們",
+    "language": "yue-HK",
+    "generatedBy": "gpt-sovits",
+    "qaStatus": "review_required"
+  },
+  {
+    "id": "park-park",
+    "file": "assets/chinese-space/audio/park/park-park.mp3",
+    "expectedText": "公園",
+    "language": "yue-HK",
+    "generatedBy": "gpt-sovits",
+    "qaStatus": "review_required"
+  },
+  {
+    "id": "park-grass",
+    "file": "assets/chinese-space/audio/park/park-grass.mp3",
+    "expectedText": "草地",
+    "language": "yue-HK",
+    "generatedBy": "gpt-sovits",
+    "qaStatus": "review_required"
+  },
+  {
+    "id": "park-outdoors",
+    "file": "assets/chinese-space/audio/park/park-outdoors.mp3",
+    "expectedText": "户外",
+    "language": "yue-HK",
+    "generatedBy": "gpt-sovits",
+    "qaStatus": "review_required"
+  },
+  {
+    "id": "park-sky",
+    "file": "assets/chinese-space/audio/park/park-sky.mp3",
+    "expectedText": "天空",
+    "language": "yue-HK",
+    "generatedBy": "gpt-sovits",
+    "qaStatus": "review_required"
+  },
+  {
+    "id": "park-plants",
+    "file": "assets/chinese-space/audio/park/park-plants.mp3",
+    "expectedText": "植物",
+    "language": "yue-HK",
+    "generatedBy": "gpt-sovits",
+    "qaStatus": "review_required"
+  },
+  {
+    "id": "park-animals",
+    "file": "assets/chinese-space/audio/park/park-animals.mp3",
+    "expectedText": "動物",
+    "language": "yue-HK",
+    "generatedBy": "gpt-sovits",
+    "qaStatus": "review_required"
+  },
+  {
+    "id": "park-trees",
+    "file": "assets/chinese-space/audio/park/park-trees.mp3",
+    "expectedText": "樹木",
+    "language": "yue-HK",
+    "generatedBy": "gpt-sovits",
+    "qaStatus": "review_required"
+  },
+  {
+    "id": "park-flowers",
+    "file": "assets/chinese-space/audio/park/park-flowers.mp3",
+    "expectedText": "花兒",
+    "language": "yue-HK",
+    "generatedBy": "gpt-sovits",
+    "qaStatus": "review_required"
+  },
+  {
+    "id": "park-leaves",
+    "file": "assets/chinese-space/audio/park/park-leaves.mp3",
+    "expectedText": "葉子",
+    "language": "yue-HK",
+    "generatedBy": "gpt-sovits",
+    "qaStatus": "review_required"
+  },
+  {
+    "id": "park-bird",
+    "file": "assets/chinese-space/audio/park/park-bird.mp3",
+    "expectedText": "小鳥",
+    "language": "yue-HK",
+    "generatedBy": "gpt-sovits",
+    "qaStatus": "review_required"
+  },
+  {
+    "id": "park-fish",
+    "file": "assets/chinese-space/audio/park/park-fish.mp3",
+    "expectedText": "魚兒",
+    "language": "yue-HK",
+    "generatedBy": "gpt-sovits",
+    "qaStatus": "review_required"
+  },
+  {
+    "id": "park-running",
+    "file": "assets/chinese-space/audio/park/park-running.mp3",
+    "expectedText": "跑步",
+    "language": "yue-HK",
+    "generatedBy": "gpt-sovits",
+    "qaStatus": "review_required"
+  },
+  {
+    "id": "park-ball",
+    "file": "assets/chinese-space/audio/park/park-ball.mp3",
+    "expectedText": "拍球",
+    "language": "yue-HK",
+    "generatedBy": "gpt-sovits",
+    "qaStatus": "review_required"
+  },
+  {
+    "id": "park-playing",
+    "file": "assets/chinese-space/audio/park/park-playing.mp3",
+    "expectedText": "玩耍",
+    "language": "yue-HK",
+    "generatedBy": "gpt-sovits",
+    "qaStatus": "review_required"
+  },
+  {
+    "id": "park-rest",
+    "file": "assets/chinese-space/audio/park/park-rest.mp3",
+    "expectedText": "休息",
+    "language": "yue-HK",
+    "generatedBy": "gpt-sovits",
+    "qaStatus": "review_required"
+  },
+  {
+    "id": "park-walking",
+    "file": "assets/chinese-space/audio/park/park-walking.mp3",
+    "expectedText": "走路",
+    "language": "yue-HK",
+    "generatedBy": "gpt-sovits",
+    "qaStatus": "review_required"
+  },
+  {
+    "id": "park-holiday",
+    "file": "assets/chinese-space/audio/park/park-holiday.mp3",
+    "expectedText": "假日",
+    "language": "yue-HK",
+    "generatedBy": "gpt-sovits",
+    "qaStatus": "review_required"
+  },
+  {
+    "id": "park-spring",
+    "file": "assets/chinese-space/audio/park/park-spring.mp3",
+    "expectedText": "春天",
+    "language": "yue-HK",
+    "generatedBy": "gpt-sovits",
+    "qaStatus": "review_required"
+  },
+  {
+    "id": "park-summer",
+    "file": "assets/chinese-space/audio/park/park-summer.mp3",
+    "expectedText": "夏天",
+    "language": "yue-HK",
+    "generatedBy": "gpt-sovits",
+    "qaStatus": "review_required"
+  },
+  {
+    "id": "park-autumn",
+    "file": "assets/chinese-space/audio/park/park-autumn.mp3",
+    "expectedText": "秋天",
+    "language": "yue-HK",
+    "generatedBy": "gpt-sovits",
+    "qaStatus": "review_required"
+  },
+  {
+    "id": "park-winter",
+    "file": "assets/chinese-space/audio/park/park-winter.mp3",
+    "expectedText": "冬天",
+    "language": "yue-HK",
+    "generatedBy": "gpt-sovits",
+    "qaStatus": "review_required"
+  },
+  {
+    "id": "family-family",
+    "file": "assets/chinese-space/audio/family/family-family.mp3",
+    "expectedText": "家人",
+    "language": "yue-HK",
+    "generatedBy": "gpt-sovits",
+    "qaStatus": "review_required"
+  },
+  {
+    "id": "family-parents",
+    "file": "assets/chinese-space/audio/family/family-parents.mp3",
+    "expectedText": "父母",
+    "language": "yue-HK",
+    "generatedBy": "gpt-sovits",
+    "qaStatus": "review_required"
+  },
+  {
+    "id": "family-dad",
+    "file": "assets/chinese-space/audio/family/family-dad.mp3",
+    "expectedText": "爸爸",
+    "language": "yue-HK",
+    "generatedBy": "gpt-sovits",
+    "qaStatus": "review_required"
+  },
+  {
+    "id": "family-mum",
+    "file": "assets/chinese-space/audio/family/family-mum.mp3",
+    "expectedText": "媽媽",
+    "language": "yue-HK",
+    "generatedBy": "gpt-sovits",
+    "qaStatus": "review_required"
+  },
+  {
+    "id": "family-grandfather",
+    "file": "assets/chinese-space/audio/family/family-grandfather.mp3",
+    "expectedText": "祖父",
+    "language": "yue-HK",
+    "generatedBy": "gpt-sovits",
+    "qaStatus": "review_required"
+  },
+  {
+    "id": "family-grandmother",
+    "file": "assets/chinese-space/audio/family/family-grandmother.mp3",
+    "expectedText": "祖母",
+    "language": "yue-HK",
+    "generatedBy": "gpt-sovits",
+    "qaStatus": "review_required"
+  },
+  {
+    "id": "family-grandma",
+    "file": "assets/chinese-space/audio/family/family-grandma.mp3",
+    "expectedText": "外婆",
+    "language": "yue-HK",
+    "generatedBy": "gpt-sovits",
+    "qaStatus": "review_required"
+  },
+  {
+    "id": "family-grandpa",
+    "file": "assets/chinese-space/audio/family/family-grandpa.mp3",
+    "expectedText": "外公",
+    "language": "yue-HK",
+    "generatedBy": "gpt-sovits",
+    "qaStatus": "review_required"
+  },
+  {
+    "id": "family-daughter",
+    "file": "assets/chinese-space/audio/family/family-daughter.mp3",
+    "expectedText": "女兒",
+    "language": "yue-HK",
+    "generatedBy": "gpt-sovits",
+    "qaStatus": "review_required"
+  },
+  {
+    "id": "family-son",
+    "file": "assets/chinese-space/audio/family/family-son.mp3",
+    "expectedText": "兒子",
+    "language": "yue-HK",
+    "generatedBy": "gpt-sovits",
+    "qaStatus": "review_required"
+  },
+  {
+    "id": "family-doors-windows",
+    "file": "assets/chinese-space/audio/family/family-doors-windows.mp3",
+    "expectedText": "門窗",
+    "language": "yue-HK",
+    "generatedBy": "gpt-sovits",
+    "qaStatus": "review_required"
+  },
+  {
+    "id": "family-floor",
+    "file": "assets/chinese-space/audio/family/family-floor.mp3",
+    "expectedText": "地板",
+    "language": "yue-HK",
+    "generatedBy": "gpt-sovits",
+    "qaStatus": "review_required"
+  },
+  {
+    "id": "family-table",
+    "file": "assets/chinese-space/audio/family/family-table.mp3",
+    "expectedText": "桌子",
+    "language": "yue-HK",
+    "generatedBy": "gpt-sovits",
+    "qaStatus": "review_required"
+  },
+  {
+    "id": "family-ground",
+    "file": "assets/chinese-space/audio/family/family-ground.mp3",
+    "expectedText": "地上",
+    "language": "yue-HK",
+    "generatedBy": "gpt-sovits",
+    "qaStatus": "review_required"
+  },
+  {
+    "id": "family-room",
+    "file": "assets/chinese-space/audio/family/family-room.mp3",
+    "expectedText": "房間",
+    "language": "yue-HK",
+    "generatedBy": "gpt-sovits",
+    "qaStatus": "review_required"
+  },
+  {
+    "id": "family-homework",
+    "file": "assets/chinese-space/audio/family/family-homework.mp3",
+    "expectedText": "功課",
+    "language": "yue-HK",
+    "generatedBy": "gpt-sovits",
+    "qaStatus": "review_required"
+  },
+  {
+    "id": "family-reading",
+    "file": "assets/chinese-space/audio/family/family-reading.mp3",
+    "expectedText": "看書",
+    "language": "yue-HK",
+    "generatedBy": "gpt-sovits",
+    "qaStatus": "review_required"
+  },
+  {
+    "id": "family-wake-up",
+    "file": "assets/chinese-space/audio/family/family-wake-up.mp3",
+    "expectedText": "起牀",
+    "language": "yue-HK",
+    "generatedBy": "gpt-sovits",
+    "qaStatus": "review_required"
+  },
+  {
+    "id": "family-rest",
+    "file": "assets/chinese-space/audio/family/family-rest.mp3",
+    "expectedText": "休息",
+    "language": "yue-HK",
+    "generatedBy": "gpt-sovits",
+    "qaStatus": "review_required"
+  },
+  {
+    "id": "family-eat",
+    "file": "assets/chinese-space/audio/family/family-eat.mp3",
+    "expectedText": "吃飯",
+    "language": "yue-HK",
+    "generatedBy": "gpt-sovits",
+    "qaStatus": "review_required"
+  },
+  {
+    "id": "family-cleaning",
+    "file": "assets/chinese-space/audio/family/family-cleaning.mp3",
+    "expectedText": "打掃",
+    "language": "yue-HK",
+    "generatedBy": "gpt-sovits",
+    "qaStatus": "review_required"
+  },
+  {
+    "id": "family-cooking",
+    "file": "assets/chinese-space/audio/family/family-cooking.mp3",
+    "expectedText": "做飯",
+    "language": "yue-HK",
+    "generatedBy": "gpt-sovits",
+    "qaStatus": "review_required"
+  },
+  {
+    "id": "family-dinner",
+    "file": "assets/chinese-space/audio/family/family-dinner.mp3",
+    "expectedText": "晚飯",
+    "language": "yue-HK",
+    "generatedBy": "gpt-sovits",
+    "qaStatus": "review_required"
+  },
+  {
+    "id": "family-breakfast",
+    "file": "assets/chinese-space/audio/family/family-breakfast.mp3",
+    "expectedText": "早餐",
+    "language": "yue-HK",
+    "generatedBy": "gpt-sovits",
+    "qaStatus": "review_required"
+  },
+  {
+    "id": "family-morning",
+    "file": "assets/chinese-space/audio/family/family-morning.mp3",
+    "expectedText": "早上",
+    "language": "yue-HK",
+    "generatedBy": "gpt-sovits",
+    "qaStatus": "review_required"
+  },
+  {
+    "id": "family-noon",
+    "file": "assets/chinese-space/audio/family/family-noon.mp3",
+    "expectedText": "中午",
+    "language": "yue-HK",
+    "generatedBy": "gpt-sovits",
+    "qaStatus": "review_required"
+  },
+  {
+    "id": "family-afternoon",
+    "file": "assets/chinese-space/audio/family/family-afternoon.mp3",
+    "expectedText": "下午",
+    "language": "yue-HK",
+    "generatedBy": "gpt-sovits",
+    "qaStatus": "review_required"
+  },
+  {
+    "id": "family-evening",
+    "file": "assets/chinese-space/audio/family/family-evening.mp3",
+    "expectedText": "晚上",
+    "language": "yue-HK",
+    "generatedBy": "gpt-sovits",
+    "qaStatus": "review_required"
+  }
+]
