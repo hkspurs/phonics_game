@@ -9,11 +9,18 @@ import subprocess
 import sys
 import tempfile
 from urllib.request import Request, urlopen
+import wave
 
 
 ROOT = Path(__file__).resolve().parents[1]
 CATALOG = ROOT / "data" / "chinese_space_words.json"
 PUBLIC = ROOT / "public"
+MIN_WAV_PEAK = 0.02
+MAX_WAV_ATTEMPTS = 3
+
+
+def synthesis_text(text):
+    return f"{text}，{text}，{text}。"
 
 
 def manifest_entries(catalog, output_dir):
@@ -41,8 +48,11 @@ def request_wav(api_url, reference_audio, prompt_text, text, wav_path):
         "refer_wav_path": str(reference_audio),
         "prompt_text": prompt_text,
         "prompt_language": "yue",
-        "text": text,
+        "text": synthesis_text(text),
         "text_language": "yue",
+        "top_k": 20,
+        "top_p": 0.6,
+        "temperature": 0.6,
     }).encode("utf-8")
     request = Request(
         f"{api_url.rstrip('/')}/",
@@ -54,6 +64,34 @@ def request_wav(api_url, reference_audio, prompt_text, text, wav_path):
         wav_file.write(response.read())
 
 
+def wav_peak(wav_path):
+    with wave.open(str(wav_path), "rb") as wav_file:
+        sample_width = wav_file.getsampwidth()
+        if sample_width not in (1, 2, 3, 4):
+            raise ValueError(f"Unsupported WAV sample width: {sample_width}")
+        frames = wav_file.readframes(wav_file.getnframes())
+
+    if not frames:
+        return 0.0
+    peak = 0
+    for index in range(0, len(frames), sample_width):
+        sample = frames[index] - 128 if sample_width == 1 else int.from_bytes(
+            frames[index:index + sample_width], "little", signed=True,
+        )
+        peak = max(peak, abs(sample))
+    return peak / (1 << (sample_width * 8 - 1))
+
+
+def request_audible_wav(api_url, reference_audio, prompt_text, text, wav_path):
+    peak = 0.0
+    for _ in range(MAX_WAV_ATTEMPTS):
+        request_wav(api_url, reference_audio, prompt_text, text, wav_path)
+        peak = wav_peak(wav_path)
+        if peak >= MIN_WAV_PEAK:
+            return
+    raise ValueError(f"Quiet WAV peak {peak:.4f} after {MAX_WAV_ATTEMPTS} attempts")
+
+
 def convert_to_mp3(wav_path, output_path):
     output_path.parent.mkdir(parents=True, exist_ok=True)
     with tempfile.NamedTemporaryFile(suffix=".mp3", dir=output_path.parent, delete=False) as temp_file:
@@ -61,6 +99,7 @@ def convert_to_mp3(wav_path, output_path):
     try:
         subprocess.run([
             "ffmpeg", "-y", "-hide_banner", "-loglevel", "error", "-i", str(wav_path),
+            "-af", "silenceremove=start_periods=1:start_duration=0.05:start_threshold=-45dB:stop_periods=1:stop_duration=0.1:stop_threshold=-45dB",
             "-vn", "-ac", "1", "-ar", "24000", "-map_metadata", "-1",
             "-codec:a", "libmp3lame", "-b:a", "96k", str(temp_path),
         ], check=True)
@@ -95,7 +134,7 @@ def main():
         with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as temp_file:
             wav_path = Path(temp_file.name)
         try:
-            request_wav(args.api_url, args.reference_audio, prompt_text, entry["expectedText"], wav_path)
+            request_audible_wav(args.api_url, args.reference_audio, prompt_text, entry["expectedText"], wav_path)
             convert_to_mp3(wav_path, output_path)
             print(f"generated {entry['id']} -> {entry['file']}")
         except Exception as error:  # Continue to identify every failed word.
