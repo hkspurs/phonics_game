@@ -230,6 +230,7 @@ export class SettingsScene extends Phaser.Scene {
         this.toggleSubject('chineseEnabled');
       },
     });
+    this.chineseToggleBtn.setDepth(50);
 
     // 2. 數學科 Toggle
     this.mathToggleBtn = new CanvasButton(this, {
@@ -244,6 +245,7 @@ export class SettingsScene extends Phaser.Scene {
         this.toggleSubject('mathEnabled');
       },
     });
+    this.mathToggleBtn.setDepth(50);
 
     // 3. 英文科 Toggle
     this.englishToggleBtn = new CanvasButton(this, {
@@ -258,6 +260,7 @@ export class SettingsScene extends Phaser.Scene {
         this.toggleSubject('englishEnabled');
       },
     });
+    this.englishToggleBtn.setDepth(50);
   }
 
   public toggleSubject(key: 'chineseEnabled' | 'mathEnabled' | 'englishEnabled'): void {
@@ -337,7 +340,7 @@ export class SettingsScene extends Phaser.Scene {
           this.selectVoiceLanguage(item.lang, item.sample);
         },
       });
-
+      btn.setDepth(50);
       this.voiceButtons.push(btn);
     });
   }
@@ -404,7 +407,7 @@ export class SettingsScene extends Phaser.Scene {
           this.setVolumeLevel(conf.vol);
         },
       });
-
+      btn.setDepth(50);
       this.volumeButtons.push(btn);
     });
 
@@ -421,6 +424,7 @@ export class SettingsScene extends Phaser.Scene {
         SoundManager.play('coin');
       },
     });
+    this.testAudioButton.setDepth(50);
   }
 
   public setVolumeLevel(vol: number): void {
@@ -483,7 +487,7 @@ export class SettingsScene extends Phaser.Scene {
           this.selectDifficulty(opt.level);
         },
       });
-
+      btn.setDepth(50);
       this.difficultyButtons.push(btn);
     });
 
@@ -566,6 +570,7 @@ export class SettingsScene extends Phaser.Scene {
         this.openResetConfirmationModal();
       },
     });
+    this.resetButton.setDepth(50);
   }
 
   public openResetConfirmationModal(): void {
