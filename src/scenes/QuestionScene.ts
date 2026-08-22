@@ -399,19 +399,19 @@ export class QuestionScene extends Phaser.Scene {
     if (tokensCount === 0) return;
 
     // 1. Calculate dynamic slot sizing and positions
-    const spacing = tokensCount > 6 ? 10 : 14;
-    let cardWidth = 140;
-    const cardHeight = 64;
+    const spacing = tokensCount > 6 ? 12 : 16;
+    let cardWidth = 155;
+    const cardHeight = 74;
 
-    if (tokensCount === 5) cardWidth = 125;
-    else if (tokensCount === 6) cardWidth = 110;
+    if (tokensCount === 5) cardWidth = 140;
+    else if (tokensCount === 6) cardWidth = 120;
     else if (tokensCount >= 7) {
-      cardWidth = Math.min(100, Math.floor((960 - (tokensCount - 1) * spacing) / tokensCount));
+      cardWidth = Math.min(110, Math.floor((1050 - (tokensCount - 1) * spacing) / tokensCount));
     }
 
     const totalSlotsWidth = tokensCount * cardWidth + (tokensCount - 1) * spacing;
     const startX = width / 2 - totalSlotsWidth / 2 + cardWidth / 2;
-    const slotY = 250;
+    const slotY = 245;
 
     // 2. Create Target SlotBoxes
     for (let i = 0; i < tokensCount; i++) {
@@ -445,7 +445,7 @@ export class QuestionScene extends Phaser.Scene {
         ? [...this.currentQuestion.shuffledTokens]
         : SentenceEngine.shuffleTokens(expectedTokens);
 
-    const bankY = 390;
+    const bankY = 395;
     const bankTotalW = tokensCount * cardWidth + (tokensCount - 1) * spacing;
     const bankStartX = width / 2 - bankTotalW / 2 + cardWidth / 2;
 
@@ -466,7 +466,7 @@ export class QuestionScene extends Phaser.Scene {
         color: colors[i % colors.length],
         draggable: true,
         tappable: true,
-        fontSize: token.length > 4 ? '22px' : '26px',
+        fontSize: token.length <= 2 ? '34px' : token.length <= 4 ? '28px' : '24px',
         onTap: (c) => this.handleCardTap(c),
         onDragStart: (c) => {
           c.setDepth(100);
@@ -490,17 +490,17 @@ export class QuestionScene extends Phaser.Scene {
     this.choiceCards = [];
 
     // 1. Large Prompt / Equation Display Box
-    const dispW = 820;
-    const dispH = 100;
+    const dispW = 860;
+    const dispH = 110;
     const dispX = width / 2;
-    const dispY = 245;
+    const dispY = 240;
 
     if (this.add?.graphics) {
       const dispG = this.add.graphics();
-      dispG.fillStyle(0x1e293b, 0.85);
-      dispG.fillRoundedRect(dispX - dispW / 2, dispY - dispH / 2, dispW, dispH, 16);
-      dispG.lineStyle(2, 0x38bdf8, 0.85);
-      dispG.strokeRoundedRect(dispX - dispW / 2, dispY - dispH / 2, dispW, dispH, 16);
+      dispG.fillStyle(0x1e293b, 0.9);
+      dispG.fillRoundedRect(dispX - dispW / 2, dispY - dispH / 2, dispW, dispH, 18);
+      dispG.lineStyle(2.5, 0x38bdf8, 0.9);
+      dispG.strokeRoundedRect(dispX - dispW / 2, dispY - dispH / 2, dispW, dispH, 18);
     }
 
     // Display Text (Expression or Prompt)
@@ -508,8 +508,8 @@ export class QuestionScene extends Phaser.Scene {
       this.currentQuestion.speakText || this.currentQuestion.prompt || '';
     if (this.add?.text) {
       const eqLabel = this.add.text(dispX, dispY, displayText, {
-        fontSize: displayText.length > 25 ? '22px' : '30px',
-        fontFamily: "'Kenney Future', 'Noto Sans TC', sans-serif",
+        fontSize: displayText.length > 25 ? '28px' : '38px',
+        fontFamily: "'Kenney Future', 'Noto Sans TC', 'PingFang HK', sans-serif",
         color: '#ffd700',
         fontStyle: 'bold',
         align: 'center',
@@ -531,12 +531,12 @@ export class QuestionScene extends Phaser.Scene {
 
     if (count <= 3) {
       // Single horizontal row
-      const optW = count === 2 ? 260 : 220;
-      const optH = 70;
-      const spacing = 24;
+      const optW = count === 2 ? 300 : 250;
+      const optH = 80;
+      const spacing = 28;
       const totalW = count * optW + (count - 1) * spacing;
       const startX = width / 2 - totalW / 2 + optW / 2;
-      const optY = 390;
+      const optY = 400;
 
       options.forEach((opt, idx) => {
         const xPos = startX + idx * (optW + spacing);
@@ -549,19 +549,19 @@ export class QuestionScene extends Phaser.Scene {
           value: opt,
           color: themeColors[idx % themeColors.length],
           tappable: true,
-          fontSize: '26px',
+          fontSize: String(opt).length > 8 ? '26px' : '34px',
           onTap: (c) => this.handleChoiceSelection(c, idx),
         });
         this.choiceCards.push(card);
       });
     } else {
       // 2x2 Grid for 4 options
-      const optW = 320;
-      const optH = 66;
-      const row1Y = 360;
-      const row2Y = 445;
-      const col1X = width / 2 - 180;
-      const col2X = width / 2 + 180;
+      const optW = 360;
+      const optH = 76;
+      const row1Y = 365;
+      const row2Y = 460;
+      const col1X = width / 2 - 200;
+      const col2X = width / 2 + 200;
 
       const positions = [
         { x: col1X, y: row1Y },
@@ -581,7 +581,7 @@ export class QuestionScene extends Phaser.Scene {
           value: opt,
           color: themeColors[idx % themeColors.length],
           tappable: true,
-          fontSize: String(opt).length > 8 ? '20px' : '26px',
+          fontSize: String(opt).length > 8 ? '24px' : '32px',
           onTap: (c) => this.handleChoiceSelection(c, idx),
         });
         this.choiceCards.push(card);
@@ -596,7 +596,7 @@ export class QuestionScene extends Phaser.Scene {
     if (!this.add) return;
 
     const isScramble = this.currentQuestion?.type === 'sentence_scramble';
-    const controlsY = height - 70;
+    const controlsY = height - 64;
 
     const controls = this.add.container
       ? this.add.container(0, 0)
@@ -605,15 +605,15 @@ export class QuestionScene extends Phaser.Scene {
     controls.setDepth(90);
 
     // 💡 提示 (Hint Button)
-    const hintX = isScramble ? width / 2 - 90 : width / 2;
+    const hintX = isScramble ? width / 2 - 110 : width / 2;
     this.hintButton = new CanvasButton(this, {
       x: hintX,
       y: controlsY,
-      width: 150,
-      height: 48,
+      width: 170,
+      height: 54,
       text: '💡 提示',
       color: 'yellow',
-      fontSize: '18px',
+      fontSize: '22px',
       onClick: () => {
         this.handleHint();
       },
@@ -623,13 +623,13 @@ export class QuestionScene extends Phaser.Scene {
     // 🔄 重置 (Reset Button)
     if (isScramble) {
       this.resetButton = new CanvasButton(this, {
-        x: width / 2 + 90,
+        x: width / 2 + 110,
         y: controlsY,
-        width: 150,
-        height: 48,
+        width: 170,
+        height: 54,
         text: '🔄 重置',
         color: 'orange',
-        fontSize: '18px',
+        fontSize: '22px',
         onClick: () => {
           this.handleReset();
         },

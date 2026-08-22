@@ -167,8 +167,17 @@ export class CanvasCard extends Phaser.GameObjects.Container {
     }
 
     const palette = this.getThemePalette();
-    const fontSize = typeof this.config.fontSize === 'number' ? `${this.config.fontSize}px` : this.config.fontSize ?? '28px';
-    const fontFamily = this.config.fontFamily ?? "'Kenney Future Narrow', 'Noto Sans TC', 'PingFang HK', 'Microsoft JhengHei', sans-serif";
+    let defaultFontSize = '30px';
+    if (this.cardText.length <= 2) {
+      defaultFontSize = '34px';
+    } else if (this.cardText.length <= 4) {
+      defaultFontSize = '28px';
+    } else {
+      defaultFontSize = '22px';
+    }
+
+    const fontSize = typeof this.config.fontSize === 'number' ? `${this.config.fontSize}px` : this.config.fontSize ?? defaultFontSize;
+    const fontFamily = this.config.fontFamily ?? "'PingFang HK', 'Noto Sans TC', 'Microsoft JhengHei', sans-serif";
     const textColor = this.config.textColor ?? palette.textColor;
 
     const text = this.scene.add.text(0, 0, this.cardText, {
