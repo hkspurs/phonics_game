@@ -346,6 +346,12 @@ export class CanvasButton extends Phaser.GameObjects.Container {
     return this.btnHeight;
   }
 
+  public triggerClick(): void {
+    if (this.isBtnEnabled && typeof this.config.onClick === 'function') {
+      this.config.onClick(this);
+    }
+  }
+
   public override destroy(fromScene?: boolean): void {
     if (this.scene?.tweens?.killTweensOf) {
       this.scene.tweens.killTweensOf(this);
@@ -353,3 +359,4 @@ export class CanvasButton extends Phaser.GameObjects.Container {
     super.destroy(fromScene);
   }
 }
+

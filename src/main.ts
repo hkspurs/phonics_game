@@ -59,5 +59,7 @@ export const phaserGameConfig: Phaser.Types.Core.GameConfig = {
 
 // Auto-instantiate Phaser when running in browser DOM environment
 if (typeof window !== 'undefined' && document.getElementById(DEFAULT_GAME_SETTINGS.parent)) {
-  new Phaser.Game(phaserGameConfig);
+  const game = new Phaser.Game(phaserGameConfig);
+  (window as any).__PHASER_GAME__ = game;
 }
+
