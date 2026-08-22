@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - master
+      - p1-adventure
   workflow_dispatch:
 
 permissions:
