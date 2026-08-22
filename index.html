@@ -5,9 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover, shrink-to-fit=no" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="升夢大冒險" />
   <meta name="apple-touch-fullscreen" content="yes" />
   <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="theme-color" content="#0b0f19" />
   <meta name="format-detection" content="telephone=no" />
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <link rel="apple-touch-icon" href="./assets/kenney/game-icons/PNG/White/2x/trophy.png" />
   <title>升夢大冒險 —— 香港小一學科闖關 | P1 Adventure</title>
   <style>
     * {
@@ -16,10 +20,14 @@
       padding: 0;
       -webkit-tap-highlight-color: transparent;
     }
-    html, body {
+    html {
+      height: 100%;
+      height: -webkit-fill-available;
+    }
+    body {
       width: 100vw;
       height: 100vh;
-      width: 100dvw;
+      height: -webkit-fill-available;
       height: 100dvh;
       position: fixed;
       inset: 0;
@@ -50,6 +58,104 @@
       object-fit: contain;
       image-rendering: -webkit-optimize-contrast;
       image-rendering: crisp-edges;
+    }
+
+    /* iOS Fullscreen & Add to Home Screen Floating Button */
+    #fullscreen-btn {
+      position: fixed;
+      top: max(12px, env(safe-area-inset-top));
+      right: max(16px, env(safe-area-inset-right));
+      z-index: 999;
+      background: rgba(30, 41, 59, 0.85);
+      color: #ffd700;
+      border: 1.5px solid rgba(255, 215, 0, 0.6);
+      border-radius: 20px;
+      padding: 6px 14px;
+      font-size: 13px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      backdrop-filter: blur(8px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+      transition: transform 0.15s ease, background 0.2s ease;
+    }
+    #fullscreen-btn:active {
+      transform: scale(0.94);
+      background: rgba(30, 41, 59, 1);
+    }
+
+    /* iPhone Full Screen Guide Modal */
+    #ios-pwa-modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(11, 15, 25, 0.88);
+      z-index: 100000;
+      backdrop-filter: blur(10px);
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+    .ios-modal-card {
+      background: #1e293b;
+      border: 2px solid #ffd700;
+      border-radius: 20px;
+      max-width: 460px;
+      width: 100%;
+      padding: 24px;
+      color: #ffffff;
+      text-align: center;
+      box-shadow: 0 16px 36px rgba(0,0,0,0.6);
+      animation: modalPop 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    @keyframes modalPop {
+      from { transform: scale(0.85); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+    .ios-modal-title {
+      font-size: 20px;
+      font-weight: 800;
+      color: #ffd700;
+      margin-bottom: 12px;
+    }
+    .ios-step {
+      background: #0f172a;
+      border-radius: 12px;
+      padding: 12px 16px;
+      margin: 10px 0;
+      text-align: left;
+      font-size: 15px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border: 1px solid #334155;
+    }
+    .ios-step-num {
+      background: #38bdf8;
+      color: #0f172a;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 14px;
+    }
+    .ios-modal-close {
+      margin-top: 18px;
+      background: #22c55e;
+      color: #ffffff;
+      border: none;
+      border-radius: 12px;
+      padding: 10px 24px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      width: 100%;
     }
 
     /* Orientation Warning for Portrait on iPhone / iPad */
@@ -124,6 +230,34 @@
   </style>
 </head>
 <body>
+  <!-- Fullscreen / iOS App Button -->
+  <button id="fullscreen-btn" onclick="handleFullscreenClick()">
+    <span>⛶</span> 全螢幕
+  </button>
+
+  <!-- iOS Safari PWA Tutorial Modal -->
+  <div id="ios-pwa-modal" onclick="closeIosModal(event)">
+    <div class="ios-modal-card" onclick="event.stopPropagation()">
+      <div class="ios-modal-title">📱 iPhone 100% 無網址列全螢幕遊玩</div>
+      <p style="color: #94a3b8; font-size: 14px; margin-bottom: 14px;">因 Apple 限制，iPhone Safari 需透過「加入主畫面」即可像 App 一樣純淨全螢幕遊玩：</p>
+      
+      <div class="ios-step">
+        <div class="ios-step-num">1</div>
+        <div>點擊 Safari 下方或上方的 <strong>「分享」按鈕 📤</strong></div>
+      </div>
+      <div class="ios-step">
+        <div class="ios-step-num">2</div>
+        <div>在選單中向下滑動，選擇 <strong>「加入主畫面 ➕」</strong></div>
+      </div>
+      <div class="ios-step">
+        <div class="ios-step-num">3</div>
+        <div>點擊右上角 <strong>「新增」</strong>，在桌面點擊圖示即可全螢幕暢玩！</div>
+      </div>
+
+      <button class="ios-modal-close" onclick="closeIosModal()">我知道了，繼續遊玩</button>
+    </div>
+  </div>
+
   <div id="orientation-warning">
     <div class="rotate-icon">📱</div>
     <div class="rotate-title">請旋轉至橫向螢幕</div>
@@ -133,5 +267,43 @@
 
   <div id="game-container"></div>
   <script type="module" src="/src/main.ts"></script>
+
+  <script>
+    function isIosSafari() {
+      const ua = window.navigator.userAgent;
+      const isIos = /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+      const isWebkit = /WebKit/i.test(ua);
+      const isStandalone = window.navigator.standalone || window.matchMedia('(display-mode: standalone)').matches;
+      return isIos && isWebkit && !isStandalone;
+    }
+
+    function handleFullscreenClick() {
+      if (isIosSafari()) {
+        // iPhone Safari doesn't support requestFullscreen API, show quick guide
+        const modal = document.getElementById('ios-pwa-modal');
+        if (modal) modal.style.display = 'flex';
+      } else {
+        // iPad, Android, Desktop supports HTML5 Fullscreen API
+        if (!document.fullscreenElement) {
+          document.documentElement.requestFullscreen().catch(() => {
+            const modal = document.getElementById('ios-pwa-modal');
+            if (modal) modal.style.display = 'flex';
+          });
+        } else {
+          document.exitFullscreen();
+        }
+      }
+    }
+
+    function closeIosModal() {
+      const modal = document.getElementById('ios-pwa-modal');
+      if (modal) modal.style.display = 'none';
+    }
+
+    // Auto-scroll on initial touch to collapse Safari address bar
+    window.addEventListener('touchstart', function() {
+      window.scrollTo(0, 1);
+    }, { passive: true, once: true });
+  </script>
 </body>
 </html>
