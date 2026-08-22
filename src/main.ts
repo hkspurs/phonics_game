@@ -1,5 +1,41 @@
 import Phaser from 'phaser';
 import { DEFAULT_GAME_SETTINGS } from './config';
+import { BootScene } from './scenes/BootScene';
+import { PreloadScene } from './scenes/PreloadScene';
+import { TitleScene } from './scenes/TitleScene';
+import { MapScene } from './scenes/MapScene';
+import { QuestionScene } from './scenes/QuestionScene';
+import { RunnerScene } from './scenes/RunnerScene';
+import { ResultScene } from './scenes/ResultScene';
+import { ShopScene } from './scenes/ShopScene';
+import { TrophyScene } from './scenes/TrophyScene';
+import { SettingsScene } from './scenes/SettingsScene';
+
+export {
+  BootScene,
+  PreloadScene,
+  TitleScene,
+  MapScene,
+  QuestionScene,
+  RunnerScene,
+  ResultScene,
+  ShopScene,
+  TrophyScene,
+  SettingsScene,
+};
+
+export const gameScenes = [
+  BootScene,
+  PreloadScene,
+  TitleScene,
+  MapScene,
+  QuestionScene,
+  RunnerScene,
+  ResultScene,
+  ShopScene,
+  TrophyScene,
+  SettingsScene,
+];
 
 export const phaserGameConfig: Phaser.Types.Core.GameConfig = {
   type: Phaser.AUTO,
@@ -18,19 +54,7 @@ export const phaserGameConfig: Phaser.Types.Core.GameConfig = {
       debug: false,
     },
   },
-  scene: {
-    preload() {
-      // Scaffolding preload placeholder
-    },
-    create() {
-      // Scaffolding create placeholder
-      const text = this.add.text(640, 360, '升夢大冒險 - P1 Adventure', {
-        fontSize: '36px',
-        color: '#ffffff',
-      });
-      text.setOrigin(0.5);
-    },
-  },
+  scene: gameScenes,
 };
 
 // Auto-instantiate Phaser when running in browser DOM environment
