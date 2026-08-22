@@ -204,15 +204,25 @@ export class PreloadScene extends Phaser.Scene {
       female_walk2: 'assets/kenney/platformer-characters/PNG/Female/Poses/female_walk2.png',
       female_jump: 'assets/kenney/platformer-characters/PNG/Female/Poses/female_jump.png',
       female_cheer1: 'assets/kenney/platformer-characters/PNG/Female/Poses/female_cheer1.png',
+      female_cheer2: 'assets/kenney/platformer-characters/PNG/Female/Poses/female_cheer2.png',
       adventurer_stand: 'assets/kenney/platformer-characters/PNG/Adventurer/Poses/adventurer_stand.png',
       adventurer_walk1: 'assets/kenney/platformer-characters/PNG/Adventurer/Poses/adventurer_walk1.png',
       adventurer_walk2: 'assets/kenney/platformer-characters/PNG/Adventurer/Poses/adventurer_walk2.png',
       adventurer_jump: 'assets/kenney/platformer-characters/PNG/Adventurer/Poses/adventurer_jump.png',
       adventurer_cheer1: 'assets/kenney/platformer-characters/PNG/Adventurer/Poses/adventurer_cheer1.png',
+      adventurer_cheer2: 'assets/kenney/platformer-characters/PNG/Adventurer/Poses/adventurer_cheer2.png',
       soldier_stand: 'assets/kenney/platformer-characters/PNG/Soldier/Poses/soldier_stand.png',
       soldier_walk1: 'assets/kenney/platformer-characters/PNG/Soldier/Poses/soldier_walk1.png',
+      soldier_walk2: 'assets/kenney/platformer-characters/PNG/Soldier/Poses/soldier_walk2.png',
+      soldier_jump: 'assets/kenney/platformer-characters/PNG/Soldier/Poses/soldier_jump.png',
+      soldier_cheer1: 'assets/kenney/platformer-characters/PNG/Soldier/Poses/soldier_cheer1.png',
+      soldier_cheer2: 'assets/kenney/platformer-characters/PNG/Soldier/Poses/soldier_cheer2.png',
       zombie_stand: 'assets/kenney/platformer-characters/PNG/Zombie/Poses/zombie_stand.png',
       zombie_walk1: 'assets/kenney/platformer-characters/PNG/Zombie/Poses/zombie_walk1.png',
+      zombie_walk2: 'assets/kenney/platformer-characters/PNG/Zombie/Poses/zombie_walk2.png',
+      zombie_jump: 'assets/kenney/platformer-characters/PNG/Zombie/Poses/zombie_jump.png',
+      zombie_cheer1: 'assets/kenney/platformer-characters/PNG/Zombie/Poses/zombie_cheer1.png',
+      zombie_cheer2: 'assets/kenney/platformer-characters/PNG/Zombie/Poses/zombie_cheer2.png',
     };
 
     for (const [key, path] of Object.entries(spriteMap)) {
@@ -442,6 +452,152 @@ export class PreloadScene extends Phaser.Scene {
       ctx.moveTo(0, 10);
       ctx.lineTo(20, 10);
       ctx.stroke();
+    });
+
+    // 8. Procedural Closed Treasure Chest
+    createSafeCanvasTexture('chest_closed', 64, 52, (ctx) => {
+      // Wood base
+      ctx.fillStyle = '#8b5a2b';
+      ctx.fillRect(6, 16, 52, 32);
+      // Wood lid
+      ctx.fillStyle = '#a06a35';
+      ctx.beginPath();
+      ctx.arc(32, 18, 26, Math.PI, 0);
+      ctx.fill();
+      // Gold rims / hinges
+      ctx.fillStyle = '#ffd700';
+      ctx.fillRect(6, 14, 52, 6);
+      ctx.fillRect(16, 8, 8, 40);
+      ctx.fillRect(40, 8, 8, 40);
+      // Gold keyhole lock
+      ctx.fillStyle = '#ffe066';
+      ctx.fillRect(28, 22, 8, 12);
+      ctx.fillStyle = '#3e2723';
+      ctx.fillRect(30, 26, 4, 6);
+      // Border outline
+      ctx.strokeStyle = '#3e2723';
+      ctx.lineWidth = 2;
+      ctx.strokeRect(6, 16, 52, 32);
+    });
+
+    // 9. Procedural Open Treasure Chest
+    createSafeCanvasTexture('chest_open', 64, 58, (ctx) => {
+      // Open lid flipped back
+      ctx.fillStyle = '#6d431d';
+      ctx.beginPath();
+      ctx.ellipse(32, 12, 24, 10, 0, 0, Math.PI * 2);
+      ctx.fill();
+      // Treasure glow burst
+      const glow = ctx.createRadialGradient(32, 22, 4, 32, 22, 26);
+      glow.addColorStop(0, '#ffffa0');
+      glow.addColorStop(0.7, '#ffd700');
+      glow.addColorStop(1, 'rgba(255, 215, 0, 0)');
+      ctx.fillStyle = glow;
+      ctx.fillRect(8, 0, 48, 30);
+      // Gold coins and gems overflowing
+      ctx.fillStyle = '#ffd700';
+      ctx.beginPath();
+      ctx.arc(24, 20, 7, 0, Math.PI * 2);
+      ctx.arc(38, 18, 8, 0, Math.PI * 2);
+      ctx.arc(32, 22, 9, 0, Math.PI * 2);
+      ctx.fill();
+      // Cyan jewel inside
+      ctx.fillStyle = '#00e5ff';
+      ctx.beginPath();
+      ctx.moveTo(32, 12);
+      ctx.lineTo(37, 18);
+      ctx.lineTo(32, 24);
+      ctx.lineTo(27, 18);
+      ctx.closePath();
+      ctx.fill();
+      // Wood base
+      ctx.fillStyle = '#8b5a2b';
+      ctx.fillRect(6, 24, 52, 28);
+      // Gold bands
+      ctx.fillStyle = '#ffd700';
+      ctx.fillRect(16, 24, 8, 28);
+      ctx.fillRect(40, 24, 8, 28);
+      ctx.fillRect(6, 22, 52, 4);
+      // Outline
+      ctx.strokeStyle = '#3e2723';
+      ctx.lineWidth = 2;
+      ctx.strokeRect(6, 24, 52, 28);
+    });
+
+    // 10. Procedural Springboard Up
+    createSafeCanvasTexture('springboard_up', 48, 36, (ctx) => {
+      // Base wood
+      ctx.fillStyle = '#5c4033';
+      ctx.fillRect(4, 30, 40, 6);
+      // Red spring coil
+      ctx.strokeStyle = '#e74c3c';
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.moveTo(16, 30);
+      ctx.lineTo(32, 24);
+      ctx.lineTo(16, 18);
+      ctx.lineTo(32, 12);
+      ctx.lineTo(24, 6);
+      ctx.stroke();
+      // Top bouncy pad
+      ctx.fillStyle = '#f39c12';
+      ctx.fillRect(6, 2, 36, 6);
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(18, 4, 12, 2);
+    });
+
+    // 11. Procedural Springboard Down (compressed)
+    createSafeCanvasTexture('springboard_down', 48, 24, (ctx) => {
+      ctx.fillStyle = '#5c4033';
+      ctx.fillRect(4, 18, 40, 6);
+      // Compressed spring
+      ctx.strokeStyle = '#e74c3c';
+      ctx.lineWidth = 4;
+      ctx.beginPath();
+      ctx.moveTo(14, 18);
+      ctx.lineTo(34, 14);
+      ctx.lineTo(14, 10);
+      ctx.stroke();
+      // Top pad
+      ctx.fillStyle = '#f39c12';
+      ctx.fillRect(6, 4, 36, 6);
+    });
+
+    // 12. Procedural Obstacle Rock
+    createSafeCanvasTexture('obstacle_rock', 48, 40, (ctx) => {
+      ctx.fillStyle = '#7f8c8d';
+      ctx.beginPath();
+      ctx.moveTo(6, 38);
+      ctx.lineTo(14, 14);
+      ctx.lineTo(26, 6);
+      ctx.lineTo(40, 18);
+      ctx.lineTo(44, 38);
+      ctx.closePath();
+      ctx.fill();
+      // Highlights & Moss
+      ctx.fillStyle = '#95a5a6';
+      ctx.beginPath();
+      ctx.moveTo(16, 16);
+      ctx.lineTo(26, 8);
+      ctx.lineTo(32, 18);
+      ctx.closePath();
+      ctx.fill();
+      ctx.fillStyle = '#27ae60';
+      ctx.fillRect(10, 34, 12, 4);
+    });
+
+    // 13. Procedural Platform Block
+    createSafeCanvasTexture('runner_platform', 140, 36, (ctx) => {
+      // Dirt body
+      ctx.fillStyle = '#795548';
+      ctx.beginPath();
+      ctx.roundRect ? ctx.roundRect(0, 8, 140, 28, [0, 0, 8, 8]) : ctx.fillRect(0, 8, 140, 28);
+      ctx.fill();
+      // Top green grass
+      ctx.fillStyle = '#4caf50';
+      ctx.fillRect(0, 0, 140, 10);
+      ctx.fillStyle = '#81c784';
+      ctx.fillRect(0, 0, 140, 3);
     });
   }
 
