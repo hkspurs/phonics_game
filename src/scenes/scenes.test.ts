@@ -70,6 +70,22 @@ export function createMockSceneForTest(sceneKey: string): any {
       pause: vi.fn(),
       resume: vi.fn(),
     },
+    cameras: {
+      main: {
+        scrollX: 0,
+        scrollY: 0,
+        setBounds: vi.fn().mockReturnThis(),
+        setScroll: vi.fn(function (this: any, x = 0, y = 0) {
+          this.scrollX = x;
+          this.scrollY = y;
+          return this;
+        }),
+        centerOn: vi.fn().mockReturnThis(),
+        pan: vi.fn().mockReturnThis(),
+        zoom: 1,
+        setZoom: vi.fn().mockReturnThis(),
+      },
+    },
     scale: {
       scaleMode: Phaser.Scale.NONE,
       autoCenter: Phaser.Scale.NO_CENTER,
@@ -106,6 +122,8 @@ export function createMockSceneForTest(sceneKey: string): any {
           fillRoundedRect: vi.fn().mockReturnThis(),
           fillCircle: vi.fn().mockReturnThis(),
           fillEllipse: vi.fn().mockReturnThis(),
+          fillTriangle: vi.fn().mockReturnThis(),
+          strokeTriangle: vi.fn().mockReturnThis(),
           lineStyle: vi.fn().mockReturnThis(),
           lineBetween: vi.fn().mockReturnThis(),
           strokeRect: vi.fn().mockReturnThis(),

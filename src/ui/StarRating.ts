@@ -45,7 +45,7 @@ export class StarRating extends Phaser.GameObjects.Container {
       starImg.setDisplaySize(this.starSize, this.starSize);
       starImg.setOrigin(0.5, 0.5);
 
-      if (!this.scene.textures.exists(textureKey)) {
+      if (!this.scene?.textures?.exists || !this.scene.textures.exists(textureKey)) {
         // Fallback tint/alpha if texture not preloaded
         starImg.setTint(isLit ? 0xffcc00 : 0x666666);
       }
@@ -73,7 +73,7 @@ export class StarRating extends Phaser.GameObjects.Container {
         const isLit = i < clampedStars;
         const textureKey = isLit ? 'star_gold' : 'star_gray';
         star.setTexture(textureKey);
-        if (!this.scene.textures.exists(textureKey)) {
+        if (!this.scene?.textures?.exists || !this.scene.textures.exists(textureKey)) {
           star.setTint(isLit ? 0xffcc00 : 0x666666);
         }
         star.setScale(1);
