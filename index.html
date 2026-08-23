@@ -10,6 +10,9 @@
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="theme-color" content="#0b0f19" />
   <meta name="format-detection" content="telephone=no" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
   <link rel="manifest" href="./manifest.webmanifest" />
   <link rel="apple-touch-icon" href="./assets/kenney/game-icons/PNG/White/2x/trophy.png" />
   <title>升夢大冒險 —— 香港小一學科闖關 | P1 Adventure</title>
@@ -278,6 +281,23 @@
   </div>
 
   <div id="game-container"></div>
+  <script>
+    // Force purge any legacy service workers or stale PWA caches
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then(function(registrations) {
+        for (var i = 0; i < registrations.length; i++) {
+          registrations[i].unregister();
+        }
+      }).catch(function() {});
+    }
+    if ('caches' in window) {
+      caches.keys().then(function(names) {
+        for (var i = 0; i < names.length; i++) {
+          caches.delete(names[i]);
+        }
+      }).catch(function() {});
+    }
+  </script>
   <script type="module" src="/src/main.ts"></script>
 
   <script>
