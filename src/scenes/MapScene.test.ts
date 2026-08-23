@@ -457,6 +457,26 @@ describe('MapScene — 10-Station Roadmap Scene', () => {
       expect(destroySpy).toHaveBeenCalled();
       expect(scene.activeModal).toBe(modal2);
     });
+
+    it('contains Enter button and interactive sub-level rows in modal content', () => {
+      scene.create();
+      const modal = scene.openStationModal(STATIONS[0]);
+      const content = modal.getContentContainer();
+
+      // Verify content has rows, rating, and enter button
+      expect(content.list.length).toBeGreaterThanOrEqual(4);
+
+      // Verify clicking a sub-level row starts QuestionScene with questionIndex
+      const subRow1 = content.list[1] as any; // first sub-level rowContainer
+      if (typeof subRow1.emit === 'function') {
+        subRow1.emit('pointerup');
+        expect(mockScene.scene.start).toHaveBeenCalledWith('QuestionScene', {
+          stationId: 1,
+          stationName: '小木屋',
+          questionIndex: 0,
+        });
+      }
+    });
   });
 
   // =========================================================================

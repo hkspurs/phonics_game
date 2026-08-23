@@ -931,9 +931,17 @@ export class MapScene extends Phaser.Scene {
         ? this.add.container(0, rowY)
         : new Phaser.GameObjects.Container(this, 0, rowY);
 
+      rowContainer.setSize(580, 56);
+      if (rowContainer && typeof rowContainer.setScrollFactor === 'function') {
+        rowContainer.setScrollFactor(0);
+      }
+
       // Card row background
       if (this.add.graphics) {
         const bgG = this.add.graphics();
+        if (bgG && typeof bgG.setScrollFactor === 'function') {
+          bgG.setScrollFactor(0);
+        }
         bgG.fillStyle(0x0f172a, 0.8);
         bgG.fillRoundedRect(-290, -28, 580, 56, 12);
         bgG.lineStyle(1.5, sub.color, 0.85);
@@ -942,6 +950,9 @@ export class MapScene extends Phaser.Scene {
 
         // Subject color indicator pill
         const pillG = this.add.graphics();
+        if (pillG && typeof pillG.setScrollFactor === 'function') {
+          pillG.setScrollFactor(0);
+        }
         pillG.fillStyle(sub.color, 1.0);
         pillG.fillRoundedRect(-280, -20, 110, 40, 8);
         rowContainer.add(pillG);
@@ -955,6 +966,9 @@ export class MapScene extends Phaser.Scene {
           color: '#ffffff',
           fontStyle: 'bold',
         });
+        if (badgeLabel && typeof badgeLabel.setScrollFactor === 'function') {
+          badgeLabel.setScrollFactor(0);
+        }
         if (typeof badgeLabel.setOrigin === 'function') badgeLabel.setOrigin(0.5);
         rowContainer.add(badgeLabel);
 
@@ -965,6 +979,9 @@ export class MapScene extends Phaser.Scene {
           color: '#ffd700',
           fontStyle: 'bold',
         });
+        if (titleLabel && typeof titleLabel.setScrollFactor === 'function') {
+          titleLabel.setScrollFactor(0);
+        }
         rowContainer.add(titleLabel);
 
         const descLabel = this.add.text(-150, 10, sub.desc, {
@@ -972,14 +989,58 @@ export class MapScene extends Phaser.Scene {
           fontFamily: "'Noto Sans TC', sans-serif",
           color: '#94a3b8',
         });
+        if (descLabel && typeof descLabel.setScrollFactor === 'function') {
+          descLabel.setScrollFactor(0);
+        }
         rowContainer.add(descLabel);
 
         // Sub-level star icon
         const starIcon = this.add.text(250, 0, sub.earnedStar ? '⭐' : '☆', {
           fontSize: '22px',
         });
+        if (starIcon && typeof starIcon.setScrollFactor === 'function') {
+          starIcon.setScrollFactor(0);
+        }
         if (typeof starIcon.setOrigin === 'function') starIcon.setOrigin(0.5);
         rowContainer.add(starIcon);
+      }
+
+      // Make the entire row clickable to start this subject's question directly
+      if (typeof rowContainer.setInteractive === 'function') {
+        rowContainer.setInteractive({ useHandCursor: true });
+        rowContainer.on('pointerover', () => {
+          if (this.tweens?.add) {
+            this.tweens.add({
+              targets: rowContainer,
+              scaleX: 1.02,
+              scaleY: 1.02,
+              duration: 100,
+              ease: 'Sine.easeOut',
+            });
+          }
+        });
+        rowContainer.on('pointerout', () => {
+          if (this.tweens?.add) {
+            this.tweens.add({
+              targets: rowContainer,
+              scaleX: 1.0,
+              scaleY: 1.0,
+              duration: 100,
+              ease: 'Sine.easeOut',
+            });
+          }
+        });
+        rowContainer.on('pointerup', () => {
+          SoundManager.play('click');
+          modal.close();
+          if (this.scene) {
+            this.scene.start('QuestionScene', {
+              stationId: station.id,
+              stationName: station.name,
+              questionIndex: index,
+            });
+          }
+        });
       }
 
       content.add(rowContainer);
@@ -989,6 +1050,9 @@ export class MapScene extends Phaser.Scene {
     const ratingContainer = this.add.container
       ? this.add.container(0, 115)
       : new Phaser.GameObjects.Container(this, 0, 115);
+    if (ratingContainer && typeof ratingContainer.setScrollFactor === 'function') {
+      ratingContainer.setScrollFactor(0);
+    }
 
     if (this.add.text) {
       const starSummary = this.add.text(0, -18, `本站獲得星星：${stationStars}/3 ⭐`, {
@@ -997,12 +1061,15 @@ export class MapScene extends Phaser.Scene {
         color: '#ffdd59',
         fontStyle: 'bold',
       });
+      if (starSummary && typeof starSummary.setScrollFactor === 'function') {
+        starSummary.setScrollFactor(0);
+      }
       if (typeof starSummary.setOrigin === 'function') starSummary.setOrigin(0.5);
       ratingContainer.add(starSummary);
     }
 
     try {
-      new StarRating(this, {
+      const starRating = new StarRating(this, {
         x: 0,
         y: 8,
         maxStars: 3,
@@ -1010,16 +1077,19 @@ export class MapScene extends Phaser.Scene {
         starSize: 26,
         spacing: 12,
       });
+      if (starRating && typeof starRating.setScrollFactor === 'function') {
+        starRating.setScrollFactor(0);
+      }
     } catch {
       // Fallback star text if StarRating container fails
     }
     content.add(ratingContainer);
 
     // 4. Enter Button (進入)
-    new CanvasButton(this, {
+    const enterBtn = new CanvasButton(this, {
       x: 0,
       y: 175,
-      width: 240,
+      width: 260,
       height: 52,
       text: '⚔️ 進入關卡 (進入)',
       color: 'green',
@@ -1035,6 +1105,10 @@ export class MapScene extends Phaser.Scene {
         }
       },
     });
+    if (enterBtn && typeof enterBtn.setScrollFactor === 'function') {
+      enterBtn.setScrollFactor(0);
+    }
+    content.add(enterBtn);
 
     this.activeModal = modal;
     modal.show();
@@ -1205,7 +1279,7 @@ export class MapScene extends Phaser.Scene {
     navContainer.setDepth(500);
 
     // Jump to Top Station 10 Button
-    new CanvasButton(this, {
+    const upBtn = new CanvasButton(this, {
       x: 0,
       y: -60,
       width: 44,
@@ -1216,9 +1290,13 @@ export class MapScene extends Phaser.Scene {
       fontSize: '16px',
       onClick: () => this.scrollToStation(10, 400),
     });
+    if (upBtn && typeof upBtn.setScrollFactor === 'function') {
+      upBtn.setScrollFactor(0);
+    }
+    navContainer.add(upBtn);
 
     // Jump to Current Active Station Button
-    new CanvasButton(this, {
+    const targetBtn = new CanvasButton(this, {
       x: 0,
       y: 0,
       width: 44,
@@ -1229,9 +1307,13 @@ export class MapScene extends Phaser.Scene {
       fontSize: '16px',
       onClick: () => this.focusOnCurrentStation(true),
     });
+    if (targetBtn && typeof targetBtn.setScrollFactor === 'function') {
+      targetBtn.setScrollFactor(0);
+    }
+    navContainer.add(targetBtn);
 
     // Jump to Bottom Station 1 Button
-    new CanvasButton(this, {
+    const downBtn = new CanvasButton(this, {
       x: 0,
       y: 60,
       width: 44,
@@ -1242,6 +1324,10 @@ export class MapScene extends Phaser.Scene {
       fontSize: '16px',
       onClick: () => this.scrollToStation(1, 400),
     });
+    if (downBtn && typeof downBtn.setScrollFactor === 'function') {
+      downBtn.setScrollFactor(0);
+    }
+    navContainer.add(downBtn);
 
     if (this.add && typeof this.add.existing === 'function') {
       this.add.existing(navContainer);

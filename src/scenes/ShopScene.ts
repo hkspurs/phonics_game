@@ -278,9 +278,16 @@ export class ShopScene extends Phaser.Scene {
     }
   }
 
+  public skinCardTextObjects: {
+    name: Phaser.GameObjects.Text;
+    perk: Phaser.GameObjects.Text;
+    status: Phaser.GameObjects.Text;
+  }[] = [];
+
   private createSkinSelectionList(_width: number, _height: number): void {
     if (!this.add) return;
 
+    this.skinCardTextObjects = [];
     const listX = 300;
     const startY = 130;
     const spacing = 105;
@@ -305,13 +312,14 @@ export class ShopScene extends Phaser.Scene {
     });
   }
 
-  private populateCardDetails(skin: SkinDefinition, cx: number, cy: number, _idx: number): void {
+  private populateCardDetails(skin: SkinDefinition, cx: number, cy: number, idx: number): void {
     if (!this.add) return;
 
     const dm = DataManager.getInstance();
     const profile = dm.getProfile();
     const isOwned = profile.ownedSkins.includes(skin.id);
     const isEquipped = profile.equippedSkin === skin.id;
+    const isSelected = idx === this.selectedSkinIndex;
 
     // Mini Avatar Thumbnail
     if (this.textures?.exists && this.textures.exists(skin.standSprite)) {
@@ -325,7 +333,7 @@ export class ShopScene extends Phaser.Scene {
       const nameTxt = this.add.text(cx - 155, cy - 18, `${skin.name} (${skin.englishName})`, {
         fontSize: '20px',
         fontFamily: "'Kenney Future', 'Noto Sans TC', sans-serif",
-        color: '#ffffff',
+        color: isSelected ? '#1f1505' : '#ffffff',
         fontStyle: 'bold',
       });
       if (typeof nameTxt.setOrigin === 'function') nameTxt.setOrigin(0, 0.5);
@@ -334,19 +342,20 @@ export class ShopScene extends Phaser.Scene {
       const perkTxt = this.add.text(cx - 155, cy + 14, `✨ ${skin.perkDescription}`, {
         fontSize: '15px',
         fontFamily: "'Noto Sans TC', 'Microsoft JhengHei', sans-serif",
-        color: '#ffd166',
+        color: isSelected ? '#3d2503' : '#ffd166',
+        fontStyle: isSelected ? 'bold' : 'normal',
       });
       if (typeof perkTxt.setOrigin === 'function') perkTxt.setOrigin(0, 0.5);
 
       // Cost / Status Badge on Right
       let statusLabel = `💎 ${skin.costGems}`;
-      let statusColor = '#00e5ff';
+      let statusColor = isSelected ? '#03416e' : '#00e5ff';
       if (isEquipped) {
         statusLabel = '✅ 使用中';
-        statusColor = '#76d67c';
+        statusColor = isSelected ? '#065f24' : '#76d67c';
       } else if (isOwned) {
         statusLabel = '📦 已擁有';
-        statusColor = '#a0c4ff';
+        statusColor = isSelected ? '#1e3a8a' : '#a0c4ff';
       }
 
       const statusTxt = this.add.text(cx + 195, cy, statusLabel, {
@@ -356,6 +365,8 @@ export class ShopScene extends Phaser.Scene {
         fontStyle: 'bold',
       });
       if (typeof statusTxt.setOrigin === 'function') statusTxt.setOrigin(1, 0.5);
+
+      this.skinCardTextObjects.push({ name: nameTxt, perk: perkTxt, status: statusTxt });
     }
   }
 
@@ -542,9 +553,37 @@ export class ShopScene extends Phaser.Scene {
     this.selectedSkinIndex = index;
     SoundManager.play('click');
 
+    const dm = DataManager.getInstance();
+    const profile = dm.getProfile();
+
     // Update selection highlight on cards
     this.skinCardButtons.forEach((btn, idx) => {
-      btn.setColor(idx === index ? 'yellow' : 'grey');
+      const isSelected = idx === index;
+      btn.setColor(isSelected ? 'yellow' : 'grey');
+
+      const textObj = this.skinCardTextObjects[idx];
+      const skin = this.skins[idx];
+      if (textObj && skin) {
+        const isOwned = profile.ownedSkins.includes(skin.id);
+        const isEquipped = profile.equippedSkin === skin.id;
+
+        if (typeof textObj.name.setColor === 'function') {
+          textObj.name.setColor(isSelected ? '#1f1505' : '#ffffff');
+        }
+        if (typeof textObj.perk.setColor === 'function') {
+          textObj.perk.setColor(isSelected ? '#3d2503' : '#ffd166');
+        }
+
+        let statusColor = isSelected ? '#03416e' : '#00e5ff';
+        if (isEquipped) {
+          statusColor = isSelected ? '#065f24' : '#76d67c';
+        } else if (isOwned) {
+          statusColor = isSelected ? '#1e3a8a' : '#a0c4ff';
+        }
+        if (typeof textObj.status.setColor === 'function') {
+          textObj.status.setColor(statusColor);
+        }
+      }
     });
 
     this.updatePreviewDisplay();

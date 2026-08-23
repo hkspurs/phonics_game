@@ -157,7 +157,11 @@ export class CanvasCard extends Phaser.GameObjects.Container {
     g.fillRoundedRect(-halfW + 2, -halfH + 2, w - 4, (h - 4) / 2, Math.max(2, radius - 2));
 
     this.bgGraphics = g;
-    this.add(g);
+    if (this.length > 0) {
+      this.addAt(g, 0);
+    } else {
+      this.add(g);
+    }
   }
 
   private createLabel(): void {
@@ -403,6 +407,23 @@ export class CanvasCard extends Phaser.GameObjects.Container {
 
   public getCurrentSlot(): any {
     return this.currentSlot;
+  }
+
+  public override setScrollFactor(x: number, y?: number, updateChildren: boolean = true): this {
+    if (typeof super.setScrollFactor === 'function') {
+      super.setScrollFactor(x, y, updateChildren);
+    } else {
+      this.scrollFactorX = x;
+      this.scrollFactorY = y !== undefined ? y : x;
+    }
+    const sy = y !== undefined ? y : x;
+    if (this.bgGraphics && typeof this.bgGraphics.setScrollFactor === 'function') {
+      this.bgGraphics.setScrollFactor(x, sy);
+    }
+    if (this.labelText && typeof this.labelText.setScrollFactor === 'function') {
+      this.labelText.setScrollFactor(x, sy);
+    }
+    return this;
   }
 
   public override destroy(fromScene?: boolean): void {

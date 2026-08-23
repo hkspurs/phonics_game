@@ -129,6 +129,13 @@ export function createMockScene(): any {
             r.originY = oy;
             return r;
           }),
+          scrollFactorX: 1,
+          scrollFactorY: 1,
+          setScrollFactor: vi.fn(function (sx = 1, sy?: number) {
+            r.scrollFactorX = sx;
+            r.scrollFactorY = sy !== undefined ? sy : sx;
+            return r;
+          }),
           setInteractive: vi.fn().mockReturnThis(),
           disableInteractive: vi.fn().mockReturnThis(),
           setAlpha: vi.fn().mockReturnThis(),
@@ -670,6 +677,57 @@ describe('Canvas UI Components Suite', () => {
       expect(rating.getRating()).toBe(3);
       rating.reset();
       expect(rating.getRating()).toBe(0);
+    });
+  });
+
+  describe('UI Layering & ScrollFactor Regressions', () => {
+    it('maintains background at index 0 when CanvasButton.setColor is called', () => {
+      const btn = new CanvasButton(mockScene, {
+        text: '測試按鈕',
+        color: 'grey',
+      });
+
+      // Background should be at index 0, text on top
+      expect(btn.list[0]).toBe((btn as any).bgGraphics);
+      expect(btn.list[btn.list.length - 1]).toBe((btn as any).labelText);
+
+      // Call setColor
+      btn.setColor('yellow');
+      expect(btn.list[0]).toBe((btn as any).bgGraphics);
+      expect(btn.list.indexOf((btn as any).labelText)).toBeGreaterThan(0);
+      expect(btn.getText()).toBe('測試按鈕');
+    });
+
+    it('maintains background at index 0 when CanvasCard.setState is called', () => {
+      const card = new CanvasCard(mockScene, {
+        text: '蘋果',
+        color: 'blue',
+      });
+
+      expect(card.list[0]).toBe((card as any).bgGraphics);
+      expect(card.list[card.list.length - 1]).toBe((card as any).labelText);
+
+      card.setState('selected');
+      expect(card.list[0]).toBe((card as any).bgGraphics);
+      expect(card.list.indexOf((card as any).labelText)).toBeGreaterThan(0);
+      expect(card.getText()).toBe('蘋果');
+    });
+
+    it('CanvasModal propagates scrollFactor to children and added content', () => {
+      const modal = new CanvasModal(mockScene, {
+        title: '關卡資訊',
+      });
+
+      modal.setScrollFactor(0);
+      expect((modal as any).backdropRect.scrollFactorX).toBe(0);
+      expect((modal as any).backdropRect.scrollFactorY).toBe(0);
+      expect((modal as any).closeBtn.scrollFactorX).toBe(0);
+      expect((modal as any).closeBtn.scrollFactorY).toBe(0);
+
+      const testBtn = new CanvasButton(mockScene, { text: '開始' });
+      modal.addContent(testBtn);
+      expect(testBtn.scrollFactorX).toBe(0);
+      expect(testBtn.scrollFactorY).toBe(0);
     });
   });
 });

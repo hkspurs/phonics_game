@@ -92,7 +92,11 @@ export class SlotBox extends Phaser.GameObjects.Container {
     g.strokeRoundedRect(-halfW, -halfH, w, h, radius);
 
     this.bgGraphics = g;
-    this.add(g);
+    if (this.length > 0) {
+      this.addAt(g, 0);
+    } else {
+      this.add(g);
+    }
   }
 
   private createPlaceholder(): void {
@@ -232,6 +236,23 @@ export class SlotBox extends Phaser.GameObjects.Container {
 
   public getSlotHeight(): number {
     return this.slotHeight;
+  }
+
+  public override setScrollFactor(x: number, y?: number, updateChildren: boolean = true): this {
+    if (typeof super.setScrollFactor === 'function') {
+      super.setScrollFactor(x, y, updateChildren);
+    } else {
+      this.scrollFactorX = x;
+      this.scrollFactorY = y !== undefined ? y : x;
+    }
+    const sy = y !== undefined ? y : x;
+    if (this.bgGraphics && typeof this.bgGraphics.setScrollFactor === 'function') {
+      this.bgGraphics.setScrollFactor(x, sy);
+    }
+    if (this.placeholderText && typeof this.placeholderText.setScrollFactor === 'function') {
+      this.placeholderText.setScrollFactor(x, sy);
+    }
+    return this;
   }
 
   public override destroy(fromScene?: boolean): void {

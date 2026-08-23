@@ -76,6 +76,9 @@ export class CanvasModal extends Phaser.GameObjects.Container {
     const alpha = this.config.backdropAlpha ?? 0.65;
 
     const rect = this.scene.add.rectangle(0, 0, gameW * 2, gameH * 2, color, alpha);
+    if (rect && typeof (rect as any).setScrollFactor === 'function') {
+      (rect as any).setScrollFactor(0);
+    }
     if (typeof rect.setInteractive === 'function') {
       rect.setInteractive();
       if (this.config.closeOnBackdropClick) {
@@ -197,6 +200,9 @@ export class CanvasModal extends Phaser.GameObjects.Container {
       fontSize: '22px',
       onClick: () => this.close(),
     });
+    if (btn && typeof (btn as any).setScrollFactor === 'function') {
+      (btn as any).setScrollFactor(0);
+    }
 
     this.closeBtn = btn;
     this.panelContainer.add(btn);
@@ -310,10 +316,35 @@ export class CanvasModal extends Phaser.GameObjects.Container {
   }
 
   public addContent(gameObject: Phaser.GameObjects.GameObject | Phaser.GameObjects.GameObject[]): this {
-    if (Array.isArray(gameObject)) {
-      this.contentContainer.add(gameObject);
+    const items = Array.isArray(gameObject) ? gameObject : [gameObject];
+    for (const item of items) {
+      if (item && typeof (item as any).setScrollFactor === 'function') {
+        (item as any).setScrollFactor(this.scrollFactorX, this.scrollFactorY);
+      }
+      this.contentContainer.add(item);
+    }
+    return this;
+  }
+
+  public override setScrollFactor(x: number, y?: number, updateChildren: boolean = true): this {
+    if (typeof super.setScrollFactor === 'function') {
+      super.setScrollFactor(x, y, updateChildren);
     } else {
-      this.contentContainer.add(gameObject);
+      this.scrollFactorX = x;
+      this.scrollFactorY = y !== undefined ? y : x;
+    }
+    const sy = y !== undefined ? y : x;
+    if (this.backdropRect && typeof this.backdropRect.setScrollFactor === 'function') {
+      this.backdropRect.setScrollFactor(x, sy);
+    }
+    if (this.panelContainer && typeof this.panelContainer.setScrollFactor === 'function') {
+      this.panelContainer.setScrollFactor(x, sy, updateChildren);
+    }
+    if (this.contentContainer && typeof this.contentContainer.setScrollFactor === 'function') {
+      this.contentContainer.setScrollFactor(x, sy, updateChildren);
+    }
+    if (this.closeBtn && typeof this.closeBtn.setScrollFactor === 'function') {
+      this.closeBtn.setScrollFactor(x, sy, updateChildren);
     }
     return this;
   }

@@ -135,7 +135,11 @@ export class CanvasButton extends Phaser.GameObjects.Container {
     g.strokeRoundedRect(-halfW, -halfH, w, h, radius);
 
     this.bgGraphics = g;
-    this.add(g);
+    if (this.length > 0) {
+      this.addAt(g, 0);
+    } else {
+      this.add(g);
+    }
   }
 
   private createContents(): void {
@@ -350,6 +354,26 @@ export class CanvasButton extends Phaser.GameObjects.Container {
     if (this.isBtnEnabled && typeof this.config.onClick === 'function') {
       this.config.onClick(this);
     }
+  }
+
+  public override setScrollFactor(x: number, y?: number, updateChildren: boolean = true): this {
+    if (typeof super.setScrollFactor === 'function') {
+      super.setScrollFactor(x, y, updateChildren);
+    } else {
+      this.scrollFactorX = x;
+      this.scrollFactorY = y !== undefined ? y : x;
+    }
+    const sy = y !== undefined ? y : x;
+    if (this.bgGraphics && typeof this.bgGraphics.setScrollFactor === 'function') {
+      this.bgGraphics.setScrollFactor(x, sy);
+    }
+    if (this.labelText && typeof this.labelText.setScrollFactor === 'function') {
+      this.labelText.setScrollFactor(x, sy);
+    }
+    if (this.iconImage && typeof this.iconImage.setScrollFactor === 'function') {
+      this.iconImage.setScrollFactor(x, sy);
+    }
+    return this;
   }
 
   public override destroy(fromScene?: boolean): void {
