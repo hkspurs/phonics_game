@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="升夢大冒險" />
+  <meta name="apple-touch-fullscreen" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="theme-color" content="#0b0f19" />
+  <meta name="format-detection" content="telephone=no" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <link rel="apple-touch-icon" href="./assets/kenney/game-icons/PNG/White/2x/trophy.png" />
+  <title>升夢大冒險 —— 香港小一學科闖關 | P1 Adventure</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+    html, body {
+      width: 100%;
+      height: 100%;
+      height: 100dvh;
+      height: -webkit-fill-available;
+      position: fixed;
+      inset: 0;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background-color: #0b0f19;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: -apple-system, BlinkMacSystemFont, "PingFang HK", "Noto Sans TC", "Segoe UI", Roboto, "Microsoft JhengHei", sans-serif;
+      -webkit-user-select: none;
+      user-select: none;
+      -webkit-touch-callout: none;
+      touch-action: manipulation;
+      overscroll-behavior: none;
+    }
+    #game-container {
+      width: 100vw;
+      height: 100vh;
+      height: 100dvh;
+      height: -webkit-fill-available;
+      position: absolute;
+      inset: 0;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #0b0f19;
+    }
+    canvas {
+      display: block;
+      width: 100% !important;
+      height: 100% !important;
+      object-fit: fill;
+      margin: 0;
+      padding: 0;
+      image-rendering: -webkit-optimize-contrast;
+      image-rendering: crisp-edges;
+    }
+
+    /* iOS Fullscreen & Add to Home Screen Floating Button */
+    #fullscreen-btn {
+      position: fixed;
+      bottom: max(12px, env(safe-area-inset-bottom));
+      left: max(16px, env(safe-area-inset-left));
+      z-index: 999;
+      background: rgba(30, 41, 59, 0.88);
+      color: #ffd700;
+      border: 1.5px solid rgba(255, 215, 0, 0.6);
+      border-radius: 20px;
+      padding: 6px 14px;
+      font-size: 13px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      backdrop-filter: blur(8px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+      transition: transform 0.15s ease, background 0.2s ease;
+    }
+    #fullscreen-btn:active {
+      transform: scale(0.94);
+      background: rgba(30, 41, 59, 1);
+    }
+
+    /* iPhone Full Screen Guide Modal */
+    #ios-pwa-modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(11, 15, 25, 0.92);
+      z-index: 100000;
+      backdrop-filter: blur(12px);
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+    .ios-modal-card {
+      background: #1e293b;
+      border: 2px solid #ffd700;
+      border-radius: 20px;
+      max-width: 480px;
+      width: 100%;
+      padding: 24px;
+      color: #ffffff;
+      text-align: center;
+      box-shadow: 0 16px 36px rgba(0,0,0,0.6);
+      animation: modalPop 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    @keyframes modalPop {
+      from { transform: scale(0.85); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+    .ios-modal-title {
+      font-size: 22px;
+      font-weight: 800;
+      color: #ffd700;
+      margin-bottom: 10px;
+    }
+    .ios-step {
+      background: #0f172a;
+      border-radius: 12px;
+      padding: 12px 16px;
+      margin: 10px 0;
+      text-align: left;
+      font-size: 15px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border: 1px solid #334155;
+    }
+    .ios-step-num {
+      background: #38bdf8;
+      color: #0f172a;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 15px;
+    }
+    .ios-modal-close {
+      margin-top: 18px;
+      background: #22c55e;
+      color: #ffffff;
+      border: none;
+      border-radius: 12px;
+      padding: 12px 24px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      width: 100%;
+    }
+
+    /* Forced Landscape Overlay on iPhone / iPad in Portrait */
+    #orientation-warning {
+      display: none;
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      height: 100dvh;
+      background: linear-gradient(135deg, #0b0f19 0%, #1e1b4b 100%);
+      color: #ffffff;
+      z-index: 999999;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 32px;
+      backdrop-filter: blur(14px);
+    }
+
+    /* Force landscape on all portrait screens */
+    @media screen and (orientation: portrait) {
+      #orientation-warning {
+        display: flex !important;
+      }
+    }
+
+    .rotate-icon {
+      font-size: 80px;
+      margin-bottom: 24px;
+      display: inline-block;
+      animation: phoneRotate 2.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+    }
+
+    @keyframes phoneRotate {
+      0%, 15% {
+        transform: rotate(0deg) scale(1);
+      }
+      50%, 65% {
+        transform: rotate(-90deg) scale(1.1);
+      }
+      100% {
+        transform: rotate(0deg) scale(1);
+      }
+    }
+
+    .rotate-title {
+      font-size: 28px;
+      font-weight: 800;
+      color: #ffd700;
+      margin-bottom: 12px;
+      letter-spacing: 0.5px;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.5);
+    }
+
+    .rotate-subtitle {
+      font-size: 17px;
+      color: #cbd5e1;
+      max-width: 340px;
+      line-height: 1.6;
+      margin-bottom: 24px;
+    }
+
+    .rotate-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 20px;
+      border-radius: 9999px;
+      background: rgba(255, 255, 255, 0.12);
+      border: 1.5px solid rgba(255, 255, 255, 0.25);
+      font-size: 14px;
+      font-weight: 700;
+      color: #93c5fd;
+    }
+  </style>
+  <script type="module" crossorigin src="./assets/index-D532MMvN.js"></script>
+</head>
+<body>
+  <!-- Fullscreen / iOS App Button -->
+  <button id="fullscreen-btn" onclick="handleFullscreenClick()">
+    <span>⛶</span> 全螢幕
+  </button>
+
+  <!-- iOS Safari PWA Tutorial Modal -->
+  <div id="ios-pwa-modal" onclick="closeIosModal(event)">
+    <div class="ios-modal-card" onclick="event.stopPropagation()">
+      <div class="ios-modal-title">📱 iPhone 100% 滿版全螢幕教學</div>
+      <p style="color: #94a3b8; font-size: 14px; margin-bottom: 14px;">因 Apple 限制，iPhone 透過「加入主畫面」即可完全消除網址列及黑邊，滿版暢玩：</p>
+      
+      <div class="ios-step">
+        <div class="ios-step-num">1</div>
+        <div>點擊 Safari 下方或頂部的 <strong>「分享」按鈕 📤</strong></div>
+      </div>
+      <div class="ios-step">
+        <div class="ios-step-num">2</div>
+        <div>在選單中向下滑動，選擇 <strong>「加入主畫面 ➕」</strong></div>
+      </div>
+      <div class="ios-step">
+        <div class="ios-step-num">3</div>
+        <div>點擊右上角 <strong>「新增」</strong>，在桌面點擊圖示即可滿版全螢幕！</div>
+      </div>
+
+      <button class="ios-modal-close" onclick="closeIosModal()">我知道了，繼續遊玩</button>
+    </div>
+  </div>
+
+  <!-- Mandatory Landscape Overlay in Portrait Mode -->
+  <div id="orientation-warning">
+    <div class="rotate-icon">📱</div>
+    <div class="rotate-title">請將手機橫向旋轉</div>
+    <div class="rotate-subtitle">《升夢大冒險》專為橫向全螢幕打造，橫向放置即可滿版使用整個螢幕！ ✨</div>
+    <div class="rotate-badge">🎮 橫向全螢幕鎖定</div>
+  </div>
+
+  <div id="game-container"></div>
+  <script>
+    // Force purge any legacy service workers or stale PWA caches
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then(function(registrations) {
+        for (var i = 0; i < registrations.length; i++) {
+          registrations[i].unregister();
+        }
+      }).catch(function() {});
+    }
+    if ('caches' in window) {
+      caches.keys().then(function(names) {
+        for (var i = 0; i < names.length; i++) {
+          caches.delete(names[i]);
+        }
+      }).catch(function() {});
+    }
+  </script>
+
+  <script>
+    function isIosSafari() {
+      const ua = window.navigator.userAgent;
+      const isIos = /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+      const isWebkit = /WebKit/i.test(ua);
+      const isStandalone = window.navigator.standalone || window.matchMedia('(display-mode: standalone)').matches;
+      return isIos && isWebkit && !isStandalone;
+    }
+
+    function handleFullscreenClick() {
+      if (isIosSafari()) {
+        const modal = document.getElementById('ios-pwa-modal');
+        if (modal) modal.style.display = 'flex';
+      } else {
+        if (!document.fullscreenElement) {
+          const docEl = document.documentElement;
+          if (docEl.requestFullscreen) {
+            docEl.requestFullscreen().catch(() => {
+              const modal = document.getElementById('ios-pwa-modal');
+              if (modal) modal.style.display = 'flex';
+            });
+          }
+        } else {
+          if (document.exitFullscreen) document.exitFullscreen();
+        }
+      }
+    }
+
+    function closeIosModal() {
+      const modal = document.getElementById('ios-pwa-modal');
+      if (modal) modal.style.display = 'none';
+    }
+
+    // Try locking landscape on mobile interaction
+    function tryLockLandscape() {
+      if (screen.orientation && screen.orientation.lock) {
+        screen.orientation.lock('landscape').catch(function() {});
+      }
+    }
+
+    window.addEventListener('touchstart', function() {
+      window.scrollTo(0, 1);
+      tryLockLandscape();
+    }, { passive: true, once: true });
+
+    window.addEventListener('click', function() {
+      tryLockLandscape();
+    }, { once: true });
+  </script>
+</body>
+</html>

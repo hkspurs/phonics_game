@@ -1,0 +1,19 @@
+{
+  "name": "升夢大冒險 —— 香港小一學科闖關",
+  "short_name": "升夢大冒險",
+  "description": "香港小一學科闖關教育遊戲 (中文・數學・英文)",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#0b0f19",
+  "theme_color": "#0b0f19",
+  "icons": [
+    {
+      "src": "./assets/kenney/game-icons/PNG/White/2x/trophy.png",
+      "sizes": "128x128",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
