@@ -863,6 +863,7 @@ export class MapScene extends Phaser.Scene {
       height: 520,
       title: `第 ${station.id} 站 — ${station.name}`,
       theme: 'gold',
+      closeOnBackdropClick: false,
       onClose: () => {
         this.activeModal = null;
       },
@@ -1006,8 +1007,17 @@ export class MapScene extends Phaser.Scene {
       }
 
       // Make the entire row clickable to start this subject's question directly
+      const hitRect = (Phaser && Phaser.Geom && Phaser.Geom.Rectangle)
+        ? new Phaser.Geom.Rectangle(-290, -28, 580, 56)
+        : undefined;
+
       if (typeof rowContainer.setInteractive === 'function') {
-        rowContainer.setInteractive({ useHandCursor: true });
+        if (hitRect) {
+          rowContainer.setInteractive(hitRect, Phaser.Geom.Rectangle.Contains);
+        } else {
+          rowContainer.setInteractive({ useHandCursor: true });
+        }
+
         rowContainer.on('pointerover', () => {
           if (this.tweens?.add) {
             this.tweens.add({
@@ -1080,6 +1090,7 @@ export class MapScene extends Phaser.Scene {
       if (starRating && typeof starRating.setScrollFactor === 'function') {
         starRating.setScrollFactor(0);
       }
+      ratingContainer.add(starRating);
     } catch {
       // Fallback star text if StarRating container fails
     }

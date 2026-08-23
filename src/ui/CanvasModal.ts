@@ -82,7 +82,21 @@ export class CanvasModal extends Phaser.GameObjects.Container {
     if (typeof rect.setInteractive === 'function') {
       rect.setInteractive();
       if (this.config.closeOnBackdropClick) {
-        rect.on('pointerup', () => this.close());
+        rect.on('pointerup', (pointer: any) => {
+          if (pointer) {
+            const px = pointer.x !== undefined ? pointer.x : (pointer.position ? pointer.position.x : 0);
+            const py = pointer.y !== undefined ? pointer.y : (pointer.position ? pointer.position.y : 0);
+            const localX = px - this.x;
+            const localY = py - this.y;
+            const halfW = this.modalWidth / 2;
+            const halfH = this.modalHeight / 2;
+            // If click was inside panel bounding box, do not close
+            if (localX >= -halfW && localX <= halfW && localY >= -halfH && localY <= halfH) {
+              return;
+            }
+          }
+          this.close();
+        });
       }
     }
 
@@ -101,6 +115,26 @@ export class CanvasModal extends Phaser.GameObjects.Container {
     const radius = this.config.cornerRadius ?? 16;
     const halfW = w / 2;
     const halfH = h / 2;
+
+    // Panel hit blocker rectangle to prevent clicks inside dialog from passing to backdrop
+    const blocker = this.scene.add.rectangle(0, 0, w, h, 0x000000, 0.0001);
+    if (blocker && typeof (blocker as any).setScrollFactor === 'function') {
+      (blocker as any).setScrollFactor(0);
+    }
+    if (typeof blocker.setInteractive === 'function') {
+      blocker.setInteractive();
+      blocker.on('pointerup', (_p: any, _lx: number, _ly: number, event: any) => {
+        if (event && typeof event.stopPropagation === 'function') {
+          event.stopPropagation();
+        }
+      });
+      blocker.on('pointerdown', (_p: any, _lx: number, _ly: number, event: any) => {
+        if (event && typeof event.stopPropagation === 'function') {
+          event.stopPropagation();
+        }
+      });
+    }
+    this.panelContainer.add(blocker);
 
     const g = this.scene.add.graphics();
 
