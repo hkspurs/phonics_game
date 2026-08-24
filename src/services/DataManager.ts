@@ -1381,8 +1381,16 @@ export class DataManager {
     this.save();
   }
 
+  private getLocalDateString(): string {
+    const d = new Date();
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+
   public updateStreak(): void {
-    const todayStr = new Date().toISOString().split('T')[0];
+    const todayStr = this.getLocalDateString();
     const lastPlayed = this.profile.stats.lastPlayedDate;
 
     if (!lastPlayed) {
@@ -1411,24 +1419,36 @@ export class DataManager {
   }
 
   public checkTrophies(): string[] {
-    const newlyUnlocked: string[] = [];
-    for (const trophy of TROPHY_DEFINITIONS) {
-      if (!this.profile.trophies[trophy.id] && trophy.condition(this.profile)) {
-        this.profile.trophies[trophy.id] = true;
-        if (trophy.rewardCoins) {
-          this.profile.coins += trophy.rewardCoins;
+    const allNewlyUnlocked: string[] = [];
+    let hadNewUnlocks = true;
+
+    while (hadNewUnlocks) {
+      hadNewUnlocks = false;
+      let coinsToAdd = 0;
+      let gemsToAdd = 0;
+
+      for (const trophy of TROPHY_DEFINITIONS) {
+        if (!this.profile.trophies[trophy.id] && trophy.condition(this.profile)) {
+          this.profile.trophies[trophy.id] = true;
+          if (trophy.rewardCoins) {
+            coinsToAdd += trophy.rewardCoins;
+          }
+          if (trophy.rewardGems) {
+            gemsToAdd += trophy.rewardGems;
+          }
+          allNewlyUnlocked.push(trophy.id);
+          hadNewUnlocks = true;
         }
-        if (trophy.rewardGems) {
-          this.profile.gems += trophy.rewardGems;
-        }
-        newlyUnlocked.push(trophy.id);
       }
+
+      if (coinsToAdd > 0) this.profile.coins += coinsToAdd;
+      if (gemsToAdd > 0) this.profile.gems += gemsToAdd;
     }
 
-    if (newlyUnlocked.length > 0) {
+    if (allNewlyUnlocked.length > 0) {
       this.save();
     }
-    return newlyUnlocked;
+    return allNewlyUnlocked;
   }
 
   public getTrophies(): Trophy[] {
@@ -1519,7 +1539,7 @@ export class DataManager {
    * Daily Quest & Lucky Spin Wheel
    */
   public getDailyQuest(): { date: string; completed: boolean; spinClaimed: boolean } {
-    const todayStr = new Date().toISOString().split('T')[0];
+    const todayStr = this.getLocalDateString();
     if (!this.profile.dailyQuest || this.profile.dailyQuest.date !== todayStr) {
       this.profile.dailyQuest = {
         date: todayStr,
@@ -1537,11 +1557,15 @@ export class DataManager {
     this.save();
   }
 
-  public claimDailySpin(rewardCoins: number = 30): void {
+  public claimDailySpin(rewardCoins: number = 30): boolean {
     const quest = this.getDailyQuest();
+    if (quest.spinClaimed) {
+      return false; // Idempotency protection
+    }
     quest.spinClaimed = true;
     this.addCoins(rewardCoins);
     this.save();
+    return true;
   }
 
   public save(): void {

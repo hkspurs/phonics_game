@@ -156,6 +156,11 @@ export class ShopScene extends Phaser.Scene {
 
     // 5. Update Preview Content & Action Button
     this.updatePreviewDisplay();
+
+    // 6. Bind shutdown cleanup
+    if (this.events && typeof this.events.once === 'function') {
+      this.events.once(Phaser.Scenes.Events.SHUTDOWN, this.cleanup, this);
+    }
   }
 
   private createBackground(width: number, height: number): void {

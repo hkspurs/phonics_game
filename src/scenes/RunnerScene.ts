@@ -1582,4 +1582,16 @@ export class RunnerScene extends Phaser.Scene {
       });
     }
   }
+
+  /**
+   * Scene shutdown and resource cleanup
+   */
+  public shutdown(): void {
+    if (this.tweens) {
+      this.tweens.killAll();
+    }
+    if (this.time) {
+      this.time.removeAllEvents();
+    }
+  }
 }

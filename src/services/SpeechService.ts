@@ -185,8 +185,8 @@ export class SpeechService {
   }
 
   /**
-   * Normalizes math symbols and operators (+, -, *, /, =, ?) to clear spoken words
-   * in Cantonese/Chinese and English to prevent TTS mispronouncing "-" as "至".
+   * Normalizes text for speech synthesis, replacing mathematical and special symbols
+   * with natural spoken words in the target language (e.g. + -> 加/plus, - -> 減/minus, = ? -> 等於幾多？/equals what?)
    */
   public static normalizeSpeechText(text: string, lang: VoiceLanguage | string = 'zh-HK'): string {
     if (!text) return '';
@@ -197,10 +197,8 @@ export class SpeechService {
         .replace(/(\d+)\s*\+\s*(\d+)/g, '$1 加 $2')
         .replace(/(\d+)\s*[×*]\s*(\d+)/g, '$1 乘 $2')
         .replace(/(\d+)\s*[÷/]\s*(\d+)/g, '$1 除以 $2')
-        .replace(/\s*=\s*\?/g, ' 等於幾多？')
-        .replace(/\s*=\s*多少/g, ' 等於幾多')
-        .replace(/\s*=\s*/g, ' 等於 ')
-        .replace(/\?/g, '幾多？');
+        .replace(/\s*=\s*(\?|多少|幾多|\？)/g, ' 等於幾多？')
+        .replace(/\s*=\s*/g, ' 等於 ');
     } else {
       return text
         .replace(/(\d+)\s*-\s*(\d+)/g, '$1 minus $2')
@@ -208,8 +206,7 @@ export class SpeechService {
         .replace(/(\d+)\s*[×*]\s*(\d+)/g, '$1 times $2')
         .replace(/(\d+)\s*[÷/]\s*(\d+)/g, '$1 divided by $2')
         .replace(/\s*=\s*\?/g, ' equals what?')
-        .replace(/\s*=\s*/g, ' equals ')
-        .replace(/\?/g, ' what?');
+        .replace(/\s*=\s*/g, ' equals ');
     }
   }
 

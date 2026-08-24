@@ -115,6 +115,16 @@ export class SoundManager {
   }
 
   /**
+   * Unlock Web Audio API context on direct user interaction (pointerdown/touchstart)
+   */
+  public static unlockAudioContext(): void {
+    const ctx = this.getAudioContext();
+    if (ctx && ctx.state === 'suspended') {
+      ctx.resume().catch(() => {});
+    }
+  }
+
+  /**
    * Progressive Do-Re-Mi Pitch-Shifted Combo Correct Sound (C5 -> E5 -> G5 -> C6 -> E6)
    */
   public static playComboCorrect(comboIndex?: number): void {
@@ -149,6 +159,15 @@ export class SoundManager {
       osc.connect(gain);
       gain.connect(ctx.destination);
 
+      osc.onended = () => {
+        try {
+          osc.disconnect();
+          gain.disconnect();
+        } catch {
+          // Ignore
+        }
+      };
+
       osc.start(ctx.currentTime);
       osc.stop(ctx.currentTime + 0.36);
     } catch {
@@ -182,6 +201,15 @@ export class SoundManager {
       osc.connect(gain);
       gain.connect(ctx.destination);
 
+      osc.onended = () => {
+        try {
+          osc.disconnect();
+          gain.disconnect();
+        } catch {
+          // Ignore
+        }
+      };
+
       osc.start(ctx.currentTime);
       osc.stop(ctx.currentTime + 0.2);
     } catch {
@@ -213,6 +241,15 @@ export class SoundManager {
 
       osc.connect(gain);
       gain.connect(ctx.destination);
+
+      osc.onended = () => {
+        try {
+          osc.disconnect();
+          gain.disconnect();
+        } catch {
+          // Ignore
+        }
+      };
 
       osc.start(ctx.currentTime);
       osc.stop(ctx.currentTime + 0.07);
@@ -247,6 +284,15 @@ export class SoundManager {
 
       osc.connect(gain);
       gain.connect(ctx.destination);
+
+      osc.onended = () => {
+        try {
+          osc.disconnect();
+          gain.disconnect();
+        } catch {
+          // Ignore
+        }
+      };
 
       osc.start(ctx.currentTime);
       osc.stop(ctx.currentTime + 0.13);

@@ -49,6 +49,7 @@ export class QuestionScene extends Phaser.Scene {
   public isAnswered: boolean = false;
 
   // UI Components
+  public transitionTimer: Phaser.Time.TimerEvent | null = null;
   public backButton: CanvasButton | null = null;
   public speakerButton: CanvasButton | null = null;
   public hintButton: CanvasButton | null = null;
@@ -229,14 +230,18 @@ export class QuestionScene extends Phaser.Scene {
 
     // 1. Back Button (◀ 返回地圖)
     this.backButton = new CanvasButton(this, {
-      x: 100,
+      x: 105,
       y: 42,
-      width: 140,
-      height: 44,
+      width: 150,
+      height: 50,
       text: '◀ 返回地圖',
       color: 'blue',
-      fontSize: '18px',
+      fontSize: '19px',
       onClick: () => {
+        if (this.transitionTimer) {
+          this.transitionTimer.remove();
+          this.transitionTimer = null;
+        }
         SoundManager.play('click');
         SpeechService.stop();
         if (this.scene) {
@@ -583,7 +588,7 @@ export class QuestionScene extends Phaser.Scene {
     if (!this.add) return;
 
     const isScramble = this.currentQuestion?.type === 'sentence_scramble';
-    const controlsY = height - 64;
+    const controlsY = height - 84; // Safe margin from iPhone Home Indicator bar
 
     const controls = this.add.container
       ? this.add.container(0, 0)
@@ -790,9 +795,6 @@ export class QuestionScene extends Phaser.Scene {
   public handleHint(): void {
     if (this.isAnswered || !this.currentQuestion) return;
 
-    this.sessionStats.hintsUsed++;
-    SoundManager.playCardSnap();
-
     if (this.currentQuestion.type === 'sentence_scramble') {
       const expected = this.currentQuestion.correctTokens || [];
       // Find first slot that is empty or incorrect
@@ -806,6 +808,9 @@ export class QuestionScene extends Phaser.Scene {
       }
 
       if (targetIndex >= 0) {
+        this.sessionStats.hintsUsed++;
+        SoundManager.playCardSnap();
+
         const targetSlot = this.slotBoxes[targetIndex];
         if (targetSlot.hasCard()) {
           targetSlot.removePlacedCard()?.snapBack();
@@ -840,6 +845,8 @@ export class QuestionScene extends Phaser.Scene {
       });
 
       if (wrongCards.length > 0) {
+        this.sessionStats.hintsUsed++;
+        SoundManager.playCardSnap();
         const toEliminate = wrongCards[0];
         toEliminate.wobble();
         toEliminate.setDisabled(true);
@@ -904,8 +911,12 @@ export class QuestionScene extends Phaser.Scene {
     const isComplete = this.questionIndex >= this.questions.length - 1;
     const isRainbow = this.sessionStats.correctCount >= 2;
     if (this.time?.delayedCall) {
-      this.time.delayedCall(1200, () => {
-        if (this.scene) {
+      if (this.transitionTimer) {
+        this.transitionTimer.remove();
+      }
+      this.transitionTimer = this.time.delayedCall(1200, () => {
+        const isSceneActive = this.scene && (typeof (this.scene as any).isActive === 'function' ? this.scene.isActive('QuestionScene') : true);
+        if (this.scene && isSceneActive) {
           this.scene.start('RunnerScene', {
             stationId: this.stationId,
             stationName: this.stationName,

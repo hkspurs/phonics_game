@@ -222,7 +222,7 @@ export class MathGenerator {
         unit: '個',
       },
       {
-        template: (name, a, b) => `${name}的玩具箱裡有 ${a} 隻公仔，小華再放入 ${b} 隻，現在共有玩具多少件？`,
+        template: (name, a, b) => `${name}的玩具箱裡有 ${a} 隻公仔，小華再放入 ${b} 隻，現在共有公仔多少隻？`,
         item: '玩具',
         unit: '件',
       },
@@ -265,7 +265,7 @@ export class MathGenerator {
         unit: '位',
       },
       {
-        template: (name, a, b) => `${name}的果籃裡有 ${a} 個水果，吃了 ${b} 個蘋果，還剩下水果多少個？`,
+        template: (name, a, b) => `${name}的果籃裡有 ${a} 個蘋果，吃了 ${b} 個，還剩下蘋果多少個？`,
         item: '水果',
         unit: '個',
       },
@@ -635,8 +635,8 @@ export class MathGenerator {
     if (isHalfHour) {
       const hour = MathGenerator.randomInt(1, 11);
       const prompt = `時針指在 ${hour} 和 ${hour + 1} 之間，分針指著 6，現在的時間是：`;
-      const correctAnswer = `${hour}點半`;
-      const distractors = [`${hour}點正`, `${hour + 1}點正`, `${hour + 1}點半`];
+      const correctAnswer = `${hour}時半`;
+      const distractors = [`${hour}時正`, `${hour + 1}時正`, `${hour + 1}時半`];
       const options = MathGenerator.fisherYatesShuffle([correctAnswer, ...distractors]);
 
       return {
@@ -650,11 +650,11 @@ export class MathGenerator {
     } else {
       const hour = MathGenerator.randomInt(1, 12);
       const prompt = `時針指著 ${hour}，分針指著 12，現在的時間是：`;
-      const correctAnswer = `${hour}點正`;
+      const correctAnswer = `${hour}時正`;
       const distractors = [
-        `${hour}點半`,
-        `${hour === 12 ? 1 : hour + 1}點正`,
-        `${hour === 1 ? 12 : hour - 1}點正`,
+        `${hour}時半`,
+        `${hour === 12 ? 1 : hour + 1}時正`,
+        `${hour === 1 ? 12 : hour - 1}時正`,
       ];
       const options = MathGenerator.fisherYatesShuffle([correctAnswer, ...distractors]);
 
@@ -680,12 +680,12 @@ export class MathGenerator {
         options: ['三角形', '正方形', '圓形', '長方形'],
       },
       {
-        prompt: '四條邊一樣長，有 4 個直角的平面圖形是：',
+        prompt: '四條邊一樣長，有 4 個角的平面圖形是：',
         correctAnswer: '正方形',
         options: ['正方形', '長方形', '三角形', '圓形'],
       },
       {
-        prompt: '對邊相等，有 4 個直角，像黑板一樣的平面圖形是：',
+        prompt: '對邊相等，像黑板一樣有 4 個角的平面圖形是：',
         correctAnswer: '長方形',
         options: ['長方形', '正方形', '三角形', '圓形'],
       },

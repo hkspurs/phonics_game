@@ -29,6 +29,7 @@ export class CanvasModal extends Phaser.GameObjects.Container {
   private backdropRect: Phaser.GameObjects.Rectangle | null = null;
   private panelContainer: Phaser.GameObjects.Container;
   private panelBg: Phaser.GameObjects.Graphics | null = null;
+  private panelBlocker: Phaser.GameObjects.Rectangle | null = null;
   private titleText: Phaser.GameObjects.Text | null = null;
   private closeBtn: CanvasButton | null = null;
   private contentContainer: Phaser.GameObjects.Container;
@@ -101,13 +102,17 @@ export class CanvasModal extends Phaser.GameObjects.Container {
     }
 
     this.backdropRect = rect;
-    this.add(rect);
+    this.addAt(rect, 0);
   }
 
   private createPanelBackground(): void {
     if (this.panelBg) {
       this.panelBg.destroy();
       this.panelBg = null;
+    }
+    if (this.panelBlocker) {
+      this.panelBlocker.destroy();
+      this.panelBlocker = null;
     }
 
     const w = this.modalWidth;
@@ -134,6 +139,7 @@ export class CanvasModal extends Phaser.GameObjects.Container {
         }
       });
     }
+    this.panelBlocker = blocker;
     this.panelContainer.add(blocker);
 
     const g = this.scene.add.graphics();

@@ -383,19 +383,31 @@ export class CanvasCard extends Phaser.GameObjects.Container {
   }
 
   public wobble(): this {
+    if (this.scene?.tweens) {
+      this.scene.tweens.killTweensOf(this);
+    }
+    const priorState = this.currentState;
     this.setState('wrong');
-    const startX = this.x;
+    const startX = this.currentSlot ? this.currentSlot.getCenterPosition().x : (this.homeX || this.x);
+    this.x = startX;
+
     if (this.scene?.tweens) {
       this.scene.tweens.add({
         targets: this,
         x: startX + 8,
-        duration: 50,
+        duration: 45,
         yoyo: true,
         repeat: 3,
         ease: 'Sine.easeInOut',
         onComplete: () => {
           this.x = startX;
-          this.setState('normal');
+          if (priorState === 'disabled' || this.currentState === 'disabled') {
+            this.setState('disabled');
+          } else if (this.currentSlot) {
+            this.setState('placed');
+          } else {
+            this.setState('normal');
+          }
         },
       });
     }

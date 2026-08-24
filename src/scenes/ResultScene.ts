@@ -106,7 +106,11 @@ export class ResultScene extends Phaser.Scene {
     }
   }
 
+  private isSettled: boolean = false;
+
   public applySettlementProgress(): void {
+    if (this.isSettled) return;
+    this.isSettled = true;
     try {
       const dm = DataManager.getInstance();
 
