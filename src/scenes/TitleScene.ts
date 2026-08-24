@@ -5,6 +5,8 @@ import { SoundManager } from '../services/SoundManager';
 import { CanvasButton } from '../ui/CanvasButton';
 import { CanvasModal } from '../ui/CanvasModal';
 
+declare const __APP_VERSION__: string;
+
 export class TitleScene extends Phaser.Scene {
   public startButton: CanvasButton | null = null;
   public shopButton: CanvasButton | null = null;
@@ -47,6 +49,9 @@ export class TitleScene extends Phaser.Scene {
 
     // 5. Navigation Buttons
     this.createNavigationButtons(width, height);
+
+    // 6. Version Number Display (ver 1.YYYYMMDDHHII)
+    this.createVersionFooter(width, height);
   }
 
   private createSkyBackground(width: number, height: number): void {
@@ -689,4 +694,36 @@ export class TitleScene extends Phaser.Scene {
     modal.show();
   }
 
+  /**
+   * Displays application build version number at the bottom right corner
+   */
+  public createVersionFooter(width: number, height: number): void {
+    if (!this.add || !this.add.text) return;
+
+    let appVersion = 'ver 1.0.0';
+    try {
+      if (typeof __APP_VERSION__ !== 'undefined' && __APP_VERSION__) {
+        appVersion = __APP_VERSION__;
+      }
+    } catch {
+      appVersion = 'ver 1.0.0';
+    }
+
+    const verText = this.add.text(width - 24, height - 16, appVersion, {
+      fontSize: '14px',
+      fontFamily: "'Kenney Future', 'Noto Sans TC', monospace",
+      color: '#ffffff',
+      fontStyle: 'bold',
+    });
+
+    if (typeof verText.setOrigin === 'function') {
+      verText.setOrigin(1, 1);
+    }
+    if (typeof verText.setAlpha === 'function') {
+      verText.setAlpha(0.65);
+    }
+    if (typeof verText.setDepth === 'function') {
+      verText.setDepth(50);
+    }
+  }
 }
