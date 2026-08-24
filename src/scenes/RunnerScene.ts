@@ -998,7 +998,7 @@ export class RunnerScene extends Phaser.Scene {
       },
     });
 
-    // 4. Interactive Jump Tutorial Prompt ("👆 點擊螢幕跳躍 🦘 拾取空中寶石！")
+    // 4. Interactive Jump Tutorial Prompt ("🕹️ 按左右移動 🦘 按跳躍鍵拾取寶石！")
     if (this.add.container) {
       const hintContainer = this.add.container(width / 2, _height - 54);
       if (this.add.graphics) {
@@ -1011,7 +1011,7 @@ export class RunnerScene extends Phaser.Scene {
       }
 
       if (this.add.text) {
-        const hintText = this.add.text(0, 0, '👆 點擊螢幕跳躍 🦘 拾取空中寶石！', {
+        const hintText = this.add.text(0, 0, '🕹️ 按左右移動 🦘 按跳躍鍵拾取寶石！', {
           fontSize: '16px',
           fontFamily: "'Noto Sans TC', 'Microsoft JhengHei', sans-serif",
           color: '#ffffff',
@@ -1171,44 +1171,41 @@ export class RunnerScene extends Phaser.Scene {
     }
 
     const dtSeconds = Math.min(0.1, (delta || 16) / 1000);
-    // Rainbow Rush gives +35% speed surge
-    const effectiveSpeed = this.isRainbowRush ? this.currentSpeed * 1.35 : this.currentSpeed;
-    const stepMove = effectiveSpeed * dtSeconds;
-    this.distanceRun += stepMove;
-
     const width = this.sys?.game?.config ? Number(this.sys.game.config.width) : GAME_WIDTH;
     const height = this.sys?.game?.config ? Number(this.sys.game.config.height) : GAME_HEIGHT;
 
-    // 0. Update Horizontal Movement from Virtual D-Pad / Keyboard
+    // 0. Pure Manual Movement: Player only advances when holding Right or Left
     let moveX = 0;
     if (this.isLeftDown) moveX -= 1;
     if (this.isRightDown) moveX += 1;
 
-    if (moveX !== 0) {
-      const lateralSpeed = 380 * this.skinConfig.speedMultiplier;
-      this.playerScreenX += moveX * lateralSpeed * dtSeconds;
-      this.playerScreenX = Phaser.Math.Clamp(this.playerScreenX, 120, width - 180);
+    const effectiveSpeed = this.isRainbowRush ? this.currentSpeed * 1.35 : this.currentSpeed;
+    const stepMove = moveX * effectiveSpeed * dtSeconds;
 
-      if (this.playerSprite && typeof this.playerSprite.setX === 'function') {
-        this.playerSprite.setX(this.playerScreenX);
+    if (moveX > 0) {
+      this.distanceRun += stepMove;
+      if (this.playerSprite && typeof this.playerSprite.setFlipX === 'function') {
+        this.playerSprite.setFlipX(false);
       }
-      if (this.petCompanionObject && typeof this.petCompanionObject.setX === 'function') {
-        this.petCompanionObject.setX(this.playerScreenX - 56);
+    } else if (moveX < 0) {
+      this.distanceRun = Math.max(0, this.distanceRun + stepMove);
+      if (this.playerSprite && typeof this.playerSprite.setFlipX === 'function') {
+        this.playerSprite.setFlipX(true);
       }
     }
 
-    // 1. Parallax Clouds Scrolling
+    // 1. Gentle Cloud Drift + Parallax
     for (let i = 0; i < this.clouds.length; i++) {
       const cloud = this.clouds[i];
       if (cloud && typeof cloud.x === 'number') {
-        cloud.x -= stepMove * 0.12;
+        cloud.x -= (16 * dtSeconds) + (stepMove * 0.12);
         if (cloud.x < -100) {
           cloud.x = width + 100;
         }
       }
     }
 
-    // 2. Parallax Distant Hills & Ground
+    // 2. Parallax Distant Hills & Ground based on manual distanceRun
     this.redrawDistantHills(this.distanceRun * 0.35, width, height);
     this.redrawGroundLayer(this.distanceRun, width, height);
 
@@ -1351,21 +1348,34 @@ export class RunnerScene extends Phaser.Scene {
       }
     }
 
-    // 7. Update Running Step Animation
+    // 7. Update Character Texture & Step Animation (Idle Stand when not moving)
     if (this.isGrounded && !this.isJumping && !this.isSuperJumping) {
-      this.stepTimer += delta;
-      const stepDuration = 130 / (this.isRainbowRush ? this.skinConfig.speedMultiplier * 1.35 : this.skinConfig.speedMultiplier);
-      if (this.stepTimer >= stepDuration) {
-        this.stepTimer = 0;
-        this.currentWalkFrame = this.currentWalkFrame === 1 ? 2 : 1;
-        const textureKey =
-          this.currentWalkFrame === 1
-            ? this.skinConfig.walk1Key
-            : this.skinConfig.walk2Key;
+      if (moveX !== 0) {
+        this.stepTimer += delta;
+        const stepDuration = 130 / (this.isRainbowRush ? this.skinConfig.speedMultiplier * 1.35 : this.skinConfig.speedMultiplier);
+        if (this.stepTimer >= stepDuration) {
+          this.stepTimer = 0;
+          this.currentWalkFrame = this.currentWalkFrame === 1 ? 2 : 1;
+          const textureKey =
+            this.currentWalkFrame === 1
+              ? this.skinConfig.walk1Key
+              : this.skinConfig.walk2Key;
 
-        if (this.playerSprite && typeof this.playerSprite.setTexture === 'function') {
-          this.playerSprite.setTexture(textureKey);
+          if (this.playerSprite && typeof this.playerSprite.setTexture === 'function') {
+            this.playerSprite.setTexture(textureKey);
+          }
         }
+      } else {
+        // Idle Standing when no directional keys/buttons are pressed
+        this.stepTimer = 0;
+        if (this.playerSprite && typeof this.playerSprite.setTexture === 'function') {
+          this.playerSprite.setTexture(this.skinConfig.standKey);
+        }
+      }
+    } else {
+      // Airborne Jumping Texture
+      if (this.playerSprite && typeof this.playerSprite.setTexture === 'function') {
+        this.playerSprite.setTexture(this.skinConfig.jumpKey);
       }
     }
 

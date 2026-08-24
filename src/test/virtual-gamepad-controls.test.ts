@@ -99,60 +99,46 @@ describe('RunnerScene Mobile Virtual Gamepad & Kinematics Controls Suite', () =>
     expect(scene.jumpBtn?.getText()).toBe('🦘 跳躍');
   });
 
-  it('2. steers character to the left when Left button is held', () => {
+  it('2. does NOT move or scroll automatically when idle (no buttons pressed)', () => {
     scene.init({ questionIndex: 0 });
-    scene.playerScreenX = 260;
-    scene.isLeftDown = true;
+    scene.distanceRun = 200;
+    scene.isLeftDown = false;
     scene.isRightDown = false;
 
-    // Simulate 0.2s of movement (dt clamped to 0.1s in update)
-    scene.update(0, 200);
+    scene.update(0, 100);
+    scene.update(0, 100);
 
-    // Initial 260 - (380 * 1.0 * 0.1) = 222
-    expect(scene.playerScreenX).toBeLessThan(260);
-    expect(scene.playerScreenX).toBeCloseTo(222, 1);
+    expect(scene.distanceRun).toBe(200); // 100% stands still
   });
 
-  it('3. clamps leftward movement at min boundary (120px) to stay on screen', () => {
+  it('3. runs forward along track when Right button is held', () => {
     scene.init({ questionIndex: 0 });
-    scene.playerScreenX = 130;
-    scene.isLeftDown = true;
-    scene.isRightDown = false;
-
-    // Simulate holding left for multiple steps
-    scene.update(0, 100);
-    scene.update(0, 100);
-    scene.update(0, 100);
-
-    expect(scene.playerScreenX).toBe(120);
-  });
-
-  it('4. steers character to the right when Right button is held', () => {
-    scene.init({ questionIndex: 0 });
-    scene.playerScreenX = 260;
+    scene.distanceRun = 100;
     scene.isLeftDown = false;
     scene.isRightDown = true;
 
-    // Simulate 0.2s of movement
-    scene.update(0, 200);
-
-    // Initial 260 + (380 * 1.0 * 0.1) = 298
-    expect(scene.playerScreenX).toBeGreaterThan(260);
-    expect(scene.playerScreenX).toBeCloseTo(298, 1);
+    scene.update(0, 100); // 100ms
+    expect(scene.distanceRun).toBeGreaterThan(100);
   });
 
-  it('5. clamps rightward movement at max boundary (width - 180px)', () => {
+  it('4. runs backward along track when Left button is held', () => {
     scene.init({ questionIndex: 0 });
-    scene.playerScreenX = GAME_WIDTH - 190;
-    scene.isLeftDown = false;
-    scene.isRightDown = true;
+    scene.distanceRun = 100;
+    scene.isLeftDown = true;
+    scene.isRightDown = false;
 
-    // Simulate holding right for multiple steps
-    scene.update(0, 100);
-    scene.update(0, 100);
-    scene.update(0, 100);
+    scene.update(0, 100); // 100ms
+    expect(scene.distanceRun).toBeLessThan(100);
+  });
 
-    expect(scene.playerScreenX).toBe(GAME_WIDTH - 180);
+  it('5. clamps backward movement at track start (distanceRun >= 0)', () => {
+    scene.init({ questionIndex: 0 });
+    scene.distanceRun = 10;
+    scene.isLeftDown = true;
+    scene.isRightDown = false;
+
+    scene.update(0, 200);
+    expect(scene.distanceRun).toBe(0);
   });
 
   it('6. triggers kinematic jump on jumpBtn input', () => {

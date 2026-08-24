@@ -573,6 +573,7 @@ describe('RunnerScene (2D Platformer Runner Reward Scene)', () => {
     it('progresses distanceRun, scrolls clouds and updates progress bar', () => {
       scene.init();
       scene.create();
+      scene.isRightDown = true; // Player actively moves right
 
       const initialDist = scene.distanceRun;
       const initialCloudX = scene.clouds[0]?.x;
@@ -588,6 +589,7 @@ describe('RunnerScene (2D Platformer Runner Reward Scene)', () => {
     it('cycles walk frames (walk1 <-> walk2) during running', () => {
       scene.init();
       scene.create();
+      scene.isRightDown = true; // Player actively moves right
 
       expect(scene.currentWalkFrame).toBe(1);
 
