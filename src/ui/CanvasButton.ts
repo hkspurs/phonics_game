@@ -146,7 +146,7 @@ export class CanvasButton extends Phaser.GameObjects.Container {
     const palette = this.getColorPalette();
     const textStr = this.config.text ?? '';
     const fontSize = typeof this.config.fontSize === 'number' ? `${this.config.fontSize}px` : this.config.fontSize ?? '24px';
-    const fontFamily = this.config.fontFamily ?? "'Kenney Future', 'Noto Sans TC', 'Microsoft JhengHei', sans-serif";
+    const fontFamily = this.config.fontFamily ?? "-apple-system, BlinkMacSystemFont, 'PingFang HK', 'Noto Sans TC', 'Microsoft JhengHei', sans-serif";
     const textColor = this.config.textColor ?? palette.textColor;
 
     if (this.labelText) {

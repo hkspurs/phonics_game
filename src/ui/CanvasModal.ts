@@ -197,7 +197,7 @@ export class CanvasModal extends Phaser.GameObjects.Container {
     const halfH = this.modalHeight / 2;
     const text = this.scene.add.text(0, -halfH + 32, this.modalTitle, {
       fontSize: '28px',
-      fontFamily: "'Kenney Future', 'Noto Sans TC', 'Microsoft JhengHei', sans-serif",
+      fontFamily: "-apple-system, BlinkMacSystemFont, 'PingFang HK', 'Noto Sans TC', 'Microsoft JhengHei', sans-serif",
       color: '#ffd700',
       fontStyle: 'bold',
       align: 'center',

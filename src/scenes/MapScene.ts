@@ -963,7 +963,7 @@ export class MapScene extends Phaser.Scene {
         // Sub-level badge text
         const badgeLabel = this.add.text(-225, 0, sub.badge, {
           fontSize: '14px',
-          fontFamily: "'Kenney Future', 'Noto Sans TC', sans-serif",
+          fontFamily: "-apple-system, BlinkMacSystemFont, 'PingFang HK', 'Noto Sans TC', sans-serif",
           color: '#ffffff',
           fontStyle: 'bold',
           resolution: typeof window !== 'undefined' ? Math.max(2, window.devicePixelRatio || 2) : 2,
@@ -977,7 +977,7 @@ export class MapScene extends Phaser.Scene {
         // Sub-level title & description
         const titleLabel = this.add.text(-150, -10, sub.title, {
           fontSize: '15px',
-          fontFamily: "'Noto Sans TC', sans-serif",
+          fontFamily: "-apple-system, BlinkMacSystemFont, 'PingFang HK', 'Noto Sans TC', sans-serif",
           color: '#ffd700',
           fontStyle: 'bold',
           resolution: typeof window !== 'undefined' ? Math.max(2, window.devicePixelRatio || 2) : 2,
@@ -989,7 +989,7 @@ export class MapScene extends Phaser.Scene {
 
         const descLabel = this.add.text(-150, 10, sub.desc, {
           fontSize: '12px',
-          fontFamily: "'Noto Sans TC', sans-serif",
+          fontFamily: "-apple-system, BlinkMacSystemFont, 'PingFang HK', 'Noto Sans TC', sans-serif",
           color: '#94a3b8',
           resolution: typeof window !== 'undefined' ? Math.max(2, window.devicePixelRatio || 2) : 2,
         });
