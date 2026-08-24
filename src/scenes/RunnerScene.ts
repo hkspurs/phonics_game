@@ -183,6 +183,13 @@ export class RunnerScene extends Phaser.Scene {
   public currentSpeed: number = 380;
   public playerBaselineY: number = 540;
   public playerScreenX: number = 260;
+  public isLeftDown: boolean = false;
+  public isRightDown: boolean = false;
+  public virtualGamepadContainer: Phaser.GameObjects.Container | any = null;
+  public leftBtn: CanvasButton | null = null;
+  public rightBtn: CanvasButton | null = null;
+  public jumpBtn: CanvasButton | null = null;
+  public petCompanionObject: Phaser.GameObjects.Text | any = null;
 
   // Skin & Perks
   public skinConfig: SkinConfig = SKIN_CONFIGS.adventurer;
@@ -248,6 +255,9 @@ export class RunnerScene extends Phaser.Scene {
     this.isJumping = false;
     this.isSuperJumping = false;
     this.distanceRun = 0;
+    this.playerScreenX = 260;
+    this.isLeftDown = false;
+    this.isRightDown = false;
     this.worldItems = [];
     this.clouds = [];
     this.stepTimer = 0;
@@ -294,13 +304,31 @@ export class RunnerScene extends Phaser.Scene {
     // 4. Build HUD & Controls (Currency, Progress Bar, Skip Button)
     this.createHUD(width, height);
 
-    // 5. Register Manual Jump Input (Touch Tap & Keyboard Space / W / Up)
+    // 5. Build Mobile Virtual Gamepad (Left/Right Steering & Jump Button)
+    this.createVirtualGamepad(width, height);
+
+    // 6. Register Touch & Keyboard Controls (Dual Steering & Kinematic Jump)
     if (this.input) {
       this.input.on('pointerdown', (pointer: any) => {
-        if (pointer && pointer.y < 80 && pointer.x > width - 160) return; // Skip button area
+        // Exclude skip button area (top-right) and virtual gamepad area (bottom left/right)
+        if (pointer && pointer.y < 80 && pointer.x > width - 160) return; // Skip button
+        if (pointer && pointer.y > height - 110) return; // Virtual D-pad / Jump area
         this.handleJumpInput();
       });
+
       if (this.input.keyboard) {
+        // Horizontal Movement Keys (A / D / Left / Right)
+        this.input.keyboard.on('keydown-A', () => { this.isLeftDown = true; });
+        this.input.keyboard.on('keyup-A', () => { this.isLeftDown = false; });
+        this.input.keyboard.on('keydown-LEFT', () => { this.isLeftDown = true; });
+        this.input.keyboard.on('keyup-LEFT', () => { this.isLeftDown = false; });
+
+        this.input.keyboard.on('keydown-D', () => { this.isRightDown = true; });
+        this.input.keyboard.on('keyup-D', () => { this.isRightDown = false; });
+        this.input.keyboard.on('keydown-RIGHT', () => { this.isRightDown = true; });
+        this.input.keyboard.on('keyup-RIGHT', () => { this.isRightDown = false; });
+
+        // Jump Keys
         this.input.keyboard.on('keydown-SPACE', () => this.handleJumpInput());
         this.input.keyboard.on('keydown-UP', () => this.handleJumpInput());
         this.input.keyboard.on('keydown-W', () => this.handleJumpInput());
@@ -854,6 +882,7 @@ export class RunnerScene extends Phaser.Scene {
           { fontSize: '32px' }
         );
         if (petObj.setDepth) petObj.setDepth(18);
+        this.petCompanionObject = petObj;
         if (this.tweens?.add) {
           this.tweens.add({
             targets: petObj,
@@ -1149,6 +1178,24 @@ export class RunnerScene extends Phaser.Scene {
 
     const width = this.sys?.game?.config ? Number(this.sys.game.config.width) : GAME_WIDTH;
     const height = this.sys?.game?.config ? Number(this.sys.game.config.height) : GAME_HEIGHT;
+
+    // 0. Update Horizontal Movement from Virtual D-Pad / Keyboard
+    let moveX = 0;
+    if (this.isLeftDown) moveX -= 1;
+    if (this.isRightDown) moveX += 1;
+
+    if (moveX !== 0) {
+      const lateralSpeed = 380 * this.skinConfig.speedMultiplier;
+      this.playerScreenX += moveX * lateralSpeed * dtSeconds;
+      this.playerScreenX = Phaser.Math.Clamp(this.playerScreenX, 120, width - 180);
+
+      if (this.playerSprite && typeof this.playerSprite.setX === 'function') {
+        this.playerSprite.setX(this.playerScreenX);
+      }
+      if (this.petCompanionObject && typeof this.petCompanionObject.setX === 'function') {
+        this.petCompanionObject.setX(this.playerScreenX - 56);
+      }
+    }
 
     // 1. Parallax Clouds Scrolling
     for (let i = 0; i < this.clouds.length; i++) {
@@ -1762,12 +1809,98 @@ export class RunnerScene extends Phaser.Scene {
   /**
    * Scene shutdown and resource cleanup
    */
+  /**
+   * Creates Mobile Virtual Gamepad (Left / Right Directional Controls & Large Jump Button)
+   */
+  public createVirtualGamepad(width: number, height: number): void {
+    if (!this.add) return;
+
+    this.virtualGamepadContainer = this.add.container
+      ? this.add.container(0, 0)
+      : new Phaser.GameObjects.Container(this, 0, 0);
+
+    if (this.virtualGamepadContainer.setDepth) {
+      this.virtualGamepadContainer.setDepth(150);
+    }
+
+    const dpadY = height - 52;
+    const btnH = 58;
+
+    // 1. Left Directional Button (◀ 左)
+    this.leftBtn = new CanvasButton(this, {
+      x: 80,
+      y: dpadY,
+      width: 86,
+      height: btnH,
+      text: '◀ 左',
+      color: 'blue',
+      fontSize: '20px',
+      onClick: () => {},
+    });
+    this.leftBtn.on('pointerdown', () => { this.isLeftDown = true; });
+    this.leftBtn.on('pointerup', () => { this.isLeftDown = false; });
+    this.leftBtn.on('pointerout', () => { this.isLeftDown = false; });
+    this.virtualGamepadContainer.add(this.leftBtn);
+
+    // 2. Right Directional Button (右 ▶)
+    this.rightBtn = new CanvasButton(this, {
+      x: 180,
+      y: dpadY,
+      width: 86,
+      height: btnH,
+      text: '右 ▶',
+      color: 'blue',
+      fontSize: '20px',
+      onClick: () => {},
+    });
+    this.rightBtn.on('pointerdown', () => { this.isRightDown = true; });
+    this.rightBtn.on('pointerup', () => { this.isRightDown = false; });
+    this.rightBtn.on('pointerout', () => { this.isRightDown = false; });
+    this.virtualGamepadContainer.add(this.rightBtn);
+
+    // 3. Right Large Jump Button (🦘 跳躍)
+    this.jumpBtn = new CanvasButton(this, {
+      x: width - 96,
+      y: dpadY,
+      width: 140,
+      height: btnH + 6,
+      text: '🦘 跳躍',
+      color: 'green',
+      fontSize: '22px',
+      onClick: () => {
+        this.handleJumpInput();
+      },
+    });
+    this.jumpBtn.on('pointerdown', () => {
+      this.handleJumpInput();
+    });
+    this.virtualGamepadContainer.add(this.jumpBtn);
+  }
+
   public shutdown(): void {
+    this.isLeftDown = false;
+    this.isRightDown = false;
     if (this.tweens) {
       this.tweens.killAll();
     }
     if (this.time) {
       this.time.removeAllEvents();
+    }
+    if (this.input) {
+      this.input.off('pointerdown');
+      if (this.input.keyboard) {
+        this.input.keyboard.off('keydown-A');
+        this.input.keyboard.off('keyup-A');
+        this.input.keyboard.off('keydown-LEFT');
+        this.input.keyboard.off('keyup-LEFT');
+        this.input.keyboard.off('keydown-D');
+        this.input.keyboard.off('keyup-D');
+        this.input.keyboard.off('keydown-RIGHT');
+        this.input.keyboard.off('keyup-RIGHT');
+        this.input.keyboard.off('keydown-SPACE');
+        this.input.keyboard.off('keydown-UP');
+        this.input.keyboard.off('keydown-W');
+      }
     }
   }
 }
