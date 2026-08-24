@@ -360,6 +360,7 @@ export class CanvasCard extends Phaser.GameObjects.Container {
 
   public snapBack(duration: number = 250, onComplete?: () => void): this {
     if (this.scene?.tweens) {
+      this.scene.tweens.killTweensOf(this);
       this.scene.tweens.add({
         targets: this,
         x: this.homeX,

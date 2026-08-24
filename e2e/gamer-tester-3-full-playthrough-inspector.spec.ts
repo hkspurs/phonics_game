@@ -392,7 +392,7 @@ test.describe('Gamer Tester 3: Full End-to-End Playthrough & Live Browser Inspec
     expect(q1Completed.correctCount).toBe(1);
 
     // =========================================================================
-    // STEP 4: RunnerScene Phase 1 (Touch Jump & Run to Chest)
+    // STEP 4: RunnerScene Phase 1 (Analog Virtual Joystick & Mobile Controls Audit)
     // =========================================================================
     console.log('[Playthrough Inspector] Step 4: Waiting for transition to RunnerScene Phase 1...');
     await page.waitForTimeout(1600);
@@ -405,6 +405,9 @@ test.describe('Gamer Tester 3: Full End-to-End Playthrough & Live Browser Inspec
         skinId: (runner as any)?.skinConfig?.id,
         walk1Key: (runner as any)?.skinConfig?.walk1Key,
         questionIndex: (runner as any)?.questionIndex,
+        hasJoystick: !!(runner as any)?.joystickThumbGraphics,
+        hasJumpBtn: !!(runner as any)?.jumpBtn,
+        initialDistance: (runner as any)?.distanceRun,
       };
     });
 
@@ -412,28 +415,126 @@ test.describe('Gamer Tester 3: Full End-to-End Playthrough & Live Browser Inspec
     expect(runner1State.isActive).toBe(true);
     expect(runner1State.skinId).toBe('heroine'); // Equipped Heroine skin verified!
     expect(runner1State.walk1Key).toBe('female_walk1');
+    expect(runner1State.hasJoystick).toBe(true);
+    expect(runner1State.hasJumpBtn).toBe(true);
 
     await page.screenshot({ path: path.join(runDir, '09_Runner_Phase1_Heroine.png') });
 
-    // Simulate touch jump on canvas
-    console.log('[Playthrough Inspector] Step 4.2: Simulating touch jump input in Runner...');
-    const jumpState = await page.evaluate(() => {
+    // Test 4.1: Idle State - Verify character 100% stands still when joystick is at rest
+    console.log('[Playthrough Inspector] Step 4.1: Auditing Joystick Idle State...');
+    const idleCheck = await page.evaluate(() => {
       const game = (window as any).__PHASER_GAME__;
       const runner = game.scene.getScene('RunnerScene');
-      (runner as any).executeKinematicJump(1.0);
+      const distBefore = (runner as any).distanceRun;
+      (runner as any).update(0, 200); // 200ms pass
+      const distAfter = (runner as any).distanceRun;
       return {
-        isJumping: (runner as any)?.isJumping,
-        playerVelocityY: (runner as any)?.playerVelocityY,
+        distBefore,
+        distAfter,
+        isStationary: distBefore === distAfter,
+        axisX: (runner as any).joystickAxisX,
       };
     });
+    console.log('[Playthrough Inspector] Idle Check:', idleCheck);
+    expect(idleCheck.isStationary).toBe(true);
+    expect(idleCheck.axisX).toBe(0);
 
-    console.log('[Playthrough Inspector] Jump State:', jumpState);
-    expect(jumpState.playerVelocityY).toBeLessThan(0); // Upward jump velocity (-726px/s) confirmed!
+    // Test 4.2: Continuous Swipe - Slide from left (dx = -52) to right (dx = +52) in a single drag
+    console.log('[Playthrough Inspector] Step 4.2: Auditing Continuous Joystick Swipe...');
+    const swipeCheck = await page.evaluate(() => {
+      const game = (window as any).__PHASER_GAME__;
+      const runner = game.scene.getScene('RunnerScene');
+      (runner as any).distanceRun = 100;
+
+      // 1. Swipe Left
+      (runner as any).updateJoystickFromPointer((runner as any).joystickBaseX - (runner as any).joystickRadius, (runner as any).joystickBaseY);
+      const leftAxis = (runner as any).joystickAxisX;
+      (runner as any).update(0, 100);
+      const distAfterLeft = (runner as any).distanceRun;
+
+      // 2. Seamlessly slide to Right without lifting
+      (runner as any).updateJoystickFromPointer((runner as any).joystickBaseX + (runner as any).joystickRadius, (runner as any).joystickBaseY);
+      const rightAxis = (runner as any).joystickAxisX;
+      (runner as any).update(0, 100);
+      const distAfterRight = (runner as any).distanceRun;
+
+      return {
+        leftAxis,
+        rightAxis,
+        distAfterLeft,
+        distAfterRight,
+        switchedDirection: distAfterRight > distAfterLeft,
+      };
+    });
+    console.log('[Playthrough Inspector] Swipe Check:', swipeCheck);
+    expect(swipeCheck.leftAxis).toBe(-1.0);
+    expect(swipeCheck.rightAxis).toBe(1.0);
+    expect(swipeCheck.switchedDirection).toBe(true);
+
+    // Test 4.3: Elastic Release - Releasing thumb snaps knob to center and immediately halts character
+    console.log('[Playthrough Inspector] Step 4.3: Auditing Elastic Release...');
+    const releaseCheck = await page.evaluate(() => {
+      const game = (window as any).__PHASER_GAME__;
+      const runner = game.scene.getScene('RunnerScene');
+      (runner as any).resetJoystick();
+      const distBefore = (runner as any).distanceRun;
+      (runner as any).update(0, 100);
+      const distAfter = (runner as any).distanceRun;
+      return {
+        axisAfterRelease: (runner as any).joystickAxisX,
+        isHalted: distBefore === distAfter,
+        textureKey: (runner as any).playerSprite?.texture?.key,
+        standKey: (runner as any).skinConfig?.standKey,
+      };
+    });
+    console.log('[Playthrough Inspector] Release Check:', releaseCheck);
+    expect(releaseCheck.axisAfterRelease).toBe(0);
+    expect(releaseCheck.isHalted).toBe(true);
+    expect(releaseCheck.textureKey).toBe(releaseCheck.standKey);
+
+    // Test 4.4: Multi-Touch - Left thumb dragging joystick while right thumb presses jump button
+    console.log('[Playthrough Inspector] Step 4.4: Auditing Multi-touch Joystick + Jump...');
+    const multiTouchCheck = await page.evaluate(() => {
+      const game = (window as any).__PHASER_GAME__;
+      const runner = game.scene.getScene('RunnerScene');
+      // Left thumb moves right
+      (runner as any).joystickActive = true;
+      (runner as any).joystickPointerId = 1;
+      (runner as any).updateJoystickFromPointer((runner as any).joystickBaseX + (runner as any).joystickRadius, (runner as any).joystickBaseY);
+
+      // Right thumb taps Jump Button
+      (runner as any).handleJumpInput();
+
+      const isJumping = (runner as any).isJumping;
+      const velocityY = (runner as any).playerVelocityY;
+
+      // Update frame with simultaneous steering + jump
+      (runner as any).update(0, 100);
+
+      return {
+        isJumping,
+        velocityY,
+        axisMaintained: (runner as any).joystickAxisX === 1.0,
+        isAirborne: !(runner as any).isGrounded,
+      };
+    });
+    console.log('[Playthrough Inspector] Multi-touch Check:', multiTouchCheck);
+    expect(multiTouchCheck.isJumping).toBe(true);
+    expect(multiTouchCheck.velocityY).toBeLessThan(0); // Upward velocity
+    expect(multiTouchCheck.axisMaintained).toBe(true);
+    expect(multiTouchCheck.isAirborne).toBe(true);
 
     await page.screenshot({ path: path.join(runDir, '10_Runner_Phase1_Jumping.png') });
 
+    // Release joystick after test
+    await page.evaluate(() => {
+      const game = (window as any).__PHASER_GAME__;
+      const runner = game.scene.getScene('RunnerScene');
+      (runner as any).resetJoystick();
+    });
+
     // Fast-run to chest and complete Runner Phase 1
-    console.log('[Playthrough Inspector] Step 4.3: Running to chest and opening...');
+    console.log('[Playthrough Inspector] Step 4.5: Running to chest and opening...');
     await page.evaluate(() => {
       const game = (window as any).__PHASER_GAME__;
       const runner = game.scene.getScene('RunnerScene');

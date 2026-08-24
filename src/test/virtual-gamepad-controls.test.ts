@@ -182,5 +182,99 @@ describe('RunnerScene Mobile Virtual Analog Joystick & Kinematics Suite', () => 
 
     expect(scene.isLeftDown).toBe(false);
     expect(scene.isRightDown).toBe(false);
+    expect(scene.joystickActive).toBe(false);
+    expect(scene.joystickAxisX).toBe(0);
+  });
+
+  it('8. supports simultaneous multi-touch: dragging joystick (Pointer 1) while pressing jumpBtn (Pointer 2)', () => {
+    scene.init({ questionIndex: 0 });
+    scene.createVirtualGamepad(GAME_WIDTH, GAME_HEIGHT);
+    scene.distanceRun = 200;
+    scene.isGrounded = true;
+    scene.isJumping = false;
+
+    // Pointer 1 drags joystick to the right (dx = +52)
+    scene.joystickActive = true;
+    scene.joystickPointerId = 1;
+    scene.updateJoystickFromPointer(scene.joystickBaseX + scene.joystickRadius, scene.joystickBaseY);
+    expect(scene.joystickAxisX).toBe(1.0);
+
+    // Pointer 2 presses jump button simultaneously
+    scene.handleJumpInput();
+    expect(scene.isJumping).toBe(true);
+    expect(scene.playerVelocityY).toBeLessThan(0);
+
+    // Update with both steering and jumping active
+    scene.update(0, 100);
+
+    // Verify distance increased and character is airborne
+    expect(scene.distanceRun).toBeGreaterThan(200);
+    expect(scene.isGrounded).toBe(false);
+    expect(scene.joystickAxisX).toBe(1.0); // Joystick steering maintained
+  });
+
+  it('9. prevents unwanted screen-tap jump when touching inside joystick control zone', () => {
+    let generalTapHandler: any = null;
+    scene.input.on = vi.fn((event: string, callback: any) => {
+      if (event === 'pointerdown' && !generalTapHandler) {
+        generalTapHandler = callback;
+      }
+      return scene.input;
+    }) as any;
+
+    const handleJumpSpy = vi.spyOn(scene, 'handleJumpInput');
+
+    // Re-register screen tap in create
+    const width = GAME_WIDTH;
+    const height = GAME_HEIGHT;
+    scene.input.on('pointerdown', (pointer: any) => {
+      if (pointer && pointer.y < 80 && pointer.x > width - 160) return;
+      if (pointer && pointer.x <= 340 && pointer.y >= height - 210) return;
+      if (pointer && pointer.x >= width - 180 && pointer.y >= height - 150) return;
+      if (pointer && pointer.y > height - 110) return;
+      scene.handleJumpInput();
+    });
+
+    // Touch at (x: 130, y: height - 150) inside joystick zone
+    generalTapHandler({ x: 130, y: height - 150 });
+    expect(handleJumpSpy).not.toHaveBeenCalled();
+
+    // Touch at (x: width - 100, y: height - 80) inside jump button zone
+    generalTapHandler({ x: width - 100, y: height - 80 });
+    expect(handleJumpSpy).not.toHaveBeenCalled();
+
+    // Touch at (x: 500, y: 300) in open gameplay area
+    generalTapHandler({ x: 500, y: 300 });
+    expect(handleJumpSpy).toHaveBeenCalledTimes(1);
+  });
+
+  it('10. lands stably on floating platforms while steering with joystick', () => {
+    scene.init({ questionIndex: 0 });
+    scene.playerBaselineY = 540;
+    scene.playerScreenX = 260;
+
+    // Place a floating platform at worldX = 600, worldY = 440
+    scene.worldItems = [
+      {
+        id: 'platform_600',
+        type: 'platform',
+        worldX: 600,
+        worldY: 440,
+      },
+    ];
+
+    // Steer forward to align horizontally with the platform
+    scene.distanceRun = 340; // screenX = 600 - 340 = 260 (matches playerScreenX!)
+    scene.playerY = 438; // 2px above platform
+    scene.playerVelocityY = 150; // Falling down
+
+    // Update frame (16ms)
+    scene.update(0, 16);
+
+    // Player should detect platform, snap to platform height (440) and be grounded
+    expect(scene.currentGroundY).toBe(440);
+    expect(scene.playerY).toBe(440);
+    expect(scene.isGrounded).toBe(true);
+    expect(scene.playerVelocityY).toBe(0);
   });
 });

@@ -170,7 +170,16 @@ export function createMockTestScene(): any {
       }),
     },
     tweens: {
-      add: vi.fn((_config: any) => {
+      add: vi.fn((config: any) => {
+        if (config?.targets) {
+          if (config.x !== undefined) config.targets.x = config.x;
+          if (config.y !== undefined) config.targets.y = config.y;
+          if (config.scaleX !== undefined) config.targets.scaleX = config.scaleX;
+          if (config.scaleY !== undefined) config.targets.scaleY = config.scaleY;
+        }
+        if (typeof config?.onComplete === 'function') {
+          config.onComplete();
+        }
         return { stop: vi.fn(), remove: vi.fn() };
       }),
       killTweensOf: vi.fn(),
@@ -560,12 +569,11 @@ describe('Gamer Tester 1: Token-to-Slot & Card Interaction Adversarial Glitch Su
       // Because chipSister has currentSlot === slotBoxes[1], chip is undefined!
       scene.handleHint();
 
-      // Check if slot 0 received '姐姐' or remained empty because hint failed to find chipSister
+      // Check if slot 0 received '姐姐'
       const slot0Card = scene.slotBoxes[0].getPlacedCard();
 
-      // GLITCH CONFIRMED: Slot 0 had '吃' removed and snapped back, but '姐姐' was NEVER placed!
-      expect(slot0Card).toBeNull();
-      expect(scene.sessionStats.hintsUsed).toBe(1); // Consumed a hint for nothing!
+      expect(slot0Card?.getText()).toBe('姐姐');
+      expect(scene.sessionStats.hintsUsed).toBe(1);
     });
   });
 
@@ -673,14 +681,13 @@ describe('Gamer Tester 1: Token-to-Slot & Card Interaction Adversarial Glitch Su
       expect(mockScene.tweens.add).toHaveBeenCalled();
 
       // Immediately call snapBack (simulating user tapping/returning card during wobble)
-      // snapBack in CanvasCard.ts lines 361-383 does NOT killTweensOf(this)!
       const killTweensSpy = mockScene.tweens.killTweensOf;
       killTweensSpy.mockClear();
 
       card.snapBack();
 
-      // CanvasCard.snapBack() failed to kill existing wobble tweens
-      expect(killTweensSpy).not.toHaveBeenCalledWith(card); // GLITCH CONFIRMED: Concurrent competing tweens!
+      // CanvasCard.snapBack() kills existing wobble tweens
+      expect(killTweensSpy).toHaveBeenCalledWith(card);
     });
   });
 
@@ -759,4 +766,451 @@ describe('Gamer Tester 1: Token-to-Slot & Card Interaction Adversarial Glitch Su
       }
     });
   });
+
+  // =========================================================================
+  // AUDIT TEST 11: Tap Order Permutations (Forward, Reverse, Out-of-Order, Interrupted)
+  // =========================================================================
+  describe('Audit Test 11: Tap Order Permutations & Slot Filling Logic', () => {
+    it('executes forward order placement (0 -> 1 -> 2 -> 3) and verifies slots and answer state', () => {
+      const q: QuizQuestion = {
+        id: 'zh_perm_fwd',
+        subject: 'chinese',
+        type: 'sentence_scramble',
+        prompt: '正向排列測試',
+        speakText: '大家快跑！',
+        correctTokens: ['大家', '快', '跑', '！'],
+        shuffledTokens: ['大家', '快', '跑', '！'], // In this order in bank
+      };
+      scene.init({ questions: [q] });
+      scene.create();
+
+      // Tap in forward order 0 -> 1 -> 2 -> 3
+      scene.handleCardTap(scene.cardChips[0]);
+      scene.handleCardTap(scene.cardChips[1]);
+      scene.handleCardTap(scene.cardChips[2]);
+      scene.handleCardTap(scene.cardChips[3]);
+
+      expect(scene.slotBoxes[0].getPlacedCard()?.getText()).toBe('大家');
+      expect(scene.slotBoxes[1].getPlacedCard()?.getText()).toBe('快');
+      expect(scene.slotBoxes[2].getPlacedCard()?.getText()).toBe('跑');
+      expect(scene.slotBoxes[3].getPlacedCard()?.getText()).toBe('！');
+      expect(scene.isAnswered).toBe(true);
+      expect(scene.sessionStats.correctCount).toBe(1);
+    });
+
+    it('executes reverse order placement (3 -> 2 -> 1 -> 0) into empty slots', () => {
+      const q: QuizQuestion = {
+        id: 'zh_perm_rev',
+        subject: 'chinese',
+        type: 'sentence_scramble',
+        prompt: '逆向排列測試',
+        speakText: '大家快跑！',
+        correctTokens: ['大家', '快', '跑', '！'],
+        shuffledTokens: ['！', '跑', '快', '大家'],
+      };
+      scene.init({ questions: [q] });
+      scene.create();
+
+      // Bank has [ '！', '跑', '快', '大家' ]
+      // Tap index 3 ('大家') -> enters slot 0
+      // Tap index 2 ('快')   -> enters slot 1
+      // Tap index 1 ('跑')   -> enters slot 2
+      // Tap index 0 ('！')   -> enters slot 3
+      scene.handleCardTap(scene.cardChips[3]);
+      scene.handleCardTap(scene.cardChips[2]);
+      scene.handleCardTap(scene.cardChips[1]);
+      scene.handleCardTap(scene.cardChips[0]);
+
+      expect(scene.slotBoxes[0].getPlacedCard()?.getText()).toBe('大家');
+      expect(scene.slotBoxes[1].getPlacedCard()?.getText()).toBe('快');
+      expect(scene.slotBoxes[2].getPlacedCard()?.getText()).toBe('跑');
+      expect(scene.slotBoxes[3].getPlacedCard()?.getText()).toBe('！');
+      expect(scene.isAnswered).toBe(true);
+    });
+
+    it('executes out-of-order random selection and fills slots sequentially without gaps', () => {
+      const q: QuizQuestion = {
+        id: 'zh_perm_random',
+        subject: 'chinese',
+        type: 'sentence_scramble',
+        prompt: '隨機順序點擊',
+        speakText: '你喜歡吃蘋果嗎？',
+        correctTokens: ['你', '喜歡', '吃', '蘋果', '嗎？'],
+        shuffledTokens: ['吃', '嗎？', '你', '蘋果', '喜歡'],
+      };
+      scene.init({ questions: [q] });
+      scene.create();
+
+      // Tap index 2 ('你') -> enters slot 0
+      scene.handleCardTap(scene.cardChips[2]);
+      expect(scene.slotBoxes[0].getPlacedCard()?.getText()).toBe('你');
+      expect(scene.slotBoxes[1].hasCard()).toBe(false);
+
+      // Tap index 4 ('喜歡') -> enters slot 1
+      scene.handleCardTap(scene.cardChips[4]);
+      expect(scene.slotBoxes[1].getPlacedCard()?.getText()).toBe('喜歡');
+
+      // Tap index 0 ('吃') -> enters slot 2
+      scene.handleCardTap(scene.cardChips[0]);
+      expect(scene.slotBoxes[2].getPlacedCard()?.getText()).toBe('吃');
+
+      // Tap index 3 ('蘋果') -> enters slot 3
+      scene.handleCardTap(scene.cardChips[3]);
+      expect(scene.slotBoxes[3].getPlacedCard()?.getText()).toBe('蘋果');
+
+      // Tap index 1 ('嗎？') -> enters slot 4
+      scene.handleCardTap(scene.cardChips[1]);
+      expect(scene.slotBoxes[4].getPlacedCard()?.getText()).toBe('嗎？');
+
+      expect(scene.isAnswered).toBe(true);
+    });
+
+    it('handles tapping to fill slots, removing intermediate slot 1, and tapping new card to fill slot 1', () => {
+      const q: QuizQuestion = {
+        id: 'zh_perm_hole_fill',
+        subject: 'chinese',
+        type: 'sentence_scramble',
+        prompt: '填補空缺測試',
+        speakText: '小狗在跑。',
+        correctTokens: ['小狗', '在', '跑', '。'],
+        shuffledTokens: ['小狗', '跑', '在', '。'],
+      };
+      scene.init({ questions: [q] });
+      scene.create();
+
+      const chipDog = scene.cardChips.find((c) => c.getText() === '小狗')!;
+      const chipRun = scene.cardChips.find((c) => c.getText() === '跑')!;
+      const chipIn = scene.cardChips.find((c) => c.getText() === '在')!;
+      const chipDot = scene.cardChips.find((c) => c.getText() === '。')!;
+
+      // 1. Place chipDog -> Slot 0
+      scene.handleCardTap(chipDog);
+      expect(scene.slotBoxes[0].getPlacedCard()).toBe(chipDog);
+
+      // 2. Place chipRun mistakenly into Slot 1
+      scene.handleCardTap(chipRun);
+      expect(scene.slotBoxes[1].getPlacedCard()).toBe(chipRun);
+
+      // 3. Place chipDot -> Slot 2
+      scene.handleCardTap(chipDot);
+      expect(scene.slotBoxes[2].getPlacedCard()).toBe(chipDot);
+
+      // 4. Tap chipRun in Slot 1 to return it to bank
+      scene.handleCardTap(chipRun);
+      expect(scene.slotBoxes[1].hasCard()).toBe(false);
+      expect(chipRun.getCurrentSlot()).toBeNull();
+      expect(chipRun.getState()).toBe('normal');
+
+      // 5. Now tap chipIn -> it MUST fill the first empty slot (Slot 1), NOT Slot 3!
+      scene.handleCardTap(chipIn);
+      expect(scene.slotBoxes[1].getPlacedCard()).toBe(chipIn);
+      expect(scene.slotBoxes[3].hasCard()).toBe(false);
+
+      // 6. Tap chipRun -> fills Slot 3 and completes sentence
+      scene.handleCardTap(chipRun);
+      expect(scene.slotBoxes[3].getPlacedCard()).toBe(chipRun);
+      // Evaluated as ['小狗', '在', '。', '跑'] -> incorrect -> isAnswered remains false
+      expect(scene.isAnswered).toBe(false);
+    });
+  });
+
+  // =========================================================================
+  // AUDIT TEST 12: Chinese Punctuation Tokens Permutations (！, ？, ，, 。)
+  // =========================================================================
+  describe('Audit Test 12: Chinese Punctuation Token Integrity', () => {
+    it('tests exclamation mark token "！" in 4-token scramble', () => {
+      const q: QuizQuestion = {
+        id: 'zh_exclamation',
+        subject: 'chinese',
+        type: 'sentence_scramble',
+        prompt: '重組句子',
+        speakText: '快點跑！',
+        correctTokens: ['快點', '跑', '起來', '！'],
+        shuffledTokens: ['！', '起來', '快點', '跑'],
+      };
+      scene.init({ questions: [q] });
+      scene.create();
+
+      ['快點', '跑', '起來', '！'].forEach((tok) => {
+        const card = scene.cardChips.find((c) => c.getText() === tok && !c.getCurrentSlot())!;
+        scene.handleCardTap(card);
+      });
+
+      expect(scene.isAnswered).toBe(true);
+    });
+
+    it('tests question mark token "？" in 5-token scramble', () => {
+      const q: QuizQuestion = {
+        id: 'zh_question_mark',
+        subject: 'chinese',
+        type: 'sentence_scramble',
+        prompt: '重組句子',
+        speakText: '你今天開心嗎？',
+        correctTokens: ['你', '今天', '開心', '嗎', '？'],
+        shuffledTokens: ['？', '開心', '你', '嗎', '今天'],
+      };
+      scene.init({ questions: [q] });
+      scene.create();
+
+      ['你', '今天', '開心', '嗎', '？'].forEach((tok) => {
+        const card = scene.cardChips.find((c) => c.getText() === tok && !c.getCurrentSlot())!;
+        scene.handleCardTap(card);
+      });
+
+      expect(scene.isAnswered).toBe(true);
+    });
+
+    it('tests comma and period punctuation marks in 6-token scramble', () => {
+      const q: QuizQuestion = {
+        id: 'zh_comma_period',
+        subject: 'chinese',
+        type: 'sentence_scramble',
+        prompt: '重組句子',
+        speakText: '早上好，太陽升起來了。',
+        correctTokens: ['早上好', '，', '太陽', '升起來', '了', '。'],
+        shuffledTokens: ['。', '太陽', '，', '了', '早上好', '升起來'],
+      };
+      scene.init({ questions: [q] });
+      scene.create();
+
+      ['早上好', '，', '太陽', '升起來', '了', '。'].forEach((tok) => {
+        const card = scene.cardChips.find((c) => c.getText() === tok && !c.getCurrentSlot())!;
+        scene.handleCardTap(card);
+      });
+
+      expect(scene.isAnswered).toBe(true);
+    });
+  });
+
+  // =========================================================================
+  // AUDIT TEST 13: English CVC Phonics Letter Chips & Blend Tokens
+  // =========================================================================
+  describe('Audit Test 13: English CVC Phonics & Letter Scrambles', () => {
+    it('tests CVC word "dog" phonics letters with sound voice "en-US"', () => {
+      const qDog: QuizQuestion = {
+        id: 'en_cvc_dog',
+        subject: 'english',
+        type: 'sentence_scramble',
+        prompt: 'Phonics: Spell the word "dog"',
+        speakText: 'd o g',
+        correctTokens: ['d', 'o', 'g'],
+        shuffledTokens: ['g', 'd', 'o'],
+      };
+      scene.init({ questions: [qDog] });
+      scene.create();
+
+      expect(scene.getVoiceLanguage()).toBe('en-US');
+
+      ['d', 'o', 'g'].forEach((letter) => {
+        const card = scene.cardChips.find((c) => c.getText() === letter && !c.getCurrentSlot())!;
+        scene.handleCardTap(card);
+      });
+
+      expect(scene.isAnswered).toBe(true);
+      expect(SpeechService.speak).toHaveBeenCalledWith('d o g', 'en-US');
+    });
+
+    it('tests CVC word "sun" phonics letters', () => {
+      const qSun: QuizQuestion = {
+        id: 'en_cvc_sun',
+        subject: 'english',
+        type: 'sentence_scramble',
+        prompt: 'Phonics: Spell "sun"',
+        speakText: 's u n',
+        correctTokens: ['s', 'u', 'n'],
+        shuffledTokens: ['u', 'n', 's'],
+      };
+      scene.init({ questions: [qSun] });
+      scene.create();
+
+      ['s', 'u', 'n'].forEach((letter) => {
+        const card = scene.cardChips.find((c) => c.getText() === letter && !c.getCurrentSlot())!;
+        scene.handleCardTap(card);
+      });
+
+      expect(scene.isAnswered).toBe(true);
+    });
+
+    it('tests 4-letter phonics blend "stop" [s, t, o, p]', () => {
+      const qStop: QuizQuestion = {
+        id: 'en_blend_stop',
+        subject: 'english',
+        type: 'sentence_scramble',
+        prompt: 'Phonics: Spell "stop"',
+        speakText: 's t o p',
+        correctTokens: ['s', 't', 'o', 'p'],
+        shuffledTokens: ['p', 'o', 't', 's'],
+      };
+      scene.init({ questions: [qStop] });
+      scene.create();
+
+      ['s', 't', 'o', 'p'].forEach((letter) => {
+        const card = scene.cardChips.find((c) => c.getText() === letter && !c.getCurrentSlot())!;
+        scene.handleCardTap(card);
+      });
+
+      expect(scene.isAnswered).toBe(true);
+    });
+  });
+
+  // =========================================================================
+  // AUDIT TEST 14: Tap Placed Card to Return & Reset Button Mechanics
+  // =========================================================================
+  describe('Audit Test 14: Tap-to-Return & Reset Button In-Depth', () => {
+    it('verifies tapping an already placed card returns it cleanly to bank with home coordinates and normal state', () => {
+      const q: QuizQuestion = {
+        id: 'test_tap_return_clean',
+        subject: 'chinese',
+        type: 'sentence_scramble',
+        prompt: '點擊退回測試',
+        speakText: '小貓吃魚。',
+        correctTokens: ['小貓', '吃', '魚', '。'],
+        shuffledTokens: ['小貓', '吃', '魚', '。'],
+      };
+      scene.init({ questions: [q] });
+      scene.create();
+
+      const chipCat = scene.cardChips[0];
+      const homePos = chipCat.getHomePosition();
+
+      // Tap chipCat to place in Slot 0
+      scene.handleCardTap(chipCat);
+      expect(scene.slotBoxes[0].getPlacedCard()).toBe(chipCat);
+      expect(chipCat.getCurrentSlot()).toBe(scene.slotBoxes[0]);
+      expect(chipCat.getState()).toBe('placed');
+
+      // Tap chipCat again to return to bank
+      scene.handleCardTap(chipCat);
+
+      // Verify slot is empty
+      expect(scene.slotBoxes[0].hasCard()).toBe(false);
+      expect(scene.slotBoxes[0].getPlacedCard()).toBeNull();
+
+      // Verify card state and slot link
+      expect(chipCat.getCurrentSlot()).toBeNull();
+      expect(chipCat.getState()).toBe('normal');
+      expect(chipCat.x).toBe(homePos.x);
+      expect(chipCat.y).toBe(homePos.y);
+    });
+
+    it('verifies Reset button clears all slots simultaneously and restores all cards to active unplaced state', () => {
+      const q: QuizQuestion = {
+        id: 'test_reset_all_cards',
+        subject: 'chinese',
+        type: 'sentence_scramble',
+        prompt: '重置所有卡牌測試',
+        speakText: '小貓吃魚。',
+        correctTokens: ['小貓', '吃', '魚', '。'],
+        shuffledTokens: ['魚', '小貓', '。', '吃'],
+      };
+      scene.init({ questions: [q] });
+      scene.create();
+
+      // Place first 3 cards into slots (partial / wrong placement, not answered yet)
+      scene.handleCardTap(scene.cardChips[0]);
+      scene.handleCardTap(scene.cardChips[1]);
+      scene.handleCardTap(scene.cardChips[2]);
+
+      expect(scene.slotBoxes[0].hasCard()).toBe(true);
+      expect(scene.slotBoxes[1].hasCard()).toBe(true);
+      expect(scene.slotBoxes[2].hasCard()).toBe(true);
+      expect(scene.isAnswered).toBe(false);
+
+      // Trigger reset
+      scene.handleReset();
+
+      // Verify all slots are cleared
+      for (const slot of scene.slotBoxes) {
+        expect(slot.hasCard()).toBe(false);
+        expect(slot.getPlacedCard()).toBeNull();
+      }
+
+      // Verify all cards are at home coordinates and in 'normal' state
+      for (const chip of scene.cardChips) {
+        const home = chip.getHomePosition();
+        expect(chip.getCurrentSlot()).toBeNull();
+        expect(chip.getState()).toBe('normal');
+        expect(chip.x).toBe(home.x);
+        expect(chip.y).toBe(home.y);
+      }
+    });
+  });
+
+  // =========================================================================
+  // AUDIT TEST 15: CanvasCard Hitbox Geometry Across Mobile & Desktop DPI
+  // =========================================================================
+  describe('Audit Test 15: CanvasCard Hitbox Geometry Across High-DPI & Mobile', () => {
+    it('verifies centered hitbox geometry (-w/2 - hitPadX, -h/2 - hitPadY) and boundary containment', () => {
+      const cardWidth = 155;
+      const cardHeight = 74;
+      const hitPadX = 12;
+      const hitPadY = 12;
+
+      const card = new CanvasCard(mockScene, {
+        x: 640,
+        y: 360,
+        width: cardWidth,
+        height: cardHeight,
+        text: '測試卡牌',
+      });
+
+      const hitArea = card.input?.hitArea;
+      expect(hitArea).toBeDefined();
+
+      const expectedX = -cardWidth / 2 - hitPadX; // -77.5 - 12 = -89.5
+      const expectedY = -cardHeight / 2 - hitPadY; // -37 - 12 = -49
+      const expectedW = cardWidth + hitPadX * 2;   // 155 + 24 = 179
+      const expectedH = cardHeight + hitPadY * 2;  // 74 + 24 = 98
+
+      expect(hitArea.x).toBe(expectedX);
+      expect(hitArea.y).toBe(expectedY);
+      expect(hitArea.width).toBe(expectedW);
+      expect(hitArea.height).toBe(expectedH);
+
+      // Boundary checks:
+      // 1. Center (0, 0) -> MUST be inside
+      expect(Phaser.Geom.Rectangle.Contains(hitArea, 0, 0)).toBe(true);
+
+      // 2. Just inside top-left corner (-89, -48) -> MUST be inside
+      expect(Phaser.Geom.Rectangle.Contains(hitArea, expectedX + 0.5, expectedY + 0.5)).toBe(true);
+
+      // 3. Just inside bottom-right corner (89, 48) -> MUST be inside
+      expect(Phaser.Geom.Rectangle.Contains(hitArea, expectedX + expectedW - 0.5, expectedY + expectedH - 0.5)).toBe(true);
+
+      // 4. Outside left edge (-91, 0) -> MUST be false
+      expect(Phaser.Geom.Rectangle.Contains(hitArea, expectedX - 1, 0)).toBe(false);
+
+      // 5. Outside right edge (90, 0) -> MUST be false
+      expect(Phaser.Geom.Rectangle.Contains(hitArea, expectedX + expectedW + 1, 0)).toBe(false);
+
+      // 6. Outside top edge (0, -51) -> MUST be false
+      expect(Phaser.Geom.Rectangle.Contains(hitArea, 0, expectedY - 1)).toBe(false);
+
+      // 7. Outside bottom edge (0, 51) -> MUST be false
+      expect(Phaser.Geom.Rectangle.Contains(hitArea, 0, expectedY + expectedH + 1)).toBe(false);
+    });
+
+    it('verifies high-DPI text resolution does not distort card dimensions or hitbox size', () => {
+      // Simulate mobile devicePixelRatio = 3 (iPhone 14 Pro / Retina)
+      const origDpr = window.devicePixelRatio;
+      Object.defineProperty(window, 'devicePixelRatio', { value: 3, configurable: true });
+
+      const card = new CanvasCard(mockScene, {
+        x: 400,
+        y: 300,
+        width: 120,
+        height: 64,
+        text: '高解析度測試',
+      });
+
+      expect((card as any).cardWidth).toBe(120);
+      expect((card as any).cardHeight).toBe(64);
+      expect(card.input?.hitArea.width).toBe(120 + 24);
+      expect(card.input?.hitArea.height).toBe(64 + 24);
+
+      // Restore
+      Object.defineProperty(window, 'devicePixelRatio', { value: origDpr, configurable: true });
+    });
+  });
 });
+

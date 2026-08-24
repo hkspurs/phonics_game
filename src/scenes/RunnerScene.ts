@@ -332,6 +332,8 @@ export class RunnerScene extends Phaser.Scene {
       this.input.on('pointerdown', (pointer: any) => {
         // Exclude skip button area (top-right) and virtual gamepad area (bottom left/right)
         if (pointer && pointer.y < 80 && pointer.x > width - 160) return; // Skip button
+        if (pointer && pointer.x <= 340 && pointer.y >= height - 210) return; // Virtual Joystick area
+        if (pointer && pointer.x >= width - 180 && pointer.y >= height - 150) return; // Jump button area
         if (pointer && pointer.y > height - 110) return; // Virtual D-pad / Jump area
         this.handleJumpInput();
       });
@@ -1948,9 +1950,6 @@ export class RunnerScene extends Phaser.Scene {
       text: '🦘 跳躍',
       color: 'green',
       fontSize: '22px',
-      onClick: () => {
-        this.handleJumpInput();
-      },
     });
     this.jumpBtn.on('pointerdown', () => {
       this.handleJumpInput();
@@ -2025,6 +2024,7 @@ export class RunnerScene extends Phaser.Scene {
   }
 
   public shutdown(): void {
+    this.resetJoystick();
     this.isLeftDown = false;
     this.isRightDown = false;
     if (this.tweens) {
@@ -2035,6 +2035,9 @@ export class RunnerScene extends Phaser.Scene {
     }
     if (this.input) {
       this.input.off('pointerdown');
+      this.input.off('pointermove');
+      this.input.off('pointerup');
+      this.input.off('pointerupoutside');
       if (this.input.keyboard) {
         this.input.keyboard.off('keydown-A');
         this.input.keyboard.off('keyup-A');

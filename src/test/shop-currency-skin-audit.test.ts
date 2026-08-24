@@ -170,6 +170,17 @@ describe('Gamer Tester 2: Shop Gem/Coin Skin Purchasing & Currency Deduction Aud
   // 2. SURPLUS GEMS PURCHASING TESTS
   // =========================================================================
   describe('2. Surplus Gems Purchasing & Accurate Balance Deduction', () => {
+    it('80 gems -> buy Heroine (30💎) -> remaining gems is exactly 50', () => {
+      const dm = DataManager.getInstance();
+      dm.addGems(80);
+      expect(dm.getProfile().gems).toBe(80);
+
+      const success = dm.unlockSkin('heroine', 30, 0);
+      expect(success).toBe(true);
+      expect(dm.getProfile().gems).toBe(50);
+      expect(dm.getProfile().ownedSkins).toContain('heroine');
+    });
+
     it('200 gems -> buy Soldier (60💎) -> remaining gems is exactly 140', () => {
       const dm = DataManager.getInstance();
       dm.addGems(200);
@@ -388,6 +399,38 @@ describe('Gamer Tester 2: Shop Gem/Coin Skin Purchasing & Currency Deduction Aud
 
       expect(dm.getProfile().equippedSkin).toBe('heroine');
       expect(scene.scene?.restart).toHaveBeenCalled();
+    });
+
+    it('clicking Action Button with 29 gems on Heroine (30💎) is rejected without deduction', () => {
+      const dm = DataManager.getInstance();
+      dm.addGems(29);
+
+      const scene = createMockShopScene(1); // Heroine
+      scene.updatePreviewDisplay();
+
+      expect(scene.actionButton?.setText).toHaveBeenCalledWith('💎 30 寶石不足');
+      expect(scene.actionButton?.setEnabled).toHaveBeenCalledWith(false);
+
+      // Attempt click trigger
+      scene.handleActionClick();
+
+      expect(dm.getProfile().gems).toBe(29);
+      expect(dm.getProfile().ownedSkins).toEqual(['adventurer']);
+      expect(dm.getProfile().equippedSkin).toBe('adventurer');
+    });
+
+    it('verifies actionButton visual depth is set to 60 (above showcase pedestal depth 40)', () => {
+      const scene = new ShopScene();
+      const mockSetDepth = vi.fn();
+      scene.actionButton = {
+        setDepth: mockSetDepth,
+        setText: vi.fn(),
+        setColor: vi.fn(),
+        setEnabled: vi.fn(),
+      } as any;
+
+      scene.updatePreviewDisplay();
+      expect(mockSetDepth).toHaveBeenCalledWith(60);
     });
   });
 

@@ -858,10 +858,16 @@ export class QuestionScene extends Phaser.Scene {
         }
 
         const expectedVal = expected[targetIndex];
-        // Find chip with expectedVal that is not currently in a slot
-        const chip = this.cardChips.find(
+        // Find chip with expectedVal (either unplaced or misplaced in another slot)
+        let chip = this.cardChips.find(
           (c) => c.getText() === expectedVal && c.getCurrentSlot() === null
         );
+        if (!chip) {
+          chip = this.cardChips.find((c) => c.getText() === expectedVal);
+          if (chip && chip.getCurrentSlot()) {
+            chip.getCurrentSlot()?.removePlacedCard();
+          }
+        }
 
         if (chip) {
           targetSlot.setPlacedCard(chip);
