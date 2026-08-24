@@ -220,7 +220,15 @@ export class CanvasButton extends Phaser.GameObjects.Container {
   }
 
   private setupInteractivity(): void {
-    this.setInteractive({ useHandCursor: true });
+    const hitRect = (Phaser && Phaser.Geom && Phaser.Geom.Rectangle)
+      ? new Phaser.Geom.Rectangle(-this.btnWidth / 2, -this.btnHeight / 2, this.btnWidth, this.btnHeight)
+      : undefined;
+
+    if (hitRect) {
+      this.setInteractive(hitRect, Phaser.Geom.Rectangle.Contains);
+    } else {
+      this.setInteractive({ useHandCursor: true });
+    }
 
     this.on('pointerover', () => {
       if (!this.isBtnEnabled) return;

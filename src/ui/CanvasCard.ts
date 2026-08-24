@@ -201,7 +201,15 @@ export class CanvasCard extends Phaser.GameObjects.Container {
   }
 
   private setupInteractions(): void {
-    this.setInteractive({ useHandCursor: true });
+    const hitRect = (Phaser && Phaser.Geom && Phaser.Geom.Rectangle)
+      ? new Phaser.Geom.Rectangle(-this.cardWidth / 2, -this.cardHeight / 2, this.cardWidth, this.cardHeight)
+      : undefined;
+
+    if (hitRect) {
+      this.setInteractive(hitRect, Phaser.Geom.Rectangle.Contains);
+    } else {
+      this.setInteractive({ useHandCursor: true });
+    }
 
     if (this.config.draggable && this.scene.input && typeof this.scene.input.setDraggable === 'function') {
       this.scene.input.setDraggable(this);

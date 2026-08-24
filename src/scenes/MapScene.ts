@@ -1212,6 +1212,9 @@ export class MapScene extends Phaser.Scene {
         }
       },
     });
+    if (this.backButton && typeof this.backButton.setScrollFactor === 'function') {
+      this.backButton.setScrollFactor(0);
+    }
     header.add(this.backButton);
 
     // 2. Status & Currency Bar Pill
