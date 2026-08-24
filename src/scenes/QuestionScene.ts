@@ -320,10 +320,10 @@ export class QuestionScene extends Phaser.Scene {
   private createPromptBanner(width: number): void {
     if (!this.add) return;
 
-    const bannerW = 1100;
-    const bannerH = 90;
+    const bannerW = Math.min(width - 60, 1160);
+    const bannerH = 108;
     const bannerX = width / 2;
-    const bannerY = 125;
+    const bannerY = 135;
 
     const banner = this.add.container
       ? this.add.container(bannerX, bannerY)
@@ -331,27 +331,27 @@ export class QuestionScene extends Phaser.Scene {
 
     banner.setDepth(90);
 
-    // Banner Background Card
+    // Banner Background Card (Large, prominent container for question & audio)
     if (this.add.graphics) {
       const bg = this.add.graphics();
-      bg.fillStyle(0x1a2333, 0.9);
-      bg.fillRoundedRect(-bannerW / 2, -bannerH / 2, bannerW, bannerH, 16);
+      bg.fillStyle(0x1a2333, 0.92);
+      bg.fillRoundedRect(-bannerW / 2, -bannerH / 2, bannerW, bannerH, 18);
 
       const subjectColor = this.getSubjectColor();
-      bg.lineStyle(2, subjectColor, 0.8);
-      bg.strokeRoundedRect(-bannerW / 2, -bannerH / 2, bannerW, bannerH, 16);
+      bg.lineStyle(2.5, subjectColor, 0.85);
+      bg.strokeRoundedRect(-bannerW / 2, -bannerH / 2, bannerW, bannerH, 18);
 
       // Subject Badge Pill
       bg.fillStyle(subjectColor, 1.0);
-      bg.fillRoundedRect(-bannerW / 2 + 20, -18, 110, 36, 18);
+      bg.fillRoundedRect(-bannerW / 2 + 20, -22, 110, 44, 12);
       banner.add(bg);
     }
 
     // Subject Badge Label
     if (this.add.text) {
       const subjectTag = this.add.text(-bannerW / 2 + 75, 0, `[${this.getCurrentSubjectName()}]`, {
-        fontSize: '15px',
-        fontFamily: "'Kenney Future', 'Noto Sans TC', sans-serif",
+        fontSize: '18px',
+        fontFamily: "-apple-system, BlinkMacSystemFont, 'PingFang HK', 'Noto Sans TC', sans-serif",
         color: '#ffffff',
         fontStyle: 'bold',
         resolution: typeof window !== 'undefined' ? Math.max(2, window.devicePixelRatio || 2) : 2,
@@ -360,15 +360,16 @@ export class QuestionScene extends Phaser.Scene {
       banner.add(subjectTag);
     }
 
-    // Prompt Instruction Text
+    // Prompt Instruction Text (Big and clearly legible)
     const promptStr = this.currentQuestion?.prompt || '請回答以下問題：';
     if (this.add.text) {
       const promptLbl = this.add.text(-bannerW / 2 + 150, 0, promptStr, {
-        fontSize: '21px',
-        fontFamily: "'Noto Sans TC', 'Microsoft JhengHei', sans-serif",
+        fontSize: promptStr.length > 32 ? '22px' : '26px',
+        fontFamily: "-apple-system, BlinkMacSystemFont, 'PingFang HK', 'Noto Sans TC', sans-serif",
         color: '#ffffff',
         fontStyle: 'bold',
         align: 'left',
+        wordWrap: { width: bannerW - 350 },
         resolution: typeof window !== 'undefined' ? Math.max(2, window.devicePixelRatio || 2) : 2,
       });
       if (typeof promptLbl.setOrigin === 'function') promptLbl.setOrigin(0, 0.5);
@@ -376,15 +377,15 @@ export class QuestionScene extends Phaser.Scene {
       banner.add(promptLbl);
     }
 
-    // Speaker Button (🔊 朗讀)
+    // Prominent Speaker Button (🔊 朗讀)
     this.speakerButton = new CanvasButton(this, {
-      x: bannerW / 2 - 80,
+      x: bannerW / 2 - 95,
       y: 0,
-      width: 120,
-      height: 44,
+      width: 140,
+      height: 52,
       text: '🔊 朗讀',
       color: 'yellow',
-      fontSize: '17px',
+      fontSize: '20px',
       onClick: () => {
         SoundManager.play('click');
         this.speakCurrentQuestion();
@@ -425,7 +426,7 @@ export class QuestionScene extends Phaser.Scene {
 
     const totalSlotsWidth = tokensCount * cardWidth + (tokensCount - 1) * spacing;
     const startX = width / 2 - totalSlotsWidth / 2 + cardWidth / 2;
-    const slotY = 245;
+    const slotY = 270;
 
     // 2. Create Target SlotBoxes
     for (let i = 0; i < tokensCount; i++) {
@@ -459,7 +460,7 @@ export class QuestionScene extends Phaser.Scene {
         ? [...this.currentQuestion.shuffledTokens]
         : SentenceEngine.shuffleTokens(expectedTokens);
 
-    const bankY = 395;
+    const bankY = 425;
     const bankTotalW = tokensCount * cardWidth + (tokensCount - 1) * spacing;
     const bankStartX = width / 2 - bankTotalW / 2 + cardWidth / 2;
 
@@ -496,43 +497,14 @@ export class QuestionScene extends Phaser.Scene {
 
   /**
    * Mode B: Multiple Choice & Math Calculation Mode
-   * Displays question equation display and choice selection cards
+   * Displays spacious choice selection cards without redundant duplicate boxes
    */
   public renderChoiceQuizMode(width: number, _height: number): void {
     if (!this.currentQuestion) return;
 
     this.choiceCards = [];
 
-    // 1. Large Prompt / Equation Display Box
-    const dispW = 860;
-    const dispH = 110;
-    const dispX = width / 2;
-    const dispY = 240;
-
-    if (this.add?.graphics) {
-      const dispG = this.add.graphics();
-      dispG.fillStyle(0x1e293b, 0.9);
-      dispG.fillRoundedRect(dispX - dispW / 2, dispY - dispH / 2, dispW, dispH, 18);
-      dispG.lineStyle(2.5, 0x38bdf8, 0.9);
-      dispG.strokeRoundedRect(dispX - dispW / 2, dispY - dispH / 2, dispW, dispH, 18);
-    }
-
-    // Display Text (Expression or Prompt)
-    const displayText =
-      this.currentQuestion.speakText || this.currentQuestion.prompt || '';
-    if (this.add?.text) {
-      const eqLabel = this.add.text(dispX, dispY, displayText, {
-        fontSize: displayText.length > 25 ? '28px' : '38px',
-        fontFamily: "'Kenney Future', 'Noto Sans TC', 'PingFang HK', sans-serif",
-        color: '#ffd700',
-        fontStyle: 'bold',
-        align: 'center',
-        resolution: typeof window !== 'undefined' ? Math.max(2, window.devicePixelRatio || 2) : 2,
-      });
-      if (typeof eqLabel.setOrigin === 'function') eqLabel.setOrigin(0.5);
-    }
-
-    // 2. Choice Option Cards (2x2 grid or horizontal row)
+    // Choice Option Cards (2x2 grid or horizontal row)
     const options = this.currentQuestion.options || [];
     const count = options.length;
     if (count === 0) return;
@@ -545,13 +517,13 @@ export class QuestionScene extends Phaser.Scene {
     ];
 
     if (count <= 3) {
-      // Single horizontal row
-      const optW = count === 2 ? 300 : 250;
-      const optH = 80;
-      const spacing = 28;
+      // Single horizontal row for 2 or 3 choices
+      const optW = count === 2 ? 350 : 290;
+      const optH = 96;
+      const spacing = 32;
       const totalW = count * optW + (count - 1) * spacing;
       const startX = width / 2 - totalW / 2 + optW / 2;
-      const optY = 400;
+      const optY = 340;
 
       options.forEach((opt, idx) => {
         const xPos = startX + idx * (optW + spacing);
@@ -564,19 +536,19 @@ export class QuestionScene extends Phaser.Scene {
           value: opt,
           color: themeColors[idx % themeColors.length],
           tappable: true,
-          fontSize: String(opt).length > 8 ? '26px' : '34px',
+          fontSize: String(opt).length > 8 ? '28px' : '38px',
           onTap: (c) => this.handleChoiceSelection(c, idx),
         });
         this.choiceCards.push(card);
       });
     } else {
-      // 2x2 Grid for 4 options
-      const optW = 360;
-      const optH = 76;
-      const row1Y = 365;
-      const row2Y = 460;
-      const col1X = width / 2 - 200;
-      const col2X = width / 2 + 200;
+      // 2x2 Grid for 4 options (spacious, clear, and easy to tap)
+      const optW = 390;
+      const optH = 92;
+      const row1Y = 285;
+      const row2Y = 415;
+      const col1X = width / 2 - 215;
+      const col2X = width / 2 + 215;
 
       const positions = [
         { x: col1X, y: row1Y },
@@ -596,7 +568,7 @@ export class QuestionScene extends Phaser.Scene {
           value: opt,
           color: themeColors[idx % themeColors.length],
           tappable: true,
-          fontSize: String(opt).length > 8 ? '24px' : '32px',
+          fontSize: String(opt).length > 8 ? '26px' : '36px',
           onTap: (c) => this.handleChoiceSelection(c, idx),
         });
         this.choiceCards.push(card);

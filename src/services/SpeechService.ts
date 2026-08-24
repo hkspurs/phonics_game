@@ -185,6 +185,35 @@ export class SpeechService {
   }
 
   /**
+   * Normalizes math symbols and operators (+, -, *, /, =, ?) to clear spoken words
+   * in Cantonese/Chinese and English to prevent TTS mispronouncing "-" as "至".
+   */
+  public static normalizeSpeechText(text: string, lang: VoiceLanguage | string = 'zh-HK'): string {
+    if (!text) return '';
+    const isZh = lang.toLowerCase().startsWith('zh') || lang.toLowerCase().startsWith('yue') || lang.toLowerCase().startsWith('cmn');
+    if (isZh) {
+      return text
+        .replace(/(\d+)\s*-\s*(\d+)/g, '$1 減 $2')
+        .replace(/(\d+)\s*\+\s*(\d+)/g, '$1 加 $2')
+        .replace(/(\d+)\s*[×*]\s*(\d+)/g, '$1 乘 $2')
+        .replace(/(\d+)\s*[÷/]\s*(\d+)/g, '$1 除以 $2')
+        .replace(/\s*=\s*\?/g, ' 等於幾多？')
+        .replace(/\s*=\s*多少/g, ' 等於幾多')
+        .replace(/\s*=\s*/g, ' 等於 ')
+        .replace(/\?/g, '幾多？');
+    } else {
+      return text
+        .replace(/(\d+)\s*-\s*(\d+)/g, '$1 minus $2')
+        .replace(/(\d+)\s*\+\s*(\d+)/g, '$1 plus $2')
+        .replace(/(\d+)\s*[×*]\s*(\d+)/g, '$1 times $2')
+        .replace(/(\d+)\s*[÷/]\s*(\d+)/g, '$1 divided by $2')
+        .replace(/\s*=\s*\?/g, ' equals what?')
+        .replace(/\s*=\s*/g, ' equals ')
+        .replace(/\?/g, ' what?');
+    }
+  }
+
+  /**
    * Speak the given text with language fallback and cancellation of previous speech
    */
   public static speak(
@@ -207,8 +236,10 @@ export class SpeechService {
       if (!UtteranceClass) return null;
 
       const targetLang = (lang || DataManager.getInstance().getProfile().settings.voiceLanguage || 'zh-HK') as VoiceLanguage;
-      const utterance = new UtteranceClass(text);
-      utterance.text = text;
+      const processedText = this.normalizeSpeechText(text, targetLang);
+
+      const utterance = new UtteranceClass(processedText);
+      utterance.text = processedText;
       utterance.lang = targetLang;
       utterance.rate = this.defaultRate;
       utterance.pitch = this.defaultPitch;

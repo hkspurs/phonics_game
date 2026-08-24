@@ -127,14 +127,26 @@ export class QuestionEngine {
     const options = mathQ.options.map((opt) => String(opt));
     const correctOptionIndex = mathQ.options.indexOf(mathQ.correctAnswer);
 
-    // Format speak text (e.g. 3 + 5 = ? -> 3 加 5 等於多少)
-    const speakText = `${mathQ.prompt} ${mathQ.expression.replace('?', '多少')}`;
+    // Format speak text with explicit Chinese operators to prevent TTS mispronouncing "-" as "至"
+    const mathSpokenExpr = mathQ.expression
+      .replace(/\+/g, ' 加 ')
+      .replace(/-/g, ' 減 ')
+      .replace(/[×*]/g, ' 乘 ')
+      .replace(/[÷/]/g, ' 除以 ')
+      .replace(/\s*=\s*\?/g, ' 等於幾多？')
+      .replace(/\s*=\s*/g, ' 等於 ')
+      .replace(/\(\s*\)/g, '幾多')
+      .trim();
+
+    const speakText = mathQ.type === 'word_problem'
+      ? mathQ.prompt
+      : `${mathQ.prompt} ${mathSpokenExpr}`;
 
     return {
       id: mathQ.id,
       subject: 'math',
       type: mathQ.type === 'word_problem' ? 'word_problem' : 'multiple_choice',
-      prompt: `${mathQ.prompt} ${mathQ.expression}`,
+      prompt: mathQ.type === 'word_problem' ? mathQ.prompt : `${mathQ.prompt} ${mathQ.expression}`,
       speakText,
       options,
       correctOptionIndex: correctOptionIndex >= 0 ? correctOptionIndex : 0,
