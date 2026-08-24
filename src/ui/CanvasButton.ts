@@ -285,7 +285,7 @@ export class CanvasButton extends Phaser.GameObjects.Container {
     });
 
     this.on('pointerup', () => {
-      if (!this.isBtnEnabled || !isPressedOnThis) return;
+      if (!this.isBtnEnabled) return;
       isPressedOnThis = false;
       if (this.scene?.tweens) {
         this.scene.tweens.killTweensOf(this);

@@ -145,6 +145,16 @@ export class QuestionScene extends Phaser.Scene {
 
     // 5. Action Controls (💡 提示, 🔄 重置)
     this.createActionControls(width, height);
+
+    // 6. Automatically read the question prompt aloud after 1 second delay
+    if (this.time?.delayedCall) {
+      this.time.delayedCall(1000, () => {
+        const isActive = typeof this.scene?.isActive === 'function' ? this.scene.isActive() : true;
+        if (isActive && !this.isAnswered) {
+          this.speakCurrentQuestion();
+        }
+      });
+    }
   }
 
   /**

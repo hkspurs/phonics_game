@@ -1011,8 +1011,11 @@ export class MapScene extends Phaser.Scene {
       }
 
       // Make the entire row clickable to start this subject's question directly
+      // Note: Container setSize(580, 56) shifts hit area by displayOrigin (290, 28)
+      const padX = 16;
+      const padY = 8;
       const hitRect = (Phaser && Phaser.Geom && Phaser.Geom.Rectangle)
-        ? new Phaser.Geom.Rectangle(-290, -28, 580, 56)
+        ? new Phaser.Geom.Rectangle(-padX, -padY, 580 + padX * 2, 56 + padY * 2)
         : undefined;
 
       if (typeof rowContainer.setInteractive === 'function') {
@@ -1023,6 +1026,9 @@ export class MapScene extends Phaser.Scene {
         }
 
         rowContainer.on('pointerover', () => {
+          if (this.tweens?.killTweensOf) {
+            this.tweens.killTweensOf(rowContainer);
+          }
           if (this.tweens?.add) {
             this.tweens.add({
               targets: rowContainer,
@@ -1033,7 +1039,11 @@ export class MapScene extends Phaser.Scene {
             });
           }
         });
+
         rowContainer.on('pointerout', () => {
+          if (this.tweens?.killTweensOf) {
+            this.tweens.killTweensOf(rowContainer);
+          }
           if (this.tweens?.add) {
             this.tweens.add({
               targets: rowContainer,
@@ -1044,7 +1054,27 @@ export class MapScene extends Phaser.Scene {
             });
           }
         });
+
+        let isPressedOnRow = false;
+
+        rowContainer.on('pointerdown', () => {
+          isPressedOnRow = true;
+          if (this.tweens?.killTweensOf) {
+            this.tweens.killTweensOf(rowContainer);
+          }
+          if (this.tweens?.add) {
+            this.tweens.add({
+              targets: rowContainer,
+              scaleX: 0.98,
+              scaleY: 0.98,
+              duration: 50,
+              ease: 'Quad.easeIn',
+            });
+          }
+        });
+
         rowContainer.on('pointerup', () => {
+          isPressedOnRow = false;
           SoundManager.play('click');
           modal.close();
           if (this.scene) {
@@ -1052,6 +1082,23 @@ export class MapScene extends Phaser.Scene {
               stationId: station.id,
               stationName: station.name,
               questionIndex: index,
+            });
+          }
+        });
+
+        rowContainer.on('pointerupoutside', () => {
+          if (!isPressedOnRow) return;
+          isPressedOnRow = false;
+          if (this.tweens?.killTweensOf) {
+            this.tweens.killTweensOf(rowContainer);
+          }
+          if (this.tweens?.add) {
+            this.tweens.add({
+              targets: rowContainer,
+              scaleX: 1.0,
+              scaleY: 1.0,
+              duration: 100,
+              ease: 'Sine.easeOut',
             });
           }
         });
