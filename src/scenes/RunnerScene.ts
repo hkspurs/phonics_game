@@ -203,6 +203,7 @@ export class RunnerScene extends Phaser.Scene {
   public skinConfig: SkinConfig = SKIN_CONFIGS.adventurer;
   public currentWalkFrame: number = 1;
   public stepTimer: number = 0;
+  public stumbleTimer: number = 0;
 
   // Game Objects & Layers
   public playerSprite: Phaser.GameObjects.Image | any = null;
@@ -1202,7 +1203,12 @@ export class RunnerScene extends Phaser.Scene {
     if (this.isRightDown) moveX += 1;
     moveX = Phaser.Math.Clamp(moveX, -1, 1);
 
-    const effectiveSpeed = this.isRainbowRush ? this.currentSpeed * 1.35 : this.currentSpeed;
+    if (this.stumbleTimer > 0) {
+      this.stumbleTimer = Math.max(0, this.stumbleTimer - delta);
+    }
+
+    const speedMod = this.stumbleTimer > 0 ? 0.55 : 1.0;
+    const effectiveSpeed = (this.isRainbowRush ? this.currentSpeed * 1.35 : this.currentSpeed) * speedMod;
     const stepMove = moveX * effectiveSpeed * dtSeconds;
 
     if (Math.abs(moveX) > 0.08) {
@@ -1355,11 +1361,33 @@ export class RunnerScene extends Phaser.Scene {
         }
       }
 
-      // Obstacle interaction: Auto-hop if player didn't jump (gentle child-friendly bounce)
+      // Obstacle interaction: requires user to manual click jump to clear!
       if (item.type === 'obstacle') {
         const distToPlayer = screenX - this.playerScreenX;
-        if (distToPlayer > 0 && distToPlayer < 90 && this.isGrounded) {
-          this.executeKinematicJump(0.9);
+        const isAirborne = this.playerY < this.playerBaselineY - 25;
+
+        if (distToPlayer > -25 && distToPlayer < 45) {
+          if (!isAirborne && this.isGrounded && this.stumbleTimer <= 0) {
+            // Player hit the rock because they did not jump!
+            this.stumbleTimer = 650; // 0.65s stumble slowdown
+            SoundManager.playSoftWrong();
+            if (this.playerSprite) {
+              if (typeof (this.playerSprite as any).setTint === 'function') {
+                (this.playerSprite as any).setTint(0xff6b6b);
+              }
+              this.tweens.add({
+                targets: this.playerSprite,
+                scaleY: 0.85,
+                duration: 90,
+                yoyo: true,
+                onComplete: () => {
+                  if (this.playerSprite && typeof (this.playerSprite as any).clearTint === 'function') {
+                    (this.playerSprite as any).clearTint();
+                  }
+                },
+              });
+            }
+          }
         }
       }
 

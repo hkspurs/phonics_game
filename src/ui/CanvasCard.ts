@@ -337,11 +337,11 @@ export class CanvasCard extends Phaser.GameObjects.Container {
       const py = pointer?.y ?? this.pointerDownY;
       const moveDist = Math.hypot(px - this.pointerDownX, py - this.pointerDownY);
 
-      if (this.hasDraggedCard && moveDist > 16) {
-        if (typeof this.config.onDragEnd === 'function') {
-          this.config.onDragEnd(this, pointer);
-        }
-      } else {
+      if (typeof this.config.onDragEnd === 'function') {
+        this.config.onDragEnd(this, pointer);
+      }
+
+      if (!this.hasDraggedCard || moveDist <= 16) {
         this.triggerTap();
       }
 

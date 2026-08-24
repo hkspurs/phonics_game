@@ -723,14 +723,6 @@ export class QuestionScene extends Phaser.Scene {
   public handleCardDragEnd(card: CanvasCard, _pointer: Phaser.Input.Pointer): void {
     if (this.isAnswered) return;
 
-    // If card barely moved from bank home, treat as a tap
-    const home = card.getHomePosition();
-    const isBarelyMoved = Math.hypot(card.x - home.x, card.y - home.y) <= 25;
-    if (isBarelyMoved && !card.getCurrentSlot()) {
-      this.handleCardTap(card);
-      return;
-    }
-
     // Find nearest slot
     let targetSlot: SlotBox | null = null;
     let minDistance = 75;
