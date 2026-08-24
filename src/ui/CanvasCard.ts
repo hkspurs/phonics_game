@@ -258,12 +258,27 @@ export class CanvasCard extends Phaser.GameObjects.Container {
     this.on('pointerdown', () => {
       if (this.currentState === 'disabled') return;
       this.hasDraggedCard = false;
+      if (this.scene?.tweens) {
+        this.scene.tweens.killTweensOf(this);
+        this.setScale(1.0, 1.0);
+        this.scene.tweens.add({
+          targets: this,
+          scaleX: 1.12,
+          scaleY: 0.88,
+          duration: 70,
+          yoyo: true,
+          ease: 'Cubic.easeOut',
+          onComplete: () => {
+            this.setScale(1.0, 1.0);
+          },
+        });
+      }
     });
 
     this.on('pointerup', () => {
       if (this.currentState === 'disabled') return;
       if (!this.hasDraggedCard && this.config.tappable !== false && typeof this.config.onTap === 'function') {
-        SoundManager.play('click');
+        SoundManager.playCardSnap();
         this.config.onTap(this);
       }
       this.hasDraggedCard = false;
@@ -276,6 +291,7 @@ export class CanvasCard extends Phaser.GameObjects.Container {
       this.setDepth(100);
       if (this.scene?.tweens) {
         this.scene.tweens.killTweensOf(this);
+        this.setScale(1.08, 1.08);
       }
       if (typeof this.config.onDragStart === 'function') {
         this.config.onDragStart(this, pointer);

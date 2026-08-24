@@ -16,7 +16,6 @@ export class StarRating extends Phaser.GameObjects.Container {
   private currentStars: number;
   private starSize: number;
   private spacing: number;
-  private soundKey: 'coin' | 'correct' | 'victory';
   private starLabels: Phaser.GameObjects.Text[] = [];
 
   constructor(scene: Phaser.Scene, config: StarRatingConfig = {}) {
@@ -26,7 +25,6 @@ export class StarRating extends Phaser.GameObjects.Container {
     this.currentStars = Phaser.Math.Clamp(config.initialStars ?? 0, 0, this.maxStars);
     this.starSize = config.starSize ?? 32;
     this.spacing = config.spacing ?? 16;
-    this.soundKey = config.soundKey ?? 'coin';
 
     this.createStars();
     if (scene.add && typeof scene.add.existing === 'function') {
@@ -102,7 +100,7 @@ export class StarRating extends Phaser.GameObjects.Container {
             onStart: () => {
               if (typeof star.setText === 'function') star.setText('⭐');
               if (typeof star.setColor === 'function') star.setColor('#ffd700');
-              SoundManager.play(this.soundKey);
+              SoundManager.playComboCorrect(i + 1);
             },
             onComplete: () => {
               if (this.scene?.tweens?.add) {

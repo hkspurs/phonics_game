@@ -148,4 +148,31 @@ describe('SoundManager', () => {
       expect(mockPhaserSound.stopAll).toHaveBeenCalledTimes(2);
     });
   });
+
+  describe('Juicy Audio Synthesis & Combo System', () => {
+    it('should increment combo on playComboCorrect and reset on playSoftWrong', () => {
+      SoundManager.init(mockScene);
+      expect(SoundManager.getCombo()).toBe(0);
+
+      SoundManager.playComboCorrect();
+      expect(SoundManager.getCombo()).toBe(1);
+      expect(mockPhaserSound.play).toHaveBeenCalledWith('correct', expect.any(Object));
+
+      SoundManager.playComboCorrect();
+      expect(SoundManager.getCombo()).toBe(2);
+
+      SoundManager.playSoftWrong();
+      expect(SoundManager.getCombo()).toBe(0);
+      expect(mockPhaserSound.play).toHaveBeenCalledWith('wrong', expect.any(Object));
+    });
+
+    it('should safely execute playCardSnap and playCoinArpeggio without crashing', () => {
+      SoundManager.init(mockScene);
+      expect(() => {
+        SoundManager.playCardSnap();
+        SoundManager.playCoinArpeggio(0);
+        SoundManager.playCoinArpeggio(3);
+      }).not.toThrow();
+    });
+  });
 });

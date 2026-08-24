@@ -330,4 +330,71 @@ describe('DataManager', () => {
       expect(profile.stats.chineseCorrect).toBe(0);
     });
   });
+
+  describe('3-6-9 Fast Hatching Companion Pet System', () => {
+    it('should report locked stage with 0-2 correct answers', () => {
+      const manager = DataManager.getInstance();
+      expect(manager.getPetCompanion().stage).toBe('none');
+
+      manager.recordCorrectAnswer('chinese');
+      manager.recordCorrectAnswer('math');
+      expect(manager.getPetCompanion().stage).toBe('none');
+    });
+
+    it('should hatch egg at 3 answers, crack at 6, and become dragon at 9', () => {
+      const manager = DataManager.getInstance();
+
+      // 3 answers
+      manager.recordCorrectAnswer('chinese');
+      manager.recordCorrectAnswer('math');
+      manager.recordCorrectAnswer('english');
+      expect(manager.getPetCompanion().stage).toBe('egg');
+      expect(manager.getPetCompanion().icon).toBe('🥚');
+
+      // 6 answers
+      manager.recordCorrectAnswer('chinese');
+      manager.recordCorrectAnswer('math');
+      manager.recordCorrectAnswer('english');
+      expect(manager.getPetCompanion().stage).toBe('cracking');
+      expect(manager.getPetCompanion().icon).toBe('🐣');
+
+      // 9 answers
+      manager.recordCorrectAnswer('chinese');
+      manager.recordCorrectAnswer('math');
+      manager.recordCorrectAnswer('english');
+      expect(manager.getPetCompanion().stage).toBe('hatched');
+      expect(manager.getPetCompanion().icon).toBe('🐲');
+    });
+  });
+
+  describe('Stamp Book & Daily Quest System', () => {
+    it('should unlock and retrieve Hong Kong landmark stamps', () => {
+      const manager = DataManager.getInstance();
+      expect(manager.getStamps()).toEqual([]);
+
+      manager.unlockStamp('station_1');
+      manager.unlockStamp('station_2');
+      expect(manager.getStamps()).toContain('station_1');
+      expect(manager.getStamps()).toContain('station_2');
+
+      // Duplicate unlock is ignored
+      manager.unlockStamp('station_1');
+      expect(manager.getStamps().length).toBe(2);
+    });
+
+    it('should track daily quest status and allow spinning the lucky wheel', () => {
+      const manager = DataManager.getInstance();
+      const quest = manager.getDailyQuest();
+      expect(quest.completed).toBe(false);
+      expect(quest.spinClaimed).toBe(false);
+
+      manager.completeDailyQuest();
+      expect(manager.getDailyQuest().completed).toBe(true);
+
+      const beforeCoins = manager.getProfile().coins;
+      manager.claimDailySpin(50);
+      expect(manager.getDailyQuest().spinClaimed).toBe(true);
+      expect(manager.getProfile().coins).toBe(beforeCoins + 50);
+    });
+  });
 });

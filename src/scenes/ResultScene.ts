@@ -118,6 +118,9 @@ export class ResultScene extends Phaser.Scene {
       dm.addCoins(this.rewardCoins);
       dm.addGems(this.rewardGems);
 
+      // Unlock Hong Kong landmark stamp
+      dm.unlockStamp(`station_${this.stationId}`);
+
       // Check for newly unlocked trophies
       this.newlyUnlockedTrophies = dm.checkTrophies();
     } catch (e) {

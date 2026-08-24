@@ -42,6 +42,12 @@ export interface UserProfile {
   trophies: Record<string, boolean>; // trophyId -> boolean
   stats: UserStats;
   settings: GameSettings;
+  stamps?: string[]; // unlocked HK landmark stamp IDs
+  dailyQuest?: {
+    date: string;
+    completed: boolean;
+    spinClaimed: boolean;
+  };
 }
 
 export interface Station {

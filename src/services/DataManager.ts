@@ -1443,6 +1443,107 @@ export class DataManager {
     this.save();
   }
 
+  /**
+   * 3-6-9 Fast Hatching Companion Pet System
+   */
+  public getPetCompanion(): {
+    stage: 'none' | 'egg' | 'cracking' | 'hatched';
+    name: string;
+    icon: string;
+    progress: number;
+    target: number;
+  } {
+    const totalCorrect =
+      (this.profile.stats.chineseCorrect || 0) +
+      (this.profile.stats.mathCorrect || 0) +
+      (this.profile.stats.englishCorrect || 0);
+
+    if (totalCorrect >= 9) {
+      return {
+        stage: 'hatched',
+        name: '星光小幼龍 (Star Hatchling)',
+        icon: '🐲',
+        progress: totalCorrect,
+        target: 9,
+      };
+    } else if (totalCorrect >= 6) {
+      return {
+        stage: 'cracking',
+        name: '微光破裂蛋 (Cracking Egg)',
+        icon: '🐣',
+        progress: totalCorrect,
+        target: 9,
+      };
+    } else if (totalCorrect >= 3) {
+      return {
+        stage: 'egg',
+        name: '神祕星光蛋 (Mystery Egg)',
+        icon: '🥚',
+        progress: totalCorrect,
+        target: 6,
+      };
+    } else {
+      return {
+        stage: 'none',
+        name: '未解鎖 (Locked)',
+        icon: '🔒',
+        progress: totalCorrect,
+        target: 3,
+      };
+    }
+  }
+
+  /**
+   * Stamp Collection Book (Hong Kong Landmarks)
+   */
+  public getStamps(): string[] {
+    if (!Array.isArray(this.profile.stamps)) {
+      this.profile.stamps = [];
+    }
+    return this.profile.stamps;
+  }
+
+  public unlockStamp(stampId: string): boolean {
+    if (!Array.isArray(this.profile.stamps)) {
+      this.profile.stamps = [];
+    }
+    if (!this.profile.stamps.includes(stampId)) {
+      this.profile.stamps.push(stampId);
+      this.save();
+      return true;
+    }
+    return false;
+  }
+
+  /**
+   * Daily Quest & Lucky Spin Wheel
+   */
+  public getDailyQuest(): { date: string; completed: boolean; spinClaimed: boolean } {
+    const todayStr = new Date().toISOString().split('T')[0];
+    if (!this.profile.dailyQuest || this.profile.dailyQuest.date !== todayStr) {
+      this.profile.dailyQuest = {
+        date: todayStr,
+        completed: false,
+        spinClaimed: false,
+      };
+      this.save();
+    }
+    return this.profile.dailyQuest;
+  }
+
+  public completeDailyQuest(): void {
+    const quest = this.getDailyQuest();
+    quest.completed = true;
+    this.save();
+  }
+
+  public claimDailySpin(rewardCoins: number = 30): void {
+    const quest = this.getDailyQuest();
+    quest.spinClaimed = true;
+    this.addCoins(rewardCoins);
+    this.save();
+  }
+
   public save(): void {
     try {
       if (typeof localStorage !== 'undefined') {

@@ -146,14 +146,27 @@ export class SlotBox extends Phaser.GameObjects.Container {
     if (this.scene?.tweens) {
       this.scene.tweens.killTweensOf(card);
     }
-    if (typeof card.setScale === 'function') {
-      card.setScale(1.0);
-    }
-
-    // Snap card coordinates to slot position
+    // Snap card coordinates to slot position with smooth spring ease
     const center = this.getCenterPosition();
-    card.x = center.x;
-    card.y = center.y;
+    if (this.scene?.tweens) {
+      this.scene.tweens.killTweensOf(card);
+      card.setScale(1.08);
+      this.scene.tweens.add({
+        targets: card,
+        x: center.x,
+        y: center.y,
+        scaleX: 1.0,
+        scaleY: 1.0,
+        duration: 110,
+        ease: 'Back.easeOut',
+      });
+    } else {
+      card.x = center.x;
+      card.y = center.y;
+      if (typeof card.setScale === 'function') {
+        card.setScale(1.0);
+      }
+    }
     card.setState('placed');
 
     if (this.placeholderText && typeof this.placeholderText.setVisible === 'function') {

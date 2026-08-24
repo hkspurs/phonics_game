@@ -22,6 +22,7 @@ export interface RunnerSceneInitData {
   totalQuestions?: number;
   questions?: QuizQuestion[];
   sessionStats?: RunnerSessionStats;
+  isRainbowRush?: boolean;
 }
 
 export interface SkinConfig {
@@ -199,6 +200,7 @@ export class RunnerScene extends Phaser.Scene {
   public miniRunnerIcon: Phaser.GameObjects.Image | Phaser.GameObjects.Text | any = null;
   public skipButton: CanvasButton | null = null;
   public celebrationBanner: Phaser.GameObjects.Container | any = null;
+  public isRainbowRush: boolean = false;
 
   constructor() {
     super({ key: 'RunnerScene' });
@@ -214,6 +216,7 @@ export class RunnerScene extends Phaser.Scene {
     this.isStationComplete = data?.isStationComplete ?? false;
     this.totalQuestions = data?.totalQuestions ?? 3;
     this.questions = data?.questions ? [...data.questions] : [];
+    this.isRainbowRush = Boolean(data?.isRainbowRush);
     this.sessionStats = data?.sessionStats
       ? { ...data.sessionStats }
       : {
@@ -819,6 +822,32 @@ export class RunnerScene extends Phaser.Scene {
         this.playerSprite.setTint(this.skinConfig.tint);
       }
     }
+
+    // 3. Companion Pet (if unlocked via 3-6-9 milestone)
+    try {
+      const petData = DataManager.getInstance().getPetCompanion();
+      if (petData.stage !== 'none' && this.add.text) {
+        const petObj = this.add.text(
+          this.playerScreenX - 56,
+          this.playerBaselineY - 36,
+          petData.icon,
+          { fontSize: '32px' }
+        );
+        if (petObj.setDepth) petObj.setDepth(18);
+        if (this.tweens?.add) {
+          this.tweens.add({
+            targets: petObj,
+            y: this.playerBaselineY - 50,
+            duration: 800,
+            yoyo: true,
+            repeat: -1,
+            ease: 'Sine.easeInOut',
+          });
+        }
+      }
+    } catch {
+      // Ignore
+    }
   }
 
   /**
@@ -1155,9 +1184,9 @@ export class RunnerScene extends Phaser.Scene {
       // Safe ignore
     }
 
-    // Audio SFX
+    // Audio SFX with progressive arpeggio
     try {
-      SoundManager.play('coin');
+      SoundManager.playCoinArpeggio(this.sessionStats.collectedCoins || 0);
     } catch {
       // Safe ignore
     }

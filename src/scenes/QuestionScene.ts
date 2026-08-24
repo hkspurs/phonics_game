@@ -733,7 +733,7 @@ export class QuestionScene extends Phaser.Scene {
       this.onCorrectAnswer();
       return true;
     } else {
-      SoundManager.play('wrong');
+      SoundManager.playSoftWrong();
       this.sessionStats.mistakes++;
 
       for (const slot of this.slotBoxes) {
@@ -774,7 +774,7 @@ export class QuestionScene extends Phaser.Scene {
       this.onCorrectAnswer();
       return true;
     } else {
-      SoundManager.play('wrong');
+      SoundManager.playSoftWrong();
       this.sessionStats.mistakes++;
       card.wobble();
       card.setDisabled(true);
@@ -791,7 +791,7 @@ export class QuestionScene extends Phaser.Scene {
     if (this.isAnswered || !this.currentQuestion) return;
 
     this.sessionStats.hintsUsed++;
-    SoundManager.play('click');
+    SoundManager.playCardSnap();
 
     if (this.currentQuestion.type === 'sentence_scramble') {
       const expected = this.currentQuestion.correctTokens || [];
@@ -799,13 +799,13 @@ export class QuestionScene extends Phaser.Scene {
       let targetIndex = -1;
       for (let i = 0; i < this.slotBoxes.length; i++) {
         const slot = this.slotBoxes[i];
-        if (!slot.hasCard() || !slot.isCorrect()) {
+        if (!slot.hasCard() || slot.getPlacedCard()?.getText() !== expected[i]) {
           targetIndex = i;
           break;
         }
       }
 
-      if (targetIndex !== -1) {
+      if (targetIndex >= 0) {
         const targetSlot = this.slotBoxes[targetIndex];
         if (targetSlot.hasCard()) {
           targetSlot.removePlacedCard()?.snapBack();
@@ -865,7 +865,7 @@ export class QuestionScene extends Phaser.Scene {
   public handleReset(): void {
     if (this.isAnswered) return;
 
-    SoundManager.play('click');
+    SoundManager.playCardSnap();
     for (const slot of this.slotBoxes) {
       const card = slot.removePlacedCard();
       if (card) {
@@ -892,7 +892,7 @@ export class QuestionScene extends Phaser.Scene {
     }
 
     // 2. Play Audio & Speech
-    SoundManager.play('correct');
+    SoundManager.playComboCorrect(this.sessionStats.correctCount);
     const speakSentence =
       this.currentQuestion.speakText || this.currentQuestion.prompt || '';
     SpeechService.speak(speakSentence, this.getVoiceLanguage());
@@ -902,6 +902,7 @@ export class QuestionScene extends Phaser.Scene {
 
     // 4. Delayed Transition to RunnerScene
     const isComplete = this.questionIndex >= this.questions.length - 1;
+    const isRainbow = this.sessionStats.correctCount >= 2;
     if (this.time?.delayedCall) {
       this.time.delayedCall(1200, () => {
         if (this.scene) {
@@ -913,6 +914,7 @@ export class QuestionScene extends Phaser.Scene {
             totalQuestions: this.questions.length,
             questions: this.questions,
             sessionStats: this.sessionStats,
+            isRainbowRush: isRainbow,
           });
         }
       });

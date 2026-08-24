@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { GAME_WIDTH, GAME_HEIGHT } from '../config';
 import { DataManager } from '../services/DataManager';
+import { SoundManager } from '../services/SoundManager';
 import { CanvasButton } from '../ui/CanvasButton';
 import { CanvasModal } from '../ui/CanvasModal';
 
@@ -10,7 +11,11 @@ export class TitleScene extends Phaser.Scene {
   public trophyButton: CanvasButton | null = null;
   public settingsButton: CanvasButton | null = null;
   public reportButton: CanvasButton | null = null;
+  public dailyButton: CanvasButton | null = null;
+  public stampButton: CanvasButton | null = null;
   public reportModal: CanvasModal | null = null;
+  public dailyModal: CanvasModal | null = null;
+  public stampModal: CanvasModal | null = null;
 
   private coinText: Phaser.GameObjects.Text | null = null;
   private gemText: Phaser.GameObjects.Text | null = null;
@@ -248,14 +253,25 @@ export class TitleScene extends Phaser.Scene {
       headerContainer.add(starLabel);
 
       // 4. Streak Days Display
-      const streakLabel = this.add.text(260, 0, `🔥 連續: ${profile.stats.streakDays} 天`, {
-        fontSize: '18px',
+      const streakLabel = this.add.text(220, 0, `🔥 連續: ${profile.stats.streakDays} 天`, {
+        fontSize: '16px',
         fontFamily: "'Kenney Future', 'Noto Sans TC', sans-serif",
         color: '#ff6b6b',
         fontStyle: 'bold',
       });
       if (typeof streakLabel.setOrigin === 'function') streakLabel.setOrigin(0.5);
       headerContainer.add(streakLabel);
+
+      // 5. Pet Companion Milestone Display
+      const pet = DataManager.getInstance().getPetCompanion();
+      const petLabel = this.add.text(325, 0, `${pet.icon} ${pet.stage === 'hatched' ? '萌寵' : '萌蛋'}: ${pet.progress}/${pet.target}`, {
+        fontSize: '15px',
+        fontFamily: "'Noto Sans TC', sans-serif",
+        color: '#a78bfa',
+        fontStyle: 'bold',
+      });
+      if (typeof petLabel.setOrigin === 'function') petLabel.setOrigin(0.5);
+      headerContainer.add(petLabel);
     }
   }
 
@@ -523,4 +539,154 @@ export class TitleScene extends Phaser.Scene {
       // Ignore
     }
   }
+
+  public openDailyQuestModal(): void {
+    if (this.dailyModal && this.dailyModal.isOpen()) return;
+
+    const dm = DataManager.getInstance();
+    const quest = dm.getDailyQuest();
+    const totalCorrect = dm.getProfile().stats.chineseCorrect + dm.getProfile().stats.mathCorrect + dm.getProfile().stats.englishCorrect;
+
+    const modal = new CanvasModal(this, {
+      title: '🎁 每日 3 分鐘晨光任務',
+      width: 640,
+      height: 480,
+      theme: 'gold',
+      onClose: () => {
+        this.dailyModal = null;
+      },
+    });
+
+    if (this.add.text) {
+      const intro = this.add.text(0, -110, '🌟 每天完成 3 題挑戰，養成好習慣，轉動幸運大輪盤！', {
+        fontSize: '18px',
+        fontFamily: "'Noto Sans TC', sans-serif",
+        color: '#ffffff',
+        align: 'center',
+      });
+      if (typeof intro.setOrigin === 'function') intro.setOrigin(0.5);
+      modal.addContent(intro);
+
+      const statusBox = this.add.text(0, -50, quest.completed || totalCorrect >= 3 ? '✅ 今日 3 題挑戰已達成！' : `🎯 今日進度：已完成 ${Math.min(3, totalCorrect)} / 3 題`, {
+        fontSize: '22px',
+        fontFamily: "'Noto Sans TC', sans-serif",
+        color: quest.completed || totalCorrect >= 3 ? '#48b64e' : '#ffd700',
+        fontStyle: 'bold',
+        align: 'center',
+      });
+      if (typeof statusBox.setOrigin === 'function') statusBox.setOrigin(0.5);
+      modal.addContent(statusBox);
+
+      // Spin button or reward status
+      if (quest.spinClaimed) {
+        const claimed = this.add.text(0, 40, '🎉 今日幸運大輪盤獎勵已領取！明天繼續加油！', {
+          fontSize: '20px',
+          fontFamily: "'Noto Sans TC', sans-serif",
+          color: '#00e5ff',
+          fontStyle: 'bold',
+          align: 'center',
+        });
+        if (typeof claimed.setOrigin === 'function') claimed.setOrigin(0.5);
+        modal.addContent(claimed);
+      } else {
+        const spinBtn = new CanvasButton(this, {
+          x: 0,
+          y: 45,
+          width: 280,
+          height: 60,
+          text: '🎰 轉動幸運大輪盤！',
+          color: 'green',
+          fontSize: '22px',
+          soundKey: 'victory',
+          onClick: () => {
+            dm.claimDailySpin(50);
+            this.refreshCurrencyBar();
+            SoundManager.playComboCorrect(3);
+            modal.close();
+            this.openDailyQuestModal();
+          },
+        });
+        modal.addContent(spinBtn);
+      }
+    }
+
+    this.dailyModal = modal;
+    modal.show();
+  }
+
+  public openStampBookModal(): void {
+    if (this.stampModal && this.stampModal.isOpen()) return;
+
+    const dm = DataManager.getInstance();
+    const unlockedStamps = dm.getStamps();
+    const profile = dm.getProfile();
+
+    const modal = new CanvasModal(this, {
+      title: '🏷️ 香港地標冒險集郵手帳',
+      width: 720,
+      height: 520,
+      theme: 'dark',
+      onClose: () => {
+        this.stampModal = null;
+      },
+    });
+
+    const stampList = [
+      { id: 'station_1', name: '青草小木屋', icon: '🏡' },
+      { id: 'station_2', name: '天星小輪碼頭', icon: '🚢' },
+      { id: 'station_3', name: '香港太空館', icon: '🔭' },
+      { id: 'station_4', name: '獅子山觀景台', icon: '🦁' },
+      { id: 'station_5', name: '懷舊茶餐廳', icon: '🫖' },
+      { id: 'station_6', name: '香港海洋公園', icon: '🐬' },
+      { id: 'station_7', name: '港島叮叮車', icon: '🚋' },
+      { id: 'station_8', name: '尖沙咀鐘樓', icon: '🔔' },
+      { id: 'station_9', name: '奇妙童話城堡', icon: '🏰' },
+      { id: 'station_10', name: '未來科技太空站', icon: '🚀' },
+    ];
+
+    if (this.add.text) {
+      const subtitle = this.add.text(0, -145, `🎒 收集進度：${Math.min(10, profile.unlockedStations)} / 10 個香港地標印章`, {
+        fontSize: '18px',
+        fontFamily: "'Noto Sans TC', sans-serif",
+        color: '#ffd700',
+        fontStyle: 'bold',
+        align: 'center',
+      });
+      if (typeof subtitle.setOrigin === 'function') subtitle.setOrigin(0.5);
+      modal.addContent(subtitle);
+
+      // Render 5x2 grid of stamps
+      const startX = -240;
+      const startY = -80;
+      const colSpacing = 120;
+      const rowSpacing = 110;
+
+      stampList.forEach((s, idx) => {
+        const col = idx % 5;
+        const row = Math.floor(idx / 5);
+        const x = startX + col * colSpacing;
+        const y = startY + row * rowSpacing;
+
+        const isUnlocked = idx < profile.unlockedStations || unlockedStamps.includes(s.id);
+        const iconText = this.add.text(x, y, isUnlocked ? s.icon : '🔒', {
+          fontSize: '36px',
+        });
+        if (typeof iconText.setOrigin === 'function') iconText.setOrigin(0.5);
+        modal.addContent(iconText);
+
+        const nameText = this.add.text(x, y + 36, isUnlocked ? s.name : '未解鎖', {
+          fontSize: '13px',
+          fontFamily: "'Noto Sans TC', sans-serif",
+          color: isUnlocked ? '#ffffff' : '#64748b',
+          align: 'center',
+        });
+        if (typeof nameText.setOrigin === 'function') nameText.setOrigin(0.5);
+        modal.addContent(nameText);
+      });
+    }
+
+    this.stampModal = modal;
+    modal.show();
+  }
+
 }

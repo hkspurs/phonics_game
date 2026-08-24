@@ -624,6 +624,7 @@ describe('QuestionScene — Interactive Quiz Scene Suite', () => {
         totalQuestions: 3,
         questions: expect.any(Array),
         sessionStats: expect.any(Object),
+        isRainbowRush: expect.any(Boolean),
       });
     });
 
@@ -646,6 +647,7 @@ describe('QuestionScene — Interactive Quiz Scene Suite', () => {
         totalQuestions: 3,
         questions: expect.any(Array),
         sessionStats: expect.any(Object),
+        isRainbowRush: expect.any(Boolean),
       });
     });
   });
