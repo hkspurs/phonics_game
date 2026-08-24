@@ -185,6 +185,14 @@ export class RunnerScene extends Phaser.Scene {
   public playerScreenX: number = 260;
   public isLeftDown: boolean = false;
   public isRightDown: boolean = false;
+  public joystickActive: boolean = false;
+  public joystickPointerId: number | null = null;
+  public joystickBaseX: number = 130;
+  public joystickBaseY: number = 610;
+  public joystickRadius: number = 52;
+  public joystickAxisX: number = 0;
+  public joystickBaseGraphics: Phaser.GameObjects.Graphics | any = null;
+  public joystickThumbGraphics: Phaser.GameObjects.Graphics | any = null;
   public virtualGamepadContainer: Phaser.GameObjects.Container | any = null;
   public leftBtn: CanvasButton | null = null;
   public rightBtn: CanvasButton | null = null;
@@ -258,6 +266,9 @@ export class RunnerScene extends Phaser.Scene {
     this.playerScreenX = 260;
     this.isLeftDown = false;
     this.isRightDown = false;
+    this.joystickActive = false;
+    this.joystickPointerId = null;
+    this.joystickAxisX = 0;
     this.worldItems = [];
     this.clouds = [];
     this.stepTimer = 0;
@@ -306,6 +317,15 @@ export class RunnerScene extends Phaser.Scene {
 
     // 5. Build Mobile Virtual Gamepad (Left/Right Steering & Jump Button)
     this.createVirtualGamepad(width, height);
+
+    // Enable multi-touch for 2+ simultaneous fingers (Left joystick + Right jump)
+    if (this.input && typeof (this.input as any).addPointer === 'function') {
+      try {
+        (this.input as any).addPointer(2);
+      } catch {
+        // Safe ignore if pointers already exist
+      }
+    }
 
     // 6. Register Touch & Keyboard Controls (Dual Steering & Kinematic Jump)
     if (this.input) {
@@ -998,7 +1018,7 @@ export class RunnerScene extends Phaser.Scene {
       },
     });
 
-    // 4. Interactive Jump Tutorial Prompt ("🕹️ 按左右移動 🦘 按跳躍鍵拾取寶石！")
+    // 4. Interactive Jump Tutorial Prompt ("🕹️ 滑動搖桿左右移動 🦘 按跳躍鍵拾取寶石！")
     if (this.add.container) {
       const hintContainer = this.add.container(width / 2, _height - 54);
       if (this.add.graphics) {
@@ -1011,7 +1031,7 @@ export class RunnerScene extends Phaser.Scene {
       }
 
       if (this.add.text) {
-        const hintText = this.add.text(0, 0, '🕹️ 按左右移動 🦘 按跳躍鍵拾取寶石！', {
+        const hintText = this.add.text(0, 0, '🕹️ 滑動搖桿左右移動 🦘 按跳躍鍵拾取寶石！', {
           fontSize: '16px',
           fontFamily: "'Noto Sans TC', 'Microsoft JhengHei', sans-serif",
           color: '#ffffff',
@@ -1174,23 +1194,26 @@ export class RunnerScene extends Phaser.Scene {
     const width = this.sys?.game?.config ? Number(this.sys.game.config.width) : GAME_WIDTH;
     const height = this.sys?.game?.config ? Number(this.sys.game.config.height) : GAME_HEIGHT;
 
-    // 0. Pure Manual Movement: Player only advances when holding Right or Left
-    let moveX = 0;
+    // 0. Analog Joystick & Keyboard Steering (Seamless swipe left -> right)
+    let moveX = this.joystickAxisX;
     if (this.isLeftDown) moveX -= 1;
     if (this.isRightDown) moveX += 1;
+    moveX = Phaser.Math.Clamp(moveX, -1, 1);
 
     const effectiveSpeed = this.isRainbowRush ? this.currentSpeed * 1.35 : this.currentSpeed;
     const stepMove = moveX * effectiveSpeed * dtSeconds;
 
-    if (moveX > 0) {
-      this.distanceRun += stepMove;
-      if (this.playerSprite && typeof this.playerSprite.setFlipX === 'function') {
-        this.playerSprite.setFlipX(false);
-      }
-    } else if (moveX < 0) {
-      this.distanceRun = Math.max(0, this.distanceRun + stepMove);
-      if (this.playerSprite && typeof this.playerSprite.setFlipX === 'function') {
-        this.playerSprite.setFlipX(true);
+    if (Math.abs(moveX) > 0.08) {
+      if (moveX > 0) {
+        this.distanceRun += stepMove;
+        if (this.playerSprite && typeof this.playerSprite.setFlipX === 'function') {
+          this.playerSprite.setFlipX(false);
+        }
+      } else {
+        this.distanceRun = Math.max(0, this.distanceRun + stepMove);
+        if (this.playerSprite && typeof this.playerSprite.setFlipX === 'function') {
+          this.playerSprite.setFlipX(true);
+        }
       }
     }
 
@@ -1350,7 +1373,7 @@ export class RunnerScene extends Phaser.Scene {
 
     // 7. Update Character Texture & Step Animation (Idle Stand when not moving)
     if (this.isGrounded && !this.isJumping && !this.isSuperJumping) {
-      if (moveX !== 0) {
+      if (Math.abs(moveX) > 0.08) {
         this.stepTimer += delta;
         const stepDuration = 130 / (this.isRainbowRush ? this.skinConfig.speedMultiplier * 1.35 : this.skinConfig.speedMultiplier);
         if (this.stepTimer >= stepDuration) {
@@ -1820,7 +1843,7 @@ export class RunnerScene extends Phaser.Scene {
    * Scene shutdown and resource cleanup
    */
   /**
-   * Creates Mobile Virtual Gamepad (Left / Right Directional Controls & Large Jump Button)
+   * Creates Mobile Virtual Analog Joystick (Left Thumb Drag / Slide) & Large Jump Button (Right Thumb)
    */
   public createVirtualGamepad(width: number, height: number): void {
     if (!this.add) return;
@@ -1833,47 +1856,95 @@ export class RunnerScene extends Phaser.Scene {
       this.virtualGamepadContainer.setDepth(150);
     }
 
-    const dpadY = height - 52;
-    const btnH = 58;
+    this.joystickBaseX = 130;
+    this.joystickBaseY = height - 90;
+    this.joystickRadius = 52;
 
-    // 1. Left Directional Button (◀ 左)
-    this.leftBtn = new CanvasButton(this, {
-      x: 80,
-      y: dpadY,
-      width: 86,
-      height: btnH,
-      text: '◀ 左',
-      color: 'blue',
-      fontSize: '20px',
-      onClick: () => {},
-    });
-    this.leftBtn.on('pointerdown', () => { this.isLeftDown = true; });
-    this.leftBtn.on('pointerup', () => { this.isLeftDown = false; });
-    this.leftBtn.on('pointerout', () => { this.isLeftDown = false; });
-    this.virtualGamepadContainer.add(this.leftBtn);
+    // 1. Draw Joystick Base (Translucent Cyber Ring with Directional Indicators)
+    if (this.add.graphics) {
+      const gBase = this.add.graphics();
+      gBase.fillStyle(0x0f172a, 0.65);
+      gBase.fillCircle(this.joystickBaseX, this.joystickBaseY, this.joystickRadius);
+      gBase.lineStyle(3, 0x38bdf8, 0.85);
+      if (typeof gBase.strokeCircle === 'function') gBase.strokeCircle(this.joystickBaseX, this.joystickBaseY, this.joystickRadius);
 
-    // 2. Right Directional Button (右 ▶)
-    this.rightBtn = new CanvasButton(this, {
-      x: 180,
-      y: dpadY,
-      width: 86,
-      height: btnH,
-      text: '右 ▶',
-      color: 'blue',
-      fontSize: '20px',
-      onClick: () => {},
-    });
-    this.rightBtn.on('pointerdown', () => { this.isRightDown = true; });
-    this.rightBtn.on('pointerup', () => { this.isRightDown = false; });
-    this.rightBtn.on('pointerout', () => { this.isRightDown = false; });
-    this.virtualGamepadContainer.add(this.rightBtn);
+      // Inner guidelines
+      gBase.lineStyle(1.5, 0x38bdf8, 0.35);
+      if (typeof gBase.strokeCircle === 'function') gBase.strokeCircle(this.joystickBaseX, this.joystickBaseY, 26);
+      if (typeof gBase.lineBetween === 'function') gBase.lineBetween(this.joystickBaseX - 44, this.joystickBaseY, this.joystickBaseX + 44, this.joystickBaseY);
 
-    // 3. Right Large Jump Button (🦘 跳躍)
+      this.joystickBaseGraphics = gBase;
+      this.virtualGamepadContainer.add(gBase);
+
+      // 2. Draw Joystick Thumbstick Knob
+      const gThumb = this.add.graphics();
+      this.redrawJoystickThumb(gThumb, this.joystickBaseX, this.joystickBaseY);
+      this.joystickThumbGraphics = gThumb;
+      this.virtualGamepadContainer.add(gThumb);
+    }
+
+    // Directional labels on joystick base
+    if (this.add.text) {
+      const leftLabel = this.add.text(this.joystickBaseX - 36, this.joystickBaseY, '◀', {
+        fontSize: '14px',
+        color: '#38bdf8',
+        fontStyle: 'bold',
+      });
+      if (typeof leftLabel.setOrigin === 'function') leftLabel.setOrigin(0.5);
+      this.virtualGamepadContainer.add(leftLabel);
+
+      const rightLabel = this.add.text(this.joystickBaseX + 36, this.joystickBaseY, '▶', {
+        fontSize: '14px',
+        color: '#38bdf8',
+        fontStyle: 'bold',
+      });
+      if (typeof rightLabel.setOrigin === 'function') rightLabel.setOrigin(0.5);
+      this.virtualGamepadContainer.add(rightLabel);
+
+      const joystickTitle = this.add.text(this.joystickBaseX, this.joystickBaseY - this.joystickRadius - 14, '🕹️ 滑動搖桿移動', {
+        fontSize: '13px',
+        fontFamily: "'Noto Sans TC', sans-serif",
+        color: '#93c5fd',
+        fontStyle: 'bold',
+      });
+      if (typeof joystickTitle.setOrigin === 'function') joystickTitle.setOrigin(0.5);
+      this.virtualGamepadContainer.add(joystickTitle);
+    }
+
+    // 3. Register Left-Side Touch Joystick Drag / Slide Events
+    if (this.input) {
+      this.input.on('pointerdown', (pointer: any) => {
+        // Left touch zone: X <= 320, Y >= height - 200
+        if (pointer.x <= 320 && pointer.y >= height - 200) {
+          this.joystickActive = true;
+          this.joystickPointerId = pointer.id;
+          this.updateJoystickFromPointer(pointer.x, pointer.y);
+        }
+      });
+
+      this.input.on('pointermove', (pointer: any) => {
+        if (this.joystickActive && (this.joystickPointerId === null || pointer.id === this.joystickPointerId)) {
+          this.updateJoystickFromPointer(pointer.x, pointer.y);
+        }
+      });
+
+      const releaseJoystick = (pointer: any) => {
+        if (this.joystickActive && (this.joystickPointerId === null || pointer.id === this.joystickPointerId)) {
+          this.resetJoystick();
+        }
+      };
+
+      this.input.on('pointerup', releaseJoystick);
+      this.input.on('pointerupoutside', releaseJoystick);
+    }
+
+    // 4. Large Right Action Jump Button (🦘 跳躍)
+    const jumpBtnY = height - 76;
     this.jumpBtn = new CanvasButton(this, {
-      x: width - 96,
-      y: dpadY,
+      x: width - 100,
+      y: jumpBtnY,
       width: 140,
-      height: btnH + 6,
+      height: 68,
       text: '🦘 跳躍',
       color: 'green',
       fontSize: '22px',
@@ -1885,6 +1956,72 @@ export class RunnerScene extends Phaser.Scene {
       this.handleJumpInput();
     });
     this.virtualGamepadContainer.add(this.jumpBtn);
+  }
+
+  /**
+   * Redraws the 3D shiny thumbstick knob at target coordinates
+   */
+  public redrawJoystickThumb(g: Phaser.GameObjects.Graphics, x: number, y: number): void {
+    if (!g || typeof g.clear !== 'function') return;
+    g.clear();
+
+    const r = 26;
+    // Drop shadow
+    g.fillStyle(0x000000, 0.4);
+    g.fillCircle(x + 2, y + 4, r);
+
+    // Main knob gradient base
+    g.fillStyle(0x0284c7, 0.95);
+    g.fillCircle(x, y, r);
+
+    // Specular gloss cap
+    g.fillStyle(0x7dd3fc, 0.65);
+    g.fillCircle(x - 4, y - 6, r * 0.55);
+
+    // Inner glowing ring
+    g.lineStyle(2, 0xffffff, 0.9);
+    if (typeof g.strokeCircle === 'function') g.strokeCircle(x, y, r * 0.7);
+    g.fillStyle(0xffffff, 0.9);
+    g.fillCircle(x, y, 4);
+  }
+
+  /**
+   * Updates joystick position and continuous axis (-1.0 to +1.0) from pointer drag coordinates
+   */
+  public updateJoystickFromPointer(pointerX: number, pointerY: number): void {
+    const dx = pointerX - this.joystickBaseX;
+    const dy = pointerY - this.joystickBaseY;
+    const dist = Math.hypot(dx, dy);
+
+    let knobX = pointerX;
+    let knobY = pointerY;
+
+    if (dist > this.joystickRadius) {
+      const angle = Math.atan2(dy, dx);
+      knobX = this.joystickBaseX + Math.cos(angle) * this.joystickRadius;
+      knobY = this.joystickBaseY + Math.sin(angle) * this.joystickRadius;
+    }
+
+    if (this.joystickThumbGraphics) {
+      this.redrawJoystickThumb(this.joystickThumbGraphics, knobX, knobY);
+    }
+
+    // Continuous X Axis mapped from -1.0 (full left) to +1.0 (full right)
+    const clampedDistX = Math.max(-this.joystickRadius, Math.min(this.joystickRadius, dx));
+    this.joystickAxisX = clampedDistX / this.joystickRadius;
+  }
+
+  /**
+   * Resets joystick knob to center with elastic release
+   */
+  public resetJoystick(): void {
+    this.joystickActive = false;
+    this.joystickPointerId = null;
+    this.joystickAxisX = 0;
+
+    if (this.joystickThumbGraphics) {
+      this.redrawJoystickThumb(this.joystickThumbGraphics, this.joystickBaseX, this.joystickBaseY);
+    }
   }
 
   public shutdown(): void {

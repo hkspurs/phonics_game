@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { RunnerScene } from '../scenes/RunnerScene';
 import { GAME_WIDTH, GAME_HEIGHT } from '../config';
 
-describe('RunnerScene Mobile Virtual Gamepad & Kinematics Controls Suite', () => {
+describe('RunnerScene Mobile Virtual Analog Joystick & Kinematics Suite', () => {
   let scene: RunnerScene;
 
   const createMockGameObject = () => ({
@@ -19,9 +19,12 @@ describe('RunnerScene Mobile Virtual Gamepad & Kinematics Controls Suite', () =>
     setShadow: () => {},
     fillStyle: () => {},
     fillRoundedRect: () => {},
+    fillCircle: () => {},
     fillEllipse: () => {},
     lineStyle: () => {},
     strokeRoundedRect: () => {},
+    strokeCircle: () => {},
+    lineBetween: () => {},
     clear: () => {},
     destroy: () => {},
     once: vi.fn(),
@@ -79,6 +82,7 @@ describe('RunnerScene Mobile Virtual Gamepad & Kinematics Controls Suite', () =>
     scene.input = {
       on: vi.fn(),
       off: vi.fn(),
+      addPointer: vi.fn(),
       keyboard: {
         on: vi.fn(),
         off: vi.fn(),
@@ -86,59 +90,76 @@ describe('RunnerScene Mobile Virtual Gamepad & Kinematics Controls Suite', () =>
     } as any;
   });
 
-  it('1. builds the virtual gamepad with Left, Right and Jump buttons on top depth (150)', () => {
+  it('1. builds the analog virtual joystick and jump button on top depth (150)', () => {
     scene.createVirtualGamepad(GAME_WIDTH, GAME_HEIGHT);
 
     expect(scene.virtualGamepadContainer).toBeDefined();
     expect(scene.virtualGamepadContainer.depth).toBe(150);
-    expect(scene.leftBtn).toBeDefined();
-    expect(scene.rightBtn).toBeDefined();
+    expect(scene.joystickBaseGraphics).toBeDefined();
+    expect(scene.joystickThumbGraphics).toBeDefined();
     expect(scene.jumpBtn).toBeDefined();
-    expect(scene.leftBtn?.getText()).toBe('◀ 左');
-    expect(scene.rightBtn?.getText()).toBe('右 ▶');
     expect(scene.jumpBtn?.getText()).toBe('🦘 跳躍');
   });
 
-  it('2. does NOT move or scroll automatically when idle (no buttons pressed)', () => {
+  it('2. stays completely idle (no movement) when joystick is at rest (axis = 0)', () => {
     scene.init({ questionIndex: 0 });
-    scene.distanceRun = 200;
+    scene.distanceRun = 250;
+    scene.joystickAxisX = 0;
     scene.isLeftDown = false;
     scene.isRightDown = false;
 
     scene.update(0, 100);
-    scene.update(0, 100);
-
-    expect(scene.distanceRun).toBe(200); // 100% stands still
+    expect(scene.distanceRun).toBe(250);
   });
 
-  it('3. runs forward along track when Right button is held', () => {
+  it('3. runs forward when joystick is dragged to the right (continuous slide)', () => {
     scene.init({ questionIndex: 0 });
+    scene.createVirtualGamepad(GAME_WIDTH, GAME_HEIGHT);
     scene.distanceRun = 100;
-    scene.isLeftDown = false;
-    scene.isRightDown = true;
+
+    // Simulate thumb dragging right: pointerX = baseX + radius
+    scene.updateJoystickFromPointer(scene.joystickBaseX + scene.joystickRadius, scene.joystickBaseY);
+
+    expect(scene.joystickAxisX).toBe(1.0);
 
     scene.update(0, 100); // 100ms
     expect(scene.distanceRun).toBeGreaterThan(100);
   });
 
-  it('4. runs backward along track when Left button is held', () => {
+  it('4. seamlessly switches to moving left when sliding thumb from right to left in one swipe', () => {
     scene.init({ questionIndex: 0 });
-    scene.distanceRun = 100;
-    scene.isLeftDown = true;
-    scene.isRightDown = false;
+    scene.createVirtualGamepad(GAME_WIDTH, GAME_HEIGHT);
+    scene.distanceRun = 300;
 
-    scene.update(0, 100); // 100ms
-    expect(scene.distanceRun).toBeLessThan(100);
+    // Swipe right first
+    scene.updateJoystickFromPointer(scene.joystickBaseX + scene.joystickRadius, scene.joystickBaseY);
+    expect(scene.joystickAxisX).toBe(1.0);
+    scene.update(0, 50);
+    const distAfterRight = scene.distanceRun;
+    expect(distAfterRight).toBeGreaterThan(300);
+
+    // Seamlessly slide left without releasing finger
+    scene.updateJoystickFromPointer(scene.joystickBaseX - scene.joystickRadius, scene.joystickBaseY);
+    expect(scene.joystickAxisX).toBe(-1.0);
+    scene.update(0, 50);
+    expect(scene.distanceRun).toBeLessThan(distAfterRight);
   });
 
-  it('5. clamps backward movement at track start (distanceRun >= 0)', () => {
+  it('5. springs back to center and stops player immediately on release', () => {
     scene.init({ questionIndex: 0 });
-    scene.distanceRun = 10;
-    scene.isLeftDown = true;
-    scene.isRightDown = false;
+    scene.createVirtualGamepad(GAME_WIDTH, GAME_HEIGHT);
+    scene.distanceRun = 150;
 
-    scene.update(0, 200);
-    expect(scene.distanceRun).toBe(0);
+    scene.updateJoystickFromPointer(scene.joystickBaseX + scene.joystickRadius, scene.joystickBaseY);
+    expect(scene.joystickAxisX).toBe(1.0);
+
+    // Finger released
+    scene.resetJoystick();
+    expect(scene.joystickAxisX).toBe(0);
+    expect(scene.joystickActive).toBe(false);
+
+    scene.update(0, 100);
+    expect(scene.distanceRun).toBe(150); // Did not move
   });
 
   it('6. triggers kinematic jump on jumpBtn input', () => {
@@ -153,9 +174,9 @@ describe('RunnerScene Mobile Virtual Gamepad & Kinematics Controls Suite', () =>
     expect(scene.playerVelocityY).toBeLessThan(0); // Upward velocity
   });
 
-  it('7. cleans up input and releases directional states in shutdown()', () => {
-    scene.isLeftDown = true;
-    scene.isRightDown = true;
+  it('7. cleans up input and releases joystick state in shutdown()', () => {
+    scene.joystickActive = true;
+    scene.joystickAxisX = 0.8;
 
     scene.shutdown();
 
