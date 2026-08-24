@@ -65,12 +65,18 @@ export const phaserGameConfig: Phaser.Types.Core.GameConfig = {
   parent: DEFAULT_GAME_SETTINGS.parent,
   width: initialSize.width,
   height: initialSize.height,
+  roundPixels: true,
   backgroundColor: DEFAULT_GAME_SETTINGS.backgroundColor,
   scale: {
     mode: Phaser.Scale.FIT,
     autoCenter: Phaser.Scale.CENTER_BOTH,
     width: initialSize.width,
     height: initialSize.height,
+  },
+  render: {
+    antialias: true,
+    pixelArt: false,
+    roundPixels: true,
   },
   physics: {
     default: 'arcade',

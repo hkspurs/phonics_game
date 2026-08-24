@@ -160,6 +160,7 @@ export class CanvasButton extends Phaser.GameObjects.Container {
         fontFamily,
         color: textColor,
         align: 'center',
+        resolution: typeof window !== 'undefined' ? Math.max(2, window.devicePixelRatio || 2) : 2,
       });
       if (typeof text.setOrigin === 'function') {
         text.setOrigin(0.5, 0.5);

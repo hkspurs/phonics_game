@@ -191,6 +191,7 @@ export class CanvasCard extends Phaser.GameObjects.Container {
       color: textColor,
       fontStyle: 'bold',
       align: 'center',
+      resolution: typeof window !== 'undefined' ? Math.max(2, window.devicePixelRatio || 2) : 2,
     });
 
     if (typeof text.setOrigin === 'function') {

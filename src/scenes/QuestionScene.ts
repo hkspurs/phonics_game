@@ -250,6 +250,7 @@ export class QuestionScene extends Phaser.Scene {
         stroke: '#0f172a',
         strokeThickness: 3,
         align: 'center',
+        resolution: typeof window !== 'undefined' ? Math.max(2, window.devicePixelRatio || 2) : 2,
       });
       if (typeof title.setOrigin === 'function') title.setOrigin(0.5);
       this.headerTitleText = title;
@@ -289,6 +290,7 @@ export class QuestionScene extends Phaser.Scene {
           fontFamily: "'Kenney Future', 'Noto Sans TC', sans-serif",
           color: '#94a3b8',
           fontStyle: 'bold',
+          resolution: typeof window !== 'undefined' ? Math.max(2, window.devicePixelRatio || 2) : 2,
         }
       );
       if (typeof counterLabel.setOrigin === 'function') counterLabel.setOrigin(0, 0.5);
@@ -342,6 +344,7 @@ export class QuestionScene extends Phaser.Scene {
         fontFamily: "'Kenney Future', 'Noto Sans TC', sans-serif",
         color: '#ffffff',
         fontStyle: 'bold',
+        resolution: typeof window !== 'undefined' ? Math.max(2, window.devicePixelRatio || 2) : 2,
       });
       if (typeof subjectTag.setOrigin === 'function') subjectTag.setOrigin(0.5);
       banner.add(subjectTag);
@@ -356,6 +359,7 @@ export class QuestionScene extends Phaser.Scene {
         color: '#ffffff',
         fontStyle: 'bold',
         align: 'left',
+        resolution: typeof window !== 'undefined' ? Math.max(2, window.devicePixelRatio || 2) : 2,
       });
       if (typeof promptLbl.setOrigin === 'function') promptLbl.setOrigin(0, 0.5);
       this.promptText = promptLbl;
@@ -513,6 +517,7 @@ export class QuestionScene extends Phaser.Scene {
         color: '#ffd700',
         fontStyle: 'bold',
         align: 'center',
+        resolution: typeof window !== 'undefined' ? Math.max(2, window.devicePixelRatio || 2) : 2,
       });
       if (typeof eqLabel.setOrigin === 'function') eqLabel.setOrigin(0.5);
     }

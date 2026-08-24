@@ -201,6 +201,7 @@ export class CanvasModal extends Phaser.GameObjects.Container {
       color: '#ffd700',
       fontStyle: 'bold',
       align: 'center',
+      resolution: typeof window !== 'undefined' ? Math.max(2, window.devicePixelRatio || 2) : 2,
     });
 
     if (typeof text.setOrigin === 'function') {

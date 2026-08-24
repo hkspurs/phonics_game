@@ -966,6 +966,7 @@ export class MapScene extends Phaser.Scene {
           fontFamily: "'Kenney Future', 'Noto Sans TC', sans-serif",
           color: '#ffffff',
           fontStyle: 'bold',
+          resolution: typeof window !== 'undefined' ? Math.max(2, window.devicePixelRatio || 2) : 2,
         });
         if (badgeLabel && typeof badgeLabel.setScrollFactor === 'function') {
           badgeLabel.setScrollFactor(0);
@@ -979,6 +980,7 @@ export class MapScene extends Phaser.Scene {
           fontFamily: "'Noto Sans TC', sans-serif",
           color: '#ffd700',
           fontStyle: 'bold',
+          resolution: typeof window !== 'undefined' ? Math.max(2, window.devicePixelRatio || 2) : 2,
         });
         if (titleLabel && typeof titleLabel.setScrollFactor === 'function') {
           titleLabel.setScrollFactor(0);
@@ -989,6 +991,7 @@ export class MapScene extends Phaser.Scene {
           fontSize: '12px',
           fontFamily: "'Noto Sans TC', sans-serif",
           color: '#94a3b8',
+          resolution: typeof window !== 'undefined' ? Math.max(2, window.devicePixelRatio || 2) : 2,
         });
         if (descLabel && typeof descLabel.setScrollFactor === 'function') {
           descLabel.setScrollFactor(0);
@@ -998,6 +1001,7 @@ export class MapScene extends Phaser.Scene {
         // Sub-level star icon
         const starIcon = this.add.text(250, 0, sub.earnedStar ? '⭐' : '☆', {
           fontSize: '22px',
+          resolution: typeof window !== 'undefined' ? Math.max(2, window.devicePixelRatio || 2) : 2,
         });
         if (starIcon && typeof starIcon.setScrollFactor === 'function') {
           starIcon.setScrollFactor(0);
@@ -1238,6 +1242,7 @@ export class MapScene extends Phaser.Scene {
         fontFamily: "'Kenney Future', 'Noto Sans TC', sans-serif",
         color: '#67e8f9',
         fontStyle: 'bold',
+        resolution: typeof window !== 'undefined' ? Math.max(2, window.devicePixelRatio || 2) : 2,
       });
       if (typeof progLabel.setOrigin === 'function') progLabel.setOrigin(0.5);
       this.progressText = progLabel;
@@ -1249,6 +1254,7 @@ export class MapScene extends Phaser.Scene {
         fontFamily: "'Kenney Future', 'Noto Sans TC', sans-serif",
         color: '#fde047',
         fontStyle: 'bold',
+        resolution: typeof window !== 'undefined' ? Math.max(2, window.devicePixelRatio || 2) : 2,
       });
       if (typeof starLabel.setOrigin === 'function') starLabel.setOrigin(0.5);
       this.starText = starLabel;
@@ -1260,6 +1266,7 @@ export class MapScene extends Phaser.Scene {
         fontFamily: "'Kenney Future', 'Noto Sans TC', sans-serif",
         color: '#fbbf24',
         fontStyle: 'bold',
+        resolution: typeof window !== 'undefined' ? Math.max(2, window.devicePixelRatio || 2) : 2,
       });
       if (typeof coinLabel.setOrigin === 'function') coinLabel.setOrigin(0.5);
       this.coinText = coinLabel;
@@ -1271,6 +1278,7 @@ export class MapScene extends Phaser.Scene {
         fontFamily: "'Kenney Future', 'Noto Sans TC', sans-serif",
         color: '#38bdf8',
         fontStyle: 'bold',
+        resolution: typeof window !== 'undefined' ? Math.max(2, window.devicePixelRatio || 2) : 2,
       });
       if (typeof gemLabel.setOrigin === 'function') gemLabel.setOrigin(0.5);
       this.gemText = gemLabel;

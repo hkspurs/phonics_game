@@ -113,6 +113,7 @@ export class SlotBox extends Phaser.GameObjects.Container {
       color: '#657388',
       fontStyle: 'bold',
       align: 'center',
+      resolution: typeof window !== 'undefined' ? Math.max(2, window.devicePixelRatio || 2) : 2,
     });
 
     if (typeof text.setOrigin === 'function') {
