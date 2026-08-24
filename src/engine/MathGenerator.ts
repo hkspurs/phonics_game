@@ -22,8 +22,18 @@ export class MathGenerator {
         return this.generateLevel1();
       case 2:
         return this.generateLevel2();
-      case 3:
-        return this.generateWordProblem(20);
+      case 3: {
+        const roll = Math.random();
+        if (roll < 0.4) {
+          return this.generateWordProblem(20);
+        } else if (roll < 0.7) {
+          return this.generateHongKongMoney(20);
+        } else if (roll < 0.85) {
+          return this.generateClockTime();
+        } else {
+          return this.generateShapeQuestion();
+        }
+      }
       case 4:
         return this.generateLevel4();
       default:
@@ -50,10 +60,12 @@ export class MathGenerator {
    */
   private static generateLevel2(): MathQuestion {
     const roll = Math.random();
-    if (roll < 0.45) {
+    if (roll < 0.4) {
       return this.generateAddition(20, 10);
-    } else if (roll < 0.85) {
+    } else if (roll < 0.75) {
       return this.generateSubtraction(20, 10);
+    } else if (roll < 0.88) {
+      return this.generateNumberPattern();
     } else {
       return this.generateComparison(20);
     }
@@ -557,4 +569,236 @@ export class MathGenerator {
   private static generateId(prefix: string = 'math'): string {
     return `${prefix}_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
   }
+
+  /**
+   * Generates Hong Kong Money & Coin word problems (e.g. 10元, 5元, 2元, 1元, 找續)
+   */
+  static generateHongKongMoney(_maxVal: number = 20): MathQuestion {
+    const scenarios = [
+      {
+        text: (item: string, cost: number, paid: number) => `買一${item}售 ${cost} 元，小明付了一張 ${paid} 元，應找回多少元？`,
+        calc: (cost: number, paid: number) => paid - cost,
+        items: ['盒牛奶', '本筆記簿', '支彩色筆', '包餅乾', '個麵包'],
+      },
+      {
+        text: (item: string, a: number, b: number) => `小華買了一${item}花了 ${a} 元，又買了一包貼紙花了 ${b} 元，一共要付多少元？`,
+        calc: (a: number, b: number) => a + b,
+        items: ['支鉛筆', '塊橡皮擦', '本故事書', '把剪刀'],
+      }
+    ];
+
+    const isChange = Math.random() < 0.6;
+    if (isChange) {
+      const paid = Math.random() < 0.5 ? 10 : 20;
+      const cost = MathGenerator.randomInt(2, paid - 1);
+      const correctAnswer = paid - cost;
+      const item = scenarios[0].items[MathGenerator.randomInt(0, scenarios[0].items.length - 1)];
+      const prompt = scenarios[0].text(item, cost, paid);
+      const expression = `${paid} - ${cost} = ${correctAnswer}`;
+      const distractors = MathGenerator.generateDistractors(correctAnswer, [cost, paid], 3, 0, 20);
+      const options = MathGenerator.fisherYatesShuffle([correctAnswer, ...distractors]);
+
+      return {
+        id: MathGenerator.generateId('math_money'),
+        type: 'word_problem',
+        prompt,
+        expression,
+        correctAnswer,
+        options,
+      };
+    } else {
+      const a = MathGenerator.randomInt(2, 9);
+      const b = MathGenerator.randomInt(2, 9);
+      const correctAnswer = a + b;
+      const item = scenarios[1].items[MathGenerator.randomInt(0, scenarios[1].items.length - 1)];
+      const prompt = scenarios[1].text(item, a, b);
+      const expression = `${a} + ${b} = ${correctAnswer}`;
+      const distractors = MathGenerator.generateDistractors(correctAnswer, [a, b], 3, 0, 20);
+      const options = MathGenerator.fisherYatesShuffle([correctAnswer, ...distractors]);
+
+      return {
+        id: MathGenerator.generateId('math_money'),
+        type: 'word_problem',
+        prompt,
+        expression,
+        correctAnswer,
+        options,
+      };
+    }
+  }
+
+  /**
+   * Generates Clock / Time reading questions (整點/半點)
+   */
+  static generateClockTime(): MathQuestion {
+    const isHalfHour = Math.random() < 0.5;
+    if (isHalfHour) {
+      const hour = MathGenerator.randomInt(1, 11);
+      const prompt = `時針指在 ${hour} 和 ${hour + 1} 之間，分針指著 6，現在的時間是：`;
+      const correctAnswer = `${hour}點半`;
+      const distractors = [`${hour}點正`, `${hour + 1}點正`, `${hour + 1}點半`];
+      const options = MathGenerator.fisherYatesShuffle([correctAnswer, ...distractors]);
+
+      return {
+        id: MathGenerator.generateId('math_time'),
+        type: 'word_problem',
+        prompt,
+        expression: prompt,
+        correctAnswer,
+        options,
+      };
+    } else {
+      const hour = MathGenerator.randomInt(1, 12);
+      const prompt = `時針指著 ${hour}，分針指著 12，現在的時間是：`;
+      const correctAnswer = `${hour}點正`;
+      const distractors = [
+        `${hour}點半`,
+        `${hour === 12 ? 1 : hour + 1}點正`,
+        `${hour === 1 ? 12 : hour - 1}點正`,
+      ];
+      const options = MathGenerator.fisherYatesShuffle([correctAnswer, ...distractors]);
+
+      return {
+        id: MathGenerator.generateId('math_time'),
+        type: 'word_problem',
+        prompt,
+        expression: prompt,
+        correctAnswer,
+        options,
+      };
+    }
+  }
+
+  /**
+   * Generates 2D / 3D Shape geometry questions
+   */
+  static generateShapeQuestion(): MathQuestion {
+    const shapePool = [
+      {
+        prompt: '有 3 條直邊和 3 個角的平面圖形是：',
+        correctAnswer: '三角形',
+        options: ['三角形', '正方形', '圓形', '長方形'],
+      },
+      {
+        prompt: '四條邊一樣長，有 4 個直角的平面圖形是：',
+        correctAnswer: '正方形',
+        options: ['正方形', '長方形', '三角形', '圓形'],
+      },
+      {
+        prompt: '對邊相等，有 4 個直角，像黑板一樣的平面圖形是：',
+        correctAnswer: '長方形',
+        options: ['長方形', '正方形', '三角形', '圓形'],
+      },
+      {
+        prompt: '沒有直邊，由一條光滑曲線圍成的平面圖形是：',
+        correctAnswer: '圓形',
+        options: ['圓形', '三角形', '正方形', '長方形'],
+      },
+      {
+        prompt: '像足球一樣，可以向任何方向滾動的立體圖形是：',
+        correctAnswer: '球體',
+        options: ['球體', '圓柱體', '正方體', '長方體'],
+      },
+      {
+        prompt: '上下兩個底面都是圓形，像可樂罐一樣的立體圖形是：',
+        correctAnswer: '圓柱體',
+        options: ['圓柱體', '球體', '長方體', '正方體'],
+      },
+      {
+        prompt: '有 6 個大小相同的正方形面的立體圖形是：',
+        correctAnswer: '正方體',
+        options: ['正方體', '長方體', '圓柱體', '球體'],
+      },
+    ];
+
+    const chosen = shapePool[MathGenerator.randomInt(0, shapePool.length - 1)];
+    const options = MathGenerator.fisherYatesShuffle([...chosen.options]);
+
+    return {
+      id: MathGenerator.generateId('math_shape'),
+      type: 'word_problem',
+      prompt: chosen.prompt,
+      expression: chosen.prompt,
+      correctAnswer: chosen.correctAnswer,
+      options,
+    };
+  }
+
+  /**
+   * Generates Number Pattern & Sequence questions (單雙數、順數倒數、2個/5個/10個一數)
+   */
+  static generateNumberPattern(): MathQuestion {
+    const patternType = MathGenerator.randomInt(1, 4);
+
+    if (patternType === 1) {
+      // Even numbers
+      const evens = [2, 4, 6, 8, 10, 12, 14, 16, 18, 20];
+      const correct = evens[MathGenerator.randomInt(0, evens.length - 1)];
+      const odds = [1, 3, 5, 7, 9, 11, 13, 15, 17, 19];
+      const distractors = MathGenerator.fisherYatesShuffle(odds).slice(0, 3);
+      const options = MathGenerator.fisherYatesShuffle([correct, ...distractors]);
+
+      return {
+        id: MathGenerator.generateId('math_pattern'),
+        type: 'word_problem',
+        prompt: '選出以下的雙數（偶數）：',
+        expression: '選出雙數',
+        correctAnswer: correct,
+        options,
+      };
+    } else if (patternType === 2) {
+      // Odd numbers
+      const odds = [1, 3, 5, 7, 9, 11, 13, 15, 17, 19];
+      const correct = odds[MathGenerator.randomInt(0, odds.length - 1)];
+      const evens = [2, 4, 6, 8, 10, 12, 14, 16, 18, 20];
+      const distractors = MathGenerator.fisherYatesShuffle(evens).slice(0, 3);
+      const options = MathGenerator.fisherYatesShuffle([correct, ...distractors]);
+
+      return {
+        id: MathGenerator.generateId('math_pattern'),
+        type: 'word_problem',
+        prompt: '選出以下的單數（奇數）：',
+        expression: '選出單數',
+        correctAnswer: correct,
+        options,
+      };
+    } else if (patternType === 3) {
+      // Counting by 2s or 5s (within 20)
+      const step = Math.random() < 0.5 ? 2 : 5;
+      const start = step === 2 ? 2 : 5;
+      const seq = step === 2 ? [start, start + step, start + step * 2] : [5, 10, 15];
+      const correctAnswer = step === 2 ? start + step * 3 : 20;
+      const prompt = `按照規律填寫下一個數字：${seq.join(', ')}, ( )`;
+      const distractors = MathGenerator.generateDistractors(correctAnswer, seq, 3, 1, 20);
+      const options = MathGenerator.fisherYatesShuffle([correctAnswer, ...distractors]);
+
+      return {
+        id: MathGenerator.generateId('math_pattern'),
+        type: 'word_problem',
+        prompt,
+        expression: prompt,
+        correctAnswer,
+        options,
+      };
+    } else {
+      // Counting backwards
+      const start = 20;
+      const step = Math.random() < 0.5 ? 2 : 5;
+      const seq = [start, start - step, start - step * 2];
+      const correctAnswer = start - step * 3;
+      const prompt = `按照倒數規律填寫下一個數字：${seq.join(', ')}, ( )`;
+      const distractors = MathGenerator.generateDistractors(correctAnswer, seq, 3, 0, 20);
+      const options = MathGenerator.fisherYatesShuffle([correctAnswer, ...distractors]);
+
+      return {
+        id: MathGenerator.generateId('math_pattern'),
+        type: 'word_problem',
+        prompt,
+        expression: prompt,
+        correctAnswer,
+        options,
+      };
+    }
+  }
+
 }

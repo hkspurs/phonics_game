@@ -71,11 +71,11 @@ export interface QuizQuestion {
 
 export interface MathQuestion {
   id: string;
-  type: 'addition' | 'subtraction' | 'comparison' | 'word_problem';
+  type: 'addition' | 'subtraction' | 'comparison' | 'word_problem' | 'money' | 'time' | 'shape' | 'pattern' | 'mixed';
   prompt: string;
   expression: string;
-  correctAnswer: number;
-  options: number[]; // 3-4 randomized choices
+  correctAnswer: number | string;
+  options: (number | string)[]; // 3-4 randomized choices
 }
 
 export interface SentenceQuestion {
