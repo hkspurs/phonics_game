@@ -54,7 +54,7 @@ export const SKIN_CONFIGS: Record<string, SkinConfig> = {
   },
   heroine: {
     id: 'heroine',
-    name: '精靈射手 (Heroine)',
+    name: '女英雄 (Heroine)',
     walk1Key: 'female_walk1',
     walk2Key: 'female_walk2',
     jumpKey: 'female_jump',
@@ -66,7 +66,7 @@ export const SKIN_CONFIGS: Record<string, SkinConfig> = {
   },
   female: {
     id: 'female',
-    name: '精靈射手 (Heroine)',
+    name: '女英雄 (Heroine)',
     walk1Key: 'female_walk1',
     walk2Key: 'female_walk2',
     jumpKey: 'female_jump',
@@ -165,11 +165,17 @@ export class RunnerScene extends Phaser.Scene {
     collectedGems: 0,
   };
 
-  // State
+  // State & Kinematic Platformer Physics
   public isTransitioning: boolean = false;
   public isCelebrating: boolean = false;
   public isJumping: boolean = false;
   public isSuperJumping: boolean = false;
+  public isGrounded: boolean = true;
+  public playerVelocityY: number = 0;
+  public playerY: number = 540;
+  public currentGroundY: number = 540;
+  public coyoteTimer: number = 0;
+  public jumpBufferTimer: number = 0;
   public distanceRun: number = 0;
   public targetTrackDistance: number = 2800;
   public baseSpeed: number = 380;
@@ -287,7 +293,20 @@ export class RunnerScene extends Phaser.Scene {
     // 4. Build HUD & Controls (Currency, Progress Bar, Skip Button)
     this.createHUD(width, height);
 
-    // 5. Play startup runner sound
+    // 5. Register Manual Jump Input (Touch Tap & Keyboard Space / W / Up)
+    if (this.input) {
+      this.input.on('pointerdown', (pointer: any) => {
+        if (pointer && pointer.y < 80 && pointer.x > width - 160) return; // Skip button area
+        this.handleJumpInput();
+      });
+      if (this.input.keyboard) {
+        this.input.keyboard.on('keydown-SPACE', () => this.handleJumpInput());
+        this.input.keyboard.on('keydown-UP', () => this.handleJumpInput());
+        this.input.keyboard.on('keydown-W', () => this.handleJumpInput());
+      }
+    }
+
+    // 6. Play startup runner sound
     try {
       SoundManager.play('jump');
     } catch {
@@ -951,7 +970,114 @@ export class RunnerScene extends Phaser.Scene {
   }
 
   /**
-   * Main Scene update loop: updates parallax, character animations, triggers, and magnet perks
+   * Handles Manual Player Jump Input (Touch / Keyboard) with 140ms Jump Buffering
+   */
+  public handleJumpInput(): void {
+    if (this.isCelebrating || this.isTransitioning) {
+      this.finishRunner();
+      return;
+    }
+
+    this.jumpBufferTimer = 140;
+    if (this.isGrounded || this.coyoteTimer > 0) {
+      this.executeKinematicJump(1.0);
+    }
+  }
+
+  /**
+   * Executes kinematic jump impulse with squash & stretch feedback
+   */
+  public executeKinematicJump(multiplier: number = 1.0): void {
+    this.isGrounded = false;
+    this.coyoteTimer = 0;
+    this.jumpBufferTimer = 0;
+    this.isJumping = true;
+    this.playerVelocityY = -660 * this.skinConfig.jumpMultiplier * multiplier;
+
+    if (this.playerSprite && typeof this.playerSprite.setTexture === 'function') {
+      this.playerSprite.setTexture(this.skinConfig.jumpKey);
+    }
+
+    if (this.playerSprite && this.tweens?.add) {
+      this.tweens.add({
+        targets: this.playerSprite,
+        scaleX: 1.2,
+        scaleY: 0.8,
+        duration: 90,
+        yoyo: true,
+        ease: 'Quad.easeOut',
+      });
+    }
+
+    try {
+      SoundManager.play('jump');
+    } catch {
+      // Safe ignore
+    }
+
+    if (this.playerSprite && this.tweens?.add) {
+      this.tweens.add({
+        targets: this.playerSprite,
+        scaleX: 1.15,
+        scaleY: 0.85,
+        duration: 90,
+        yoyo: true,
+        ease: 'Quad.easeOut',
+      });
+    }
+  }
+
+  /**
+   * Alias for backward compatibility
+   */
+  public triggerJump(multiplier: number = 1.0): void {
+    this.executeKinematicJump(multiplier);
+  }
+
+  /**
+   * Triggers springboard super-jump with physical compression
+   */
+  public triggerSpringboard(item: RunnerWorldItem): void {
+    this.isSuperJumping = true;
+    this.isGrounded = false;
+    this.isJumping = true;
+    this.playerVelocityY = -920 * this.skinConfig.jumpMultiplier;
+
+    if (item.gameObject && typeof item.gameObject.setTexture === 'function') {
+      item.gameObject.setTexture('springboard_down');
+      if (this.time?.delayedCall) {
+        this.time.delayedCall(220, () => {
+          if (item.gameObject && typeof item.gameObject.setTexture === 'function') {
+            item.gameObject.setTexture('springboard_up');
+          }
+        });
+      }
+    }
+
+    if (this.playerSprite && typeof this.playerSprite.setTexture === 'function') {
+      this.playerSprite.setTexture(this.skinConfig.jumpKey);
+    }
+
+    if (this.playerSprite && this.tweens?.add) {
+      this.tweens.add({
+        targets: this.playerSprite,
+        scaleX: 1.2,
+        scaleY: 0.8,
+        duration: 90,
+        yoyo: true,
+        ease: 'Quad.easeOut',
+      });
+    }
+
+    try {
+      SoundManager.play('jump');
+    } catch {
+      // Safe ignore
+    }
+  }
+
+  /**
+   * Main Scene update loop: updates parallax, kinematics, platforms, triggers, and dynamic magnet
    */
   public update(_time: number, delta: number): void {
     if (this.isTransitioning || this.isCelebrating) {
@@ -959,7 +1085,9 @@ export class RunnerScene extends Phaser.Scene {
     }
 
     const dtSeconds = Math.min(0.1, (delta || 16) / 1000);
-    const stepMove = this.currentSpeed * dtSeconds;
+    // Rainbow Rush gives +35% speed surge
+    const effectiveSpeed = this.isRainbowRush ? this.currentSpeed * 1.35 : this.currentSpeed;
+    const stepMove = effectiveSpeed * dtSeconds;
     this.distanceRun += stepMove;
 
     const width = this.sys?.game?.config ? Number(this.sys.game.config.width) : GAME_WIDTH;
@@ -980,7 +1108,78 @@ export class RunnerScene extends Phaser.Scene {
     this.redrawDistantHills(this.distanceRun * 0.35, width, height);
     this.redrawGroundLayer(this.distanceRun, width, height);
 
-    // 3. Update Course Items Positions
+    // 3. Platform Detection (Solid One-Way Floating Platforms)
+    let targetGroundY = this.playerBaselineY;
+    for (let i = 0; i < this.worldItems.length; i++) {
+      const item = this.worldItems[i];
+      if (item && item.type === 'platform') {
+        const screenX = item.worldX - this.distanceRun;
+        if (Math.abs(screenX - this.playerScreenX) < 70) {
+          if (this.playerY <= item.worldY + 25 && this.playerVelocityY >= 0) {
+            targetGroundY = item.worldY;
+            break;
+          }
+        }
+      }
+    }
+    this.currentGroundY = targetGroundY;
+
+    // 4. Update Coyote Time & Jump Buffer
+    if (this.isGrounded) {
+      this.coyoteTimer = 100;
+    } else {
+      this.coyoteTimer = Math.max(0, this.coyoteTimer - delta);
+    }
+
+    if (this.jumpBufferTimer > 0) {
+      this.jumpBufferTimer = Math.max(0, this.jumpBufferTimer - delta);
+      if (this.isGrounded || this.coyoteTimer > 0) {
+        this.executeKinematicJump(1.0);
+      }
+    }
+
+    // 5. Kinematic Gravity & Vertical Position Integration
+    if (!this.isGrounded || this.playerY < this.currentGroundY) {
+      // Asymmetric snappy gravity: falling accelerates faster than rising
+      const gravity = this.playerVelocityY < 0 ? 1700 : 2600;
+      this.playerVelocityY += gravity * dtSeconds;
+      this.playerY += this.playerVelocityY * dtSeconds;
+
+      if (this.playerY >= this.currentGroundY) {
+        const wasAirborne = !this.isGrounded;
+        this.playerY = this.currentGroundY;
+        this.playerVelocityY = 0;
+        this.isGrounded = true;
+        this.isJumping = false;
+        this.isSuperJumping = false;
+
+        if (this.playerSprite && typeof this.playerSprite.setTexture === 'function') {
+          this.playerSprite.setTexture(this.skinConfig.walk1Key);
+        }
+
+        // Landing squash compression
+        if (wasAirborne && this.playerSprite && this.tweens?.add) {
+          this.tweens.add({
+            targets: this.playerSprite,
+            scaleX: 1.12,
+            scaleY: 0.88,
+            duration: 80,
+            yoyo: true,
+            ease: 'Quad.easeOut',
+          });
+        }
+      }
+    } else {
+      this.playerY = this.currentGroundY;
+      this.playerVelocityY = 0;
+      this.isGrounded = true;
+    }
+
+    if (this.playerSprite && typeof this.playerSprite.setY === 'function') {
+      this.playerSprite.setY(this.playerY);
+    }
+
+    // 6. Update Course Items & Interactions
     for (let i = 0; i < this.worldItems.length; i++) {
       const item = this.worldItems[i];
       if (!item) continue;
@@ -990,21 +1189,19 @@ export class RunnerScene extends Phaser.Scene {
         item.gameObject.setPosition(screenX, item.worldY);
       }
 
-      // Check Coin/Gem Magnet Attraction Perk
+      // Check Coin/Gem Dynamic Magnet (scales with player speed)
       if (!item.collected && (item.type === 'coin' || item.type === 'gem')) {
         const dx = screenX - this.playerScreenX;
-        const dy = item.worldY - (this.playerSprite?.y || this.playerBaselineY);
+        const dy = item.worldY - this.playerY;
         const dist = Math.sqrt(dx * dx + dy * dy);
 
-        // Within magnet radius
         if (dist < this.skinConfig.magnetRadius && dist > 1) {
-          const pullSpeed = 260 * dtSeconds;
+          const pullSpeed = (effectiveSpeed * 1.8 + 260) * dtSeconds;
           item.worldX -= (dx / dist) * pullSpeed;
           item.worldY -= (dy / dist) * pullSpeed;
         }
 
-        // Within collection radius
-        if (dist < 48) {
+        if (dist < 54) {
           if (item.type === 'coin') {
             this.collectCoin(item);
           } else {
@@ -1013,19 +1210,19 @@ export class RunnerScene extends Phaser.Scene {
         }
       }
 
-      // Check Obstacle Auto-Jump Trigger
-      if (item.type === 'obstacle') {
+      // Check Springboard Collision
+      if (item.type === 'springboard') {
         const distToPlayer = screenX - this.playerScreenX;
-        if (distToPlayer > 0 && distToPlayer < 120 && !this.isJumping) {
-          this.triggerJump(1.0);
+        if (distToPlayer > -25 && distToPlayer < 45 && Math.abs(this.playerY - this.playerBaselineY) < 35) {
+          this.triggerSpringboard(item);
         }
       }
 
-      // Check Springboard Super-Jump Trigger
-      if (item.type === 'springboard') {
+      // Obstacle interaction: Auto-hop if player didn't jump (gentle child-friendly bounce)
+      if (item.type === 'obstacle') {
         const distToPlayer = screenX - this.playerScreenX;
-        if (distToPlayer > -20 && distToPlayer < 50 && !this.isSuperJumping) {
-          this.triggerSpringboard(item);
+        if (distToPlayer > 0 && distToPlayer < 90 && this.isGrounded) {
+          this.executeKinematicJump(0.9);
         }
       }
 
@@ -1039,10 +1236,10 @@ export class RunnerScene extends Phaser.Scene {
       }
     }
 
-    // 4. Update Running Step Animation
-    if (!this.isJumping && !this.isSuperJumping) {
+    // 7. Update Running Step Animation
+    if (this.isGrounded && !this.isJumping && !this.isSuperJumping) {
       this.stepTimer += delta;
-      const stepDuration = 130 / this.skinConfig.speedMultiplier;
+      const stepDuration = 130 / (this.isRainbowRush ? this.skinConfig.speedMultiplier * 1.35 : this.skinConfig.speedMultiplier);
       if (this.stepTimer >= stepDuration) {
         this.stepTimer = 0;
         this.currentWalkFrame = this.currentWalkFrame === 1 ? 2 : 1;
@@ -1057,7 +1254,7 @@ export class RunnerScene extends Phaser.Scene {
       }
     }
 
-    // 5. Update Distance Progress Bar
+    // 8. Update Distance Progress Bar
     this.updateProgressBar(width);
   }
 
@@ -1080,106 +1277,17 @@ export class RunnerScene extends Phaser.Scene {
   }
 
   /**
-   * Triggers regular obstacle auto-jump
-   */
-  public triggerJump(multiplier: number = 1.0): void {
-    if (this.isJumping) return;
-    this.isJumping = true;
-
-    if (this.playerSprite && typeof this.playerSprite.setTexture === 'function') {
-      this.playerSprite.setTexture(this.skinConfig.jumpKey);
-    }
-
-    try {
-      SoundManager.play('jump');
-    } catch {
-      // Safe ignore
-    }
-
-    const jumpHeight = 110 * this.skinConfig.jumpMultiplier * multiplier;
-    const jumpDuration = 480;
-
-    if (this.tweens?.add && this.playerSprite) {
-      this.tweens.add({
-        targets: this.playerSprite,
-        y: this.playerBaselineY - jumpHeight,
-        duration: jumpDuration / 2,
-        ease: 'Cubic.easeOut',
-        yoyo: true,
-        onComplete: () => {
-          this.isJumping = false;
-          if (this.playerSprite && typeof this.playerSprite.setTexture === 'function') {
-            this.playerSprite.setTexture(this.skinConfig.walk1Key);
-          }
-        },
-      });
-    } else {
-      this.isJumping = false;
-    }
-  }
-
-  /**
-   * Triggers springboard super-jump with springboard bounce compression
-   */
-  public triggerSpringboard(item: RunnerWorldItem): void {
-    if (this.isSuperJumping) return;
-    this.isSuperJumping = true;
-
-    // Compress springboard
-    if (item.gameObject && typeof item.gameObject.setTexture === 'function') {
-      item.gameObject.setTexture('springboard_down');
-      if (this.time?.delayedCall) {
-        this.time.delayedCall(220, () => {
-          if (item.gameObject && typeof item.gameObject.setTexture === 'function') {
-            item.gameObject.setTexture('springboard_up');
-          }
-        });
-      }
-    }
-
-    if (this.playerSprite && typeof this.playerSprite.setTexture === 'function') {
-      this.playerSprite.setTexture(this.skinConfig.jumpKey);
-    }
-
-    try {
-      SoundManager.play('jump');
-    } catch {
-      // Safe ignore
-    }
-
-    const superJumpHeight = 180 * this.skinConfig.jumpMultiplier;
-    const jumpDuration = 700;
-
-    if (this.tweens?.add && this.playerSprite) {
-      this.tweens.add({
-        targets: this.playerSprite,
-        y: this.playerBaselineY - superJumpHeight,
-        duration: jumpDuration / 2,
-        ease: 'Cubic.easeOut',
-        yoyo: true,
-        onComplete: () => {
-          this.isSuperJumping = false;
-          if (this.playerSprite && typeof this.playerSprite.setTexture === 'function') {
-            this.playerSprite.setTexture(this.skinConfig.walk1Key);
-          }
-        },
-      });
-    } else {
-      this.isSuperJumping = false;
-    }
-  }
-
-  /**
    * Collects a floating coin, awards currency & plays effects
    */
   public collectCoin(item: RunnerWorldItem): void {
     if (item.collected) return;
     item.collected = true;
 
-    // Update Session Stats & DataManager
-    this.sessionStats.collectedCoins = (this.sessionStats.collectedCoins || 0) + 1;
+    // Update Session Stats & DataManager (2x if Rainbow Rush!)
+    const coinValue = this.isRainbowRush ? 2 : 1;
+    this.sessionStats.collectedCoins = (this.sessionStats.collectedCoins || 0) + coinValue;
     try {
-      DataManager.getInstance().addCoins(1);
+      DataManager.getInstance().addCoins(coinValue);
     } catch {
       // Safe ignore
     }

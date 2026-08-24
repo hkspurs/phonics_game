@@ -1010,7 +1010,7 @@ export const TROPHY_DEFINITIONS: Trophy[] = [
     description: '累積獲得 10 枚金幣',
     category: 'wealth',
     rewardCoins: 5,
-    rewardGems: 1,
+    rewardGems: 0,
     condition: (p) => p.coins >= 10,
   },
   {
@@ -1019,7 +1019,7 @@ export const TROPHY_DEFINITIONS: Trophy[] = [
     description: '累積獲得 25 枚金幣',
     category: 'wealth',
     rewardCoins: 10,
-    rewardGems: 1,
+    rewardGems: 0,
     condition: (p) => p.coins >= 25,
   },
   {
@@ -1028,7 +1028,7 @@ export const TROPHY_DEFINITIONS: Trophy[] = [
     description: '累積獲得 50 枚金幣',
     category: 'wealth',
     rewardCoins: 20,
-    rewardGems: 2,
+    rewardGems: 0,
     condition: (p) => p.coins >= 50,
   },
   {
@@ -1037,7 +1037,7 @@ export const TROPHY_DEFINITIONS: Trophy[] = [
     description: '累積獲得 100 枚金幣',
     category: 'wealth',
     rewardCoins: 35,
-    rewardGems: 3,
+    rewardGems: 0,
     condition: (p) => p.coins >= 100,
   },
   {
@@ -1046,7 +1046,7 @@ export const TROPHY_DEFINITIONS: Trophy[] = [
     description: '累積獲得 200 枚金幣',
     category: 'wealth',
     rewardCoins: 50,
-    rewardGems: 5,
+    rewardGems: 0,
     condition: (p) => p.coins >= 200,
   },
   {
@@ -1055,7 +1055,7 @@ export const TROPHY_DEFINITIONS: Trophy[] = [
     description: '累積獲得 300 枚金幣',
     category: 'wealth',
     rewardCoins: 75,
-    rewardGems: 7,
+    rewardGems: 0,
     condition: (p) => p.coins >= 300,
   },
   {
@@ -1064,7 +1064,7 @@ export const TROPHY_DEFINITIONS: Trophy[] = [
     description: '累積獲得 500 枚金幣',
     category: 'wealth',
     rewardCoins: 120,
-    rewardGems: 12,
+    rewardGems: 0,
     condition: (p) => p.coins >= 500,
   },
   {
@@ -1073,7 +1073,7 @@ export const TROPHY_DEFINITIONS: Trophy[] = [
     description: '累積獲得 750 枚金幣',
     category: 'wealth',
     rewardCoins: 180,
-    rewardGems: 18,
+    rewardGems: 0,
     condition: (p) => p.coins >= 750,
   },
   {
@@ -1082,7 +1082,7 @@ export const TROPHY_DEFINITIONS: Trophy[] = [
     description: '累積獲得 1,000 枚金幣',
     category: 'wealth',
     rewardCoins: 250,
-    rewardGems: 25,
+    rewardGems: 0,
     condition: (p) => p.coins >= 1000,
   },
   {
@@ -1091,7 +1091,7 @@ export const TROPHY_DEFINITIONS: Trophy[] = [
     description: '累積獲得 1,500 枚金幣',
     category: 'wealth',
     rewardCoins: 350,
-    rewardGems: 35,
+    rewardGems: 0,
     condition: (p) => p.coins >= 1500,
   },
   {
@@ -1100,7 +1100,7 @@ export const TROPHY_DEFINITIONS: Trophy[] = [
     description: '累積獲得 2,000 枚金幣',
     category: 'wealth',
     rewardCoins: 500,
-    rewardGems: 50,
+    rewardGems: 0,
     condition: (p) => p.coins >= 2000,
   },
   {
@@ -1109,7 +1109,7 @@ export const TROPHY_DEFINITIONS: Trophy[] = [
     description: '累積獲得 3,000 枚金幣',
     category: 'wealth',
     rewardCoins: 750,
-    rewardGems: 75,
+    rewardGems: 0,
     condition: (p) => p.coins >= 3000,
   },
   {
@@ -1118,7 +1118,7 @@ export const TROPHY_DEFINITIONS: Trophy[] = [
     description: '累積獲得 5,000 枚金幣',
     category: 'wealth',
     rewardCoins: 1200,
-    rewardGems: 120,
+    rewardGems: 0,
     condition: (p) => p.coins >= 5000,
   },
   {
@@ -1127,7 +1127,7 @@ export const TROPHY_DEFINITIONS: Trophy[] = [
     description: '累積獲得 10,000 枚金幣！',
     category: 'wealth',
     rewardCoins: 3000,
-    rewardGems: 300,
+    rewardGems: 0,
     condition: (p) => p.coins >= 10000,
   },
   {
@@ -1136,7 +1136,7 @@ export const TROPHY_DEFINITIONS: Trophy[] = [
     description: '累積擁有 5 顆鑽石',
     category: 'wealth',
     rewardCoins: 20,
-    rewardGems: 1,
+    rewardGems: 0,
     condition: (p) => p.gems >= 5,
   },
   {
@@ -1145,7 +1145,7 @@ export const TROPHY_DEFINITIONS: Trophy[] = [
     description: '累積擁有 10 顆鑽石',
     category: 'wealth',
     rewardCoins: 40,
-    rewardGems: 2,
+    rewardGems: 0,
     condition: (p) => p.gems >= 10,
   },
   {
@@ -1154,7 +1154,7 @@ export const TROPHY_DEFINITIONS: Trophy[] = [
     description: '累積擁有 20 顆鑽石',
     category: 'wealth',
     rewardCoins: 80,
-    rewardGems: 3,
+    rewardGems: 0,
     condition: (p) => p.gems >= 20,
   },
   {
@@ -1163,7 +1163,7 @@ export const TROPHY_DEFINITIONS: Trophy[] = [
     description: '累積擁有 30 顆鑽石 (足夠換女英雄造型！)',
     category: 'wealth',
     rewardCoins: 120,
-    rewardGems: 5,
+    rewardGems: 0,
     condition: (p) => p.gems >= 30,
   },
   {
@@ -1172,7 +1172,7 @@ export const TROPHY_DEFINITIONS: Trophy[] = [
     description: '累積擁有 50 顆鑽石',
     category: 'wealth',
     rewardCoins: 180,
-    rewardGems: 7,
+    rewardGems: 0,
     condition: (p) => p.gems >= 50,
   },
   {
@@ -1181,7 +1181,7 @@ export const TROPHY_DEFINITIONS: Trophy[] = [
     description: '累積擁有 75 顆鑽石',
     category: 'wealth',
     rewardCoins: 250,
-    rewardGems: 10,
+    rewardGems: 0,
     condition: (p) => p.gems >= 75,
   },
   {
@@ -1190,7 +1190,7 @@ export const TROPHY_DEFINITIONS: Trophy[] = [
     description: '累積擁有 100 顆鑽石',
     category: 'wealth',
     rewardCoins: 350,
-    rewardGems: 15,
+    rewardGems: 0,
     condition: (p) => p.gems >= 100,
   },
   {
@@ -1199,7 +1199,7 @@ export const TROPHY_DEFINITIONS: Trophy[] = [
     description: '累積擁有 150 顆鑽石',
     category: 'wealth',
     rewardCoins: 500,
-    rewardGems: 20,
+    rewardGems: 0,
     condition: (p) => p.gems >= 150,
   },
   {
@@ -1208,7 +1208,7 @@ export const TROPHY_DEFINITIONS: Trophy[] = [
     description: '累積擁有 200 顆鑽石',
     category: 'wealth',
     rewardCoins: 700,
-    rewardGems: 25,
+    rewardGems: 0,
     condition: (p) => p.gems >= 200,
   },
   {
@@ -1217,7 +1217,7 @@ export const TROPHY_DEFINITIONS: Trophy[] = [
     description: '累積擁有 300 顆鑽石',
     category: 'wealth',
     rewardCoins: 1000,
-    rewardGems: 35,
+    rewardGems: 0,
     condition: (p) => p.gems >= 300,
   },
   {
@@ -1226,7 +1226,7 @@ export const TROPHY_DEFINITIONS: Trophy[] = [
     description: '累積擁有 500 顆鑽石！',
     category: 'wealth',
     rewardCoins: 2000,
-    rewardGems: 50,
+    rewardGems: 0,
     condition: (p) => p.gems >= 500,
   },
 ];
@@ -1347,12 +1347,23 @@ export class DataManager {
     return stationId <= this.profile.unlockedStations;
   }
 
-  public unlockSkin(skinId: string, costGems: number): boolean {
+  public unlockSkin(skinId: string, costGems: number = 0, costCoins: number = 0): boolean {
     if (this.profile.ownedSkins.includes(skinId)) {
       return true;
     }
-    if (this.profile.gems >= costGems) {
+    if (costGems > 0 && this.profile.gems >= costGems) {
       this.profile.gems -= costGems;
+      this.profile.ownedSkins.push(skinId);
+      this.save();
+      return true;
+    }
+    if (costCoins > 0 && this.profile.coins >= costCoins) {
+      this.profile.coins -= costCoins;
+      this.profile.ownedSkins.push(skinId);
+      this.save();
+      return true;
+    }
+    if (costGems === 0 && costCoins === 0) {
       this.profile.ownedSkins.push(skinId);
       this.save();
       return true;

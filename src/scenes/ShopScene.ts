@@ -9,10 +9,12 @@ export interface SkinDefinition {
   name: string;
   englishName: string;
   costGems: number;
+  costCoins: number;
   description: string;
   perkDescription: string;
   speedBonus: number;
   jumpBonus: number;
+  magnetBonus: number;
   waterGlide?: boolean;
   standSprite: string;
   walkSprites: string[];
@@ -27,10 +29,12 @@ export const CHARACTER_SKINS: readonly SkinDefinition[] = [
     name: '冒險家',
     englishName: 'Adventurer',
     costGems: 0,
+    costCoins: 0,
     description: '活力充沛的探險小英雄，踏上小一升夢之旅。',
     perkDescription: '基礎跑跳能力',
     speedBonus: 0,
     jumpBonus: 0,
+    magnetBonus: 100,
     standSprite: 'adventurer_stand',
     walkSprites: ['adventurer_walk1', 'adventurer_walk2'],
     cheerSprite: 'adventurer_cheer1',
@@ -41,10 +45,12 @@ export const CHARACTER_SKINS: readonly SkinDefinition[] = [
     name: '女英雄',
     englishName: 'Heroine',
     costGems: 30,
-    description: '身手矯健的勇敢女孩，彈跳力出類拔萃。',
-    perkDescription: '跳躍力 +10%',
-    speedBonus: 0,
+    costCoins: 300,
+    description: '身手矯健的勇敢女孩，彈跳與吸金兼備。',
+    perkDescription: '跑速 +10% / 跳躍 +10% / 磁力 130px',
+    speedBonus: 0.10,
     jumpBonus: 0.10,
+    magnetBonus: 130,
     standSprite: 'female_stand',
     walkSprites: ['female_walk1', 'female_walk2'],
     cheerSprite: 'female_cheer1',
@@ -55,10 +61,12 @@ export const CHARACTER_SKINS: readonly SkinDefinition[] = [
     name: '戰士',
     englishName: 'Soldier',
     costGems: 60,
+    costCoins: 600,
     description: '訓練有素的皇家侍衛，奔跑疾如迅風。',
-    perkDescription: '跑速 +15%',
+    perkDescription: '跑速 +15% / 跳躍 +15% / 磁力 140px',
     speedBonus: 0.15,
-    jumpBonus: 0,
+    jumpBonus: 0.15,
+    magnetBonus: 140,
     standSprite: 'soldier_stand',
     walkSprites: ['soldier_walk1', 'soldier_walk2'],
     cheerSprite: 'soldier_cheer1',
@@ -69,10 +77,12 @@ export const CHARACTER_SKINS: readonly SkinDefinition[] = [
     name: '騎士',
     englishName: 'Knight',
     costGems: 100,
-    description: '身披榮耀重甲的守護騎士，綜合實力卓越。',
-    perkDescription: '跳躍 +25% & 跑速 +10%',
+    costCoins: 1000,
+    description: '身披榮耀重甲的守護騎士，超高跳躍力。',
+    perkDescription: '跑速 +10% / 跳躍 +25% / 磁力 160px',
     speedBonus: 0.10,
     jumpBonus: 0.25,
+    magnetBonus: 160,
     standSprite: 'player_stand',
     walkSprites: ['player_walk1', 'player_walk2'],
     cheerSprite: 'player_cheer1',
@@ -84,10 +94,12 @@ export const CHARACTER_SKINS: readonly SkinDefinition[] = [
     name: '忍者',
     englishName: 'Ninja',
     costGems: 150,
-    description: '來去無蹤的夜行刺客，擁有極限跑速與輕功滑行。',
-    perkDescription: '跑速 +30% & 輕功滑行',
+    costCoins: 1500,
+    description: '來去無蹤的夜行刺客，擁有極限跑速與超大吸金磁場！',
+    perkDescription: '跑速 +30% / 跳躍 +20% / 磁力 190px',
     speedBonus: 0.30,
     jumpBonus: 0.20,
+    magnetBonus: 190,
     waterGlide: true,
     standSprite: 'player_stand',
     walkSprites: ['player_walk1', 'player_walk2'],
@@ -653,9 +665,11 @@ export class ShopScene extends Phaser.Scene {
         this.actionButton.setColor('blue');
         this.actionButton.setEnabled(true);
       } else {
-        const canAfford = profile.gems >= skin.costGems;
-        if (canAfford) {
-          this.actionButton.setText(`💎 ${skin.costGems} 購買解鎖`);
+        const canAffordGems = profile.gems >= skin.costGems;
+        const canAffordCoins = profile.coins >= (skin.costCoins || 999999);
+        if (canAffordGems || canAffordCoins) {
+          const costText = canAffordGems ? `💎 ${skin.costGems}` : `🪙 ${skin.costCoins}`;
+          this.actionButton.setText(`${costText} 購買解鎖`);
           this.actionButton.setColor('yellow');
           this.actionButton.setEnabled(true);
         } else {

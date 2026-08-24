@@ -230,13 +230,13 @@ export class QuestionScene extends Phaser.Scene {
 
     // 1. Back Button (◀ 返回地圖)
     this.backButton = new CanvasButton(this, {
-      x: 105,
+      x: 95,
       y: 42,
-      width: 150,
-      height: 50,
+      width: 130,
+      height: 46,
       text: '◀ 返回地圖',
       color: 'blue',
-      fontSize: '19px',
+      fontSize: '18px',
       onClick: () => {
         if (this.transitionTimer) {
           this.transitionTimer.remove();
@@ -250,6 +250,36 @@ export class QuestionScene extends Phaser.Scene {
       },
     });
     header.add(this.backButton);
+
+    // 1b. Quick Station Restart (🔄 重試本關)
+    const restartBtn = new CanvasButton(this, {
+      x: 235,
+      y: 42,
+      width: 130,
+      height: 46,
+      text: '🔄 重試本關',
+      color: 'orange',
+      fontSize: '18px',
+      onClick: () => {
+        if (this.transitionTimer) {
+          this.transitionTimer.remove();
+          this.transitionTimer = null;
+        }
+        SoundManager.play('click');
+        SpeechService.stop();
+        if (this.scene) {
+          this.scene.start('QuestionScene', {
+            stationId: this.stationId,
+            stationName: this.stationName,
+            questionIndex: 0,
+            totalQuestions: this.questions.length,
+            questions: this.questions,
+            sessionStats: { hintsUsed: 0, mistakes: 0, correctCount: 0, startTime: Date.now() },
+          });
+        }
+      },
+    });
+    header.add(restartBtn);
 
     // 2. Station & Level Header (e.g. 第 3-1 關 櫻花樹・中文)
     const levelNumber = `${this.stationId}-${this.questionIndex + 1}`;
@@ -907,28 +937,39 @@ export class QuestionScene extends Phaser.Scene {
     // 3. Play Celebration Visuals
     this.playCelebrationEffect();
 
-    // 4. Delayed Transition to RunnerScene
+    // 4. Delayed Transition to RunnerScene with Tap-to-Fast-Forward
     const isComplete = this.questionIndex >= this.questions.length - 1;
     const isRainbow = this.sessionStats.correctCount >= 2;
+
+    const executeTransition = () => {
+      if (this.transitionTimer) {
+        this.transitionTimer.remove();
+        this.transitionTimer = null;
+      }
+      const isSceneActive = this.scene && (typeof (this.scene as any).isActive === 'function' ? this.scene.isActive('QuestionScene') : true);
+      if (this.scene && isSceneActive) {
+        this.scene.start('RunnerScene', {
+          stationId: this.stationId,
+          stationName: this.stationName,
+          questionIndex: this.questionIndex,
+          isStationComplete: isComplete,
+          totalQuestions: this.questions.length,
+          questions: this.questions,
+          sessionStats: this.sessionStats,
+          isRainbowRush: isRainbow,
+        });
+      }
+    };
+
+    if (this.input) {
+      this.input.once('pointerdown', executeTransition);
+    }
+
     if (this.time?.delayedCall) {
       if (this.transitionTimer) {
         this.transitionTimer.remove();
       }
-      this.transitionTimer = this.time.delayedCall(1200, () => {
-        const isSceneActive = this.scene && (typeof (this.scene as any).isActive === 'function' ? this.scene.isActive('QuestionScene') : true);
-        if (this.scene && isSceneActive) {
-          this.scene.start('RunnerScene', {
-            stationId: this.stationId,
-            stationName: this.stationName,
-            questionIndex: this.questionIndex,
-            isStationComplete: isComplete,
-            totalQuestions: this.questions.length,
-            questions: this.questions,
-            sessionStats: this.sessionStats,
-            isRainbowRush: isRainbow,
-          });
-        }
-      });
+      this.transitionTimer = this.time.delayedCall(1200, executeTransition);
     }
   }
 

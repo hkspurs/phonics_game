@@ -863,7 +863,7 @@ export class MapScene extends Phaser.Scene {
       height: 520,
       title: `第 ${station.id} 站 — ${station.name}`,
       theme: 'gold',
-      closeOnBackdropClick: false,
+      closeOnBackdropClick: true,
       onClose: () => {
         this.activeModal = null;
       },
