@@ -542,6 +542,9 @@ export class ShopScene extends Phaser.Scene {
         this.handleActionClick();
       },
     });
+    if (typeof this.actionButton.setDepth === 'function') {
+      this.actionButton.setDepth(60);
+    }
 
     this.previewContainer = showcase;
     if (this.add && typeof this.add.existing === 'function') {
@@ -656,6 +659,9 @@ export class ShopScene extends Phaser.Scene {
 
     // 3. Update Action Button
     if (this.actionButton) {
+      if (typeof this.actionButton.setDepth === 'function') {
+        this.actionButton.setDepth(60);
+      }
       if (isEquipped) {
         this.actionButton.setText('✅ 當前使用中');
         this.actionButton.setColor('grey');
