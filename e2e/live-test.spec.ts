@@ -22,7 +22,7 @@ test('Full Live UAT on https://hkspurs.github.io/phonics_game/', async ({ page }
     return Array.from(document.querySelectorAll('script')).map(s => s.src);
   });
   console.log('Live Scripts:', scriptSrcs);
-  expect(scriptSrcs.some(s => s.includes('index-DN3PcqRB.js'))).toBe(true);
+  expect(scriptSrcs.some(s => s.includes('index-') && s.endsWith('.js'))).toBe(true);
 
   // Take live TitleScene screenshot
   await page.screenshot({ path: path.join(uatDir, '01_Live_TitleScene.png') });

@@ -852,6 +852,13 @@ export class QuestionScene extends Phaser.Scene {
   }
 
   /**
+   * Helper alias for tests and automated agents
+   */
+  public useHint(): void {
+    this.handleHint();
+  }
+
+  /**
    * Reset Action (Sentence Scramble mode)
    * Clears all placed cards from slots and snaps them back to bank
    */

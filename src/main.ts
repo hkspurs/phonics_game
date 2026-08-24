@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { DEFAULT_GAME_SETTINGS } from './config';
+import { DEFAULT_GAME_SETTINGS, GAME_WIDTH, GAME_HEIGHT } from './config';
 import { BootScene } from './scenes/BootScene';
 import { PreloadScene } from './scenes/PreloadScene';
 import { TitleScene } from './scenes/TitleScene';
@@ -37,41 +37,18 @@ export const gameScenes = [
   SettingsScene,
 ];
 
-/**
- * Calculates dynamic canvas resolution matching the exact screen aspect ratio (iPhone 19.5:9, iPad 4:3, PC 16:9)
- * Eliminates 100% of black bars, letterboxing, and margins.
- */
-export function getDynamicGameSize(): { width: number; height: number } {
-  if (typeof window === 'undefined') {
-    return { width: DEFAULT_GAME_SETTINGS.width, height: DEFAULT_GAME_SETTINGS.height };
-  }
-  const screenW = window.innerWidth || document.documentElement?.clientWidth || 1280;
-  const screenH = window.innerHeight || document.documentElement?.clientHeight || 720;
-  
-  // Real device aspect ratio (e.g. 932 / 430 = 2.167 on iPhone 15 Pro)
-  const aspect = screenW > 0 && screenH > 0 ? screenW / screenH : 16 / 9;
-
-  // Keep fixed height 720 for consistent physics and large child-friendly touch targets
-  const baseHeight = 720;
-  // Compute exact canvas width to fill 100% of device screen aspect ratio
-  const baseWidth = Math.max(960, Math.min(1920, Math.round(baseHeight * Math.max(1.33, Math.min(2.5, aspect)))));
-  return { width: baseWidth, height: baseHeight };
-}
-
-const initialSize = getDynamicGameSize();
-
 export const phaserGameConfig: Phaser.Types.Core.GameConfig = {
   type: Phaser.AUTO,
   parent: DEFAULT_GAME_SETTINGS.parent,
-  width: initialSize.width,
-  height: initialSize.height,
+  width: GAME_WIDTH,
+  height: GAME_HEIGHT,
   roundPixels: true,
-  backgroundColor: DEFAULT_GAME_SETTINGS.backgroundColor,
+  backgroundColor: '#0b0f19',
   scale: {
     mode: Phaser.Scale.FIT,
     autoCenter: Phaser.Scale.CENTER_BOTH,
-    width: initialSize.width,
-    height: initialSize.height,
+    width: GAME_WIDTH,
+    height: GAME_HEIGHT,
   },
   render: {
     antialias: true,
@@ -95,8 +72,6 @@ if (typeof window !== 'undefined' && document.getElementById(DEFAULT_GAME_SETTIN
 
   const handleResize = () => {
     if (game && game.scale) {
-      const newSize = getDynamicGameSize();
-      game.scale.resize(newSize.width, newSize.height);
       game.scale.refresh();
     }
   };
