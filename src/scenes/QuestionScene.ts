@@ -117,6 +117,7 @@ export class QuestionScene extends Phaser.Scene {
 
     this.currentQuestion = this.questions[this.questionIndex] || null;
     this.isAnswered = false;
+    this.isTransitioning = false;
 
     // Reset component collections
     this.slotBoxes = [];

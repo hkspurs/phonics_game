@@ -60,7 +60,7 @@ export const SKIN_CONFIGS: Record<string, SkinConfig> = {
     jumpKey: 'female_jump',
     standKey: 'female_stand',
     cheerKey: 'female_cheer1',
-    speedMultiplier: 1.15,
+    speedMultiplier: 1.10,
     jumpMultiplier: 1.10,
     magnetRadius: 130,
   },
@@ -72,7 +72,7 @@ export const SKIN_CONFIGS: Record<string, SkinConfig> = {
     jumpKey: 'female_jump',
     standKey: 'female_stand',
     cheerKey: 'female_cheer1',
-    speedMultiplier: 1.15,
+    speedMultiplier: 1.10,
     jumpMultiplier: 1.10,
     magnetRadius: 130,
   },
@@ -84,9 +84,9 @@ export const SKIN_CONFIGS: Record<string, SkinConfig> = {
     jumpKey: 'soldier_jump',
     standKey: 'soldier_stand',
     cheerKey: 'soldier_cheer1',
-    speedMultiplier: 1.05,
-    jumpMultiplier: 1.25,
-    magnetRadius: 100,
+    speedMultiplier: 1.15,
+    jumpMultiplier: 1.15,
+    magnetRadius: 140,
   },
   knight: {
     id: 'knight',
@@ -98,8 +98,8 @@ export const SKIN_CONFIGS: Record<string, SkinConfig> = {
     cheerKey: 'player_cheer1',
     tint: 0xc8e6ff, // Glistening cyan-silver armor tint
     speedMultiplier: 1.10,
-    jumpMultiplier: 1.15,
-    magnetRadius: 150,
+    jumpMultiplier: 1.25,
+    magnetRadius: 160,
   },
   ninja: {
     id: 'ninja',
@@ -110,9 +110,9 @@ export const SKIN_CONFIGS: Record<string, SkinConfig> = {
     standKey: 'player_stand',
     cheerKey: 'player_cheer1',
     tint: 0x4a4a5a, // Dark shadow stealth tint
-    speedMultiplier: 1.22,
+    speedMultiplier: 1.30,
     jumpMultiplier: 1.20,
-    magnetRadius: 180,
+    magnetRadius: 190,
   },
   zombie: {
     id: 'zombie',

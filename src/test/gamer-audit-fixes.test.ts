@@ -67,8 +67,8 @@ describe('Gamer Audit Fixes & Enhancements Suite', () => {
       scene.init();
 
       expect(scene.skinConfig.id).toBe('ninja');
-      expect(scene.skinConfig.speedMultiplier).toBe(1.22);
-      expect(scene.skinConfig.magnetRadius).toBe(180);
+      expect(scene.skinConfig.speedMultiplier).toBe(1.30);
+      expect(scene.skinConfig.magnetRadius).toBe(190);
 
       // Distance test: Coin at distance 120px within 180px magnet radius
       const coinItem: any = {

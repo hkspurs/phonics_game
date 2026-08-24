@@ -360,9 +360,9 @@ describe('RunnerScene (2D Platformer Runner Reward Scene)', () => {
       scene.init();
       expect(scene.skinConfig.id).toBe('heroine');
       expect(scene.skinConfig.walk1Key).toBe('female_walk1');
-      expect(scene.skinConfig.speedMultiplier).toBe(1.15);
+      expect(scene.skinConfig.speedMultiplier).toBe(1.10);
       expect(scene.skinConfig.magnetRadius).toBe(130);
-      expect(scene.currentSpeed).toBe(scene.baseSpeed * 1.15);
+      expect(scene.currentSpeed).toBe(scene.baseSpeed * 1.10);
     });
 
     it('resolves Soldier skin with high jump multiplier (+25%)', () => {
@@ -372,7 +372,7 @@ describe('RunnerScene (2D Platformer Runner Reward Scene)', () => {
 
       scene.init();
       expect(scene.skinConfig.id).toBe('soldier');
-      expect(scene.skinConfig.jumpMultiplier).toBe(1.25);
+      expect(scene.skinConfig.jumpMultiplier).toBe(1.15);
       expect(scene.skinConfig.walk1Key).toBe('soldier_walk1');
     });
 
@@ -384,7 +384,7 @@ describe('RunnerScene (2D Platformer Runner Reward Scene)', () => {
       scene.init();
       expect(scene.skinConfig.id).toBe('knight');
       expect(scene.skinConfig.tint).toBe(0xc8e6ff);
-      expect(scene.skinConfig.magnetRadius).toBe(150);
+      expect(scene.skinConfig.magnetRadius).toBe(160);
     });
 
     it('resolves Ninja skin with max speed bonus (+22%) and super magnet radius (180)', () => {
@@ -394,8 +394,8 @@ describe('RunnerScene (2D Platformer Runner Reward Scene)', () => {
 
       scene.init();
       expect(scene.skinConfig.id).toBe('ninja');
-      expect(scene.skinConfig.speedMultiplier).toBe(1.22);
-      expect(scene.skinConfig.magnetRadius).toBe(180);
+      expect(scene.skinConfig.speedMultiplier).toBe(1.30);
+      expect(scene.skinConfig.magnetRadius).toBe(190);
       expect(scene.skinConfig.tint).toBe(0x4a4a5a);
     });
 
