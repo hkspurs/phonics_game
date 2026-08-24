@@ -672,7 +672,7 @@ export class TitleScene extends Phaser.Scene {
         const x = startX + col * colSpacing;
         const y = startY + row * rowSpacing;
 
-        const isUnlocked = idx < profile.unlockedStations || unlockedStamps.includes(s.id);
+        const isUnlocked = (idx + 1 < profile.unlockedStations) || (profile.stationStars && profile.stationStars[idx + 1] > 0) || unlockedStamps.includes(s.id);
         const iconText = this.add.text(x, y, isUnlocked ? s.icon : '🔒', {
           fontSize: '36px',
         });
@@ -709,21 +709,30 @@ export class TitleScene extends Phaser.Scene {
       appVersion = 'ver 1.0.0';
     }
 
-    const verText = this.add.text(width - 24, height - 16, appVersion, {
-      fontSize: '14px',
-      fontFamily: "'Kenney Future', 'Noto Sans TC', monospace",
-      color: '#ffffff',
-      fontStyle: 'bold',
-    });
+    // Container with dark translucent backdrop pill for maximum contrast and high-DPI rendering
+    const container = this.add.container ? this.add.container(width - 16, height - 16) : null;
+    if (container) {
+      container.setDepth(100);
+      if (this.add.graphics) {
+        const bg = this.add.graphics();
+        bg.fillStyle(0x0e1320, 0.75);
+        bg.lineStyle(1, 0x4a90e2, 0.6);
+        bg.fillRoundedRect(-170, -24, 166, 26, 8);
+        bg.strokeRoundedRect(-170, -24, 166, 26, 8);
+        container.add(bg);
+      }
 
-    if (typeof verText.setOrigin === 'function') {
-      verText.setOrigin(1, 1);
-    }
-    if (typeof verText.setAlpha === 'function') {
-      verText.setAlpha(0.65);
-    }
-    if (typeof verText.setDepth === 'function') {
-      verText.setDepth(50);
+      const verText = this.add.text(-87, -11, appVersion, {
+        fontSize: '13px',
+        fontFamily: "'Kenney Future', 'Noto Sans TC', monospace",
+        color: '#e2e8f0',
+        fontStyle: 'bold',
+        resolution: typeof window !== 'undefined' ? Math.max(2, window.devicePixelRatio || 2) : 2,
+      });
+      if (typeof verText.setOrigin === 'function') {
+        verText.setOrigin(0.5, 0.5);
+      }
+      container.add(verText);
     }
   }
 }

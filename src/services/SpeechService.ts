@@ -1,5 +1,6 @@
 import { VoiceLanguage } from '../types';
 import { DataManager } from './DataManager';
+import { SoundManager } from './SoundManager';
 
 /**
  * SpeechService provides Web Speech API (SpeechSynthesis) speech synthesis
@@ -235,12 +236,29 @@ export class SpeechService {
       const targetLang = (lang || DataManager.getInstance().getProfile().settings.voiceLanguage || 'zh-HK') as VoiceLanguage;
       const processedText = this.normalizeSpeechText(text, targetLang);
 
+      // Respect mute settings
+      try {
+        const profile = DataManager.getInstance().getProfile();
+        const vol = profile?.settings?.soundVolume ?? 1.0;
+        if (vol <= 0 || SoundManager.isMuted()) {
+          if (onEnd) onEnd();
+          return null;
+        }
+      } catch {
+        // Safe fallback
+      }
+
       const utterance = new UtteranceClass(processedText);
       utterance.text = processedText;
       utterance.lang = targetLang;
       utterance.rate = this.defaultRate;
       utterance.pitch = this.defaultPitch;
-      utterance.volume = this.defaultVolume;
+      try {
+        const profile = DataManager.getInstance().getProfile();
+        utterance.volume = profile?.settings?.soundVolume ?? this.defaultVolume;
+      } catch {
+        utterance.volume = this.defaultVolume;
+      }
 
       const bestVoice = this.getBestVoice(targetLang);
       if (bestVoice) {

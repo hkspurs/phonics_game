@@ -128,6 +128,8 @@ export class SoundManager {
    * Progressive Do-Re-Mi Pitch-Shifted Combo Correct Sound (C5 -> E5 -> G5 -> C6 -> E6)
    */
   public static playComboCorrect(comboIndex?: number): void {
+    if (this.isMuted() || this.getVolume() <= 0) return;
+
     if (comboIndex !== undefined) {
       this.comboCount = comboIndex;
     } else {
@@ -179,6 +181,8 @@ export class SoundManager {
    * Gentle, soft water drop / bubble pop error sound (no harsh buzzer)
    */
   public static playSoftWrong(): void {
+    if (this.isMuted() || this.getVolume() <= 0) return;
+
     this.resetCombo();
     this.play('wrong');
 
@@ -221,6 +225,8 @@ export class SoundManager {
    * ASMR crisp magnetic click for card slots
    */
   public static playCardSnap(): void {
+    if (this.isMuted() || this.getVolume() <= 0) return;
+
     const ctx = this.getAudioContext();
     if (!ctx) {
       this.play('click');
@@ -262,6 +268,8 @@ export class SoundManager {
    * Arpeggiated coin collection tone in runner
    */
   public static playCoinArpeggio(step: number = 0): void {
+    if (this.isMuted() || this.getVolume() <= 0) return;
+
     const ctx = this.getAudioContext();
     if (!ctx) {
       this.play('coin');

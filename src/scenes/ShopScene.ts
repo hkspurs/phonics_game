@@ -698,15 +698,19 @@ export class ShopScene extends Phaser.Scene {
       SoundManager.play('click');
       this.refreshSceneState();
     } else {
-      // Purchase Skin
+      // Purchase Skin (Support both Gems and Coins)
+      let success = false;
       if (profile.gems >= skin.costGems) {
-        const success = dm.unlockSkin(skin.id, skin.costGems);
-        if (success) {
-          dm.equipSkin(skin.id);
-          dm.checkTrophies();
-          SoundManager.play('victory');
-          this.refreshSceneState();
-        }
+        success = dm.unlockSkin(skin.id, skin.costGems, 0);
+      } else if (skin.costCoins && profile.coins >= skin.costCoins) {
+        success = dm.unlockSkin(skin.id, 0, skin.costCoins);
+      }
+
+      if (success) {
+        dm.equipSkin(skin.id);
+        dm.checkTrophies();
+        SoundManager.play('victory');
+        this.refreshSceneState();
       } else {
         SoundManager.play('wrong');
       }

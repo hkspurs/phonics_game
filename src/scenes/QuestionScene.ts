@@ -50,6 +50,8 @@ export class QuestionScene extends Phaser.Scene {
 
   // UI Components
   public transitionTimer: Phaser.Time.TimerEvent | null = null;
+  public autoReadTimer: Phaser.Time.TimerEvent | null = null;
+  public isTransitioning: boolean = false;
   public backButton: CanvasButton | null = null;
   public speakerButton: CanvasButton | null = null;
   public hintButton: CanvasButton | null = null;
@@ -242,6 +244,10 @@ export class QuestionScene extends Phaser.Scene {
           this.transitionTimer.remove();
           this.transitionTimer = null;
         }
+        if (this.autoReadTimer) {
+          this.autoReadTimer.remove();
+          this.autoReadTimer = null;
+        }
         SoundManager.play('click');
         SpeechService.stop();
         if (this.scene) {
@@ -264,6 +270,10 @@ export class QuestionScene extends Phaser.Scene {
         if (this.transitionTimer) {
           this.transitionTimer.remove();
           this.transitionTimer = null;
+        }
+        if (this.autoReadTimer) {
+          this.autoReadTimer.remove();
+          this.autoReadTimer = null;
         }
         SoundManager.play('click');
         SpeechService.stop();
@@ -942,9 +952,16 @@ export class QuestionScene extends Phaser.Scene {
     const isRainbow = this.sessionStats.correctCount >= 2;
 
     const executeTransition = () => {
+      if (this.isTransitioning) return;
+      this.isTransitioning = true;
+
       if (this.transitionTimer) {
         this.transitionTimer.remove();
         this.transitionTimer = null;
+      }
+      if (this.autoReadTimer) {
+        this.autoReadTimer.remove();
+        this.autoReadTimer = null;
       }
       const isSceneActive = this.scene && (typeof (this.scene as any).isActive === 'function' ? this.scene.isActive('QuestionScene') : true);
       if (this.scene && isSceneActive) {
@@ -962,7 +979,11 @@ export class QuestionScene extends Phaser.Scene {
     };
 
     if (this.input) {
-      this.input.once('pointerdown', executeTransition);
+      this.input.once('pointerdown', (pointer: any) => {
+        // Exclude top header area from tap-to-fast-forward
+        if (pointer && pointer.y < 80) return;
+        executeTransition();
+      });
     }
 
     if (this.time?.delayedCall) {

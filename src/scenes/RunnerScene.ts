@@ -171,6 +171,7 @@ export class RunnerScene extends Phaser.Scene {
   public isJumping: boolean = false;
   public isSuperJumping: boolean = false;
   public isGrounded: boolean = true;
+  public springboardCooldown: number = 0;
   public playerVelocityY: number = 0;
   public playerY: number = 540;
   public currentGroundY: number = 540;
@@ -1115,7 +1116,7 @@ export class RunnerScene extends Phaser.Scene {
       if (item && item.type === 'platform') {
         const screenX = item.worldX - this.distanceRun;
         if (Math.abs(screenX - this.playerScreenX) < 70) {
-          if (this.playerY <= item.worldY + 25 && this.playerVelocityY >= 0) {
+          if (this.playerY <= item.worldY + 5 && this.playerVelocityY >= 0) {
             targetGroundY = item.worldY;
             break;
           }
@@ -1123,6 +1124,16 @@ export class RunnerScene extends Phaser.Scene {
       }
     }
     this.currentGroundY = targetGroundY;
+
+    // Detect stepping off platform edge into free fall
+    if (this.playerY < this.currentGroundY && this.isGrounded) {
+      this.isGrounded = false;
+      this.coyoteTimer = 100;
+    }
+
+    if (this.springboardCooldown > 0) {
+      this.springboardCooldown = Math.max(0, this.springboardCooldown - delta);
+    }
 
     // 4. Update Coyote Time & Jump Buffer
     if (this.isGrounded) {
@@ -1210,10 +1221,11 @@ export class RunnerScene extends Phaser.Scene {
         }
       }
 
-      // Check Springboard Collision
+      // Check Springboard Collision (with cooldown debounce)
       if (item.type === 'springboard') {
         const distToPlayer = screenX - this.playerScreenX;
-        if (distToPlayer > -25 && distToPlayer < 45 && Math.abs(this.playerY - this.playerBaselineY) < 35) {
+        if (distToPlayer > -25 && distToPlayer < 45 && Math.abs(this.playerY - this.playerBaselineY) < 35 && this.springboardCooldown <= 0) {
+          this.springboardCooldown = 350;
           this.triggerSpringboard(item);
         }
       }

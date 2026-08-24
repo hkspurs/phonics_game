@@ -1248,7 +1248,7 @@ export class DataManager {
   }
 
   private getDefaultProfile(): UserProfile {
-    const today = new Date().toISOString().split('T')[0];
+    const today = this.getLocalDateString();
     return {
       coins: 0,
       gems: 0,
@@ -1422,7 +1422,7 @@ export class DataManager {
 
     if (diffDays === 1) {
       this.profile.stats.streakDays += 1;
-    } else if (diffDays > 1) {
+    } else if (diffDays > 1 || diffDays < 0) {
       this.profile.stats.streakDays = 1;
     }
     this.profile.stats.lastPlayedDate = todayStr;
