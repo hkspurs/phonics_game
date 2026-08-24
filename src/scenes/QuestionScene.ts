@@ -487,12 +487,19 @@ export class QuestionScene extends Phaser.Scene {
         placeholder: `${i + 1}`,
       });
 
-      // Tapping a slot that contains a card removes the card back to bank
+      // Tapping a slot: if filled, returns card to bank; if empty, auto-fills with next available word chip!
       if (typeof slot.setInteractive === 'function') {
         slot.setInteractive({ useHandCursor: true });
         slot.on('pointerup', () => {
           if (slot.hasCard()) {
             this.handleSlotCardRemoval(slot);
+          } else {
+            const nextUnplacedChip = this.cardChips.find((c) => c.getCurrentSlot() === null);
+            if (nextUnplacedChip) {
+              SoundManager.play('click');
+              slot.setPlacedCard(nextUnplacedChip);
+              this.evaluateSentenceScramble();
+            }
           }
         });
       }

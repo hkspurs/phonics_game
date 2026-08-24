@@ -210,7 +210,7 @@ test.describe('Chaos Monkey & Adversarial Stress E2E Suite', () => {
     page.on('pageerror', (err) => pageErrors.push(err.message));
 
     await page.goto('/');
-    await page.waitForSelector('canvas');
+    await page.waitForSelector('#game-container canvas', { timeout: 15000 });
     await page.waitForTimeout(500);
 
     // Start RunnerScene directly

@@ -34,7 +34,7 @@ test('Verify Sentence Scramble Speech: Reads prompt instruction before answering
       ]
     });
 
-    await new Promise(r => setTimeout(r, 1400));
+    await new Promise(r => setTimeout(r, 2000));
     return (window as any).__LAST_SPOKEN_TEXT__;
   });
 
