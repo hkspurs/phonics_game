@@ -53,6 +53,7 @@ export class CanvasCard extends Phaser.GameObjects.Container {
   private homeX: number;
   private homeY: number;
   private currentSlot: any = null;
+  private hasDraggedCard: boolean = false;
 
   private bgGraphics: Phaser.GameObjects.Graphics | null = null;
   private labelText: Phaser.GameObjects.Text | null = null;
@@ -221,11 +222,12 @@ export class CanvasCard extends Phaser.GameObjects.Container {
         this.setState('hover');
       }
       if (this.scene?.tweens) {
+        this.scene.tweens.killTweensOf(this);
         this.scene.tweens.add({
           targets: this,
           scaleX: 1.04,
           scaleY: 1.04,
-          duration: 100,
+          duration: 80,
           ease: 'Quad.easeOut',
         });
       }
@@ -237,28 +239,39 @@ export class CanvasCard extends Phaser.GameObjects.Container {
         this.setState('normal');
       }
       if (this.scene?.tweens) {
+        this.scene.tweens.killTweensOf(this);
         this.scene.tweens.add({
           targets: this,
           scaleX: 1.0,
           scaleY: 1.0,
-          duration: 100,
+          duration: 80,
           ease: 'Quad.easeOut',
         });
       }
     });
 
+    this.on('pointerdown', () => {
+      if (this.currentState === 'disabled') return;
+      this.hasDraggedCard = false;
+    });
+
     this.on('pointerup', () => {
       if (this.currentState === 'disabled') return;
-      if (this.config.tappable !== false && typeof this.config.onTap === 'function') {
+      if (!this.hasDraggedCard && this.config.tappable !== false && typeof this.config.onTap === 'function') {
         SoundManager.play('click');
         this.config.onTap(this);
       }
+      this.hasDraggedCard = false;
     });
 
     this.on('dragstart', (pointer: Phaser.Input.Pointer) => {
       if (this.currentState === 'disabled') return;
+      this.hasDraggedCard = true;
       this.setState('selected');
       this.setDepth(100);
+      if (this.scene?.tweens) {
+        this.scene.tweens.killTweensOf(this);
+      }
       if (typeof this.config.onDragStart === 'function') {
         this.config.onDragStart(this, pointer);
       }
@@ -266,6 +279,7 @@ export class CanvasCard extends Phaser.GameObjects.Container {
 
     this.on('drag', (pointer: Phaser.Input.Pointer, dragX: number, dragY: number) => {
       if (this.currentState === 'disabled') return;
+      this.hasDraggedCard = true;
       this.x = dragX;
       this.y = dragY;
       if (typeof this.config.onDrag === 'function') {
@@ -279,6 +293,7 @@ export class CanvasCard extends Phaser.GameObjects.Container {
       if (typeof this.config.onDragEnd === 'function') {
         this.config.onDragEnd(this, pointer);
       }
+      this.hasDraggedCard = false;
     });
 
     this.on('drop', (_pointer: Phaser.Input.Pointer, target: any) => {

@@ -233,11 +233,12 @@ export class CanvasButton extends Phaser.GameObjects.Container {
     this.on('pointerover', () => {
       if (!this.isBtnEnabled) return;
       if (this.scene?.tweens) {
+        this.scene.tweens.killTweensOf(this);
         this.scene.tweens.add({
           targets: this,
           scaleX: this.scaleOnHover,
           scaleY: this.scaleOnHover,
-          duration: 100,
+          duration: 80,
           ease: 'Quad.easeOut',
         });
       }
@@ -246,11 +247,12 @@ export class CanvasButton extends Phaser.GameObjects.Container {
     this.on('pointerout', () => {
       if (!this.isBtnEnabled) return;
       if (this.scene?.tweens) {
+        this.scene.tweens.killTweensOf(this);
         this.scene.tweens.add({
           targets: this,
           scaleX: 1.0,
           scaleY: 1.0,
-          duration: 100,
+          duration: 80,
           ease: 'Quad.easeOut',
         });
       }
@@ -260,11 +262,12 @@ export class CanvasButton extends Phaser.GameObjects.Container {
       if (!this.isBtnEnabled) return;
       SoundManager.play(this.soundKey);
       if (this.scene?.tweens) {
+        this.scene.tweens.killTweensOf(this);
         this.scene.tweens.add({
           targets: this,
           scaleX: this.scaleOnDown,
           scaleY: this.scaleOnDown,
-          duration: 60,
+          duration: 50,
           ease: 'Quad.easeIn',
         });
       }
@@ -273,11 +276,12 @@ export class CanvasButton extends Phaser.GameObjects.Container {
     this.on('pointerup', () => {
       if (!this.isBtnEnabled) return;
       if (this.scene?.tweens) {
+        this.scene.tweens.killTweensOf(this);
         this.scene.tweens.add({
           targets: this,
           scaleX: 1.0,
           scaleY: 1.0,
-          duration: 100,
+          duration: 80,
           ease: 'Back.easeOut',
         });
       }

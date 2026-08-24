@@ -142,6 +142,13 @@ export class SlotBox extends Phaser.GameObjects.Container {
     this.placedCard = card;
     card.setCurrentSlot(this);
 
+    if (this.scene?.tweens) {
+      this.scene.tweens.killTweensOf(card);
+    }
+    if (typeof card.setScale === 'function') {
+      card.setScale(1.0);
+    }
+
     // Snap card coordinates to slot position
     const center = this.getCenterPosition();
     card.x = center.x;
