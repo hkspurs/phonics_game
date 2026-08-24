@@ -227,12 +227,12 @@ export class CanvasModal extends Phaser.GameObjects.Container {
     const btn = new CanvasButton(this.scene, {
       x: halfW - 28,
       y: -halfH + 28,
-      width: 44,
-      height: 44,
+      width: 52,
+      height: 52,
       variant: 'round',
       text: '✕',
       color: 'red',
-      fontSize: '22px',
+      fontSize: '24px',
       onClick: () => this.close(),
     });
     if (btn && typeof (btn as any).setScrollFactor === 'function') {

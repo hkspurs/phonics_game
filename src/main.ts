@@ -45,16 +45,16 @@ export function getDynamicGameSize(): { width: number; height: number } {
   if (typeof window === 'undefined') {
     return { width: DEFAULT_GAME_SETTINGS.width, height: DEFAULT_GAME_SETTINGS.height };
   }
-  const screenW = Math.max(window.innerWidth || 0, document.documentElement?.clientWidth || 0, 1280);
-  const screenH = Math.max(window.innerHeight || 0, document.documentElement?.clientHeight || 0, 720);
+  const screenW = window.innerWidth || document.documentElement?.clientWidth || 1280;
+  const screenH = window.innerHeight || document.documentElement?.clientHeight || 720;
   
-  // Calculate aspect ratio
-  const aspect = screenW / Math.max(1, screenH);
+  // Real device aspect ratio (e.g. 932 / 430 = 2.167 on iPhone 15 Pro)
+  const aspect = screenW > 0 && screenH > 0 ? screenW / screenH : 16 / 9;
 
   // Keep fixed height 720 for consistent physics and large child-friendly touch targets
   const baseHeight = 720;
   // Compute exact canvas width to fill 100% of device screen aspect ratio
-  const baseWidth = Math.max(960, Math.min(1800, Math.round(baseHeight * Math.max(1.33, aspect))));
+  const baseWidth = Math.max(960, Math.min(1920, Math.round(baseHeight * Math.max(1.33, Math.min(2.5, aspect)))));
   return { width: baseWidth, height: baseHeight };
 }
 
@@ -97,6 +97,7 @@ if (typeof window !== 'undefined' && document.getElementById(DEFAULT_GAME_SETTIN
     if (game && game.scale) {
       const newSize = getDynamicGameSize();
       game.scale.resize(newSize.width, newSize.height);
+      game.scale.refresh();
     }
   };
 

@@ -18,6 +18,16 @@ test.describe('Sentence Scramble Card Tap & Button Repeated Hover UAT', () => {
       title.scene.start('QuestionScene', {
         stationId: 1,
         questionIndex: 0,
+        questions: [
+          {
+            id: 'test_zh_scramble',
+            subject: 'chinese',
+            type: 'sentence_scramble',
+            prompt: '重組句子：請把字詞排列成通順的句子。',
+            correctTokens: ['姐姐', '吃', '餅乾', '。'],
+            shuffledTokens: ['吃', '。', '姐姐', '餅乾'],
+          }
+        ]
       });
     });
     await page.waitForTimeout(1500);

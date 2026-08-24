@@ -203,8 +203,12 @@ export class CanvasCard extends Phaser.GameObjects.Container {
   }
 
   private setupInteractions(): void {
+    const hitPadX = 12;
+    const hitPadY = 12;
+    const hitW = this.cardWidth + hitPadX * 2;
+    const hitH = this.cardHeight + hitPadY * 2;
     const hitRect = (Phaser && Phaser.Geom && Phaser.Geom.Rectangle)
-      ? new Phaser.Geom.Rectangle(-this.cardWidth / 2, -this.cardHeight / 2, this.cardWidth, this.cardHeight)
+      ? new Phaser.Geom.Rectangle(-hitPadX, -hitPadY, hitW, hitH)
       : undefined;
 
     if (hitRect) {

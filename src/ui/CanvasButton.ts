@@ -221,8 +221,15 @@ export class CanvasButton extends Phaser.GameObjects.Container {
   }
 
   private setupInteractivity(): void {
+    // Generous touch hit area (minimum 54x54px and +16px padding)
+    // Note: Because Container has setSize(w, h), displayOrigin is (w/2, h/2).
+    // Phaser shifts pointer by displayOrigin, so hitArea starts at 0, 0 (or -hitPadX, -hitPadY with padding).
+    const hitPadX = 16;
+    const hitPadY = 16;
+    const hitW = this.btnWidth + hitPadX * 2;
+    const hitH = this.btnHeight + hitPadY * 2;
     const hitRect = (Phaser && Phaser.Geom && Phaser.Geom.Rectangle)
-      ? new Phaser.Geom.Rectangle(-this.btnWidth / 2, -this.btnHeight / 2, this.btnWidth, this.btnHeight)
+      ? new Phaser.Geom.Rectangle(-hitPadX, -hitPadY, hitW, hitH)
       : undefined;
 
     if (hitRect) {
@@ -259,8 +266,11 @@ export class CanvasButton extends Phaser.GameObjects.Container {
       }
     });
 
+    let isPressedOnThis = false;
+
     this.on('pointerdown', () => {
       if (!this.isBtnEnabled) return;
+      isPressedOnThis = true;
       SoundManager.play(this.soundKey);
       if (this.scene?.tweens) {
         this.scene.tweens.killTweensOf(this);
@@ -275,7 +285,8 @@ export class CanvasButton extends Phaser.GameObjects.Container {
     });
 
     this.on('pointerup', () => {
-      if (!this.isBtnEnabled) return;
+      if (!this.isBtnEnabled || !isPressedOnThis) return;
+      isPressedOnThis = false;
       if (this.scene?.tweens) {
         this.scene.tweens.killTweensOf(this);
         this.scene.tweens.add({
@@ -288,6 +299,21 @@ export class CanvasButton extends Phaser.GameObjects.Container {
       }
       if (typeof this.config.onClick === 'function') {
         this.config.onClick(this);
+      }
+    });
+
+    this.on('pointerupoutside', () => {
+      if (!isPressedOnThis) return;
+      isPressedOnThis = false;
+      if (this.scene?.tweens) {
+        this.scene.tweens.killTweensOf(this);
+        this.scene.tweens.add({
+          targets: this,
+          scaleX: 1.0,
+          scaleY: 1.0,
+          duration: 80,
+          ease: 'Back.easeOut',
+        });
       }
     });
   }
