@@ -56,6 +56,7 @@ export class CanvasCard extends Phaser.GameObjects.Container {
   private hasDraggedCard: boolean = false;
   private pointerDownX: number = 0;
   private pointerDownY: number = 0;
+  private lastTapTime: number = 0;
 
   private bgGraphics: Phaser.GameObjects.Graphics | null = null;
   private labelText: Phaser.GameObjects.Text | null = null;
@@ -279,10 +280,9 @@ export class CanvasCard extends Phaser.GameObjects.Container {
         });
       }
 
-      // If card is in multiple-choice mode (not draggable), trigger tap on pointerdown for instant zero-latency feedback
-      if (!this.config.draggable && this.config.tappable !== false && typeof this.config.onTap === 'function') {
-        SoundManager.playCardSnap();
-        this.config.onTap(this);
+      // If card is non-draggable (choice quiz option), trigger tap instantly on pointerdown
+      if (!this.config.draggable) {
+        this.triggerTap();
       }
     });
 
@@ -294,12 +294,7 @@ export class CanvasCard extends Phaser.GameObjects.Container {
       const moveDist = Math.hypot(px - this.pointerDownX, py - this.pointerDownY);
 
       if (!this.hasDraggedCard || moveDist <= 16) {
-        if (this.config.tappable !== false && typeof this.config.onTap === 'function') {
-          if (this.config.draggable || !pointer) {
-            SoundManager.playCardSnap();
-            this.config.onTap(this);
-          }
-        }
+        this.triggerTap();
       }
       this.hasDraggedCard = false;
     });
@@ -338,8 +333,16 @@ export class CanvasCard extends Phaser.GameObjects.Container {
       if (this.currentState === 'disabled') return;
       this.setDepth(10);
 
-      if (typeof this.config.onDragEnd === 'function') {
-        this.config.onDragEnd(this, pointer);
+      const px = pointer?.x ?? this.pointerDownX;
+      const py = pointer?.y ?? this.pointerDownY;
+      const moveDist = Math.hypot(px - this.pointerDownX, py - this.pointerDownY);
+
+      if (this.hasDraggedCard && moveDist > 16) {
+        if (typeof this.config.onDragEnd === 'function') {
+          this.config.onDragEnd(this, pointer);
+        }
+      } else {
+        this.triggerTap();
       }
 
       this.hasDraggedCard = false;
@@ -351,6 +354,18 @@ export class CanvasCard extends Phaser.GameObjects.Container {
         this.config.onDrop(this, target);
       }
     });
+  }
+
+  public triggerTap(): void {
+    if (this.currentState === 'disabled') return;
+    const now = Date.now();
+    if (now - this.lastTapTime < 280) return; // Debounce duplicate triggers on same click gesture
+    this.lastTapTime = now;
+
+    if (this.config.tappable !== false && typeof this.config.onTap === 'function') {
+      SoundManager.playCardSnap();
+      this.config.onTap(this);
+    }
   }
 
   public setState(state: CardState): this {
