@@ -349,7 +349,7 @@ describe('QuestionScene — Interactive Quiz Scene Suite', () => {
       scene.speakerButton?.emit('pointerup');
 
       expect(SoundManager.play).toHaveBeenCalledWith('click');
-      expect(speakSpy).toHaveBeenCalledWith('姐姐在花園裡看書。', 'zh-HK');
+      expect(speakSpy).toHaveBeenCalledWith('重組句子：請把字詞排列成通順的句子。', 'zh-HK');
     });
 
     it('correctly maps English subject to en-US voice language', () => {

@@ -989,11 +989,14 @@ export class QuestionScene extends Phaser.Scene {
   }
 
   /**
-   * Speaks the current question text via SpeechService
+   * Speaks the current question text via SpeechService.
+   * For sentence scramble questions, reads the instruction prompt so it doesn't give away the answer before solving.
    */
   public speakCurrentQuestion(): void {
     if (!this.currentQuestion) return;
-    const text = this.currentQuestion.speakText || this.currentQuestion.prompt;
+    const text = this.currentQuestion.type === 'sentence_scramble'
+      ? (this.currentQuestion.prompt || '重組句子：請把字詞排列成通順的句子。')
+      : (this.currentQuestion.speakText || this.currentQuestion.prompt);
     SpeechService.speak(text, this.getVoiceLanguage());
   }
 
