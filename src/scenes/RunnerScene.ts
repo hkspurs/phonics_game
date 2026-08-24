@@ -968,6 +968,62 @@ export class RunnerScene extends Phaser.Scene {
         this.skipRunner();
       },
     });
+
+    // 4. Interactive Jump Tutorial Prompt ("👆 點擊螢幕跳躍 🦘 拾取空中寶石！")
+    if (this.add.container) {
+      const hintContainer = this.add.container(width / 2, _height - 54);
+      if (this.add.graphics) {
+        const hintBg = this.add.graphics();
+        hintBg.fillStyle(0x0e1320, 0.75);
+        hintBg.lineStyle(1.5, 0xffd700, 0.85);
+        hintBg.fillRoundedRect(-165, -20, 330, 40, 20);
+        hintBg.strokeRoundedRect(-165, -20, 330, 40, 20);
+        hintContainer.add(hintBg);
+      }
+
+      if (this.add.text) {
+        const hintText = this.add.text(0, 0, '👆 點擊螢幕跳躍 🦘 拾取空中寶石！', {
+          fontSize: '16px',
+          fontFamily: "'Noto Sans TC', 'Microsoft JhengHei', sans-serif",
+          color: '#ffffff',
+          fontStyle: 'bold',
+        });
+        if (typeof hintText.setOrigin === 'function') hintText.setOrigin(0.5);
+        hintContainer.add(hintText);
+      }
+
+      this.hudContainer.add(hintContainer);
+
+      if (this.tweens?.add) {
+        this.tweens.add({
+          targets: hintContainer,
+          y: _height - 62,
+          duration: 600,
+          yoyo: true,
+          repeat: -1,
+          ease: 'Sine.easeInOut',
+        });
+
+        if (this.time?.delayedCall) {
+          this.time.delayedCall(3200, () => {
+            if (this.tweens?.add && hintContainer && hintContainer.active) {
+              this.tweens.add({
+                targets: hintContainer,
+                alpha: 0,
+                duration: 600,
+                onComplete: () => {
+                  try {
+                    hintContainer.destroy();
+                  } catch {
+                    // Ignore
+                  }
+                },
+              });
+            }
+          });
+        }
+      }
+    }
   }
 
   /**
