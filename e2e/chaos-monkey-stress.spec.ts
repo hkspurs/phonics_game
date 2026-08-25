@@ -191,7 +191,11 @@ test.describe('Chaos Monkey & Adversarial Stress E2E Suite', () => {
     });
 
     // Immediately click Back to Map button during the 1200ms celebration delay
-    await page.mouse.click(100, 42); // Back button at (100, 42)
+    const canvas = page.locator('#game-container canvas');
+    const box = await canvas.boundingBox();
+    if (box) {
+      await page.mouse.click(box.x + (95 / 1280) * box.width, box.y + (42 / 720) * box.height);
+    }
     await page.waitForTimeout(1500); // Wait past the 1200ms delayedCall
 
     // Check which scene is currently active

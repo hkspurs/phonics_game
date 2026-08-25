@@ -776,6 +776,7 @@ export class QuestionScene extends Phaser.Scene {
       if (card.getCurrentSlot()) {
         card.getCurrentSlot().removePlacedCard();
       }
+      card.setCurrentSlot(null);
       card.snapBack();
     }
   }

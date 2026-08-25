@@ -73,6 +73,9 @@ if (typeof window !== 'undefined' && document.getElementById(DEFAULT_GAME_SETTIN
   const handleResize = () => {
     if (game && game.scale) {
       game.scale.refresh();
+      if (typeof (game.scale as any).updateBounds === 'function') {
+        (game.scale as any).updateBounds();
+      }
     }
   };
 
@@ -80,5 +83,11 @@ if (typeof window !== 'undefined' && document.getElementById(DEFAULT_GAME_SETTIN
   window.addEventListener('orientationchange', () => {
     setTimeout(handleResize, 150);
     setTimeout(handleResize, 400);
+  });
+  window.addEventListener('fullscreenchange', () => {
+    setTimeout(handleResize, 100);
+  });
+  window.addEventListener('webkitfullscreenchange', () => {
+    setTimeout(handleResize, 100);
   });
 }

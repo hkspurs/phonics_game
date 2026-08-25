@@ -2,8 +2,9 @@ import { test, expect } from '@playwright/test';
 
 test('Live Verify: Auto-read after 1s & 100% full-area sub-level row clicks on GitHub Pages', async ({ page }) => {
   await page.setViewportSize({ width: 932, height: 430 });
-  await page.goto('https://hkspurs.github.io/phonics_game/?_t=' + Date.now());
-  await page.waitForTimeout(3000);
+  const targetUrl = process.env.LIVE_URL || 'http://localhost:4173/';
+  await page.goto(targetUrl);
+  await page.waitForTimeout(2000);
 
   const canvas = page.locator('#game-container canvas');
   const box = await canvas.boundingBox();
@@ -42,7 +43,7 @@ test('Live Verify: Auto-read after 1s & 100% full-area sub-level row clicks on G
   // Verify QuestionScene is active
   const activeScenes = await page.evaluate(() => {
     const game = (window as any).__PHASER_GAME__;
-    return game.scene.scenes.filter((s: any) => s.scene.isActive()).map((s: any) => s.scene.key);
+    return game.scene.scenes.filter((s: any) => s.sys?.settings?.active).map((s: any) => s.scene.key);
   });
   console.log('Active scenes after clicking far right of sub-level row:', activeScenes);
   expect(activeScenes).toContain('QuestionScene');

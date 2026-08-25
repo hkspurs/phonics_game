@@ -211,7 +211,7 @@ export class CanvasCard extends Phaser.GameObjects.Container {
     const hitW = this.cardWidth + hitPadX * 2;
     const hitH = this.cardHeight + hitPadY * 2;
     const hitRect = (Phaser && Phaser.Geom && Phaser.Geom.Rectangle)
-      ? new Phaser.Geom.Rectangle(-this.cardWidth / 2 - hitPadX, -this.cardHeight / 2 - hitPadY, hitW, hitH)
+      ? new Phaser.Geom.Rectangle(-hitPadX, -hitPadY, hitW, hitH)
       : undefined;
 
     if (hitRect) {
@@ -389,6 +389,7 @@ export class CanvasCard extends Phaser.GameObjects.Container {
   }
 
   public snapBack(duration: number = 250, onComplete?: () => void): this {
+    this.currentSlot = null;
     if (this.scene?.tweens) {
       this.scene.tweens.killTweensOf(this);
       this.scene.tweens.add({

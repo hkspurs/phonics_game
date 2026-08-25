@@ -118,7 +118,7 @@ test('Verification: Auto-read after 1s in QuestionScene and 100% full-area sub-l
 
   const activeSceneAfterRightClick = await page.evaluate(() => {
     const game = (window as any).__PHASER_GAME__;
-    return game.scene.scenes.filter((s: any) => s.scene.isActive()).map((s: any) => s.scene.key);
+    return game.scene.scenes.filter((s: any) => s.sys?.settings?.active).map((s: any) => s.scene.key);
   });
   console.log('Active scenes after clicking far right of sub-level button:', activeSceneAfterRightClick);
   expect(activeSceneAfterRightClick).toContain('QuestionScene');
