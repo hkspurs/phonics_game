@@ -933,27 +933,19 @@ export class RunnerScene extends Phaser.Scene {
       }
     }
 
-    // 3. Companion Pet (if unlocked via 3-6-9 milestone)
+    // 3. Companion Pet (if unlocked via 3-6-9 milestone and no shop pet equipped)
     try {
-      const petData = DataManager.getInstance().getPetCompanion();
-      if (petData.stage !== 'none' && this.add.text) {
-        const petObj = this.add.text(
-          this.playerScreenX - 56,
-          this.playerBaselineY - 36,
-          petData.icon,
-          { fontSize: '32px' }
-        );
-        if (petObj.setDepth) petObj.setDepth(18);
-        this.petCompanionObject = petObj;
-        if (this.tweens?.add) {
-          this.tweens.add({
-            targets: petObj,
-            y: this.playerBaselineY - 50,
-            duration: 800,
-            yoyo: true,
-            repeat: -1,
-            ease: 'Sine.easeInOut',
-          });
+      if (!this.companionPet) {
+        const petData = DataManager.getInstance().getPetCompanion();
+        if (petData.stage !== 'none' && this.add.text) {
+          const petObj = this.add.text(
+            this.playerScreenX - 45,
+            this.playerBaselineY - 35,
+            petData.icon,
+            { fontSize: '32px' }
+          );
+          if (petObj.setDepth) petObj.setDepth(18);
+          this.petCompanionObject = petObj;
         }
       }
     } catch {
@@ -1227,8 +1219,12 @@ export class RunnerScene extends Phaser.Scene {
           duration: 90,
           yoyo: true,
           onComplete: () => {
-            if (this.playerSprite && typeof (this.playerSprite as any).clearTint === 'function') {
-              (this.playerSprite as any).clearTint();
+            if (this.playerSprite) {
+              if (this.skinConfig.tint !== undefined && typeof (this.playerSprite as any).setTint === 'function') {
+                (this.playerSprite as any).setTint(this.skinConfig.tint);
+              } else if (typeof (this.playerSprite as any).clearTint === 'function') {
+                (this.playerSprite as any).clearTint();
+              }
             }
           },
         });
@@ -1436,6 +1432,9 @@ export class RunnerScene extends Phaser.Scene {
         this.playerY,
         Boolean(this.playerSprite?.flipX)
       );
+    } else if (this.petCompanionObject && typeof this.petCompanionObject.setPosition === 'function') {
+      const followOffsetX = this.playerSprite?.flipX ? 45 : -45;
+      this.petCompanionObject.setPosition(this.playerScreenX + followOffsetX, this.playerY - 35);
     }
 
     // 6. Update Course Items & Interactions
@@ -1762,6 +1761,10 @@ export class RunnerScene extends Phaser.Scene {
     // 1. Switch Player Pose to Cheer Celebration
     if (this.playerSprite && typeof this.playerSprite.setTexture === 'function') {
       this.playerSprite.setTexture(this.skinConfig.cheerKey);
+    }
+
+    if (this.companionPet && typeof this.companionPet.playVictoryDance === 'function') {
+      this.companionPet.playVictoryDance();
     }
 
     if (this.playerSprite && this.tweens?.add) {

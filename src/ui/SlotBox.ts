@@ -135,13 +135,17 @@ export class SlotBox extends Phaser.GameObjects.Container {
       return true;
     }
 
-    // If slot already holds a card, remove the old one first
+    // If slot already holds a card, return old card back to bank cleanly
     if (this.placedCard && this.placedCard !== card) {
-      this.placedCard.setCurrentSlot(null);
+      const oldCard = this.placedCard;
+      oldCard.setCurrentSlot(null);
+      oldCard.setState('normal');
+      oldCard.snapBack();
     }
 
     this.placedCard = card;
     card.setCurrentSlot(this);
+    this.setError(false);
 
     if (this.scene?.tweens) {
       this.scene.tweens.killTweensOf(card);
@@ -161,11 +165,8 @@ export class SlotBox extends Phaser.GameObjects.Container {
         ease: 'Back.easeOut',
       });
     } else {
-      card.x = center.x;
-      card.y = center.y;
-      if (typeof card.setScale === 'function') {
-        card.setScale(1.0);
-      }
+      card.setPosition(center.x, center.y);
+      card.setScale(1.0);
     }
     card.setState('placed');
 
@@ -184,6 +185,8 @@ export class SlotBox extends Phaser.GameObjects.Container {
       card.setState('normal');
       this.placedCard = null;
     }
+
+    this.setError(false);
 
     if (this.placeholderText && typeof this.placeholderText.setVisible === 'function') {
       this.placeholderText.setVisible(true);

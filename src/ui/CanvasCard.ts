@@ -263,26 +263,17 @@ export class CanvasCard extends Phaser.GameObjects.Container {
       this.hasDraggedCard = false;
       this.pointerDownX = pointer?.x ?? this.x;
       this.pointerDownY = pointer?.y ?? this.y;
-
+      // Tap animation
       if (this.scene?.tweens) {
         this.scene.tweens.killTweensOf(this);
-        this.setScale(1.0, 1.0);
         this.scene.tweens.add({
           targets: this,
-          scaleX: 1.08,
-          scaleY: 0.92,
-          duration: 70,
+          scaleX: 0.95,
+          scaleY: 0.95,
+          duration: 60,
           yoyo: true,
-          ease: 'Cubic.easeOut',
-          onComplete: () => {
-            this.setScale(1.0, 1.0);
-          },
+          ease: 'Quad.easeInOut',
         });
-      }
-
-      // If card is non-draggable (choice quiz option), trigger tap instantly on pointerdown
-      if (!this.config.draggable) {
-        this.triggerTap();
       }
     });
 
@@ -293,7 +284,7 @@ export class CanvasCard extends Phaser.GameObjects.Container {
       const py = pointer?.y ?? this.pointerDownY;
       const moveDist = Math.hypot(px - this.pointerDownX, py - this.pointerDownY);
 
-      if (!this.hasDraggedCard || moveDist <= 16) {
+      if (!this.hasDraggedCard && moveDist <= 16) {
         this.triggerTap();
       }
       this.hasDraggedCard = false;
@@ -318,14 +309,12 @@ export class CanvasCard extends Phaser.GameObjects.Container {
       const px = pointer?.x ?? dragX;
       const py = pointer?.y ?? dragY;
       const moveDist = Math.hypot(px - this.pointerDownX, py - this.pointerDownY);
-
-      if (moveDist > 14) {
+      if (moveDist > 12) {
         this.hasDraggedCard = true;
-        this.x = dragX;
-        this.y = dragY;
-        if (typeof this.config.onDrag === 'function') {
-          this.config.onDrag(this, pointer, dragX, dragY);
-        }
+      }
+      this.setPosition(px, py);
+      if (typeof this.config.onDrag === 'function') {
+        this.config.onDrag(this, pointer, dragX, dragY);
       }
     });
 
@@ -341,11 +330,9 @@ export class CanvasCard extends Phaser.GameObjects.Container {
         this.config.onDragEnd(this, pointer);
       }
 
-      if (!this.hasDraggedCard || moveDist <= 16) {
+      if (!this.hasDraggedCard && moveDist <= 16) {
         this.triggerTap();
       }
-
-      this.hasDraggedCard = false;
     });
 
     this.on('drop', (_pointer: Phaser.Input.Pointer, target: any) => {

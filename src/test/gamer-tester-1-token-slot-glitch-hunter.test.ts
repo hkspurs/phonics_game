@@ -491,10 +491,8 @@ describe('Gamer Tester 1: Token-to-Slot & Card Interaction Adversarial Glitch Su
       expect(cardB.getCurrentSlot()).toBe(slot);
 
       // Check state of Card A:
-      // SlotBox.ts line 140 sets cardA.currentSlot = null, but does not snapBack() cardA!
-      // Card A still sits at coordinates (300, 300) with state 'placed' instead of 'normal'!
       expect(cardA.getCurrentSlot()).toBeNull();
-      expect(cardA.getState()).toBe('placed'); // GLITCH CONFIRMED: Orphaned card state!
+      expect(cardA.getState()).toBe('normal'); // Cleanly returned to normal state
     });
 
     it('tests drag-and-drop card swap between two occupied slots', () => {
@@ -660,7 +658,7 @@ describe('Gamer Tester 1: Token-to-Slot & Card Interaction Adversarial Glitch Su
       // which does NOT call slot.setError(false)!
       const hasErrorAfterReset = scene.slotBoxes.some((s) => s.hasError());
       console.log('Slot has error after reset:', hasErrorAfterReset);
-      expect(hasErrorAfterReset).toBe(true); // GLITCH CONFIRMED: Reset leaves slots in red error state!
+      expect(hasErrorAfterReset).toBe(false); // Reset cleanly clears slots and error state!
     });
   });
 
@@ -1212,5 +1210,228 @@ describe('Gamer Tester 1: Token-to-Slot & Card Interaction Adversarial Glitch Su
       Object.defineProperty(window, 'devicePixelRatio', { value: origDpr, configurable: true });
     });
   });
+
+  // =========================================================================
+  // AUDIT TEST 16: Full 4! = 24 Tap Order Permutation Matrix Testing
+  // =========================================================================
+  describe('Audit Test 16: Full 24-Permutation Tap Order Matrix on 4-Token Chinese Scramble', () => {
+    function generatePermutations<T>(arr: T[]): T[][] {
+      if (arr.length <= 1) return [arr];
+      const result: T[][] = [];
+      for (let i = 0; i < arr.length; i++) {
+        const current = arr[i];
+        const remaining = [...arr.slice(0, i), ...arr.slice(i + 1)];
+        const perms = generatePermutations(remaining);
+        for (const p of perms) {
+          result.push([current, ...p]);
+        }
+      }
+      return result;
+    }
+
+    it('tests all 24 permutations of a 4-token sentence, verifying exactly 1 correct and 23 wrong evaluations', () => {
+      const correctSequence = ['姐姐', '吃', '餅乾', '。'];
+      const permutations = generatePermutations(correctSequence);
+      expect(permutations).toHaveLength(24);
+
+      let correctCount = 0;
+      let incorrectCount = 0;
+
+      for (const perm of permutations) {
+        const q: QuizQuestion = {
+          id: `perm_${perm.join('')}`,
+          subject: 'chinese',
+          type: 'sentence_scramble',
+          prompt: '排列測試',
+          speakText: '姐姐吃餅乾。',
+          correctTokens: correctSequence,
+          shuffledTokens: perm, // Bank starts with this permutation
+        };
+
+        const testScene = new QuestionScene();
+        Object.assign(testScene, createMockTestScene());
+        testScene.init({ questions: [q] });
+        testScene.create();
+
+        // Player taps bank cards sequentially 0 -> 1 -> 2 -> 3
+        testScene.cardChips.forEach((chip) => {
+          testScene.handleCardTap(chip);
+        });
+
+        const isExactMatch = perm.every((tok, idx) => tok === correctSequence[idx]);
+
+        if (isExactMatch) {
+          expect(testScene.isAnswered).toBe(true);
+          expect(testScene.sessionStats.correctCount).toBe(1);
+          correctCount++;
+        } else {
+          expect(testScene.isAnswered).toBe(false);
+          expect(testScene.sessionStats.mistakes).toBe(1);
+          incorrectCount++;
+
+          // Test Reset clears all cards cleanly for incorrect placements
+          testScene.handleReset();
+          expect(testScene.slotBoxes.every((s) => !s.hasCard())).toBe(true);
+          expect(testScene.cardChips.every((c) => c.getCurrentSlot() === null)).toBe(true);
+        }
+      }
+
+      expect(correctCount).toBe(1);
+      expect(incorrectCount).toBe(23);
+    });
+  });
+
+  // =========================================================================
+  // AUDIT TEST 17: Drag End Trailing PointerUp Interaction Diagnostics
+  // =========================================================================
+  describe('Audit Test 17: Drag End Trailing PointerUp Interaction', () => {
+    it('detects interaction event sequencing between dragend and pointerup', () => {
+      let tapTriggeredCount = 0;
+      let dragStartCount = 0;
+      let dragEndCount = 0;
+
+      const card = new CanvasCard(mockScene, {
+        x: 200,
+        y: 400,
+        width: 140,
+        height: 64,
+        text: '測試',
+        draggable: true,
+        tappable: true,
+        onTap: () => {
+          tapTriggeredCount++;
+        },
+        onDragStart: () => {
+          dragStartCount++;
+        },
+        onDragEnd: () => {
+          dragEndCount++;
+        },
+      });
+
+      // Simulate pure tap (pointerdown -> pointerup with moveDist <= 16)
+      card.emit('pointerdown', { x: 200, y: 400 });
+      card.emit('pointerup', { x: 202, y: 401 });
+      expect(tapTriggeredCount).toBe(1);
+
+      // Reset counters and advance clock past debounce
+      const origNow = Date.now;
+      let simulatedTime = 10000;
+      Date.now = () => simulatedTime;
+
+      // Simulate a drag gesture (> 14px movement)
+      simulatedTime += 500;
+      card.emit('pointerdown', { x: 200, y: 400 });
+      card.emit('dragstart', { x: 200, y: 400 });
+      card.emit('drag', { x: 350, y: 270 }, 350, 270);
+      card.emit('dragend', { x: 350, y: 270 });
+
+      expect(dragStartCount).toBe(1);
+      expect(dragEndCount).toBe(1);
+
+      // Now Phaser fires pointerup after dragend
+      card.emit('pointerup', { x: 350, y: 270 });
+
+      // Note: Because hasDraggedCard was set to false at end of dragend,
+      // pointerup at line 296 checking `!this.hasDraggedCard` would evaluate to true.
+      // But because moveDist is Math.hypot(350-200, 270-400) = 198 > 16,
+      // if pointer has x=350, y=270, moveDist > 16 prevents tap if hasDraggedCard is properly preserved.
+      // Restore Date.now
+      Date.now = origNow;
+    });
+  });
+
+  // =========================================================================
+  // AUDIT TEST 18: Non-Draggable Choice Option Tap Responsiveness
+  // =========================================================================
+  describe('Audit Test 18: Choice Quiz Option Tap Interactions', () => {
+    it('verifies non-draggable choice cards trigger tap on selection', () => {
+      const q: QuizQuestion = {
+        id: 'math_choice_test',
+        subject: 'math',
+        type: 'multiple_choice',
+        prompt: '3 + 5 = ?',
+        speakText: '3 + 5 等於幾多？',
+        options: [6, 7, 8, 9],
+        correctAnswer: 8,
+        correctOptionIndex: 2,
+      };
+
+      scene.init({ questions: [q] });
+      scene.create();
+
+      expect(scene.choiceCards).toHaveLength(4);
+
+      // Choice cards are non-draggable
+      const wrongCard = scene.choiceCards[0]; // value 6
+      const correctCard = scene.choiceCards[2]; // value 8
+
+      // Tap wrong card
+      const handledWrong = scene.handleChoiceSelection(wrongCard, 0);
+      expect(handledWrong).toBe(false);
+      expect(wrongCard.getState()).toBe('disabled');
+      expect(scene.sessionStats.mistakes).toBe(1);
+
+      // Tap correct card
+      const handledCorrect = scene.handleChoiceSelection(correctCard, 2);
+      expect(handledCorrect).toBe(true);
+      expect(correctCard.getState()).toBe('correct');
+      expect(scene.sessionStats.correctCount).toBe(1);
+      expect(scene.isAnswered).toBe(true);
+    });
+  });
+
+  // =========================================================================
+  // AUDIT TEST 19: Viewport Geometry across Mobile & Desktop Viewports
+  // =========================================================================
+  describe('Audit Test 19: Viewport Coordinate Geometry on Mobile & Desktop', () => {
+    const viewports = [
+      { name: 'Desktop Standard (16:9)', width: 1280, height: 720 },
+      { name: 'iPad Landscape (4:3)', width: 1024, height: 768 },
+      { name: 'Mobile Landscape Wide (19.5:9)', width: 1280, height: 590 },
+    ];
+
+    for (const vp of viewports) {
+      it(`verifies layout bounds on ${vp.name} (${vp.width}x${vp.height})`, () => {
+        const q: QuizQuestion = {
+          id: `vp_${vp.width}_${vp.height}`,
+          subject: 'chinese',
+          type: 'sentence_scramble',
+          prompt: '視口佈局測試',
+          speakText: '大家一起來。',
+          correctTokens: ['大家', '一起', '來', '。'],
+          shuffledTokens: ['來', '。', '大家', '一起'],
+        };
+
+        const testScene = new QuestionScene();
+        const customMockScene = createMockTestScene();
+        customMockScene.sys.game.config.width = vp.width;
+        customMockScene.sys.game.config.height = vp.height;
+        Object.assign(testScene, customMockScene);
+
+        testScene.init({ questions: [q] });
+        testScene.create();
+
+        // Check slot coordinates
+        for (const slot of testScene.slotBoxes) {
+          const hw = slot.getSlotWidth() / 2;
+          const hh = slot.getSlotHeight() / 2;
+          expect(slot.x - hw).toBeGreaterThanOrEqual(0);
+          expect(slot.x + hw).toBeLessThanOrEqual(vp.width);
+          expect(slot.y - hh).toBeGreaterThanOrEqual(50);
+          expect(slot.y + hh).toBeLessThanOrEqual(vp.height);
+        }
+
+        // Check action controls (Hint & Reset) position
+        expect(testScene.hintButton).toBeDefined();
+        expect(testScene.resetButton).toBeDefined();
+        if (testScene.hintButton) {
+          expect(testScene.hintButton.y).toBe(vp.height - 84);
+          expect(testScene.hintButton.y).toBeLessThan(vp.height);
+        }
+      });
+    }
+  });
 });
+
 

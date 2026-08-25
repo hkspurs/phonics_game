@@ -1352,6 +1352,10 @@ export class ShopScene extends Phaser.Scene {
       const w = WARDROBE_ITEMS.find((item) => item.id === eq.wings);
       if (w) icons.push(w.icon);
     }
+    if (eq.accessory) {
+      const w = WARDROBE_ITEMS.find((item) => item.id === eq.accessory);
+      if (w) icons.push(w.icon);
+    }
 
     if (typeof this.previewWardrobeOverlay.setText === 'function') {
       this.previewWardrobeOverlay.setText(icons.join(' '));
@@ -1433,10 +1437,13 @@ export class ShopScene extends Phaser.Scene {
         if (item.category === 'top') slot = 'top';
         else if (item.category === 'bottom') slot = 'bottom';
         else if (item.category === 'accessory') {
-          slot = item.id.includes('wings') ? 'wings' : 'hat';
+          if (item.id.includes('wings')) slot = 'wings';
+          else if (item.id.includes('hat') || item.id.includes('cap') || item.id.includes('ears')) slot = 'hat';
+          else slot = 'accessory';
         }
 
         dm.equipWardrobeItem(slot, item.id);
+        dm.checkTrophies();
         SoundManager.playMagicTransform();
         this.speakCantonesePraise();
         this.refreshSceneState();
@@ -1449,9 +1456,12 @@ export class ShopScene extends Phaser.Scene {
           if (item.category === 'top') slot = 'top';
           else if (item.category === 'bottom') slot = 'bottom';
           else if (item.category === 'accessory') {
-            slot = item.id.includes('wings') ? 'wings' : 'hat';
+            if (item.id.includes('wings')) slot = 'wings';
+            else if (item.id.includes('hat') || item.id.includes('cap') || item.id.includes('ears')) slot = 'hat';
+            else slot = 'accessory';
           }
           dm.equipWardrobeItem(slot, item.id);
+          dm.checkTrophies();
           SoundManager.playMagicTransform();
           this.speakCantonesePraise();
           this.refreshSceneState();
@@ -1473,6 +1483,7 @@ export class ShopScene extends Phaser.Scene {
         const ok = dm.buyPet(pet.id, currency);
         if (ok) {
           dm.equipPet(pet.id);
+          dm.checkTrophies();
           SoundManager.play('victory');
           this.refreshSceneState();
         } else {
@@ -1486,6 +1497,7 @@ export class ShopScene extends Phaser.Scene {
       const currency = profile.coins >= gadget.costCoins ? 'coins' : 'gems';
       const ok = dm.buyGadget(gadget.id, 1, currency);
       if (ok) {
+        dm.checkTrophies();
         SoundManager.play('coin');
         this.refreshSceneState();
       } else {
