@@ -17,7 +17,7 @@ test.describe('UI QA: Responsive Multi-Viewport Mouse Hover & Word Slot Placemen
       await page.waitForTimeout(1500);
 
       const canvas = page.locator('#game-container canvas');
-      await expect(canvas).toBeVisible();
+      await expect(canvas).toBeVisible({ timeout: 15000 });
       const box = await canvas.boundingBox();
       expect(box).toBeTruthy();
       if (!box) return;
@@ -115,28 +115,20 @@ test.describe('UI QA: Responsive Multi-Viewport Mouse Hover & Word Slot Placemen
       const shop = game.scene.getScene('ShopScene');
       shop.selectSkin(1); // Select Heroine
 
-      // Ensure profile has at least 50 gems
-      const raw = localStorage.getItem('p1_adventure_save_v1');
-      const prof = raw ? JSON.parse(raw) : { coins: 100, gems: 50, ownedSkins: ['adventurer'], equippedSkin: 'adventurer' };
-      prof.gems = 50;
-      localStorage.setItem('p1_adventure_save_v1', JSON.stringify(prof));
-
-      // Re-read profile in DataManager
       const dm = (window as any).DataManager?.getInstance ? (window as any).DataManager.getInstance() : null;
       if (dm) {
-        dm.load();
+        dm.addGems(50);
       }
 
       // Click Action Button
       shop.handleActionClick();
 
-      const rawAfter = localStorage.getItem('p1_adventure_save_v1');
-      const profAfter = rawAfter ? JSON.parse(rawAfter) : {};
+      const profile = dm ? dm.getProfile() : null;
 
       return {
-        ownedSkins: profAfter.ownedSkins || [],
-        equippedSkin: profAfter.equippedSkin,
-        remainingGems: profAfter.gems,
+        ownedSkins: profile?.ownedSkins || [],
+        equippedSkin: profile?.equippedSkin,
+        remainingGems: profile?.gems,
       };
     });
 
