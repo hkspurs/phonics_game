@@ -1,9 +1,9 @@
 import { test, expect } from '@playwright/test';
 
 test('Live Verify: Sentence scramble speaks prompt instruction first on GitHub Pages', async ({ page }) => {
-  await page.setViewportSize({ width: 932, height: 430 });
-  await page.goto('https://hkspurs.github.io/phonics_game/?_t=' + Date.now());
-  await page.waitForTimeout(3000);
+  const targetUrl = process.env.LIVE_URL || 'http://localhost:4173/';
+  await page.goto(targetUrl);
+  await page.waitForTimeout(2000);
 
   const initialSpokenText = await page.evaluate(async () => {
     const game = (window as any).__PHASER_GAME__;

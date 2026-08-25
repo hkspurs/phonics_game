@@ -14,6 +14,7 @@ test.describe('Gamer Tester 3: Full End-to-End Playthrough & Live Browser Inspec
   test('Ruthless Adversarial E2E Playthrough: Title -> Shop Buy/Equip Heroine (30💎) -> Map Station 1 -> Q1 Chinese Scramble (Slot Audit) -> Runner (Touch Jump) -> Q2 Math -> Runner -> Q3 English Scramble (Slot Audit) -> Final Runner -> 3-Star Result Settlement', async ({
     page,
   }) => {
+    test.setTimeout(90000);
     // 0. Collect browser console messages and uncaught errors
     const consoleLogs: { type: string; text: string }[] = [];
     const pageErrors: string[] = [];

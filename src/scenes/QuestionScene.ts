@@ -152,8 +152,8 @@ export class QuestionScene extends Phaser.Scene {
 
     // 6. Automatically read the question prompt aloud after 1 second delay
     if (this.time?.delayedCall) {
-      this.time.delayedCall(1000, () => {
-        const isActive = typeof this.scene?.isActive === 'function' ? this.scene.isActive() : true;
+      this.autoReadTimer = this.time.delayedCall(1000, () => {
+        const isActive = typeof this.scene?.isActive === 'function' ? this.scene.isActive('QuestionScene') : true;
         if (isActive && !this.isAnswered) {
           this.speakCurrentQuestion();
         }
@@ -489,7 +489,12 @@ export class QuestionScene extends Phaser.Scene {
 
       // Tapping a slot: if filled, returns card to bank; if empty, auto-fills with next available word chip!
       if (typeof slot.setInteractive === 'function') {
-        slot.setInteractive({ useHandCursor: true });
+        const hitPadX = 8;
+        const hitPadY = 8;
+        const hitRect = (Phaser && Phaser.Geom && Phaser.Geom.Rectangle)
+          ? new Phaser.Geom.Rectangle(-cardWidth / 2 - hitPadX, -cardHeight / 2 - hitPadY, cardWidth + hitPadX * 2, cardHeight + hitPadY * 2)
+          : { useHandCursor: true };
+        slot.setInteractive(hitRect, Phaser.Geom.Rectangle.Contains);
         slot.on('pointerup', () => {
           if (slot.hasCard()) {
             this.handleSlotCardRemoval(slot);
@@ -723,16 +728,21 @@ export class QuestionScene extends Phaser.Scene {
   public handleCardDragEnd(card: CanvasCard, _pointer: Phaser.Input.Pointer): void {
     if (this.isAnswered) return;
 
-    // Find nearest slot
+    // Find nearest slot using box bounds
     let targetSlot: SlotBox | null = null;
-    let minDistance = 75;
+    let minDistance = 9999;
 
     for (const slot of this.slotBoxes) {
       const center = slot.getCenterPosition();
-      const dist = Math.hypot(card.x - center.x, card.y - center.y);
-      if (dist < minDistance) {
-        minDistance = dist;
-        targetSlot = slot;
+      const halfW = (typeof slot.getSlotWidth === 'function' ? slot.getSlotWidth() : 155) / 2 + 20;
+      const halfH = (typeof slot.getSlotHeight === 'function' ? slot.getSlotHeight() : 74) / 2 + 20;
+      const isInside = Math.abs(card.x - center.x) <= halfW && Math.abs(card.y - center.y) <= halfH;
+      if (isInside) {
+        const dist = Math.hypot(card.x - center.x, card.y - center.y);
+        if (dist < minDistance) {
+          minDistance = dist;
+          targetSlot = slot;
+        }
       }
     }
 

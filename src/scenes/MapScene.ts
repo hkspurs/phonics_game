@@ -1015,7 +1015,7 @@ export class MapScene extends Phaser.Scene {
       const padX = 16;
       const padY = 8;
       const hitRect = (Phaser && Phaser.Geom && Phaser.Geom.Rectangle)
-        ? new Phaser.Geom.Rectangle(-padX, -padY, 580 + padX * 2, 56 + padY * 2)
+        ? new Phaser.Geom.Rectangle(-290 - padX, -28 - padY, 580 + padX * 2, 56 + padY * 2)
         : undefined;
 
       if (typeof rowContainer.setInteractive === 'function') {

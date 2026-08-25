@@ -132,6 +132,7 @@ export class ShopScene extends Phaser.Scene {
   public mapButton: CanvasButton | null = null;
   public actionButton: CanvasButton | null = null;
   public ootdButton: CanvasButton | null = null;
+  public ootdCloseButton: CanvasButton | null = null;
   public ttsButton: CanvasButton | null = null;
   public skinCardButtons: CanvasButton[] = [];
   public tabButtons: CanvasButton[] = [];
@@ -163,6 +164,7 @@ export class ShopScene extends Phaser.Scene {
 
   // Item List Containers
   private listContainer: Phaser.GameObjects.Container | null = null;
+  private tabGameObjects: Phaser.GameObjects.GameObject[] = [];
   private ootdModal: Phaser.GameObjects.Container | null = null;
 
   private walkAnimTimer: Phaser.Time.TimerEvent | null = null;
@@ -382,6 +384,15 @@ export class ShopScene extends Phaser.Scene {
   }
 
   private renderCurrentTabList(width: number, height: number): void {
+    if (this.tabGameObjects) {
+      this.tabGameObjects.forEach((obj) => {
+        if (obj && typeof (obj as any).destroy === 'function') {
+          (obj as any).destroy();
+        }
+      });
+      this.tabGameObjects = [];
+    }
+
     if (this.listContainer) {
       this.listContainer.destroy();
       this.listContainer = null;
@@ -428,6 +439,7 @@ export class ShopScene extends Phaser.Scene {
       });
 
       this.skinCardButtons.push(cardBtn);
+      this.tabGameObjects.push(cardBtn);
       this.populateCardDetails(skin, listX, y + 25, idx);
     });
   }
@@ -446,6 +458,7 @@ export class ShopScene extends Phaser.Scene {
       const avatar = this.add.image(cx - 210, cy, skin.standSprite);
       if (typeof avatar.setScale === 'function') avatar.setScale(0.52);
       if (skin.tint && typeof avatar.setTint === 'function') avatar.setTint(skin.tint);
+      this.tabGameObjects.push(avatar);
     }
 
     if (this.add.text) {
@@ -456,6 +469,7 @@ export class ShopScene extends Phaser.Scene {
         fontStyle: 'bold',
       });
       if (typeof nameTxt.setOrigin === 'function') nameTxt.setOrigin(0, 0.5);
+      this.tabGameObjects.push(nameTxt);
 
       const perkTxt = this.add.text(cx - 155, cy + 14, `✨ ${skin.perkDescription}`, {
         fontSize: '14px',
@@ -464,6 +478,7 @@ export class ShopScene extends Phaser.Scene {
         fontStyle: isSelected ? 'bold' : 'normal',
       });
       if (typeof perkTxt.setOrigin === 'function') perkTxt.setOrigin(0, 0.5);
+      this.tabGameObjects.push(perkTxt);
 
       let statusLabel = `💎 ${skin.costGems}`;
       let statusColor = isSelected ? '#03416e' : '#00e5ff';
@@ -482,6 +497,7 @@ export class ShopScene extends Phaser.Scene {
         fontStyle: 'bold',
       });
       if (typeof statusTxt.setOrigin === 'function') statusTxt.setOrigin(1, 0.5);
+      this.tabGameObjects.push(statusTxt);
 
       this.skinCardTextObjects.push({ name: nameTxt, perk: perkTxt, status: statusTxt });
     }
@@ -520,6 +536,7 @@ export class ShopScene extends Phaser.Scene {
         },
       });
       this.subCategoryButtons.push(btn);
+      this.tabGameObjects.push(btn);
     });
 
     // 2. Render items in current category
@@ -544,6 +561,7 @@ export class ShopScene extends Phaser.Scene {
       });
 
       this.skinCardButtons.push(cardBtn);
+      this.tabGameObjects.push(cardBtn);
       this.populateWardrobeCard(item, listX, y + 25, idx);
     });
   }
@@ -561,6 +579,7 @@ export class ShopScene extends Phaser.Scene {
       // Big Emoji Icon
       const iconTxt = this.add.text(cx - 210, cy, item.icon, { fontSize: '32px' });
       if (typeof iconTxt.setOrigin === 'function') iconTxt.setOrigin(0.5);
+      this.tabGameObjects.push(iconTxt);
 
       // Name
       const nameTxt = this.add.text(cx - 165, cy - 14, `${item.name} (${item.nameEn})`, {
@@ -570,6 +589,7 @@ export class ShopScene extends Phaser.Scene {
         fontStyle: 'bold',
       });
       if (typeof nameTxt.setOrigin === 'function') nameTxt.setOrigin(0, 0.5);
+      this.tabGameObjects.push(nameTxt);
 
       // Perk
       const perkTxt = this.add.text(cx - 165, cy + 14, item.perkDescription, {
@@ -578,6 +598,7 @@ export class ShopScene extends Phaser.Scene {
         color: isSelected ? '#3d2503' : '#ffd166',
       });
       if (typeof perkTxt.setOrigin === 'function') perkTxt.setOrigin(0, 0.5);
+      this.tabGameObjects.push(perkTxt);
 
       // Status label
       let statusLabel = `🪙 ${item.costCoins}`;
@@ -597,6 +618,7 @@ export class ShopScene extends Phaser.Scene {
         fontStyle: 'bold',
       });
       if (typeof statusTxt.setOrigin === 'function') statusTxt.setOrigin(1, 0.5);
+      this.tabGameObjects.push(statusTxt);
 
       this.skinCardTextObjects.push({ name: nameTxt, perk: perkTxt, status: statusTxt });
     }
@@ -654,6 +676,7 @@ export class ShopScene extends Phaser.Scene {
         },
       });
       this.skinCardButtons.push(cardBtn);
+      this.tabGameObjects.push(cardBtn);
 
       const dm = DataManager.getInstance();
       const profile = dm.getProfile();
@@ -663,6 +686,7 @@ export class ShopScene extends Phaser.Scene {
       if (this.add.text) {
         const iconTxt = this.add.text(listX - 210, y + 25, pet.icon, { fontSize: '38px' });
         if (typeof iconTxt.setOrigin === 'function') iconTxt.setOrigin(0.5);
+        this.tabGameObjects.push(iconTxt);
 
         const nameTxt = this.add.text(listX - 160, y + 10, `${pet.name} (${pet.nameEn})`, {
           fontSize: '20px',
@@ -671,6 +695,7 @@ export class ShopScene extends Phaser.Scene {
           fontStyle: 'bold',
         });
         if (typeof nameTxt.setOrigin === 'function') nameTxt.setOrigin(0, 0.5);
+        this.tabGameObjects.push(nameTxt);
 
         const perkTxt = this.add.text(listX - 160, y + 40, `🐾 ${pet.perkDescription}`, {
           fontSize: '15px',
@@ -678,6 +703,7 @@ export class ShopScene extends Phaser.Scene {
           color: isSelected ? '#3d2503' : '#ffd166',
         });
         if (typeof perkTxt.setOrigin === 'function') perkTxt.setOrigin(0, 0.5);
+        this.tabGameObjects.push(perkTxt);
 
         let statusLabel = `🪙 ${pet.costCoins}`;
         let statusColor = isSelected ? '#7a4f01' : '#ffd700';
@@ -696,6 +722,7 @@ export class ShopScene extends Phaser.Scene {
           fontStyle: 'bold',
         });
         if (typeof statusTxt.setOrigin === 'function') statusTxt.setOrigin(1, 0.5);
+        this.tabGameObjects.push(statusTxt);
 
         this.skinCardTextObjects.push({ name: nameTxt, perk: perkTxt, status: statusTxt });
       }
@@ -734,6 +761,7 @@ export class ShopScene extends Phaser.Scene {
         },
       });
       this.skinCardButtons.push(cardBtn);
+      this.tabGameObjects.push(cardBtn);
 
       const dm = DataManager.getInstance();
       const count = dm.getGadgetCount(gadget.id);
@@ -741,6 +769,7 @@ export class ShopScene extends Phaser.Scene {
       if (this.add.text) {
         const iconTxt = this.add.text(listX - 210, y + 25, gadget.icon, { fontSize: '38px' });
         if (typeof iconTxt.setOrigin === 'function') iconTxt.setOrigin(0.5);
+        this.tabGameObjects.push(iconTxt);
 
         const nameTxt = this.add.text(listX - 160, y + 10, `${gadget.name}`, {
           fontSize: '20px',
@@ -749,6 +778,7 @@ export class ShopScene extends Phaser.Scene {
           fontStyle: 'bold',
         });
         if (typeof nameTxt.setOrigin === 'function') nameTxt.setOrigin(0, 0.5);
+        this.tabGameObjects.push(nameTxt);
 
         const perkTxt = this.add.text(listX - 160, y + 40, `🎒 ${gadget.description}`, {
           fontSize: '15px',
@@ -756,6 +786,7 @@ export class ShopScene extends Phaser.Scene {
           color: isSelected ? '#3d2503' : '#ffd166',
         });
         if (typeof perkTxt.setOrigin === 'function') perkTxt.setOrigin(0, 0.5);
+        this.tabGameObjects.push(perkTxt);
 
         const statusTxt = this.add.text(listX + 195, y + 25, `持有: x${count}\n🪙 ${gadget.costCoins}`, {
           fontSize: '16px',
@@ -765,6 +796,7 @@ export class ShopScene extends Phaser.Scene {
           fontStyle: 'bold',
         });
         if (typeof statusTxt.setOrigin === 'function') statusTxt.setOrigin(1, 0.5);
+        this.tabGameObjects.push(statusTxt);
 
         this.skinCardTextObjects.push({ name: nameTxt, perk: perkTxt, status: statusTxt });
       }
@@ -843,11 +875,12 @@ export class ShopScene extends Phaser.Scene {
       showcase.add(this.previewWardrobeOverlay);
     }
 
-    // Live Character Bobbing Tween
+    // Live Character Bobbing Tween (syncs sprite and wardrobe overlay together)
     if (this.tweens?.add) {
+      const targets = this.previewWardrobeOverlay ? [sprite, this.previewWardrobeOverlay] : sprite;
       this.tweens.add({
-        targets: sprite,
-        y: -102,
+        targets,
+        y: '-=12',
         duration: 900,
         yoyo: true,
         repeat: -1,
@@ -877,6 +910,8 @@ export class ShopScene extends Phaser.Scene {
       fontSize: '13px',
       onClick: () => this.switchPose('stand'),
     });
+    poseStand.setDepth(60);
+
     const poseWalk = new CanvasButton(this, {
       x: panelX - 50,
       y: panelY - 185,
@@ -887,6 +922,8 @@ export class ShopScene extends Phaser.Scene {
       fontSize: '13px',
       onClick: () => this.switchPose('walk'),
     });
+    poseWalk.setDepth(60);
+
     const poseCheer = new CanvasButton(this, {
       x: panelX + 40,
       y: panelY - 185,
@@ -897,6 +934,7 @@ export class ShopScene extends Phaser.Scene {
       fontSize: '13px',
       onClick: () => this.switchPose('cheer'),
     });
+    poseCheer.setDepth(60);
 
     // 4. OOTD Photo Button
     this.ootdButton = new CanvasButton(this, {
@@ -909,6 +947,7 @@ export class ShopScene extends Phaser.Scene {
       fontSize: '13px',
       onClick: () => this.showOOTDPhotoModal(),
     });
+    this.ootdButton.setDepth(60);
 
     this.poseButtons = [poseStand, poseWalk, poseCheer];
 
@@ -1525,6 +1564,9 @@ export class ShopScene extends Phaser.Scene {
       const dim = this.add.graphics();
       dim.fillStyle(0x000000, 0.75);
       dim.fillRect(-width / 2, -height / 2, width, height);
+      if (typeof dim.setInteractive === 'function' && Phaser?.Geom?.Rectangle) {
+        dim.setInteractive(new Phaser.Geom.Rectangle(-width / 2, -height / 2, width, height), Phaser.Geom.Rectangle.Contains);
+      }
       modal.add(dim);
 
       // Polaroid Card Body
@@ -1596,6 +1638,7 @@ export class ShopScene extends Phaser.Scene {
     });
     if (typeof closeBtn.setDepth === 'function') closeBtn.setDepth(210);
 
+    this.ootdCloseButton = closeBtn;
     this.ootdModal = modal;
     if (this.add && typeof this.add.existing === 'function') {
       this.add.existing(modal);
@@ -1603,6 +1646,10 @@ export class ShopScene extends Phaser.Scene {
   }
 
   public closeOOTDPhotoModal(): void {
+    if (this.ootdCloseButton) {
+      this.ootdCloseButton.destroy();
+      this.ootdCloseButton = null;
+    }
     if (this.ootdModal) {
       this.ootdModal.destroy();
       this.ootdModal = null;
@@ -1638,6 +1685,14 @@ export class ShopScene extends Phaser.Scene {
   }
 
   public cleanup(): void {
+    if (this.tabGameObjects) {
+      this.tabGameObjects.forEach((obj) => {
+        if (obj && typeof (obj as any).destroy === 'function') {
+          (obj as any).destroy();
+        }
+      });
+      this.tabGameObjects = [];
+    }
     if (this.walkAnimTimer) {
       this.walkAnimTimer.remove();
       this.walkAnimTimer = null;

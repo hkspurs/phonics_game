@@ -222,14 +222,12 @@ export class CanvasButton extends Phaser.GameObjects.Container {
 
   private setupInteractivity(): void {
     // Generous touch hit area (minimum 54x54px and +16px padding)
-    // Note: Because Container has setSize(w, h), displayOrigin is (w/2, h/2).
-    // Phaser shifts pointer by displayOrigin, so hitArea starts at 0, 0 (or -hitPadX, -hitPadY with padding).
     const hitPadX = 16;
     const hitPadY = 16;
     const hitW = this.btnWidth + hitPadX * 2;
     const hitH = this.btnHeight + hitPadY * 2;
     const hitRect = (Phaser && Phaser.Geom && Phaser.Geom.Rectangle)
-      ? new Phaser.Geom.Rectangle(-hitPadX, -hitPadY, hitW, hitH)
+      ? new Phaser.Geom.Rectangle(-this.btnWidth / 2 - hitPadX, -this.btnHeight / 2 - hitPadY, hitW, hitH)
       : undefined;
 
     if (hitRect) {

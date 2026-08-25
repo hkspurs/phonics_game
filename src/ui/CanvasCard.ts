@@ -419,8 +419,11 @@ export class CanvasCard extends Phaser.GameObjects.Container {
     }
     const priorState = this.currentState;
     this.setState('wrong');
-    const startX = this.currentSlot ? this.currentSlot.getCenterPosition().x : (this.homeX || this.x);
+    const center = this.currentSlot ? this.currentSlot.getCenterPosition() : null;
+    const startX = center ? center.x : (this.homeX || this.x);
+    const startY = center ? center.y : (this.homeY || this.y);
     this.x = startX;
+    this.y = startY;
 
     if (this.scene?.tweens) {
       this.scene.tweens.add({
@@ -432,6 +435,7 @@ export class CanvasCard extends Phaser.GameObjects.Container {
         ease: 'Sine.easeInOut',
         onComplete: () => {
           this.x = startX;
+          this.y = startY;
           if (priorState === 'disabled' || this.currentState === 'disabled') {
             this.setState('disabled');
           } else if (this.currentSlot) {

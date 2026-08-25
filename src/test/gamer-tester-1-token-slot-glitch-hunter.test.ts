@@ -285,16 +285,14 @@ describe('Gamer Tester 1: Token-to-Slot & Card Interaction Adversarial Glitch Su
       card.y = slot0.y;
 
       scene.handleCardDragEnd(card, {} as any);
-      // In QuestionScene.ts line 720: minDistance = 75. Since dist = 76 > 75, it rejects the drop!
-      expect(card.getCurrentSlot()).toBeNull(); // GLITCH CONFIRMED: Dropped inside slot boundary was rejected!
+      expect(card.getCurrentSlot()).toBe(slot0); // Accepted!
 
       // Case 2: Drop at dx = 0, dy = 65px (28px OUTSIDE slot height 74px, since halfH = 37px)
       card.x = slot0.x;
       card.y = slot0.y + 65;
 
       scene.handleCardDragEnd(card, {} as any);
-      // In QuestionScene.ts line 720: dist = 65 < 75, so it accepts the drop even though 28px outside vertically!
-      expect(card.getCurrentSlot()).toBe(slot0); // GLITCH CONFIRMED: Vertical overshoot accepted!
+      expect(card.getCurrentSlot()).toBeNull(); // Correctly rejected!
     });
   });
 
