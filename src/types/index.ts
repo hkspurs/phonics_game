@@ -32,6 +32,15 @@ export interface UserStats {
   lastPlayedDate: string; // YYYY-MM-DD
 }
 
+export interface EquippedWardrobe {
+  dress?: string;
+  top?: string;
+  bottom?: string;
+  hat?: string;
+  accessory?: string;
+  wings?: string;
+}
+
 export interface UserProfile {
   coins: number;
   gems: number;
@@ -39,6 +48,11 @@ export interface UserProfile {
   stationStars: Record<number, number>; // stationId -> stars (0-3)
   equippedSkin: string;
   ownedSkins: string[];
+  equippedPet?: string;
+  ownedPets?: string[];
+  equippedWardrobe?: EquippedWardrobe;
+  ownedWardrobe?: string[];
+  inventory?: Record<string, number>; // gadgetId -> quantity
   trophies: Record<string, boolean>; // trophyId -> boolean
   stats: UserStats;
   settings: GameSettings;
@@ -48,6 +62,32 @@ export interface UserProfile {
     completed: boolean;
     spinClaimed: boolean;
   };
+}
+
+export interface PetDefinition {
+  id: string;
+  name: string;
+  nameEn: string;
+  description: string;
+  costCoins: number;
+  costGems: number;
+  perkDescription: string;
+  magnetBonus: number; // +px radius
+  jumpBonus?: number; // e.g. 0.15 = +15%
+  bonusCoinRate?: number; // e.g. 1 extra coin on rock jump
+  icon: string;
+  tint: number;
+}
+
+export interface GadgetDefinition {
+  id: string;
+  name: string;
+  description: string;
+  costCoins: number;
+  costGems: number;
+  effectType: 'shield' | 'magnet_potion' | 'hint_coupon' | 'double_coin';
+  icon: string;
+  duration?: number;
 }
 
 export interface Station {

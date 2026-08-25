@@ -4,6 +4,7 @@ import { QuizQuestion } from '../types';
 import { DataManager } from '../services/DataManager';
 import { SoundManager } from '../services/SoundManager';
 import { CanvasButton } from '../ui/CanvasButton';
+import { CompanionPet } from '../ui/CompanionPet';
 
 export interface RunnerSessionStats {
   hintsUsed: number;
@@ -198,6 +199,11 @@ export class RunnerScene extends Phaser.Scene {
   public rightBtn: CanvasButton | null = null;
   public jumpBtn: CanvasButton | null = null;
   public petCompanionObject: Phaser.GameObjects.Text | any = null;
+  public companionPet: CompanionPet | any = null;
+  public hasDoubleJumped: boolean = false;
+  public hasShield: boolean = false;
+  public shieldGraphics: Phaser.GameObjects.Graphics | any = null;
+  public coinComboCount: number = 0;
 
   // Skin & Perks
   public skinConfig: SkinConfig = SKIN_CONFIGS.adventurer;
@@ -263,7 +269,14 @@ export class RunnerScene extends Phaser.Scene {
     this.isCelebrating = false;
     this.isJumping = false;
     this.isSuperJumping = false;
-    this.distanceRun = 0;
+    this.hasDoubleJumped = false;
+    this.stumbleTimer = 0;
+
+    try {
+      this.hasShield = DataManager.getInstance().getGadgetCount('shield') > 0;
+    } catch {
+      this.hasShield = false;
+    }
     this.playerScreenX = 260;
     this.isLeftDown = false;
     this.isRightDown = false;
@@ -312,6 +325,32 @@ export class RunnerScene extends Phaser.Scene {
 
     // 3. Build Player Character & Animation Shadows
     this.createPlayerCharacter();
+
+    // 3.1 Initialize Shield & Companion Pet
+    try {
+      this.hasShield = DataManager.getInstance().getGadgetCount('shield') > 0;
+      if (this.hasShield && this.add?.graphics) {
+        this.shieldGraphics = this.add.graphics();
+        this.shieldGraphics.lineStyle(3, 0x00ffff, 0.85);
+        this.shieldGraphics.fillStyle(0x00ffff, 0.25);
+        this.shieldGraphics.fillCircle(this.playerScreenX, this.playerBaselineY - 30, 48);
+        this.shieldGraphics.strokeCircle(this.playerScreenX, this.playerBaselineY - 30, 48);
+        this.shieldGraphics.setDepth(32);
+      }
+    } catch {
+      this.hasShield = false;
+    }
+
+    try {
+      const equippedPet = DataManager.getInstance().getProfile().equippedPet;
+      if (equippedPet) {
+        this.companionPet = new CompanionPet(this, {
+          petId: equippedPet,
+          x: this.playerScreenX - 45,
+          y: this.playerBaselineY - 35,
+        });
+      }
+    } catch {}
 
     // 4. Build HUD & Controls (Currency, Progress Bar, Skip Button)
     this.createHUD(width, height);
@@ -1088,16 +1127,48 @@ export class RunnerScene extends Phaser.Scene {
     }
 
     this.jumpBufferTimer = 140;
-    if (this.isGrounded || this.coyoteTimer > 0) {
+    if (this.isGrounded || this.coyoteTimer > 0 || !this.hasDoubleJumped) {
       this.executeKinematicJump(1.0);
     }
   }
 
   /**
-   * Executes kinematic jump impulse with squash & stretch feedback
+   * Executes kinematic jump impulse with double jump and squash & stretch feedback
    */
   public executeKinematicJump(multiplier: number = 1.0): void {
+    if (!this.isGrounded && this.coyoteTimer <= 0) {
+      if (!this.hasDoubleJumped) {
+        this.hasDoubleJumped = true;
+        this.isJumping = true;
+        this.playerVelocityY = -600 * this.skinConfig.jumpMultiplier * multiplier;
+
+        if (this.playerSprite && typeof this.playerSprite.setTexture === 'function') {
+          this.playerSprite.setTexture(this.skinConfig.jumpKey);
+        }
+
+        if (this.playerSprite && this.tweens?.add) {
+          this.tweens.add({
+            targets: this.playerSprite,
+            scaleX: 1.18,
+            scaleY: 0.82,
+            duration: 80,
+            yoyo: true,
+            ease: 'Quad.easeOut',
+          });
+        }
+
+        try {
+          SoundManager.playDoubleJump();
+        } catch {
+          // Safe ignore
+        }
+        return;
+      }
+      return;
+    }
+
     this.isGrounded = false;
+    this.hasDoubleJumped = false;
     this.coyoteTimer = 0;
     this.jumpBufferTimer = 0;
     this.isJumping = true;
@@ -1123,16 +1194,45 @@ export class RunnerScene extends Phaser.Scene {
     } catch {
       // Safe ignore
     }
+  }
 
-    if (this.playerSprite && this.tweens?.add) {
-      this.tweens.add({
-        targets: this.playerSprite,
-        scaleX: 1.15,
-        scaleY: 0.85,
-        duration: 90,
-        yoyo: true,
-        ease: 'Quad.easeOut',
-      });
+  /**
+   * Handles rock obstacle collision with shield bubble protection
+   */
+  public hitObstacleWithShieldCheck(): void {
+    if (this.hasShield) {
+      this.hasShield = false;
+      try {
+        DataManager.getInstance().consumeGadget('shield');
+        SoundManager.playShieldBreak();
+      } catch {}
+      if (this.shieldGraphics && typeof this.shieldGraphics.setVisible === 'function') {
+        this.shieldGraphics.setVisible(false);
+      }
+      return;
+    }
+
+    this.stumbleTimer = 650;
+    try {
+      SoundManager.playSoftWrong();
+    } catch {}
+    if (this.playerSprite) {
+      if (typeof (this.playerSprite as any).setTint === 'function') {
+        (this.playerSprite as any).setTint(0xff6b6b);
+      }
+      if (this.tweens?.add) {
+        this.tweens.add({
+          targets: this.playerSprite,
+          scaleY: 0.85,
+          duration: 90,
+          yoyo: true,
+          onComplete: () => {
+            if (this.playerSprite && typeof (this.playerSprite as any).clearTint === 'function') {
+              (this.playerSprite as any).clearTint();
+            }
+          },
+        });
+      }
     }
   }
 
@@ -1292,6 +1392,7 @@ export class RunnerScene extends Phaser.Scene {
         this.playerY = this.currentGroundY;
         this.playerVelocityY = 0;
         this.isGrounded = true;
+        this.hasDoubleJumped = false;
         this.isJumping = false;
         this.isSuperJumping = false;
 
@@ -1315,10 +1416,26 @@ export class RunnerScene extends Phaser.Scene {
       this.playerY = this.currentGroundY;
       this.playerVelocityY = 0;
       this.isGrounded = true;
+      this.hasDoubleJumped = false;
     }
 
     if (this.playerSprite && typeof this.playerSprite.setY === 'function') {
       this.playerSprite.setY(this.playerY);
+    }
+
+    // Update Shield Graphics position
+    if (this.shieldGraphics && typeof this.shieldGraphics.setPosition === 'function') {
+      this.shieldGraphics.setPosition(this.playerScreenX, this.playerY - 30);
+    }
+
+    // Update Companion Pet follow kinematics
+    if (this.companionPet && typeof this.companionPet.updatePet === 'function') {
+      this.companionPet.updatePet(
+        dtSeconds,
+        this.playerScreenX,
+        this.playerY,
+        Boolean(this.playerSprite?.flipX)
+      );
     }
 
     // 6. Update Course Items & Interactions
@@ -1368,25 +1485,7 @@ export class RunnerScene extends Phaser.Scene {
 
         if (distToPlayer > -25 && distToPlayer < 45) {
           if (!isAirborne && this.isGrounded && this.stumbleTimer <= 0) {
-            // Player hit the rock because they did not jump!
-            this.stumbleTimer = 650; // 0.65s stumble slowdown
-            SoundManager.playSoftWrong();
-            if (this.playerSprite) {
-              if (typeof (this.playerSprite as any).setTint === 'function') {
-                (this.playerSprite as any).setTint(0xff6b6b);
-              }
-              this.tweens.add({
-                targets: this.playerSprite,
-                scaleY: 0.85,
-                duration: 90,
-                yoyo: true,
-                onComplete: () => {
-                  if (this.playerSprite && typeof (this.playerSprite as any).clearTint === 'function') {
-                    (this.playerSprite as any).clearTint();
-                  }
-                },
-              });
-            }
+            this.hitObstacleWithShieldCheck();
           }
         }
       }

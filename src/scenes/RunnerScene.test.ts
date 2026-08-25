@@ -105,6 +105,7 @@ export function createMockRunnerScene(): any {
           fillEllipse: vi.fn().mockReturnThis(),
           lineStyle: vi.fn().mockReturnThis(),
           strokeRoundedRect: vi.fn().mockReturnThis(),
+          strokeCircle: vi.fn().mockReturnThis(),
           beginPath: vi.fn().mockReturnThis(),
           moveTo: vi.fn().mockReturnThis(),
           lineTo: vi.fn().mockReturnThis(),

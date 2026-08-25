@@ -310,6 +310,254 @@ export class SoundManager {
   }
 
   /**
+   * Double Jump whoosh audio synthesis
+   */
+  public static playDoubleJump(): void {
+    if (this.isMuted() || this.getVolume() <= 0) return;
+
+    const ctx = this.getAudioContext();
+    if (!ctx) {
+      this.play('jump');
+      return;
+    }
+
+    try {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(440, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(740, ctx.currentTime + 0.14);
+
+      const vol = Math.min(0.22, 0.18 * this.getVolume());
+      gain.gain.setValueAtTime(vol, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.14);
+
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+
+      osc.onended = () => {
+        try {
+          osc.disconnect();
+          gain.disconnect();
+        } catch {}
+      };
+
+      osc.start(ctx.currentTime);
+      osc.stop(ctx.currentTime + 0.15);
+    } catch {
+      this.play('jump');
+    }
+  }
+
+  /**
+   * Shield bubble pop / absorb sound
+   */
+  public static playShieldBreak(): void {
+    if (this.isMuted() || this.getVolume() <= 0) return;
+
+    const ctx = this.getAudioContext();
+    if (!ctx) {
+      this.play('click');
+      return;
+    }
+
+    try {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(320, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(140, ctx.currentTime + 0.18);
+
+      const vol = Math.min(0.25, 0.20 * this.getVolume());
+      gain.gain.setValueAtTime(vol, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.18);
+
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+
+      osc.onended = () => {
+        try {
+          osc.disconnect();
+          gain.disconnect();
+        } catch {}
+      };
+
+      osc.start(ctx.currentTime);
+      osc.stop(ctx.currentTime + 0.19);
+    } catch {
+      this.play('click');
+    }
+  }
+
+  /**
+   * Rock jump clearance bonus audio
+   */
+  public static playRockJumpBonus(): void {
+    if (this.isMuted() || this.getVolume() <= 0) return;
+
+    const ctx = this.getAudioContext();
+    if (!ctx) {
+      this.play('coin');
+      return;
+    }
+
+    try {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(880, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(1174, ctx.currentTime + 0.12);
+
+      const vol = Math.min(0.22, 0.16 * this.getVolume());
+      gain.gain.setValueAtTime(vol, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.12);
+
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+
+      osc.onended = () => {
+        try {
+          osc.disconnect();
+          gain.disconnect();
+        } catch {}
+      };
+
+      osc.start(ctx.currentTime);
+      osc.stop(ctx.currentTime + 0.13);
+    } catch {
+      this.play('coin');
+    }
+  }
+
+  /**
+   * Clothing snap / zipper ASMR sound effect
+   */
+  public static playClothSnap(): void {
+    if (this.isMuted() || this.getVolume() <= 0) return;
+
+    const ctx = this.getAudioContext();
+    if (!ctx) {
+      this.play('click');
+      return;
+    }
+
+    try {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(600, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(1400, ctx.currentTime + 0.06);
+
+      const vol = Math.min(0.25, 0.18 * this.getVolume());
+      gain.gain.setValueAtTime(vol, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.07);
+
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+
+      osc.onended = () => {
+        try {
+          osc.disconnect();
+          gain.disconnect();
+        } catch {}
+      };
+
+      osc.start(ctx.currentTime);
+      osc.stop(ctx.currentTime + 0.08);
+    } catch {
+      this.play('click');
+    }
+  }
+
+  /**
+   * Magical transformation sparkle chime for dress-up
+   */
+  public static playMagicTransform(): void {
+    if (this.isMuted() || this.getVolume() <= 0) return;
+
+    const ctx = this.getAudioContext();
+    if (!ctx) {
+      this.play('victory');
+      return;
+    }
+
+    try {
+      const freqs = [523.25, 659.25, 783.99, 1046.5]; // C5, E5, G5, C6
+      freqs.forEach((freq, idx) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, ctx.currentTime + idx * 0.05);
+
+        const vol = Math.min(0.18, 0.14 * this.getVolume());
+        gain.gain.setValueAtTime(vol, ctx.currentTime + idx * 0.05);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + idx * 0.05 + 0.22);
+
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+
+        osc.onended = () => {
+          try {
+            osc.disconnect();
+            gain.disconnect();
+          } catch {}
+        };
+
+        osc.start(ctx.currentTime + idx * 0.05);
+        osc.stop(ctx.currentTime + idx * 0.05 + 0.24);
+      });
+    } catch {
+      this.play('victory');
+    }
+  }
+
+  /**
+   * Camera shutter click sound for OOTD photo
+   */
+  public static playCameraSnap(): void {
+    if (this.isMuted() || this.getVolume() <= 0) return;
+
+    const ctx = this.getAudioContext();
+    if (!ctx) {
+      this.play('click');
+      return;
+    }
+
+    try {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+
+      osc.type = 'square';
+      osc.frequency.setValueAtTime(300, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(90, ctx.currentTime + 0.05);
+
+      const vol = Math.min(0.2, 0.15 * this.getVolume());
+      gain.gain.setValueAtTime(vol, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.05);
+
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+
+      osc.onended = () => {
+        try {
+          osc.disconnect();
+          gain.disconnect();
+        } catch {}
+      };
+
+      osc.start(ctx.currentTime);
+      osc.stop(ctx.currentTime + 0.06);
+    } catch {
+      this.play('click');
+    }
+  }
+
+  /**
    * Stop playing sound by key, or stop all sounds if no key is provided
    */
   public static stop(key?: string): void {

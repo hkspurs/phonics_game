@@ -1,4 +1,5 @@
-import { UserProfile, GameSettings, Trophy, SubjectType } from '../types';
+import { UserProfile, GameSettings, Trophy, SubjectType, PetDefinition, GadgetDefinition, EquippedWardrobe } from '../types';
+import { WARDROBE_ITEMS, WardrobeItem, WardrobeCategory } from '../config/wardrobe';
 
 const STORAGE_KEY = 'p1_adventure_save_v1';
 
@@ -1231,6 +1232,78 @@ export const TROPHY_DEFINITIONS: Trophy[] = [
   },
 ];
 
+export const PET_DEFINITIONS: PetDefinition[] = [
+  {
+    id: 'dino',
+    name: '小恐龍 (Dino)',
+    nameEn: 'Baby Dino',
+    description: '綠色萌萌恐龍，跑酷時吸金半徑 +60px，每次成功跳過石仔額外獎勵 +1 金幣！',
+    costCoins: 300,
+    costGems: 30,
+    perkDescription: '🧲 磁鐵範圍 +60px，跳石 +1 金幣',
+    magnetBonus: 60,
+    bonusCoinRate: 1,
+    icon: '🦖',
+    tint: 0x55ee77,
+  },
+  {
+    id: 'mecha_cat',
+    name: '機械貓 (Mecha Cat)',
+    nameEn: 'Cyber Kitty',
+    description: '藍銀機甲科技貓，跑酷時吸金半徑 +90px，自動預警前方石仔障礙！',
+    costCoins: 500,
+    costGems: 50,
+    perkDescription: '🧲 磁鐵範圍 +90px，前方障礙閃光預警',
+    magnetBonus: 90,
+    icon: '🐱',
+    tint: 0x55ccff,
+  },
+  {
+    id: 'pixie_dragon',
+    name: '飛天小精靈 (Pixie Dragon)',
+    nameEn: 'Pixie Dragon',
+    description: '粉紫羽翼小精靈，賦予跑酷二段跳高空浮力，全域吸金半徑 +120px！',
+    costCoins: 800,
+    costGems: 80,
+    perkDescription: '🪶 二段跳浮空 +20%，全域吸金 +120px',
+    magnetBonus: 120,
+    jumpBonus: 0.20,
+    icon: '🧚',
+    tint: 0xff77ee,
+  },
+];
+
+export const GADGET_DEFINITIONS: GadgetDefinition[] = [
+  {
+    id: 'shield',
+    name: '🛡️ 護盾泡泡 (Shield Bubble)',
+    description: '跑酷時自動吸收 1 次石頭障礙撞擊，免受減速與踉蹌！',
+    costCoins: 50,
+    costGems: 5,
+    effectType: 'shield',
+    icon: '🛡️',
+  },
+  {
+    id: 'magnet_potion',
+    name: '🧲 超級磁鐵水 (Magnet Potion)',
+    description: '跑酷前 12 秒全屏金幣強力吸取！',
+    costCoins: 60,
+    costGems: 6,
+    effectType: 'magnet_potion',
+    icon: '🧲',
+    duration: 12,
+  },
+  {
+    id: 'hint_coupon',
+    name: '💡 免費提示券 (Free Hint)',
+    description: '答題時免費獲取正確答案提示，不扣減三星評級！',
+    costCoins: 40,
+    costGems: 4,
+    effectType: 'hint_coupon',
+    icon: '💡',
+  },
+];
+
 export class DataManager {
   private static instance?: DataManager;
   private profile: UserProfile;
@@ -1256,6 +1329,11 @@ export class DataManager {
       stationStars: {},
       equippedSkin: 'adventurer',
       ownedSkins: ['adventurer'],
+      equippedPet: '',
+      ownedPets: [],
+      equippedWardrobe: {},
+      ownedWardrobe: [],
+      inventory: {},
       trophies: {},
       stats: {
         chineseCorrect: 0,
@@ -1297,6 +1375,13 @@ export class DataManager {
             ownedSkins: Array.isArray(parsed.ownedSkins) && parsed.ownedSkins.length > 0
               ? parsed.ownedSkins
               : ['adventurer'],
+            equippedPet: typeof parsed.equippedPet === 'string' ? parsed.equippedPet : '',
+            ownedPets: Array.isArray(parsed.ownedPets) ? parsed.ownedPets : [],
+            equippedWardrobe: parsed.equippedWardrobe && typeof parsed.equippedWardrobe === 'object'
+              ? parsed.equippedWardrobe
+              : {},
+            ownedWardrobe: Array.isArray(parsed.ownedWardrobe) ? parsed.ownedWardrobe : [],
+            inventory: parsed.inventory && typeof parsed.inventory === 'object' ? parsed.inventory : {},
             trophies: parsed.trophies || {},
           };
         }
@@ -1577,6 +1662,172 @@ export class DataManager {
     this.addCoins(rewardCoins);
     this.save();
     return true;
+  }
+
+  // --- Companion Pets System ---
+  public getPets(): PetDefinition[] {
+    return PET_DEFINITIONS;
+  }
+
+  public buyPet(petId: string, currency: 'gems' | 'coins' = 'gems'): boolean {
+    const pet = PET_DEFINITIONS.find((p) => p.id === petId);
+    if (!pet) return false;
+
+    if (!Array.isArray(this.profile.ownedPets)) {
+      this.profile.ownedPets = [];
+    }
+
+    if (this.profile.ownedPets.includes(petId)) {
+      return true; // Already owned
+    }
+
+    if (currency === 'gems') {
+      if (this.profile.gems < pet.costGems) return false;
+      this.profile.gems -= pet.costGems;
+    } else {
+      if (this.profile.coins < pet.costCoins) return false;
+      this.profile.coins -= pet.costCoins;
+    }
+
+    this.profile.ownedPets.push(petId);
+    this.profile.equippedPet = petId;
+    this.save();
+    return true;
+  }
+
+  public equipPet(petId: string): boolean {
+    if (petId === '') {
+      this.profile.equippedPet = '';
+      this.save();
+      return true;
+    }
+    if (!Array.isArray(this.profile.ownedPets) || !this.profile.ownedPets.includes(petId)) {
+      return false;
+    }
+    this.profile.equippedPet = petId;
+    this.save();
+    return true;
+  }
+
+  // --- Gadgets & Inventory System ---
+  public getGadgets(): GadgetDefinition[] {
+    return GADGET_DEFINITIONS;
+  }
+
+  public getGadgetCount(gadgetId: string): number {
+    if (!this.profile.inventory || typeof this.profile.inventory !== 'object') {
+      this.profile.inventory = {};
+    }
+    return this.profile.inventory[gadgetId] || 0;
+  }
+
+  public buyGadget(gadgetId: string, count: number = 1, currency: 'coins' | 'gems' = 'coins'): boolean {
+    const gadget = GADGET_DEFINITIONS.find((g) => g.id === gadgetId);
+    if (!gadget || count <= 0) return false;
+
+    const totalCoins = gadget.costCoins * count;
+    const totalGems = gadget.costGems * count;
+
+    if (currency === 'coins') {
+      if (this.profile.coins < totalCoins) return false;
+      this.profile.coins -= totalCoins;
+    } else {
+      if (this.profile.gems < totalGems) return false;
+      this.profile.gems -= totalGems;
+    }
+
+    if (!this.profile.inventory || typeof this.profile.inventory !== 'object') {
+      this.profile.inventory = {};
+    }
+    this.profile.inventory[gadgetId] = (this.profile.inventory[gadgetId] || 0) + count;
+    this.save();
+    return true;
+  }
+
+  public consumeGadget(gadgetId: string): boolean {
+    if (!this.profile.inventory || typeof this.profile.inventory !== 'object') {
+      this.profile.inventory = {};
+    }
+    const current = this.profile.inventory[gadgetId] || 0;
+    if (current <= 0) return false;
+
+    this.profile.inventory[gadgetId] = current - 1;
+    this.save();
+    return true;
+  }
+
+  // --- Wardrobe & Dress-up System ---
+  public getWardrobeItems(category?: WardrobeCategory): readonly WardrobeItem[] {
+    if (!category) return WARDROBE_ITEMS;
+    return WARDROBE_ITEMS.filter((item) => item.category === category);
+  }
+
+  public isWardrobeOwned(itemId: string): boolean {
+    if (!this.profile.ownedWardrobe || !Array.isArray(this.profile.ownedWardrobe)) {
+      this.profile.ownedWardrobe = [];
+    }
+    return this.profile.ownedWardrobe.includes(itemId);
+  }
+
+  public getEquippedWardrobe(): EquippedWardrobe {
+    if (!this.profile.equippedWardrobe || typeof this.profile.equippedWardrobe !== 'object') {
+      this.profile.equippedWardrobe = {};
+    }
+    return this.profile.equippedWardrobe;
+  }
+
+  public buyWardrobeItem(itemId: string, currency: 'coins' | 'gems' = 'coins'): boolean {
+    const item = WARDROBE_ITEMS.find((w) => w.id === itemId);
+    if (!item || this.isWardrobeOwned(itemId)) return false;
+
+    if (currency === 'coins') {
+      if (this.profile.coins < item.costCoins) return false;
+      this.profile.coins -= item.costCoins;
+    } else {
+      if (this.profile.gems < item.costGems) return false;
+      this.profile.gems -= item.costGems;
+    }
+
+    if (!Array.isArray(this.profile.ownedWardrobe)) {
+      this.profile.ownedWardrobe = [];
+    }
+    this.profile.ownedWardrobe.push(itemId);
+    this.save();
+    return true;
+  }
+
+  public equipWardrobeItem(slot: keyof EquippedWardrobe, itemId: string): boolean {
+    if (!this.isWardrobeOwned(itemId)) return false;
+    if (!this.profile.equippedWardrobe || typeof this.profile.equippedWardrobe !== 'object') {
+      this.profile.equippedWardrobe = {};
+    }
+
+    // If equipping a dress, unequip top & bottom to avoid overlapping
+    if (slot === 'dress') {
+      delete this.profile.equippedWardrobe.top;
+      delete this.profile.equippedWardrobe.bottom;
+    } else if (slot === 'top' || slot === 'bottom') {
+      // If equipping top or bottom, unequip one-piece dress
+      delete this.profile.equippedWardrobe.dress;
+    }
+
+    this.profile.equippedWardrobe[slot] = itemId;
+    this.save();
+    return true;
+  }
+
+  public unequipWardrobeItem(slot: keyof EquippedWardrobe): boolean {
+    if (!this.profile.equippedWardrobe || typeof this.profile.equippedWardrobe !== 'object') {
+      return false;
+    }
+    delete this.profile.equippedWardrobe[slot];
+    this.save();
+    return true;
+  }
+
+  public clearAllWardrobe(): void {
+    this.profile.equippedWardrobe = {};
+    this.save();
   }
 
   public save(): void {
