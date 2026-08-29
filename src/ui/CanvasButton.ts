@@ -227,7 +227,7 @@ export class CanvasButton extends Phaser.GameObjects.Container {
     const hitW = this.btnWidth + hitPadX * 2;
     const hitH = this.btnHeight + hitPadY * 2;
     const hitRect = (Phaser && Phaser.Geom && Phaser.Geom.Rectangle)
-      ? new Phaser.Geom.Rectangle(-hitPadX, -hitPadY, hitW, hitH)
+      ? new Phaser.Geom.Rectangle(-this.btnWidth / 2 - hitPadX, -this.btnHeight / 2 - hitPadY, hitW, hitH)
       : undefined;
 
     if (hitRect) {

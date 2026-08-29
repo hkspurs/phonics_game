@@ -92,10 +92,40 @@ test.describe('UI QA: Responsive Multi-Viewport Mouse Hover & Word Slot Placemen
 
   test('Shop purchasing Heroine (30💎) and QuestionScene sentence scramble card placement', async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 720 });
+
+    await page.addInitScript(() => {
+      const profile = {
+        coins: 100,
+        gems: 50,
+        unlockedStations: 1,
+        stationStars: {},
+        equippedSkin: 'adventurer',
+        ownedSkins: ['adventurer'],
+        trophies: {},
+        stats: {
+          chineseCorrect: 0,
+          mathCorrect: 0,
+          englishCorrect: 0,
+          streakDays: 1,
+          lastPlayedDate: '2026-08-25',
+        },
+        settings: {
+          chineseEnabled: true,
+          mathEnabled: true,
+          englishEnabled: true,
+          voiceLanguage: 'zh-HK',
+          difficulty: 1,
+          soundVolume: 1.0,
+        },
+      };
+      localStorage.setItem('p1_adventure_save_v1', JSON.stringify(profile));
+    });
+
     await page.goto('/');
     await page.waitForTimeout(1500);
 
     const canvas = page.locator('#game-container canvas');
+    await expect(canvas).toBeVisible({ timeout: 15000 });
     const box = await canvas.boundingBox();
     expect(box).toBeTruthy();
     if (!box) return;
@@ -115,20 +145,16 @@ test.describe('UI QA: Responsive Multi-Viewport Mouse Hover & Word Slot Placemen
       const shop = game.scene.getScene('ShopScene');
       shop.selectSkin(1); // Select Heroine
 
-      const dm = (window as any).DataManager?.getInstance ? (window as any).DataManager.getInstance() : null;
-      if (dm) {
-        dm.addGems(50);
-      }
-
       // Click Action Button
       shop.handleActionClick();
 
-      const profile = dm ? dm.getProfile() : null;
+      const rawAfter = localStorage.getItem('p1_adventure_save_v1');
+      const profAfter = rawAfter ? JSON.parse(rawAfter) : {};
 
       return {
-        ownedSkins: profile?.ownedSkins || [],
-        equippedSkin: profile?.equippedSkin,
-        remainingGems: profile?.gems,
+        ownedSkins: profAfter.ownedSkins || [],
+        equippedSkin: profAfter.equippedSkin,
+        remainingGems: profAfter.gems,
       };
     });
 

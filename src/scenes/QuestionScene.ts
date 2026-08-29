@@ -52,6 +52,7 @@ export class QuestionScene extends Phaser.Scene {
   public transitionTimer: Phaser.Time.TimerEvent | null = null;
   public autoReadTimer: Phaser.Time.TimerEvent | null = null;
   public isTransitioning: boolean = false;
+  public lastRemovalTime: number = 0;
   public backButton: CanvasButton | null = null;
   public speakerButton: CanvasButton | null = null;
   public hintButton: CanvasButton | null = null;
@@ -496,9 +497,12 @@ export class QuestionScene extends Phaser.Scene {
           : { useHandCursor: true };
         slot.setInteractive(hitRect, Phaser.Geom.Rectangle.Contains);
         slot.on('pointerup', () => {
+          if (this.isAnswered) return;
+          const now = Date.now();
           if (slot.hasCard()) {
             this.handleSlotCardRemoval(slot);
           } else {
+            if (now - this.lastRemovalTime < 250) return;
             const nextUnplacedChip = this.cardChips.find((c) => c.getCurrentSlot() === null);
             if (nextUnplacedChip) {
               SoundManager.play('click');
@@ -543,6 +547,16 @@ export class QuestionScene extends Phaser.Scene {
         onTap: (c) => this.handleCardTap(c),
         onDragStart: (c) => {
           c.setDepth(100);
+        },
+        onDrag: (c) => {
+          if (this.isAnswered) return;
+          for (const slot of this.slotBoxes) {
+            const center = slot.getCenterPosition();
+            const halfW = (typeof slot.getSlotWidth === 'function' ? slot.getSlotWidth() : 155) / 2 + 20;
+            const halfH = (typeof slot.getSlotHeight === 'function' ? slot.getSlotHeight() : 74) / 2 + 20;
+            const isInside = Math.abs(c.x - center.x) <= halfW && Math.abs(c.y - center.y) <= halfH;
+            slot.setHighlighted(isInside);
+          }
         },
         onDragEnd: (c, pointer) => {
           this.handleCardDragEnd(c, pointer);
@@ -714,6 +728,7 @@ export class QuestionScene extends Phaser.Scene {
    */
   public handleSlotCardRemoval(slot: SlotBox): void {
     if (this.isAnswered) return;
+    this.lastRemovalTime = Date.now();
 
     const card = slot.removePlacedCard();
     if (card) {
@@ -727,6 +742,11 @@ export class QuestionScene extends Phaser.Scene {
    */
   public handleCardDragEnd(card: CanvasCard, _pointer: Phaser.Input.Pointer): void {
     if (this.isAnswered) return;
+
+    // Clear hover highlights on all slots
+    for (const slot of this.slotBoxes) {
+      slot.setHighlighted(false);
+    }
 
     // Find nearest slot using box bounds
     let targetSlot: SlotBox | null = null;
@@ -939,10 +959,13 @@ export class QuestionScene extends Phaser.Scene {
 
     SoundManager.playCardSnap();
     for (const slot of this.slotBoxes) {
-      const card = slot.removePlacedCard();
-      if (card) {
-        card.snapBack();
-      }
+      slot.removePlacedCard();
+      slot.setError(false);
+      slot.setHighlighted(false);
+    }
+    for (const card of this.cardChips) {
+      card.setCurrentSlot(null);
+      card.snapBack();
     }
   }
 

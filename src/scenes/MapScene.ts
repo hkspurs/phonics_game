@@ -695,7 +695,14 @@ export class MapScene extends Phaser.Scene {
 
     // 8. Interactivity & Click Handling
     if (typeof container.setInteractive === 'function') {
-      container.setInteractive({ useHandCursor: isUnlocked });
+      const nodeHitRect = (Phaser && Phaser.Geom && Phaser.Geom.Rectangle)
+        ? new Phaser.Geom.Rectangle(-55, -55, 110, 110)
+        : undefined;
+      if (nodeHitRect) {
+        container.setInteractive(nodeHitRect, Phaser.Geom.Rectangle.Contains);
+      } else {
+        container.setInteractive({ useHandCursor: isUnlocked });
+      }
 
       container.on('pointerover', () => {
         if (isUnlocked && this.tweens?.add) {

@@ -1144,8 +1144,8 @@ describe('Gamer Tester 1: Token-to-Slot & Card Interaction Adversarial Glitch Su
       const hitArea = card.input?.hitArea;
       expect(hitArea).toBeDefined();
 
-      const expectedX = -hitPadX; // -12
-      const expectedY = -hitPadY; // -12
+      const expectedX = -cardWidth / 2 - hitPadX; // -89.5
+      const expectedY = -cardHeight / 2 - hitPadY; // -49
       const expectedW = cardWidth + hitPadX * 2;   // 155 + 24 = 179
       const expectedH = cardHeight + hitPadY * 2;  // 74 + 24 = 98
 
@@ -1154,32 +1154,27 @@ describe('Gamer Tester 1: Token-to-Slot & Card Interaction Adversarial Glitch Su
       expect(hitArea.width).toBe(expectedW);
       expect(hitArea.height).toBe(expectedH);
 
-      // Boundary checks (in Phaser transformed space with displayOrigin = (cardWidth / 2, cardHeight / 2)):
-      const originX = cardWidth / 2;
-      const originY = cardHeight / 2;
-      const centerX = originX;
-      const centerY = originY;
-
+      // Boundary checks in centered container local space:
       // 1. Center -> MUST be inside
-      expect(Phaser.Geom.Rectangle.Contains(hitArea, centerX, centerY)).toBe(true);
+      expect(Phaser.Geom.Rectangle.Contains(hitArea, 0, 0)).toBe(true);
 
       // 2. Just inside top-left corner -> MUST be inside
-      expect(Phaser.Geom.Rectangle.Contains(hitArea, -cardWidth / 2 + originX, -cardHeight / 2 + originY)).toBe(true);
+      expect(Phaser.Geom.Rectangle.Contains(hitArea, -cardWidth / 2, -cardHeight / 2)).toBe(true);
 
       // 3. Just inside bottom-right corner -> MUST be inside
-      expect(Phaser.Geom.Rectangle.Contains(hitArea, cardWidth / 2 + originX, cardHeight / 2 + originY)).toBe(true);
+      expect(Phaser.Geom.Rectangle.Contains(hitArea, cardWidth / 2, cardHeight / 2)).toBe(true);
 
       // 4. Outside left edge beyond pad -> MUST be false
-      expect(Phaser.Geom.Rectangle.Contains(hitArea, expectedX - 1, centerY)).toBe(false);
+      expect(Phaser.Geom.Rectangle.Contains(hitArea, expectedX - 1, 0)).toBe(false);
 
       // 5. Outside right edge beyond pad -> MUST be false
-      expect(Phaser.Geom.Rectangle.Contains(hitArea, expectedX + expectedW + 1, centerY)).toBe(false);
+      expect(Phaser.Geom.Rectangle.Contains(hitArea, expectedX + expectedW + 1, 0)).toBe(false);
 
       // 6. Outside top edge beyond pad -> MUST be false
-      expect(Phaser.Geom.Rectangle.Contains(hitArea, centerX, expectedY - 1)).toBe(false);
+      expect(Phaser.Geom.Rectangle.Contains(hitArea, 0, expectedY - 1)).toBe(false);
 
       // 7. Outside bottom edge beyond pad -> MUST be false
-      expect(Phaser.Geom.Rectangle.Contains(hitArea, centerX, expectedY + expectedH + 1)).toBe(false);
+      expect(Phaser.Geom.Rectangle.Contains(hitArea, 0, expectedY + expectedH + 1)).toBe(false);
     });
 
     it('verifies high-DPI text resolution does not distort card dimensions or hitbox size', () => {

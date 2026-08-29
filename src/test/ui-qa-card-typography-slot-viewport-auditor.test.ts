@@ -256,19 +256,17 @@ describe('UI QA Tester 1: Adversarial Card Typography, Slot Animation, Hitbox Pa
       expect(hitArea).toBeDefined();
 
       if (hitArea) {
-        expect(hitArea.x).toBe(-8);
-        expect(hitArea.y).toBe(-8);
+        expect(hitArea.x).toBe(-108);
+        expect(hitArea.y).toBe(-38);
         expect(hitArea.width).toBe(216);
         expect(hitArea.height).toBe(76);
 
-        const originX = 100;
-        const originY = 30;
-        // Test points in transformed coordinate space (point + displayOrigin)
-        const leftSideHits = Phaser.Geom.Rectangle.Contains(hitArea, -80 + originX, 0 + originY);
-        const nearCenterLeftHits = Phaser.Geom.Rectangle.Contains(hitArea, -30 + originX, 0 + originY);
-        const rightSideHits = Phaser.Geom.Rectangle.Contains(hitArea, 80 + originX, 0 + originY);
-        const farRightPadHits = Phaser.Geom.Rectangle.Contains(hitArea, 105 + originX, 0 + originY);
-        const outsideRightHits = Phaser.Geom.Rectangle.Contains(hitArea, 120 + originX, 0 + originY);
+        // Test points in local coordinate space [-100, +100] and [-30, +30]
+        const leftSideHits = Phaser.Geom.Rectangle.Contains(hitArea, -80, 0);
+        const nearCenterLeftHits = Phaser.Geom.Rectangle.Contains(hitArea, -30, 0);
+        const rightSideHits = Phaser.Geom.Rectangle.Contains(hitArea, 80, 0);
+        const farRightPadHits = Phaser.Geom.Rectangle.Contains(hitArea, 105, 0);
+        const outsideRightHits = Phaser.Geom.Rectangle.Contains(hitArea, 120, 0);
 
         expect(leftSideHits).toBe(true);
         expect(nearCenterLeftHits).toBe(true);
@@ -283,15 +281,13 @@ describe('UI QA Tester 1: Adversarial Card Typography, Slot Animation, Hitbox Pa
       const slotHeight = 64;
       const hitPadX = 8;
       const hitPadY = 8;
-      const hitArea = new Phaser.Geom.Rectangle(-hitPadX, -hitPadY, slotWidth + hitPadX * 2, slotHeight + hitPadY * 2);
+      const hitArea = new Phaser.Geom.Rectangle(-slotWidth / 2 - hitPadX, -slotHeight / 2 - hitPadY, slotWidth + hitPadX * 2, slotHeight + hitPadY * 2);
 
-      const originX = 70;
-      const originY = 32;
-      // Test all 4 visual quadrants of the slot box in transformed space:
-      const topLeftVisual = Phaser.Geom.Rectangle.Contains(hitArea, -35 + originX, -16 + originY);
-      const topRightVisual = Phaser.Geom.Rectangle.Contains(hitArea, 35 + originX, -16 + originY);
-      const bottomLeftVisual = Phaser.Geom.Rectangle.Contains(hitArea, -35 + originX, 16 + originY);
-      const bottomRightVisual = Phaser.Geom.Rectangle.Contains(hitArea, 35 + originX, 16 + originY);
+      // Test all 4 visual quadrants of the slot box:
+      const topLeftVisual = Phaser.Geom.Rectangle.Contains(hitArea, -35, -16);
+      const topRightVisual = Phaser.Geom.Rectangle.Contains(hitArea, 35, -16);
+      const bottomLeftVisual = Phaser.Geom.Rectangle.Contains(hitArea, -35, 16);
+      const bottomRightVisual = Phaser.Geom.Rectangle.Contains(hitArea, 35, 16);
 
       expect(topLeftVisual).toBe(true);
       expect(topRightVisual).toBe(true);
@@ -312,18 +308,16 @@ describe('UI QA Tester 1: Adversarial Card Typography, Slot Animation, Hitbox Pa
       expect(hitArea).toBeDefined();
 
       if (hitArea) {
-        expect(hitArea.x).toBe(-12);
-        expect(hitArea.y).toBe(-12);
+        expect(hitArea.x).toBe(-140 / 2 - 12);
+        expect(hitArea.y).toBe(-64 / 2 - 12);
         expect(hitArea.width).toBe(164);
         expect(hitArea.height).toBe(88);
 
-        const originX = 70;
-        const originY = 32;
-        expect(Phaser.Geom.Rectangle.Contains(hitArea, 0 + originX, 0 + originY)).toBe(true);
-        expect(Phaser.Geom.Rectangle.Contains(hitArea, -65 + originX, -25 + originY)).toBe(true);
-        expect(Phaser.Geom.Rectangle.Contains(hitArea, 65 + originX, -25 + originY)).toBe(true);
-        expect(Phaser.Geom.Rectangle.Contains(hitArea, -65 + originX, 25 + originY)).toBe(true);
-        expect(Phaser.Geom.Rectangle.Contains(hitArea, 65 + originX, 25 + originY)).toBe(true);
+        expect(Phaser.Geom.Rectangle.Contains(hitArea, 0, 0)).toBe(true);
+        expect(Phaser.Geom.Rectangle.Contains(hitArea, -65, -25)).toBe(true);
+        expect(Phaser.Geom.Rectangle.Contains(hitArea, 65, -25)).toBe(true);
+        expect(Phaser.Geom.Rectangle.Contains(hitArea, -65, 25)).toBe(true);
+        expect(Phaser.Geom.Rectangle.Contains(hitArea, 65, 25)).toBe(true);
       }
     });
   });
