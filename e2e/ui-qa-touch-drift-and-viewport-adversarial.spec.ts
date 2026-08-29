@@ -65,7 +65,7 @@ test.describe('UI QA Auditor 1: Adversarial Viewport & Touch Coordinate Drift E2
       await page.evaluate(() => {
         const game = (window as any).__PHASER_GAME__;
         const mapScene = game.scene.getScene('MapScene') as any;
-        mapScene.startStationQuestion(mapScene.stations[0]);
+        mapScene.scene.start('QuestionScene', { stationId: 1, stationName: '小木屋', questionIndex: 0 });
       });
       await page.waitForTimeout(800);
 
