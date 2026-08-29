@@ -261,7 +261,7 @@ export class QuestionScene extends Phaser.Scene {
 
     // 1b. Quick Station Restart (🔄 重試本關)
     const restartBtn = new CanvasButton(this, {
-      x: 235,
+      x: 248,
       y: 42,
       width: 130,
       height: 46,
@@ -461,7 +461,7 @@ export class QuestionScene extends Phaser.Scene {
     if (tokensCount === 0) return;
 
     // 1. Calculate dynamic slot sizing and positions
-    const spacing = tokensCount > 6 ? 12 : 16;
+    const spacing = tokensCount >= 6 ? 18 : tokensCount === 5 ? 20 : 24;
     let cardWidth = 155;
     const cardHeight = 74;
 
@@ -493,7 +493,7 @@ export class QuestionScene extends Phaser.Scene {
         const hitPadX = 8;
         const hitPadY = 8;
         const hitRect = (Phaser && Phaser.Geom && Phaser.Geom.Rectangle)
-          ? new Phaser.Geom.Rectangle(-cardWidth / 2 - hitPadX, -cardHeight / 2 - hitPadY, cardWidth + hitPadX * 2, cardHeight + hitPadY * 2)
+          ? new Phaser.Geom.Rectangle(-hitPadX, -hitPadY, cardWidth + hitPadX * 2, cardHeight + hitPadY * 2)
           : { useHandCursor: true };
         slot.setInteractive(hitRect, Phaser.Geom.Rectangle.Contains);
         slot.on('pointerup', () => {

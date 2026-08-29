@@ -672,15 +672,17 @@ describe('UI QA Auditor 2: Token-to-Slot Word Card Inquisitor Adversarial Test S
       expect(hitArea).toBeDefined();
 
       const pad = 12;
-      expect(hitArea.x).toBe(-140 / 2 - pad);
-      expect(hitArea.y).toBe(-64 / 2 - pad);
+      expect(hitArea.x).toBe(-pad);
+      expect(hitArea.y).toBe(-pad);
       expect(hitArea.width).toBe(140 + pad * 2);
       expect(hitArea.height).toBe(64 + pad * 2);
 
-      // Verify all 4 visual quadrants in centered local coordinate space
-      expect(Phaser.Geom.Rectangle.Contains(hitArea, 0, 0)).toBe(true);
-      expect(Phaser.Geom.Rectangle.Contains(hitArea, -65, -25)).toBe(true);
-      expect(Phaser.Geom.Rectangle.Contains(hitArea, 65, 25)).toBe(true);
+      // Verify all 4 visual quadrants in displayOrigin transformed space
+      const originX = 70;
+      const originY = 32;
+      expect(Phaser.Geom.Rectangle.Contains(hitArea, 0 + originX, 0 + originY)).toBe(true);
+      expect(Phaser.Geom.Rectangle.Contains(hitArea, -65 + originX, -25 + originY)).toBe(true);
+      expect(Phaser.Geom.Rectangle.Contains(hitArea, 65 + originX, 25 + originY)).toBe(true);
     });
 
     it('audits CanvasButton hitArea geometry for center alignment', () => {
@@ -696,14 +698,16 @@ describe('UI QA Auditor 2: Token-to-Slot Word Card Inquisitor Adversarial Test S
       expect(hitArea).toBeDefined();
 
       const pad = 8;
-      expect(hitArea.x).toBe(-160 / 2 - pad);
-      expect(hitArea.y).toBe(-50 / 2 - pad);
+      expect(hitArea.x).toBe(-pad);
+      expect(hitArea.y).toBe(-pad);
       expect(hitArea.width).toBe(160 + pad * 2);
       expect(hitArea.height).toBe(50 + pad * 2);
 
-      expect(Phaser.Geom.Rectangle.Contains(hitArea, 0, 0)).toBe(true);
-      expect(Phaser.Geom.Rectangle.Contains(hitArea, -75, -20)).toBe(true);
-      expect(Phaser.Geom.Rectangle.Contains(hitArea, 75, 20)).toBe(true);
+      const originX = 80;
+      const originY = 25;
+      expect(Phaser.Geom.Rectangle.Contains(hitArea, 0 + originX, 0 + originY)).toBe(true);
+      expect(Phaser.Geom.Rectangle.Contains(hitArea, -75 + originX, -20 + originY)).toBe(true);
+      expect(Phaser.Geom.Rectangle.Contains(hitArea, 75 + originX, 20 + originY)).toBe(true);
     });
   });
 

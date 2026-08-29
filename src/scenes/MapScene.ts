@@ -696,7 +696,7 @@ export class MapScene extends Phaser.Scene {
     // 8. Interactivity & Click Handling
     if (typeof container.setInteractive === 'function') {
       const nodeHitRect = (Phaser && Phaser.Geom && Phaser.Geom.Rectangle)
-        ? new Phaser.Geom.Rectangle(-55, -55, 110, 110)
+        ? new Phaser.Geom.Rectangle(-8, -8, 110 + 16, 110 + 16)
         : undefined;
       if (nodeHitRect) {
         container.setInteractive(nodeHitRect, Phaser.Geom.Rectangle.Contains);
@@ -1022,7 +1022,7 @@ export class MapScene extends Phaser.Scene {
       const padX = 16;
       const padY = 8;
       const hitRect = (Phaser && Phaser.Geom && Phaser.Geom.Rectangle)
-        ? new Phaser.Geom.Rectangle(-580 / 2 - padX, -56 / 2 - padY, 580 + padX * 2, 56 + padY * 2)
+        ? new Phaser.Geom.Rectangle(-padX, -padY, 580 + padX * 2, 56 + padY * 2)
         : undefined;
 
       if (typeof rowContainer.setInteractive === 'function') {
