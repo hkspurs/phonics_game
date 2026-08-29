@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { DEFAULT_GAME_SETTINGS, GAME_WIDTH, GAME_HEIGHT, GAME_TITLE } from './config';
+import { DEFAULT_GAME_SETTINGS, GAME_WIDTH, GAME_HEIGHT, GAME_TITLE, GAME_VERSION } from './config';
 
 describe('Project Scaffolding & Setup', () => {
   it('should define correct canvas resolution of 1280x720', () => {
@@ -16,5 +16,9 @@ describe('Project Scaffolding & Setup', () => {
   it('should have the proper game title and background color', () => {
     expect(GAME_TITLE).toContain('升夢大冒險');
     expect(DEFAULT_GAME_SETTINGS.backgroundColor).toBe('#1a1a2e');
+  });
+
+  it('should expose the current Dream Wardrobe release version', () => {
+    expect(GAME_VERSION).toBe('1.1.0');
   });
 });

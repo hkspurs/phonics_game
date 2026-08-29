@@ -700,13 +700,13 @@ export class TitleScene extends Phaser.Scene {
   public createVersionFooter(width: number, height: number): void {
     if (!this.add || !this.add.text) return;
 
-    let appVersion = 'ver 1.0.0';
+    let appVersion = 'ver 1.1.0';
     try {
       if (typeof __APP_VERSION__ !== 'undefined' && __APP_VERSION__) {
         appVersion = __APP_VERSION__;
       }
     } catch {
-      appVersion = 'ver 1.0.0';
+      appVersion = 'ver 1.1.0';
     }
 
     // Container with dark translucent backdrop pill for maximum contrast and high-DPI rendering

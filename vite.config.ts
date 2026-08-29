@@ -1,4 +1,5 @@
 import { defineConfig } from 'vite';
+import { GAME_VERSION } from './src/config';
 
 const now = new Date();
 const pad = (n: number) => n.toString().padStart(2, '0');
@@ -7,7 +8,7 @@ const mm = pad(now.getMonth() + 1);
 const dd = pad(now.getDate());
 const hh = pad(now.getHours());
 const ii = pad(now.getMinutes());
-const versionString = `ver 1.${yyyy}${mm}${dd}${hh}${ii}`;
+const versionString = `ver ${GAME_VERSION} (${yyyy}${mm}${dd}${hh}${ii})`;
 
 export default defineConfig({
   base: './',
@@ -25,4 +26,3 @@ export default defineConfig({
     open: false,
   },
 });
-
