@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
+import Phaser from 'phaser';
 import {
   OUTFIT_DEFINITIONS,
   OutfitLayer,
@@ -91,6 +92,26 @@ describe('Dream Wardrobe preview system', () => {
     expect(result.mode).toBe('composite');
     expect(sprite.setTexture).toHaveBeenCalledWith('player_stand');
     expect(sprite.setTexture).not.toHaveBeenCalledWith(expect.stringContaining('thumbnail'));
+  });
+
+  it('restores preview-only texture filters when the renderer cache is cleared', () => {
+    const renderer = new OutfitRenderer(wardrobeRegistry);
+    const texture = { setFilter: vi.fn() };
+    const sprite = { setTexture: vi.fn(), setVisible: vi.fn(), texture };
+
+    renderer.render(
+      { sprite, graphics: mockGraphics() } as never,
+      {
+        characterId: 'boy01',
+        baseTextureKey: 'player_stand',
+        pose: 'idle',
+        wardrobe: { top: 'hoodie_star' },
+        textureExists: () => false,
+      }
+    );
+    renderer.clearCache();
+
+    expect(texture.setFilter).toHaveBeenLastCalledWith(Phaser.Textures.FilterMode.LINEAR);
   });
 
   it('supports the scholar gown id without breaking the saved scholar robe id', () => {

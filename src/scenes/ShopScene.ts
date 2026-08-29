@@ -192,6 +192,8 @@ export class ShopScene extends Phaser.Scene {
   private purchaseModal: CanvasModal | null = null;
   private previewController: CharacterPreviewController | null = null;
   private previewWardrobeState: EquippedWardrobe | null = null;
+  private wardrobePage = 0;
+  private wardrobePageStart = 0;
 
   private walkAnimTimer: Phaser.Time.TimerEvent | null = null;
   private currentWalkFrame: number = 0;
@@ -212,6 +214,8 @@ export class ShopScene extends Phaser.Scene {
     this.wardrobeItemButtons = [];
     this.poseButtons = [];
     this.skinCardTextObjects = [];
+    this.wardrobePage = 0;
+    this.wardrobePageStart = 0;
 
     // Find initially equipped skin
     const equipped = DataManager.getInstance().getProfile().equippedSkin || 'adventurer';
@@ -553,7 +557,7 @@ export class ShopScene extends Phaser.Scene {
   private createWardrobeSelectionList(width: number, height: number): void {
     if (!this.add) return;
 
-    const layout = getWardrobeLayout(width, height);
+    const layout = this.getResponsiveWardrobeLayout(width, height);
     const filters: { key: 'all' | 'owned'; label: string }[] = [
       { key: 'all', label: '全部' },
       { key: 'owned', label: '已擁有' },
@@ -605,21 +609,28 @@ export class ShopScene extends Phaser.Scene {
       this.tabGameObjects.push(btn);
     });
 
-    const items = this.getVisibleWardrobeItems();
     const listTop = layout.items.y + (layout.compact ? 92 : 78);
     const denseCatalog = this.currentWardrobeFilter === 'all' || this.currentWardrobeFilter === 'owned';
     const columns = denseCatalog ? (layout.compact ? 2 : 3) : (layout.compact ? 2 : 1);
     const cardGap = layout.compact ? 7 : 9;
     const cardWidth = (layout.items.width - cardGap * (columns - 1)) / columns;
+    const allItems = this.getVisibleWardrobeItems();
+    const pageSize = layout.compact && denseCatalog ? columns * 2 : Math.max(1, allItems.length);
+    const pageCount = Math.max(1, Math.ceil(allItems.length / pageSize));
+    this.wardrobePage = Math.min(this.wardrobePage, pageCount - 1);
+    this.wardrobePageStart = this.wardrobePage * pageSize;
+    const items = allItems.slice(this.wardrobePageStart, this.wardrobePageStart + pageSize);
+    const pagerPadding = layout.compact && denseCatalog && pageCount > 1 ? 38 : 0;
     const rows = Math.max(1, Math.ceil(items.length / columns));
-    const cardHeight = Math.max(58, Math.min(denseCatalog ? (layout.compact ? 70 : 78) : (layout.compact ? 78 : 92), (layout.items.height - (listTop - layout.items.y) - cardGap * (rows - 1)) / rows));
+    const cardHeight = Math.max(58, Math.min(denseCatalog ? (layout.compact ? 70 : 78) : (layout.compact ? 78 : 92), (layout.items.height - (listTop - layout.items.y) - pagerPadding - cardGap * (rows - 1)) / rows));
 
     items.forEach((item, idx) => {
+      const globalIdx = this.wardrobePageStart + idx;
       const col = idx % columns;
       const row = Math.floor(idx / columns);
       const x = layout.items.x + cardWidth * (col + 0.5) + cardGap * (col - (columns - 1) / 2);
       const y = listTop + cardHeight * (row + 0.5) + cardGap * row;
-      const isSelected = idx === this.selectedWardrobeIndex;
+      const isSelected = globalIdx === this.selectedWardrobeIndex;
       const cardBtn = new CanvasButton(this, {
         x,
         y,
@@ -629,7 +640,7 @@ export class ShopScene extends Phaser.Scene {
         fontSize: layout.compact ? '12px' : '14px',
         scaleOnHover: 1.015,
         scaleOnDown: 0.97,
-        onClick: () => this.selectWardrobeItem(idx),
+        onClick: () => this.selectWardrobeItem(globalIdx),
       });
       cardBtn.setDepth(60);
       this.skinCardButtons.push(cardBtn);
@@ -644,8 +655,54 @@ export class ShopScene extends Phaser.Scene {
         if (typeof glow.setDepth === 'function') glow.setDepth(59);
         this.tabGameObjects.push(glow);
       }
-      this.populateWardrobeCard(item, x, y, idx, cardWidth, cardHeight, layout.compact, denseCatalog);
+      this.populateWardrobeCard(item, x, y, globalIdx, cardWidth, cardHeight, layout.compact, denseCatalog);
     });
+
+    if (layout.compact && denseCatalog && pageCount > 1) {
+      const pagerY = layout.items.y + layout.items.height - 18;
+      const prevButton = new CanvasButton(this, {
+        x: layout.items.x + 28,
+        y: pagerY,
+        width: 48,
+        height: 30,
+        text: '‹',
+        color: 'blue',
+        fontSize: '20px',
+        disabled: this.wardrobePage === 0,
+        onClick: () => {
+          this.wardrobePage = Math.max(0, this.wardrobePage - 1);
+          this.renderCurrentTabList(width, height);
+        },
+      });
+      const nextButton = new CanvasButton(this, {
+        x: layout.items.x + layout.items.width - 28,
+        y: pagerY,
+        width: 48,
+        height: 30,
+        text: '›',
+        color: 'blue',
+        fontSize: '20px',
+        disabled: this.wardrobePage >= pageCount - 1,
+        onClick: () => {
+          this.wardrobePage = Math.min(pageCount - 1, this.wardrobePage + 1);
+          this.renderCurrentTabList(width, height);
+        },
+      });
+      prevButton.setDepth(60);
+      nextButton.setDepth(60);
+      this.tabGameObjects.push(prevButton, nextButton);
+      if (this.add.text) {
+        const pageLabel = this.add.text(layout.items.x + layout.items.width / 2, pagerY, `第 ${this.wardrobePage + 1} / ${pageCount} 頁`, {
+          fontSize: '13px',
+          fontFamily: "'Noto Sans TC', 'Microsoft JhengHei', sans-serif",
+          color: '#c8d5ff',
+          fontStyle: 'bold',
+        });
+        if (typeof pageLabel.setOrigin === 'function') pageLabel.setOrigin(0.5);
+        if (typeof pageLabel.setDepth === 'function') pageLabel.setDepth(60);
+        this.tabGameObjects.push(pageLabel);
+      }
+    }
   }
 
   private populateWardrobeCard(
@@ -761,7 +818,7 @@ export class ShopScene extends Phaser.Scene {
       this.tabGameObjects.push(nameTxt);
 
       // Perk
-      const perkTxt = this.add.text(cx - cardWidth / 2 + (compact || denseCatalog ? 42 : 76), cy + (compact ? 14 : 15), denseCatalog ? item.name : item.nameEn, {
+      const perkTxt = this.add.text(cx - cardWidth / 2 + (compact || denseCatalog ? 42 : 76), cy + (compact ? 14 : 15), denseCatalog ? item.name : item.perkDescription, {
         fontSize: denseCatalog ? (compact ? '10px' : '11px') : compact ? '12px' : '17px',
         fontFamily: "'Noto Sans TC', 'Microsoft JhengHei', sans-serif",
         color: isSelected ? '#3d2503' : '#d9e2ff',
@@ -812,6 +869,7 @@ export class ShopScene extends Phaser.Scene {
     this.currentWardrobeCategory = cat;
     this.currentWardrobeFilter = cat;
     this.selectedWardrobeIndex = 0;
+    this.wardrobePage = 0;
     this.previewSelectedWardrobeItem();
     SoundManager.play('click');
 
@@ -826,6 +884,7 @@ export class ShopScene extends Phaser.Scene {
     if (this.currentWardrobeFilter === filter) return;
     this.currentWardrobeFilter = filter;
     this.selectedWardrobeIndex = 0;
+    this.wardrobePage = 0;
     this.previewSelectedWardrobeItem();
     SoundManager.play('click');
 
@@ -855,7 +914,7 @@ export class ShopScene extends Phaser.Scene {
   }
 
   private playWardrobeSelectionFeedback(): void {
-    const button = this.wardrobeItemButtons[this.selectedWardrobeIndex];
+    const button = this.wardrobeItemButtons[this.selectedWardrobeIndex - this.wardrobePageStart];
     if (!button) return;
 
     button.setColor('yellow');
@@ -889,6 +948,13 @@ export class ShopScene extends Phaser.Scene {
     const dm = DataManager.getInstance();
     const owned = dm.getProfile().ownedWardrobe ?? [];
     return getWardrobeItemsForFilter(WARDROBE_ITEMS, this.currentWardrobeFilter, owned);
+  }
+
+  private getResponsiveWardrobeLayout(width: number, height: number) {
+    const compactOverride = typeof window !== 'undefined'
+      ? window.innerWidth < 1100 || window.innerHeight < 620
+      : undefined;
+    return getWardrobeLayout(width, height, compactOverride);
   }
 
   private previewSelectedWardrobeItem(): void {
@@ -1071,7 +1137,7 @@ export class ShopScene extends Phaser.Scene {
   private createLivePreviewShowcase(width: number, height: number): void {
     if (!this.add) return;
 
-    const layout = getWardrobeLayout(width, height);
+    const layout = this.getResponsiveWardrobeLayout(width, height);
     const panelX = layout.preview.x + layout.preview.width / 2;
     const panelY = layout.preview.y + layout.preview.height / 2;
     const panelW = layout.preview.width;

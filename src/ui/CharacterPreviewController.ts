@@ -132,7 +132,7 @@ export class CharacterPreviewController {
     this.tryOnTween?.stop();
     this.idleTween?.stop();
     this.cheerTween?.stop();
-    this.sprite.texture?.setFilter?.(Phaser.Textures.FilterMode.LINEAR);
+    this.renderer.clearCache();
     if (typeof this.sprite.destroy === 'function') this.sprite.destroy();
     Object.values(this.layerSprites).forEach(layer => layer?.destroy());
     if (typeof this.wardrobeGraphics.destroy === 'function') this.wardrobeGraphics.destroy();

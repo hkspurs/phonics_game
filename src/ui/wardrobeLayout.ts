@@ -16,10 +16,10 @@ export interface WardrobeLayout {
   compact: boolean;
 }
 
-export function getWardrobeLayout(width: number, height: number): WardrobeLayout {
+export function getWardrobeLayout(width: number, height: number, compactOverride?: boolean): WardrobeLayout {
   const w = Math.max(1, width);
   const h = Math.max(1, height);
-  const compact = w < 1000 || h < 620;
+  const compact = compactOverride ?? (w < 1000 || h < 620);
   const margin = compact ? Math.max(10, w * 0.015) : Math.max(18, w * 0.018);
   const gap = compact ? Math.max(8, w * 0.01) : Math.max(12, w * 0.014);
   const headerHeight = compact ? Math.min(54, h * 0.14) : Math.min(62, h * 0.09);
@@ -55,7 +55,7 @@ export function getWardrobeLayout(width: number, height: number): WardrobeLayout
   };
   const characterHeight = Math.max(
     1,
-    Math.min(stage.height - (compact ? 6 : 3), preview.height * (compact ? 0.68 : 0.76))
+    Math.min(stage.height - (compact ? 6 : 3), preview.height * 0.76)
   );
   const characterWidth = Math.max(1, Math.min(stage.width - 12, characterHeight * 0.72));
   const character = {

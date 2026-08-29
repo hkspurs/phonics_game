@@ -27,6 +27,7 @@ export interface OutfitRenderResult {
 
 export class OutfitRenderer {
   private readonly targetCache = new WeakMap<object, OutfitRenderResult>();
+  private readonly filteredTextures = new Set<Phaser.Textures.Texture>();
 
   constructor(private readonly registry: OutfitRegistry = wardrobeRegistry) {}
 
@@ -56,10 +57,12 @@ export class OutfitRenderer {
 
     if (target.sprite && typeof target.sprite.setTexture === 'function') {
       target.sprite.setTexture(textureKey);
-      if (target.sprite.texture?.setFilter) {
+      const texture = target.sprite.texture;
+      if (texture?.setFilter) {
+        this.filteredTextures.add(texture);
         // The supplied Kenney fallback is pixel art enlarged for the dressing
         // room; nearest sampling keeps its outline crisp until high-res art lands.
-        target.sprite.texture.setFilter(
+        texture.setFilter(
           mode === 'fullSprite' ? Phaser.Textures.FilterMode.LINEAR : Phaser.Textures.FilterMode.NEAREST
         );
       }
@@ -96,7 +99,8 @@ export class OutfitRenderer {
   }
 
   clearCache(): void {
-    // WeakMap entries disappear with their render targets; this method documents the scene cleanup boundary.
+    this.filteredTextures.forEach(texture => texture.setFilter(Phaser.Textures.FilterMode.LINEAR));
+    this.filteredTextures.clear();
   }
 
   private renderLayered(
