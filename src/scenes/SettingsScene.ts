@@ -335,7 +335,7 @@ export class SettingsScene extends Phaser.Scene {
         height: btnH,
         text: item.label,
         color: isSelected ? 'yellow' : 'grey',
-        fontSize: '15px',
+        fontSize: '17px',
         onClick: () => {
           this.selectVoiceLanguage(item.lang, item.sample);
         },
@@ -511,7 +511,7 @@ export class SettingsScene extends Phaser.Scene {
         topY + 195,
         `📌 ${currentOpt.name}\n${currentOpt.description}`,
         {
-          fontSize: '14px',
+          fontSize: '16px',
           fontFamily: "'Noto Sans TC', 'Microsoft JhengHei', sans-serif",
           color: '#a0c4ff',
           align: 'center',

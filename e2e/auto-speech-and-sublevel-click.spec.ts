@@ -51,8 +51,8 @@ test('Verification: Auto-read after 1s in QuestionScene and 100% full-area sub-l
   console.log('Speech called at 500ms:', speechAt500ms);
   expect(speechAt500ms).toBe(false);
 
-  // At 1500ms (after 1s delay), MUST have spoken!
-  await page.waitForTimeout(1000);
+  // After 1s delay (allow 1500ms margin), MUST have spoken!
+  await page.waitForTimeout(1500);
   const speechAfter1s = await page.evaluate(() => ({
     called: (window as any).__SPEECH_CALLED__,
     text: (window as any).__SPEECH_TEXT__

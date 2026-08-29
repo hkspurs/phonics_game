@@ -146,11 +146,11 @@ export class TrophyScene extends Phaser.Scene {
 
     if (this.add.text) {
       this.totalTrophyText = this.add.text(
-        rightX - 85,
+        rightX - 90,
         barY,
         `🏆 ${unlockedCount}/${totalTrophies} (${percent}%)`,
         {
-          fontSize: '15px',
+          fontSize: '18px',
           fontFamily: "'Kenney Future', 'Noto Sans TC', sans-serif",
           color: '#ffd700',
           fontStyle: 'bold',
@@ -158,16 +158,16 @@ export class TrophyScene extends Phaser.Scene {
       );
       if (typeof this.totalTrophyText.setOrigin === 'function') this.totalTrophyText.setOrigin(0.5);
 
-      this.coinText = this.add.text(rightX + 35, barY, `🪙 ${profile.coins}`, {
-        fontSize: '15px',
+      this.coinText = this.add.text(rightX + 40, barY, `🪙 ${profile.coins}`, {
+        fontSize: '18px',
         fontFamily: "'Kenney Future', 'Noto Sans TC', sans-serif",
         color: '#ffd700',
         fontStyle: 'bold',
       });
       if (typeof this.coinText.setOrigin === 'function') this.coinText.setOrigin(0.5);
 
-      this.gemText = this.add.text(rightX + 115, barY, `💎 ${profile.gems}`, {
-        fontSize: '15px',
+      this.gemText = this.add.text(rightX + 125, barY, `💎 ${profile.gems}`, {
+        fontSize: '18px',
         fontFamily: "'Kenney Future', 'Noto Sans TC', sans-serif",
         color: '#00e5ff',
         fontStyle: 'bold',
@@ -339,7 +339,7 @@ export class TrophyScene extends Phaser.Scene {
 
       // 3. Trophy Title & Reward Badge
       const titleTxt = this.add.text(x - w / 2 + 98, y - 36, trophy.name, {
-        fontSize: '19px',
+        fontSize: '22px',
         fontFamily: "'Kenney Future', 'Noto Sans TC', sans-serif",
         color: isUnlocked ? '#ffd700' : '#e2e8f0',
         fontStyle: 'bold',
@@ -352,7 +352,7 @@ export class TrophyScene extends Phaser.Scene {
       const rewardGems = trophy.rewardGems || 0;
       const rewardLabel = `+${rewardCoins} 🪙  +${rewardGems} 💎`;
       const rewardTxt = this.add.text(x + w / 2 - 20, y - 36, rewardLabel, {
-        fontSize: '14px',
+        fontSize: '16px',
         fontFamily: "'Kenney Future', 'Noto Sans TC', sans-serif",
         color: isUnlocked ? '#76d67c' : '#ffd166',
         fontStyle: 'bold',
@@ -362,7 +362,7 @@ export class TrophyScene extends Phaser.Scene {
 
       // 4. Trophy Description
       const descTxt = this.add.text(x - w / 2 + 98, y - 6, trophy.description, {
-        fontSize: '14px',
+        fontSize: '16px',
         fontFamily: "'Noto Sans TC', 'Microsoft JhengHei', sans-serif",
         color: isUnlocked ? '#cbd5e1' : '#94a3b8',
       });
@@ -372,7 +372,7 @@ export class TrophyScene extends Phaser.Scene {
       // 5. Unlocked Status Badge or Progress Bar
       if (isUnlocked) {
         const badgeTxt = this.add.text(x - w / 2 + 98, y + 26, '✅ 已獲得 (榮譽解鎖)', {
-          fontSize: '14px',
+          fontSize: '16px',
           fontFamily: "'Noto Sans TC', 'Microsoft JhengHei', sans-serif",
           color: '#76d67c',
           fontStyle: 'bold',
@@ -401,7 +401,7 @@ export class TrophyScene extends Phaser.Scene {
 
         const progressLabel = `${Math.min(target, current)} / ${target}`;
         const progTxt = this.add.text(barStartX + barW + 16, barStartY, progressLabel, {
-          fontSize: '13px',
+          fontSize: '16px',
           fontFamily: "'Kenney Future', 'Noto Sans TC', sans-serif",
           color: '#94a3b8',
           fontStyle: 'bold',

@@ -216,17 +216,17 @@ export class TitleScene extends Phaser.Scene {
     // Background pill for header
     if (this.add.graphics && headerContainer) {
       const bg = this.add.graphics();
-      bg.fillStyle(0x0e1320, 0.7);
-      bg.fillRoundedRect(-380, -22, 760, 44, 22);
-      bg.lineStyle(2, 0x4a90e2, 0.8);
-      bg.strokeRoundedRect(-380, -22, 760, 44, 22);
+      bg.fillStyle(0x0e1320, 0.75);
+      bg.fillRoundedRect(-400, -24, 800, 48, 24);
+      bg.lineStyle(2, 0x4a90e2, 0.85);
+      bg.strokeRoundedRect(-400, -24, 800, 48, 24);
       headerContainer.add(bg);
     }
 
     // 1. Coins Display
     if (this.add.text && headerContainer) {
-      const coinLabel = this.add.text(-260, 0, `🪙 金幣: ${profile.coins}`, {
-        fontSize: '18px',
+      const coinLabel = this.add.text(-280, 0, `🪙 金幣: ${profile.coins}`, {
+        fontSize: '20px',
         fontFamily: "'Kenney Future', 'Noto Sans TC', sans-serif",
         color: '#ffd700',
         fontStyle: 'bold',
@@ -236,8 +236,8 @@ export class TitleScene extends Phaser.Scene {
       headerContainer.add(coinLabel);
 
       // 2. Gems Display
-      const gemLabel = this.add.text(-80, 0, `💎 寶石: ${profile.gems}`, {
-        fontSize: '18px',
+      const gemLabel = this.add.text(-95, 0, `💎 寶石: ${profile.gems}`, {
+        fontSize: '20px',
         fontFamily: "'Kenney Future', 'Noto Sans TC', sans-serif",
         color: '#00e5ff',
         fontStyle: 'bold',
@@ -247,8 +247,8 @@ export class TitleScene extends Phaser.Scene {
       headerContainer.add(gemLabel);
 
       // 3. Stars Display
-      const starLabel = this.add.text(90, 0, `⭐ 星星: ${totalStars}/30`, {
-        fontSize: '18px',
+      const starLabel = this.add.text(85, 0, `⭐ 星星: ${totalStars}/30`, {
+        fontSize: '20px',
         fontFamily: "'Kenney Future', 'Noto Sans TC', sans-serif",
         color: '#ffdd59',
         fontStyle: 'bold',
@@ -258,8 +258,8 @@ export class TitleScene extends Phaser.Scene {
       headerContainer.add(starLabel);
 
       // 4. Streak Days Display
-      const streakLabel = this.add.text(220, 0, `🔥 連續: ${profile.stats.streakDays} 天`, {
-        fontSize: '16px',
+      const streakLabel = this.add.text(230, 0, `🔥 連續: ${profile.stats.streakDays} 天`, {
+        fontSize: '18px',
         fontFamily: "'Kenney Future', 'Noto Sans TC', sans-serif",
         color: '#ff6b6b',
         fontStyle: 'bold',
@@ -269,8 +269,8 @@ export class TitleScene extends Phaser.Scene {
 
       // 5. Pet Companion Milestone Display
       const pet = DataManager.getInstance().getPetCompanion();
-      const petLabel = this.add.text(325, 0, `${pet.icon} ${pet.stage === 'hatched' ? '萌寵' : '萌蛋'}: ${pet.progress}/${pet.target}`, {
-        fontSize: '15px',
+      const petLabel = this.add.text(345, 0, `${pet.icon} ${pet.stage === 'hatched' ? '萌寵' : '萌蛋'}: ${pet.progress}/${pet.target}`, {
+        fontSize: '17px',
         fontFamily: "'Noto Sans TC', sans-serif",
         color: '#a78bfa',
         fontStyle: 'bold',
@@ -380,18 +380,18 @@ export class TitleScene extends Phaser.Scene {
 
     // 2. Secondary Row Buttons: 成績表 | 商店 | 獎盃 | 設定
     const rowY = height / 2 + 135;
-    const btnWidth = 160;
-    const btnHeight = 56;
+    const btnWidth = 165;
+    const btnHeight = 58;
 
     // 成績表 (Report Card Modal)
     this.reportButton = new CanvasButton(this, {
-      x: width / 2 - 270,
+      x: width / 2 - 275,
       y: rowY,
       width: btnWidth,
       height: btnHeight,
       text: '📊 成績表',
       color: 'blue',
-      fontSize: '20px',
+      fontSize: '22px',
       soundKey: 'click',
       onClick: () => {
         this.openReportModal();
@@ -400,13 +400,13 @@ export class TitleScene extends Phaser.Scene {
 
     // 商店 (ShopScene)
     this.shopButton = new CanvasButton(this, {
-      x: width / 2 - 90,
+      x: width / 2 - 92,
       y: rowY,
       width: btnWidth,
       height: btnHeight,
       text: '🛒 商店',
       color: 'yellow',
-      fontSize: '20px',
+      fontSize: '22px',
       soundKey: 'click',
       onClick: () => {
         if (this.scene) {
@@ -417,13 +417,13 @@ export class TitleScene extends Phaser.Scene {
 
     // 獎盃 (TrophyScene)
     this.trophyButton = new CanvasButton(this, {
-      x: width / 2 + 90,
+      x: width / 2 + 92,
       y: rowY,
       width: btnWidth,
       height: btnHeight,
       text: '🏆 獎盃',
       color: 'purple',
-      fontSize: '20px',
+      fontSize: '22px',
       soundKey: 'click',
       onClick: () => {
         if (this.scene) {
@@ -434,13 +434,13 @@ export class TitleScene extends Phaser.Scene {
 
     // 設定 (SettingsScene)
     this.settingsButton = new CanvasButton(this, {
-      x: width / 2 + 270,
+      x: width / 2 + 275,
       y: rowY,
       width: btnWidth,
       height: btnHeight,
       text: '⚙️ 設定',
       color: 'grey',
-      fontSize: '20px',
+      fontSize: '22px',
       soundKey: 'click',
       onClick: () => {
         if (this.scene) {
@@ -680,7 +680,7 @@ export class TitleScene extends Phaser.Scene {
         modal.addContent(iconText);
 
         const nameText = this.add.text(x, y + 36, isUnlocked ? s.name : '未解鎖', {
-          fontSize: '13px',
+          fontSize: '16px',
           fontFamily: "'Noto Sans TC', sans-serif",
           color: isUnlocked ? '#ffffff' : '#64748b',
           align: 'center',
@@ -717,13 +717,13 @@ export class TitleScene extends Phaser.Scene {
         const bg = this.add.graphics();
         bg.fillStyle(0x0e1320, 0.75);
         bg.lineStyle(1, 0x4a90e2, 0.6);
-        bg.fillRoundedRect(-170, -24, 166, 26, 8);
-        bg.strokeRoundedRect(-170, -24, 166, 26, 8);
+        bg.fillRoundedRect(-180, -28, 176, 30, 8);
+        bg.strokeRoundedRect(-180, -28, 176, 30, 8);
         container.add(bg);
       }
 
-      const verText = this.add.text(-87, -11, appVersion, {
-        fontSize: '13px',
+      const verText = this.add.text(-92, -13, appVersion, {
+        fontSize: '16px',
         fontFamily: "'Kenney Future', 'Noto Sans TC', monospace",
         color: '#e2e8f0',
         fontStyle: 'bold',

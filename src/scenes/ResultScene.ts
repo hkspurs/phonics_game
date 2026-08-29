@@ -425,7 +425,7 @@ export class ResultScene extends Phaser.Scene {
           pos.y - 12,
           item.label,
           {
-            fontSize: '14px',
+            fontSize: '16px',
             fontFamily: "'Noto Sans TC', 'Microsoft JhengHei', sans-serif",
             color: '#94a3b8',
           }
@@ -434,8 +434,8 @@ export class ResultScene extends Phaser.Scene {
         panel.add(labelTxt);
 
         // Value
-        const valTxt = this.add.text(pos.x - boxW / 2 + 56, pos.y + 12, item.val, {
-          fontSize: '17px',
+        const valTxt = this.add.text(pos.x - boxW / 2 + 56, pos.y + 13, item.val, {
+          fontSize: '18px',
           fontFamily: "'Kenney Future', 'Noto Sans TC', sans-serif",
           color: item.color,
           fontStyle: 'bold',
@@ -459,7 +459,7 @@ export class ResultScene extends Phaser.Scene {
         185,
         `🌟 累積冒險星星：${totalStars} / 30 顆  |  連續學習：${DataManager.getInstance().getProfile().stats.streakDays} 天`,
         {
-          fontSize: '15px',
+          fontSize: '17px',
           fontFamily: "'Noto Sans TC', 'Microsoft JhengHei', sans-serif",
           color: '#ffd166',
           fontStyle: 'bold',
@@ -607,7 +607,7 @@ export class ResultScene extends Phaser.Scene {
           y + 24,
           `${trophy.description}  (獎勵: +${trophy.rewardCoins || 0} 🪙 +${trophy.rewardGems || 0} 💎)`,
           {
-            fontSize: '15px',
+            fontSize: '16px',
             fontFamily: "'Noto Sans TC', 'Microsoft JhengHei', sans-serif",
             color: '#ffffff',
             align: 'center',

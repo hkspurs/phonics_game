@@ -194,11 +194,11 @@ export class QuestionScene extends Phaser.Scene {
     if (!this.add?.text || !this.tweens?.add) return;
 
     const starCoords = [
-      { x: 120, y: 140, size: '14px', delay: 0 },
-      { x: 1180, y: 120, size: '16px', delay: 400 },
-      { x: 240, y: 640, size: '12px', delay: 800 },
-      { x: 1060, y: 620, size: '14px', delay: 1200 },
-      { x: 640, y: 670, size: '10px', delay: 600 },
+      { x: 120, y: 140, size: '18px', delay: 0 },
+      { x: 1180, y: 120, size: '20px', delay: 400 },
+      { x: 240, y: 640, size: '16px', delay: 800 },
+      { x: 1060, y: 620, size: '18px', delay: 1200 },
+      { x: 640, y: 670, size: '16px', delay: 600 },
     ];
 
     for (const item of starCoords) {
@@ -236,11 +236,11 @@ export class QuestionScene extends Phaser.Scene {
     this.backButton = new CanvasButton(this, {
       x: 95,
       y: 42,
-      width: 130,
-      height: 46,
+      width: 135,
+      height: 48,
       text: '◀ 返回地圖',
       color: 'blue',
-      fontSize: '18px',
+      fontSize: '20px',
       onClick: () => {
         if (this.transitionTimer) {
           this.transitionTimer.remove();
@@ -261,13 +261,13 @@ export class QuestionScene extends Phaser.Scene {
 
     // 1b. Quick Station Restart (🔄 重試本關)
     const restartBtn = new CanvasButton(this, {
-      x: 248,
+      x: 245,
       y: 42,
-      width: 130,
-      height: 46,
+      width: 135,
+      height: 48,
       text: '🔄 重試本關',
       color: 'orange',
-      fontSize: '18px',
+      fontSize: '20px',
       onClick: () => {
         if (this.transitionTimer) {
           this.transitionTimer.remove();
@@ -300,7 +300,7 @@ export class QuestionScene extends Phaser.Scene {
 
     if (this.add.text) {
       const title = this.add.text(width / 2, 28, titleString, {
-        fontSize: '22px',
+        fontSize: '24px',
         fontFamily: "'Kenney Future', 'Noto Sans TC', sans-serif",
         color: '#ffd700',
         fontStyle: 'bold',
@@ -343,7 +343,7 @@ export class QuestionScene extends Phaser.Scene {
         barY,
         `第 ${this.questionIndex + 1} / ${totalQ} 題`,
         {
-          fontSize: '14px',
+          fontSize: '18px',
           fontFamily: "'Kenney Future', 'Noto Sans TC', sans-serif",
           color: '#94a3b8',
           fontStyle: 'bold',
@@ -397,7 +397,7 @@ export class QuestionScene extends Phaser.Scene {
     // Subject Badge Label
     if (this.add.text) {
       const subjectTag = this.add.text(-bannerW / 2 + 75, 0, `[${this.getCurrentSubjectName()}]`, {
-        fontSize: '18px',
+        fontSize: '20px',
         fontFamily: "-apple-system, BlinkMacSystemFont, 'PingFang HK', 'Noto Sans TC', sans-serif",
         color: '#ffffff',
         fontStyle: 'bold',
@@ -411,7 +411,7 @@ export class QuestionScene extends Phaser.Scene {
     const promptStr = this.currentQuestion?.prompt || '請回答以下問題：';
     if (this.add.text) {
       const promptLbl = this.add.text(-bannerW / 2 + 150, 0, promptStr, {
-        fontSize: promptStr.length > 32 ? '22px' : '26px',
+        fontSize: promptStr.length > 32 ? '24px' : '28px',
         fontFamily: "-apple-system, BlinkMacSystemFont, 'PingFang HK', 'Noto Sans TC', sans-serif",
         color: '#ffffff',
         fontStyle: 'bold',
@@ -428,11 +428,11 @@ export class QuestionScene extends Phaser.Scene {
     this.speakerButton = new CanvasButton(this, {
       x: bannerW / 2 - 95,
       y: 0,
-      width: 140,
-      height: 52,
+      width: 145,
+      height: 54,
       text: '🔊 朗讀',
       color: 'yellow',
-      fontSize: '20px',
+      fontSize: '22px',
       onClick: () => {
         SoundManager.play('click');
         this.speakCurrentQuestion();
@@ -668,8 +668,8 @@ export class QuestionScene extends Phaser.Scene {
     this.hintButton = new CanvasButton(this, {
       x: hintX,
       y: controlsY,
-      width: 170,
-      height: 54,
+      width: 180,
+      height: 58,
       text: '💡 提示',
       color: 'yellow',
       fontSize: '22px',
@@ -684,8 +684,8 @@ export class QuestionScene extends Phaser.Scene {
       this.resetButton = new CanvasButton(this, {
         x: width / 2 + 110,
         y: controlsY,
-        width: 170,
-        height: 54,
+        width: 180,
+        height: 58,
         text: '🔄 重置',
         color: 'orange',
         fontSize: '22px',

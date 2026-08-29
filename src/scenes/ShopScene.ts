@@ -242,13 +242,13 @@ export class ShopScene extends Phaser.Scene {
 
     // 1. ◀ 返回主頁 (TitleScene)
     this.homeButton = new CanvasButton(this, {
-      x: 95,
+      x: 100,
       y: barY,
-      width: 130,
-      height: 42,
+      width: 145,
+      height: 46,
       text: '◀ 返回主頁',
       color: 'blue',
-      fontSize: '16px',
+      fontSize: '18px',
       onClick: () => {
         SoundManager.play('click');
         if (this.scene) {
@@ -259,13 +259,13 @@ export class ShopScene extends Phaser.Scene {
 
     // 2. 🗺️ 前往地圖 (MapScene)
     this.mapButton = new CanvasButton(this, {
-      x: 235,
+      x: 255,
       y: barY,
-      width: 130,
-      height: 42,
+      width: 145,
+      height: 46,
       text: '🗺️ 前往地圖',
       color: 'green',
-      fontSize: '16px',
+      fontSize: '18px',
       onClick: () => {
         SoundManager.play('click');
         if (this.scene) {
@@ -277,7 +277,7 @@ export class ShopScene extends Phaser.Scene {
     // 3. Shop Title
     if (this.add.text) {
       const title = this.add.text(width / 2 - 20, barY, '🛒 夢幻衣櫥與冒險商店 (Dream Wardrobe)', {
-        fontSize: '22px',
+        fontSize: '24px',
         fontFamily: "'Kenney Future', 'Noto Sans TC', sans-serif",
         color: '#ffd700',
         fontStyle: 'bold',
@@ -296,34 +296,34 @@ export class ShopScene extends Phaser.Scene {
       profile = { coins: 0, gems: 0 };
     }
 
-    const currX = width - 180;
+    const currX = width - 195;
     if (this.add.graphics) {
       const g = this.add.graphics();
-      g.fillStyle(0x0f121d, 0.85);
-      g.fillRoundedRect(currX - 150, barY - 20, 300, 40, 20);
-      g.lineStyle(1.5, 0x4a90e2, 0.8);
-      g.strokeRoundedRect(currX - 150, barY - 20, 300, 40, 20);
+      g.fillStyle(0x0f121d, 0.9);
+      g.fillRoundedRect(currX - 170, barY - 22, 340, 44, 22);
+      g.lineStyle(2, 0x4a90e2, 0.9);
+      g.strokeRoundedRect(currX - 170, barY - 22, 340, 44, 22);
     }
 
     if (this.add.text) {
-      this.coinText = this.add.text(currX - 95, barY, `🪙 ${profile.coins}`, {
-        fontSize: '16px',
+      this.coinText = this.add.text(currX - 105, barY, `🪙 ${profile.coins}`, {
+        fontSize: '22px',
         fontFamily: "'Kenney Future', 'Noto Sans TC', sans-serif",
         color: '#ffd700',
         fontStyle: 'bold',
       });
       if (typeof this.coinText.setOrigin === 'function') this.coinText.setOrigin(0.5);
 
-      this.gemText = this.add.text(currX + 5, barY, `💎 ${profile.gems}`, {
-        fontSize: '16px',
+      this.gemText = this.add.text(currX, barY, `💎 ${profile.gems}`, {
+        fontSize: '22px',
         fontFamily: "'Kenney Future', 'Noto Sans TC', sans-serif",
         color: '#00e5ff',
         fontStyle: 'bold',
       });
       if (typeof this.gemText.setOrigin === 'function') this.gemText.setOrigin(0.5);
 
-      this.starText = this.add.text(currX + 95, barY, `⭐ ${totalStars}`, {
-        fontSize: '16px',
+      this.starText = this.add.text(currX + 105, barY, `⭐ ${totalStars}`, {
+        fontSize: '22px',
         fontFamily: "'Kenney Future', 'Noto Sans TC', sans-serif",
         color: '#ffdd59',
         fontStyle: 'bold',
@@ -342,10 +342,10 @@ export class ShopScene extends Phaser.Scene {
       { key: 'gadgets', label: '🎒 冒險道具' },
     ];
 
-    const startX = 100;
-    const tabY = 88;
-    const tabW = 125;
-    const spacing = 135;
+    const startX = 95;
+    const tabY = 90;
+    const tabW = 145;
+    const spacing = 152;
 
     this.tabButtons = [];
     tabs.forEach((t, idx) => {
@@ -353,10 +353,10 @@ export class ShopScene extends Phaser.Scene {
         x: startX + idx * spacing,
         y: tabY,
         width: tabW,
-        height: 38,
+        height: 44,
         text: t.label,
         color: this.currentTab === t.key ? 'yellow' : 'grey',
-        fontSize: '15px',
+        fontSize: '19px',
         onClick: () => {
           this.switchTab(t.key);
         },
@@ -421,7 +421,7 @@ export class ShopScene extends Phaser.Scene {
     this.skinCardTextObjects = [];
     const listX = 300;
     const startY = 150;
-    const spacing = 95;
+    const spacing = 98;
 
     this.skins.forEach((skin, idx) => {
       const y = startY + idx * spacing;
@@ -431,7 +431,7 @@ export class ShopScene extends Phaser.Scene {
         x: listX,
         y: y + 25,
         width: 520,
-        height: 84,
+        height: 88,
         color: isSelected ? 'yellow' : 'grey',
         onClick: () => {
           this.selectSkin(idx);
@@ -456,14 +456,14 @@ export class ShopScene extends Phaser.Scene {
     // Mini Avatar Thumbnail
     if (this.textures?.exists && this.textures.exists(skin.standSprite)) {
       const avatar = this.add.image(cx - 210, cy, skin.standSprite);
-      if (typeof avatar.setScale === 'function') avatar.setScale(0.52);
+      if (typeof avatar.setScale === 'function') avatar.setScale(0.58);
       if (skin.tint && typeof avatar.setTint === 'function') avatar.setTint(skin.tint);
       this.tabGameObjects.push(avatar);
     }
 
     if (this.add.text) {
       const nameTxt = this.add.text(cx - 155, cy - 16, `${skin.name} (${skin.englishName})`, {
-        fontSize: '19px',
+        fontSize: '24px',
         fontFamily: "'Kenney Future', 'Noto Sans TC', sans-serif",
         color: isSelected ? '#1f1505' : '#ffffff',
         fontStyle: 'bold',
@@ -471,8 +471,8 @@ export class ShopScene extends Phaser.Scene {
       if (typeof nameTxt.setOrigin === 'function') nameTxt.setOrigin(0, 0.5);
       this.tabGameObjects.push(nameTxt);
 
-      const perkTxt = this.add.text(cx - 155, cy + 14, `✨ ${skin.perkDescription}`, {
-        fontSize: '14px',
+      const perkTxt = this.add.text(cx - 155, cy + 16, `✨ ${skin.perkDescription}`, {
+        fontSize: '17px',
         fontFamily: "'Noto Sans TC', 'Microsoft JhengHei', sans-serif",
         color: isSelected ? '#3d2503' : '#ffd166',
         fontStyle: isSelected ? 'bold' : 'normal',
@@ -491,7 +491,7 @@ export class ShopScene extends Phaser.Scene {
       }
 
       const statusTxt = this.add.text(cx + 195, cy, statusLabel, {
-        fontSize: '17px',
+        fontSize: '22px',
         fontFamily: "'Kenney Future', 'Noto Sans TC', sans-serif",
         color: statusColor,
         fontStyle: 'bold',
@@ -516,9 +516,9 @@ export class ShopScene extends Phaser.Scene {
     ];
 
     const startX = 85;
-    const subY = 135;
-    const subW = 120;
-    const spacingX = 130;
+    const subY = 140;
+    const subW = 125;
+    const spacingX = 135;
 
     this.subCategoryButtons = [];
     subCategories.forEach((sc) => {
@@ -527,10 +527,10 @@ export class ShopScene extends Phaser.Scene {
         x: startX + this.subCategoryButtons.length * spacingX,
         y: subY,
         width: subW,
-        height: 34,
+        height: 40,
         text: sc.label,
         color: isSelected ? 'green' : 'grey',
-        fontSize: '14px',
+        fontSize: '17px',
         onClick: () => {
           this.switchWardrobeCategory(sc.key);
         },
@@ -542,8 +542,8 @@ export class ShopScene extends Phaser.Scene {
     // 2. Render items in current category
     const items = DataManager.getInstance().getWardrobeItems(this.currentWardrobeCategory);
     const listX = 300;
-    const startY = 195;
-    const spacingY = 88;
+    const startY = 200;
+    const spacingY = 92;
 
     items.forEach((item, idx) => {
       const y = startY + idx * spacingY;
@@ -553,7 +553,7 @@ export class ShopScene extends Phaser.Scene {
         x: listX,
         y: y + 25,
         width: 520,
-        height: 78,
+        height: 84,
         color: isSelected ? 'yellow' : 'grey',
         onClick: () => {
           this.selectWardrobeItem(idx);
@@ -577,13 +577,13 @@ export class ShopScene extends Phaser.Scene {
 
     if (this.add.text) {
       // Big Emoji Icon
-      const iconTxt = this.add.text(cx - 210, cy, item.icon, { fontSize: '32px' });
+      const iconTxt = this.add.text(cx - 210, cy, item.icon, { fontSize: '38px' });
       if (typeof iconTxt.setOrigin === 'function') iconTxt.setOrigin(0.5);
       this.tabGameObjects.push(iconTxt);
 
       // Name
-      const nameTxt = this.add.text(cx - 165, cy - 14, `${item.name} (${item.nameEn})`, {
-        fontSize: '18px',
+      const nameTxt = this.add.text(cx - 165, cy - 15, `${item.name} (${item.nameEn})`, {
+        fontSize: '24px',
         fontFamily: "'Kenney Future', 'Noto Sans TC', sans-serif",
         color: isSelected ? '#1f1505' : '#ffffff',
         fontStyle: 'bold',
@@ -592,8 +592,8 @@ export class ShopScene extends Phaser.Scene {
       this.tabGameObjects.push(nameTxt);
 
       // Perk
-      const perkTxt = this.add.text(cx - 165, cy + 14, item.perkDescription, {
-        fontSize: '14px',
+      const perkTxt = this.add.text(cx - 165, cy + 15, item.perkDescription, {
+        fontSize: '17px',
         fontFamily: "'Noto Sans TC', 'Microsoft JhengHei', sans-serif",
         color: isSelected ? '#3d2503' : '#ffd166',
       });
@@ -612,7 +612,7 @@ export class ShopScene extends Phaser.Scene {
       }
 
       const statusTxt = this.add.text(cx + 195, cy, statusLabel, {
-        fontSize: '17px',
+        fontSize: '22px',
         fontFamily: "'Kenney Future', 'Noto Sans TC', sans-serif",
         color: statusColor,
         fontStyle: 'bold',
@@ -669,7 +669,7 @@ export class ShopScene extends Phaser.Scene {
         x: listX,
         y: y + 25,
         width: 520,
-        height: 96,
+        height: 98,
         color: isSelected ? 'yellow' : 'grey',
         onClick: () => {
           this.selectPet(idx);
@@ -684,12 +684,12 @@ export class ShopScene extends Phaser.Scene {
       const isEquipped = profile.equippedPet === pet.id;
 
       if (this.add.text) {
-        const iconTxt = this.add.text(listX - 210, y + 25, pet.icon, { fontSize: '38px' });
+        const iconTxt = this.add.text(listX - 210, y + 25, pet.icon, { fontSize: '42px' });
         if (typeof iconTxt.setOrigin === 'function') iconTxt.setOrigin(0.5);
         this.tabGameObjects.push(iconTxt);
 
         const nameTxt = this.add.text(listX - 160, y + 10, `${pet.name} (${pet.nameEn})`, {
-          fontSize: '20px',
+          fontSize: '24px',
           fontFamily: "'Kenney Future', 'Noto Sans TC', sans-serif",
           color: isSelected ? '#1f1505' : '#ffffff',
           fontStyle: 'bold',
@@ -697,8 +697,8 @@ export class ShopScene extends Phaser.Scene {
         if (typeof nameTxt.setOrigin === 'function') nameTxt.setOrigin(0, 0.5);
         this.tabGameObjects.push(nameTxt);
 
-        const perkTxt = this.add.text(listX - 160, y + 40, `🐾 ${pet.perkDescription}`, {
-          fontSize: '15px',
+        const perkTxt = this.add.text(listX - 160, y + 42, `🐾 ${pet.perkDescription}`, {
+          fontSize: '17px',
           fontFamily: "'Noto Sans TC', 'Microsoft JhengHei', sans-serif",
           color: isSelected ? '#3d2503' : '#ffd166',
         });
@@ -716,7 +716,7 @@ export class ShopScene extends Phaser.Scene {
         }
 
         const statusTxt = this.add.text(listX + 195, y + 25, statusLabel, {
-          fontSize: '18px',
+          fontSize: '22px',
           fontFamily: "'Kenney Future', 'Noto Sans TC', sans-serif",
           color: statusColor,
           fontStyle: 'bold',
@@ -754,7 +754,7 @@ export class ShopScene extends Phaser.Scene {
         x: listX,
         y: y + 25,
         width: 520,
-        height: 96,
+        height: 98,
         color: isSelected ? 'yellow' : 'grey',
         onClick: () => {
           this.selectGadget(idx);
@@ -767,12 +767,12 @@ export class ShopScene extends Phaser.Scene {
       const count = dm.getGadgetCount(gadget.id);
 
       if (this.add.text) {
-        const iconTxt = this.add.text(listX - 210, y + 25, gadget.icon, { fontSize: '38px' });
+        const iconTxt = this.add.text(listX - 210, y + 25, gadget.icon, { fontSize: '42px' });
         if (typeof iconTxt.setOrigin === 'function') iconTxt.setOrigin(0.5);
         this.tabGameObjects.push(iconTxt);
 
         const nameTxt = this.add.text(listX - 160, y + 10, `${gadget.name}`, {
-          fontSize: '20px',
+          fontSize: '24px',
           fontFamily: "'Kenney Future', 'Noto Sans TC', sans-serif",
           color: isSelected ? '#1f1505' : '#ffffff',
           fontStyle: 'bold',
@@ -780,8 +780,8 @@ export class ShopScene extends Phaser.Scene {
         if (typeof nameTxt.setOrigin === 'function') nameTxt.setOrigin(0, 0.5);
         this.tabGameObjects.push(nameTxt);
 
-        const perkTxt = this.add.text(listX - 160, y + 40, `🎒 ${gadget.description}`, {
-          fontSize: '15px',
+        const perkTxt = this.add.text(listX - 160, y + 42, `🎒 ${gadget.description}`, {
+          fontSize: '17px',
           fontFamily: "'Noto Sans TC', 'Microsoft JhengHei', sans-serif",
           color: isSelected ? '#3d2503' : '#ffd166',
         });
@@ -789,7 +789,7 @@ export class ShopScene extends Phaser.Scene {
         this.tabGameObjects.push(perkTxt);
 
         const statusTxt = this.add.text(listX + 195, y + 25, `持有: x${count}\n🪙 ${gadget.costCoins}`, {
-          fontSize: '16px',
+          fontSize: '20px',
           fontFamily: "'Kenney Future', 'Noto Sans TC', sans-serif",
           color: isSelected ? '#7a4f01' : '#ffd700',
           align: 'right',
@@ -901,50 +901,50 @@ export class ShopScene extends Phaser.Scene {
 
     // 3. Pose Switcher Buttons (Stand, Run, Cheer)
     const poseStand = new CanvasButton(this, {
-      x: panelX - 140,
+      x: panelX - 150,
       y: panelY - 185,
-      width: 75,
-      height: 32,
+      width: 82,
+      height: 38,
       text: '🧍 站立',
       color: this.currentPose === 'stand' ? 'yellow' : 'grey',
-      fontSize: '13px',
+      fontSize: '16px',
       onClick: () => this.switchPose('stand'),
     });
     poseStand.setDepth(60);
 
     const poseWalk = new CanvasButton(this, {
-      x: panelX - 50,
+      x: panelX - 58,
       y: panelY - 185,
-      width: 75,
-      height: 32,
+      width: 82,
+      height: 38,
       text: '🏃 奔跑',
       color: this.currentPose === 'walk' ? 'yellow' : 'grey',
-      fontSize: '13px',
+      fontSize: '16px',
       onClick: () => this.switchPose('walk'),
     });
     poseWalk.setDepth(60);
 
     const poseCheer = new CanvasButton(this, {
-      x: panelX + 40,
+      x: panelX + 34,
       y: panelY - 185,
-      width: 75,
-      height: 32,
+      width: 82,
+      height: 38,
       text: '🎉 歡呼',
       color: this.currentPose === 'cheer' ? 'yellow' : 'grey',
-      fontSize: '13px',
+      fontSize: '16px',
       onClick: () => this.switchPose('cheer'),
     });
     poseCheer.setDepth(60);
 
     // 4. OOTD Photo Button
     this.ootdButton = new CanvasButton(this, {
-      x: panelX + 160,
+      x: panelX + 158,
       y: panelY - 185,
-      width: 120,
-      height: 32,
+      width: 136,
+      height: 38,
       text: '📸 今日穿搭',
       color: 'blue',
-      fontSize: '13px',
+      fontSize: '16px',
       onClick: () => this.showOOTDPhotoModal(),
     });
     this.ootdButton.setDepth(60);
@@ -954,7 +954,7 @@ export class ShopScene extends Phaser.Scene {
     // 5. Skin / Wardrobe Name & Details Texts
     if (this.add.text) {
       this.previewNameText = this.add.text(0, 15, `${initSkin.name} (${initSkin.englishName})`, {
-        fontSize: '24px',
+        fontSize: '26px',
         fontFamily: "'Kenney Future', 'Noto Sans TC', sans-serif",
         color: '#ffd700',
         fontStyle: 'bold',
@@ -964,7 +964,7 @@ export class ShopScene extends Phaser.Scene {
       showcase.add(this.previewNameText);
 
       this.previewDescText = this.add.text(0, 48, initSkin.description, {
-        fontSize: '15px',
+        fontSize: '17px',
         fontFamily: "'Noto Sans TC', 'Microsoft JhengHei', sans-serif",
         color: '#a0c4ff',
         align: 'center',
@@ -978,7 +978,7 @@ export class ShopScene extends Phaser.Scene {
         95,
         `🏃 跑速加成: +${Math.round(initSkin.speedBonus * 100)}%`,
         {
-          fontSize: '16px',
+          fontSize: '18px',
           fontFamily: "'Noto Sans TC', 'Microsoft JhengHei', sans-serif",
           color: '#ffffff',
           fontStyle: 'bold',
@@ -992,7 +992,7 @@ export class ShopScene extends Phaser.Scene {
         95,
         `🦘 跳躍加成: +${Math.round(initSkin.jumpBonus * 100)}%`,
         {
-          fontSize: '16px',
+          fontSize: '18px',
           fontFamily: "'Noto Sans TC', 'Microsoft JhengHei', sans-serif",
           color: '#ffffff',
           fontStyle: 'bold',
@@ -1006,7 +1006,7 @@ export class ShopScene extends Phaser.Scene {
         132,
         initSkin.waterGlide ? '🌊 特殊能力：水面輕功滑行 (不沉水)' : `✨ 專屬特技：${initSkin.perkDescription}`,
         {
-          fontSize: '15px',
+          fontSize: '18px',
           fontFamily: "'Noto Sans TC', 'Microsoft JhengHei', sans-serif",
           color: '#ffd166',
           fontStyle: 'bold',
@@ -1022,10 +1022,10 @@ export class ShopScene extends Phaser.Scene {
       x: panelX,
       y: panelY + 205,
       width: 380,
-      height: 60,
+      height: 64,
       text: '👕 換上造型',
       color: 'green',
-      fontSize: '22px',
+      fontSize: '24px',
       onClick: () => {
         this.handleActionClick();
       },
@@ -1596,7 +1596,7 @@ export class ShopScene extends Phaser.Scene {
     if (this.add.text) {
       // Photo Header Tag
       const headerTxt = this.add.text(0, -210, '📸 升夢小達人 • 今日穿搭 (OOTD)', {
-        fontSize: '17px',
+        fontSize: '20px',
         fontFamily: "'Kenney Future', 'Noto Sans TC', sans-serif",
         color: '#ffd700',
         fontStyle: 'bold',
@@ -1606,7 +1606,7 @@ export class ShopScene extends Phaser.Scene {
 
       // Photo Footer Title & Date
       const titleTxt = this.add.text(0, 120, `🌟 ${currentSkin?.name || '小探險家'}`, {
-        fontSize: '22px',
+        fontSize: '26px',
         fontFamily: "'Kenney Future', 'Noto Sans TC', sans-serif",
         color: '#1a2133',
         fontStyle: 'bold',
@@ -1615,9 +1615,10 @@ export class ShopScene extends Phaser.Scene {
       modal.add(titleTxt);
 
       const subTxt = this.add.text(0, 155, `🎉 榮譽星數: ⭐ ${DataManager.getInstance().getTotalStars()} 顆星 | 潮流達人`, {
-        fontSize: '15px',
+        fontSize: '17px',
         fontFamily: "'Noto Sans TC', 'Microsoft JhengHei', sans-serif",
         color: '#555555',
+        fontStyle: 'bold',
       });
       if (typeof subTxt.setOrigin === 'function') subTxt.setOrigin(0.5);
       modal.add(subTxt);
@@ -1627,11 +1628,11 @@ export class ShopScene extends Phaser.Scene {
     const closeBtn = new CanvasButton(this, {
       x: width / 2,
       y: height / 2 + 205,
-      width: 200,
-      height: 44,
+      width: 240,
+      height: 52,
       text: '❌ 關閉相片',
       color: 'blue',
-      fontSize: '16px',
+      fontSize: '20px',
       onClick: () => {
         this.closeOOTDPhotoModal();
       },

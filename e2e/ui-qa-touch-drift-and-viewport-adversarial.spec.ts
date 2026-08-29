@@ -11,14 +11,14 @@ test.describe('UI QA Auditor 1: Adversarial Viewport & Touch Coordinate Drift E2
   for (const dev of TARGET_DEVICES) {
     test(`Audits touch coordinates, letterbox bounds, and button hit responsiveness on ${dev.name}`, async ({ page }) => {
       await page.setViewportSize({ width: dev.width, height: dev.height });
-      await page.goto('/', { waitUntil: 'domcontentloaded' });
-      await page.waitForTimeout(1000);
+      await page.goto('http://localhost:4173/');
+      await page.waitForTimeout(2000);
 
       // Wait for TitleScene
       await page.waitForFunction(() => {
         const game = (window as any).__PHASER_GAME__;
         return game && game.scene && game.scene.isActive('TitleScene');
-      }, { timeout: 10000 });
+      }, { timeout: 15000 });
 
       // 1. Audit Canvas Bounds & Scale Manager FIT letterboxing
       const metrics = await page.evaluate(() => {

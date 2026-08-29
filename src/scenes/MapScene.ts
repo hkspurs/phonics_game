@@ -529,7 +529,7 @@ export class MapScene extends Phaser.Scene {
 
     for (const coord of sparkleCoords) {
       const sparkle = this.add.text(coord.x, coord.y, '✨', {
-        fontSize: '14px',
+        fontSize: '18px',
       });
       if (typeof sparkle.setOrigin === 'function') sparkle.setOrigin(0.5);
 
@@ -638,13 +638,13 @@ export class MapScene extends Phaser.Scene {
     if (this.add.graphics && this.add.text) {
       const badgeG = this.add.graphics();
       badgeG.fillStyle(0x0f172a, 0.9);
-      badgeG.fillRoundedRect(-24, -52, 48, 20, 10);
+      badgeG.fillRoundedRect(-28, -54, 56, 24, 12);
       badgeG.lineStyle(1.5, isUnlocked ? 0xffd700 : 0x64748b, 0.9);
-      badgeG.strokeRoundedRect(-24, -52, 48, 20, 10);
+      badgeG.strokeRoundedRect(-28, -54, 56, 24, 12);
       container.add(badgeG);
 
       const numLabel = this.add.text(0, -42, `${station.id}`, {
-        fontSize: '13px',
+        fontSize: '16px',
         fontFamily: "'Kenney Future', 'Noto Sans TC', sans-serif",
         color: isUnlocked ? '#ffd700' : '#94a3b8',
         fontStyle: 'bold',
@@ -656,7 +656,7 @@ export class MapScene extends Phaser.Scene {
     // 5. Station Name & English Name Labels Below
     if (this.add.text) {
       const nameText = this.add.text(0, 52, station.name, {
-        fontSize: '18px',
+        fontSize: '20px',
         fontFamily: "'Noto Sans TC', 'Microsoft JhengHei', sans-serif",
         color: isUnlocked ? '#ffffff' : '#94a3b8',
         fontStyle: 'bold',
@@ -667,8 +667,8 @@ export class MapScene extends Phaser.Scene {
       if (typeof nameText.setOrigin === 'function') nameText.setOrigin(0.5);
       container.add(nameText);
 
-      const engText = this.add.text(0, 72, station.englishName, {
-        fontSize: '12px',
+      const engText = this.add.text(0, 74, station.englishName, {
+        fontSize: '16px',
         fontFamily: "'Kenney Future', 'Noto Sans TC', sans-serif",
         color: isUnlocked ? '#f1f5f9' : '#64748b',
         align: 'center',
@@ -679,8 +679,8 @@ export class MapScene extends Phaser.Scene {
       // 6. Star Rating Badge (0 - 3 stars)
       if (isUnlocked) {
         const starStr = '⭐'.repeat(stars) + '☆'.repeat(3 - stars);
-        const starBadge = this.add.text(0, 92, starStr, {
-          fontSize: '14px',
+        const starBadge = this.add.text(0, 96, starStr, {
+          fontSize: '16px',
           align: 'center',
         });
         if (typeof starBadge.setOrigin === 'function') starBadge.setOrigin(0.5);
@@ -759,20 +759,20 @@ export class MapScene extends Phaser.Scene {
     if (this.add.graphics) {
       const g = this.add.graphics();
       g.fillStyle(0xef4444, 0.95);
-      g.fillRoundedRect(-42, -14, 84, 28, 14);
+      g.fillRoundedRect(-48, -16, 96, 32, 16);
       g.lineStyle(2, 0xffffff, 1.0);
-      g.strokeRoundedRect(-42, -14, 84, 28, 14);
+      g.strokeRoundedRect(-48, -16, 96, 32, 16);
 
       // Downward pointer arrow
       g.fillStyle(0xef4444, 0.95);
-      this.fillTriangle(g, 0, 18, -8, 10, 8, 10);
+      this.fillTriangle(g, 0, 20, -8, 12, 8, 12);
       pinContainer.add(g);
     }
 
     // Avatar text or icon
     if (this.add.text) {
       const pinLabel = this.add.text(0, 0, '🏃 當前進度', {
-        fontSize: '12px',
+        fontSize: '16px',
         fontFamily: "'Noto Sans TC', 'Microsoft JhengHei', sans-serif",
         color: '#ffffff',
         fontStyle: 'bold',
@@ -889,7 +889,7 @@ export class MapScene extends Phaser.Scene {
         -155,
         `📍 ${station.englishName} • ${station.biome} — ${station.description}`,
         {
-          fontSize: '15px',
+          fontSize: '17px',
           fontFamily: "'Noto Sans TC', 'Microsoft JhengHei', sans-serif",
           color: '#e2e8f0',
           align: 'center',
@@ -962,14 +962,14 @@ export class MapScene extends Phaser.Scene {
           pillG.setScrollFactor(0);
         }
         pillG.fillStyle(sub.color, 1.0);
-        pillG.fillRoundedRect(-280, -20, 110, 40, 8);
+        pillG.fillRoundedRect(-280, -21, 115, 42, 8);
         rowContainer.add(pillG);
       }
 
       if (this.add.text) {
         // Sub-level badge text
-        const badgeLabel = this.add.text(-225, 0, sub.badge, {
-          fontSize: '14px',
+        const badgeLabel = this.add.text(-222, 0, sub.badge, {
+          fontSize: '16px',
           fontFamily: "-apple-system, BlinkMacSystemFont, 'PingFang HK', 'Noto Sans TC', sans-serif",
           color: '#ffffff',
           fontStyle: 'bold',
@@ -983,7 +983,7 @@ export class MapScene extends Phaser.Scene {
 
         // Sub-level title & description
         const titleLabel = this.add.text(-150, -10, sub.title, {
-          fontSize: '15px',
+          fontSize: '18px',
           fontFamily: "-apple-system, BlinkMacSystemFont, 'PingFang HK', 'Noto Sans TC', sans-serif",
           color: '#ffd700',
           fontStyle: 'bold',
@@ -994,8 +994,8 @@ export class MapScene extends Phaser.Scene {
         }
         rowContainer.add(titleLabel);
 
-        const descLabel = this.add.text(-150, 10, sub.desc, {
-          fontSize: '12px',
+        const descLabel = this.add.text(-150, 11, sub.desc, {
+          fontSize: '16px',
           fontFamily: "-apple-system, BlinkMacSystemFont, 'PingFang HK', 'Noto Sans TC', sans-serif",
           color: '#94a3b8',
           resolution: typeof window !== 'undefined' ? Math.max(2, window.devicePixelRatio || 2) : 2,
@@ -1007,7 +1007,7 @@ export class MapScene extends Phaser.Scene {
 
         // Sub-level star icon
         const starIcon = this.add.text(250, 0, sub.earnedStar ? '⭐' : '☆', {
-          fontSize: '22px',
+          fontSize: '24px',
           resolution: typeof window !== 'undefined' ? Math.max(2, window.devicePixelRatio || 2) : 2,
         });
         if (starIcon && typeof starIcon.setScrollFactor === 'function') {
@@ -1124,7 +1124,7 @@ export class MapScene extends Phaser.Scene {
 
     if (this.add.text) {
       const starSummary = this.add.text(0, -18, `本站獲得星星：${stationStars}/3 ⭐`, {
-        fontSize: '15px',
+        fontSize: '18px',
         fontFamily: "'Noto Sans TC', sans-serif",
         color: '#ffdd59',
         fontStyle: 'bold',
@@ -1158,11 +1158,11 @@ export class MapScene extends Phaser.Scene {
     const enterBtn = new CanvasButton(this, {
       x: 0,
       y: 175,
-      width: 260,
-      height: 52,
+      width: 280,
+      height: 56,
       text: '⚔️ 進入關卡 (進入)',
       color: 'green',
-      fontSize: '20px',
+      fontSize: '22px',
       onClick: () => {
         SoundManager.play('click');
         modal.close();
@@ -1256,13 +1256,13 @@ export class MapScene extends Phaser.Scene {
 
     // 1. Back Button (◀ 返回主頁)
     this.backButton = new CanvasButton(this, {
-      x: 100,
+      x: 105,
       y: 42,
-      width: 140,
-      height: 44,
+      width: 145,
+      height: 48,
       text: '◀ 返回主頁',
       color: 'blue',
-      fontSize: '18px',
+      fontSize: '20px',
       onClick: () => {
         SoundManager.play('click');
         if (this.scene) {
@@ -1282,17 +1282,17 @@ export class MapScene extends Phaser.Scene {
     if (this.add.graphics) {
       const bg = this.add.graphics();
       bg.fillStyle(0x0e1320, 0.85);
-      bg.fillRoundedRect(barX - 320, barY - 22, 640, 44, 22);
+      bg.fillRoundedRect(barX - 330, barY - 24, 660, 48, 24);
       bg.lineStyle(2, 0x4a90e2, 0.85);
-      bg.strokeRoundedRect(barX - 320, barY - 22, 640, 44, 22);
+      bg.strokeRoundedRect(barX - 330, barY - 24, 660, 48, 24);
       header.add(bg);
     }
 
     // 3. Status Labels
     if (this.add.text) {
       // Progress (第 X/10 站)
-      const progLabel = this.add.text(barX - 230, barY, `🚩 進度: ${profile.unlockedStations}/10 站`, {
-        fontSize: '16px',
+      const progLabel = this.add.text(barX - 240, barY, `🚩 進度: ${profile.unlockedStations}/10 站`, {
+        fontSize: '18px',
         fontFamily: "'Kenney Future', 'Noto Sans TC', sans-serif",
         color: '#67e8f9',
         fontStyle: 'bold',
@@ -1303,8 +1303,8 @@ export class MapScene extends Phaser.Scene {
       header.add(progLabel);
 
       // Stars
-      const starLabel = this.add.text(barX - 80, barY, `⭐ 星星: ${totalStars}/30`, {
-        fontSize: '16px',
+      const starLabel = this.add.text(barX - 85, barY, `⭐ 星星: ${totalStars}/30`, {
+        fontSize: '18px',
         fontFamily: "'Kenney Future', 'Noto Sans TC', sans-serif",
         color: '#fde047',
         fontStyle: 'bold',
@@ -1316,7 +1316,7 @@ export class MapScene extends Phaser.Scene {
 
       // Coins
       const coinLabel = this.add.text(barX + 60, barY, `🪙 金幣: ${profile.coins}`, {
-        fontSize: '16px',
+        fontSize: '18px',
         fontFamily: "'Kenney Future', 'Noto Sans TC', sans-serif",
         color: '#fbbf24',
         fontStyle: 'bold',
@@ -1327,8 +1327,8 @@ export class MapScene extends Phaser.Scene {
       header.add(coinLabel);
 
       // Gems
-      const gemLabel = this.add.text(barX + 190, barY, `💎 寶石: ${profile.gems}`, {
-        fontSize: '16px',
+      const gemLabel = this.add.text(barX + 200, barY, `💎 寶石: ${profile.gems}`, {
+        fontSize: '18px',
         fontFamily: "'Kenney Future', 'Noto Sans TC', sans-serif",
         color: '#38bdf8',
         fontStyle: 'bold',
@@ -1358,12 +1358,12 @@ export class MapScene extends Phaser.Scene {
     const upBtn = new CanvasButton(this, {
       x: 0,
       y: -60,
-      width: 44,
-      height: 44,
+      width: 48,
+      height: 48,
       variant: 'round',
       text: '⬆️',
       color: 'blue',
-      fontSize: '16px',
+      fontSize: '18px',
       onClick: () => this.scrollToStation(10, 400),
     });
     if (upBtn && typeof upBtn.setScrollFactor === 'function') {
@@ -1375,12 +1375,12 @@ export class MapScene extends Phaser.Scene {
     const targetBtn = new CanvasButton(this, {
       x: 0,
       y: 0,
-      width: 44,
-      height: 44,
+      width: 48,
+      height: 48,
       variant: 'round',
       text: '🎯',
       color: 'yellow',
-      fontSize: '16px',
+      fontSize: '18px',
       onClick: () => this.focusOnCurrentStation(true),
     });
     if (targetBtn && typeof targetBtn.setScrollFactor === 'function') {
@@ -1392,12 +1392,12 @@ export class MapScene extends Phaser.Scene {
     const downBtn = new CanvasButton(this, {
       x: 0,
       y: 60,
-      width: 44,
-      height: 44,
+      width: 48,
+      height: 48,
       variant: 'round',
       text: '⬇️',
       color: 'blue',
-      fontSize: '16px',
+      fontSize: '18px',
       onClick: () => this.scrollToStation(1, 400),
     });
     if (downBtn && typeof downBtn.setScrollFactor === 'function') {

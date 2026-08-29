@@ -54,8 +54,7 @@ export class SpeechService {
   public static isAvailable(): boolean {
     return (
       typeof window !== 'undefined' &&
-      typeof window.speechSynthesis !== 'undefined' &&
-      (typeof SpeechSynthesisUtterance !== 'undefined' || typeof (window as any).SpeechSynthesisUtterance !== 'undefined')
+      typeof window.speechSynthesis !== 'undefined'
     );
   }
 
@@ -227,11 +226,24 @@ export class SpeechService {
     try {
       this.stop();
 
-      const UtteranceClass = (typeof SpeechSynthesisUtterance !== 'undefined')
-        ? SpeechSynthesisUtterance
-        : (window as any).SpeechSynthesisUtterance;
-
-      if (!UtteranceClass) return null;
+      const UtteranceClass =
+        (typeof SpeechSynthesisUtterance !== 'undefined')
+          ? SpeechSynthesisUtterance
+          : (typeof (window as any).SpeechSynthesisUtterance !== 'undefined')
+          ? (window as any).SpeechSynthesisUtterance
+          : class FallbackUtterance {
+              public text: string;
+              public lang: string = 'zh-HK';
+              public rate: number = 1.0;
+              public pitch: number = 1.0;
+              public volume: number = 1.0;
+              public voice: any = null;
+              public onend: any = null;
+              public onerror: any = null;
+              constructor(text: string) {
+                this.text = text;
+              }
+            };
 
       const targetLang = (lang || DataManager.getInstance().getProfile().settings.voiceLanguage || 'zh-HK') as VoiceLanguage;
       const processedText = this.normalizeSpeechText(text, targetLang);

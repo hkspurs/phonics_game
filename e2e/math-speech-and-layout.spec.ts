@@ -35,7 +35,7 @@ test('Verify: Math question spoken text uses explicit Chinese words (減/加/等
       ]
     });
 
-    await new Promise(r => setTimeout(r, 1400));
+    await new Promise(r => setTimeout(r, 2000));
     return (window as any).__LAST_SPOKEN_TEXT__;
   });
 

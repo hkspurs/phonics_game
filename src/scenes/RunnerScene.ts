@@ -982,15 +982,15 @@ export class RunnerScene extends Phaser.Scene {
 
     if (this.add.text) {
       this.coinCounterText = this.add.text(42, 34, `🪙 ${currentCoins}`, {
-        fontSize: '20px',
+        fontSize: '22px',
         fontFamily: "'Kenney Future', 'Noto Sans TC', sans-serif",
         color: '#ffd700',
         fontStyle: 'bold',
       });
       this.hudContainer.add(this.coinCounterText);
 
-      this.gemCounterText = this.add.text(175, 34, `💎 ${currentGems}`, {
-        fontSize: '20px',
+      this.gemCounterText = this.add.text(180, 34, `💎 ${currentGems}`, {
+        fontSize: '22px',
         fontFamily: "'Kenney Future', 'Noto Sans TC', sans-serif",
         color: '#00e5ff',
         fontStyle: 'bold',
@@ -1028,7 +1028,7 @@ export class RunnerScene extends Phaser.Scene {
         64,
         `🏝️ 第 ${this.stationId} 關 - 衝刺獎勵`,
         {
-          fontSize: '15px',
+          fontSize: '18px',
           fontFamily: "'Noto Sans TC', sans-serif",
           color: '#ffffff',
           fontStyle: 'bold',
@@ -1042,11 +1042,11 @@ export class RunnerScene extends Phaser.Scene {
     this.skipButton = new CanvasButton(this, {
       x: width - 110,
       y: 47,
-      width: 140,
-      height: 46,
+      width: 145,
+      height: 48,
       text: '⏩ 跳過',
       color: 'yellow',
-      fontSize: '18px',
+      fontSize: '20px',
       onClick: () => {
         this.skipRunner();
       },
@@ -2018,7 +2018,7 @@ export class RunnerScene extends Phaser.Scene {
     // Directional labels on joystick base
     if (this.add.text) {
       const leftLabel = this.add.text(this.joystickBaseX - 36, this.joystickBaseY, '◀', {
-        fontSize: '14px',
+        fontSize: '16px',
         color: '#38bdf8',
         fontStyle: 'bold',
       });
@@ -2026,7 +2026,7 @@ export class RunnerScene extends Phaser.Scene {
       this.virtualGamepadContainer.add(leftLabel);
 
       const rightLabel = this.add.text(this.joystickBaseX + 36, this.joystickBaseY, '▶', {
-        fontSize: '14px',
+        fontSize: '16px',
         color: '#38bdf8',
         fontStyle: 'bold',
       });
@@ -2034,7 +2034,7 @@ export class RunnerScene extends Phaser.Scene {
       this.virtualGamepadContainer.add(rightLabel);
 
       const joystickTitle = this.add.text(this.joystickBaseX, this.joystickBaseY - this.joystickRadius - 14, '🕹️ 滑動搖桿移動', {
-        fontSize: '13px',
+        fontSize: '16px',
         fontFamily: "'Noto Sans TC', sans-serif",
         color: '#93c5fd',
         fontStyle: 'bold',

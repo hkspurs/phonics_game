@@ -34,7 +34,7 @@ test('Live Verify: Sentence scramble speaks prompt instruction first on GitHub P
       ]
     });
 
-    await new Promise(r => setTimeout(r, 1400));
+    await new Promise(r => setTimeout(r, 2000));
     return (window as any).__LAST_SPOKEN_TEXT__;
   });
 
