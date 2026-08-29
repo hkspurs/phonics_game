@@ -26,17 +26,71 @@ const mockGraphics = () => ({
   strokePath: vi.fn(),
   fillRect: vi.fn(),
   fillCircle: vi.fn(),
+  fillRoundedRect: vi.fn(),
+  strokeRoundedRect: vi.fn(),
 });
 
 describe('Dream Wardrobe preview system', () => {
-  it('keeps the first four outfit definitions separate from wearing assets', () => {
-    expect(OUTFIT_DEFINITIONS).toHaveLength(4);
+  it('keeps every outfit definition separate from its wearing asset', () => {
+    expect(OUTFIT_DEFINITIONS).toHaveLength(5);
     for (const outfit of OUTFIT_DEFINITIONS) {
       expect(outfit.assets.thumbnail).toBeTruthy();
       expect(outfit.assets.idle).toBeTruthy();
       expect(outfit.assets.thumbnail).not.toBe(outfit.assets.idle);
       expect(outfit.previewMode).toBe('fullSprite');
     }
+  });
+
+  it('keeps Star Hoodie thumbnail and transparent wearing assets separate', () => {
+    const hoodie = wardrobeRegistry.get('hoodie_star');
+
+    expect(hoodie?.id).toBe('star_hoodie');
+    expect(hoodie?.aliases).toContain('hoodie_star');
+    expect(hoodie?.assets.thumbnail).toContain('star_hoodie_thumbnail.png');
+    expect(hoodie?.assets.idle).toContain('star_hoodie_wearing.png');
+    expect(hoodie?.assets.thumbnail).not.toBe(hoodie?.assets.idle);
+  });
+
+  it('never draws a rectangle when Star Hoodie wearing art is unavailable', () => {
+    const renderer = new OutfitRenderer(wardrobeRegistry);
+    const sprite = { setTexture: vi.fn(), setVisible: vi.fn() };
+    const graphics = mockGraphics();
+
+    const result = renderer.render(
+      { sprite, graphics } as never,
+      {
+        characterId: 'boy01',
+        baseTextureKey: 'player_stand',
+        pose: 'idle',
+        wardrobe: { top: 'hoodie_star' },
+        textureExists: () => false,
+      }
+    );
+
+    expect(result.mode).toBe('composite');
+    expect(sprite.setTexture).toHaveBeenCalledWith('player_stand');
+    expect(graphics.fillRoundedRect).not.toHaveBeenCalled();
+  });
+
+  it('never promotes a Star Hoodie thumbnail to a wearing texture', () => {
+    const renderer = new OutfitRenderer(wardrobeRegistry);
+    const sprite = { setTexture: vi.fn(), setVisible: vi.fn() };
+    const graphics = mockGraphics();
+
+    const result = renderer.render(
+      { sprite, graphics } as never,
+      {
+        characterId: 'boy01',
+        baseTextureKey: 'player_stand',
+        pose: 'idle',
+        wardrobe: { top: 'hoodie_star' },
+        textureExists: key => key.includes('star_hoodie_thumbnail'),
+      }
+    );
+
+    expect(result.mode).toBe('composite');
+    expect(sprite.setTexture).toHaveBeenCalledWith('player_stand');
+    expect(sprite.setTexture).not.toHaveBeenCalledWith(expect.stringContaining('thumbnail'));
   });
 
   it('supports the scholar gown id without breaking the saved scholar robe id', () => {
@@ -187,6 +241,16 @@ describe('Dream Wardrobe preview system', () => {
     expect(layout.character.height).toBeGreaterThanOrEqual(layout.preview.height * 0.5);
     expect(layout.action.x + layout.action.width).toBeLessThanOrEqual(932);
     expect(layout.action.y + layout.action.height).toBeLessThanOrEqual(430);
+  });
+
+  it('gives the character a larger visual stage without overflowing the preview', () => {
+    const layout = getWardrobeLayout(1280, 720);
+
+    expect(layout.character.height).toBeGreaterThanOrEqual(layout.preview.height * 0.74);
+    expect(layout.character.y).toBeGreaterThanOrEqual(layout.preview.y);
+    expect(layout.character.y + layout.character.height).toBeLessThanOrEqual(
+      layout.preview.y + layout.preview.height
+    );
   });
 
   it.each([

@@ -151,6 +151,7 @@ export class ShopScene extends Phaser.Scene {
   public tabButtons: CanvasButton[] = [];
   public subCategoryButtons: CanvasButton[] = [];
   public wardrobeFilterButtons: CanvasButton[] = [];
+  public wardrobeItemButtons: CanvasButton[] = [];
   public poseButtons: CanvasButton[] = [];
 
   // Top Bar Display Text
@@ -208,6 +209,7 @@ export class ShopScene extends Phaser.Scene {
     this.tabButtons = [];
     this.subCategoryButtons = [];
     this.wardrobeFilterButtons = [];
+    this.wardrobeItemButtons = [];
     this.poseButtons = [];
     this.skinCardTextObjects = [];
 
@@ -443,6 +445,7 @@ export class ShopScene extends Phaser.Scene {
     this.skinCardButtons = [];
     this.subCategoryButtons = [];
     this.wardrobeFilterButtons = [];
+    this.wardrobeItemButtons = [];
     this.skinCardTextObjects = [];
 
     this.listContainer = this.add.container ? this.add.container(0, 0) : null;
@@ -630,6 +633,7 @@ export class ShopScene extends Phaser.Scene {
       });
       cardBtn.setDepth(60);
       this.skinCardButtons.push(cardBtn);
+      this.wardrobeItemButtons.push(cardBtn);
       this.tabGameObjects.push(cardBtn);
       if (isSelected && this.add.graphics) {
         const glow = this.add.graphics();
@@ -668,18 +672,18 @@ export class ShopScene extends Phaser.Scene {
       if (thumbnail && this.textures?.exists && this.textures.exists(thumbnail) && this.add.image) {
         const thumb = this.add.image(cx, iconY, thumbnail);
         if (typeof thumb.setOrigin === 'function') thumb.setOrigin(0.5);
-        if (typeof thumb.setScale === 'function') thumb.setScale(compact ? 0.26 : 0.34);
+        if (typeof thumb.setScale === 'function') thumb.setScale(compact ? 0.32 : 0.42);
         if (typeof thumb.setDepth === 'function') thumb.setDepth(61);
         this.tabGameObjects.push(thumb);
       } else if (this.add.text) {
-        const iconTxt = this.add.text(cx, iconY, item.icon, { fontSize: compact ? '22px' : '25px' });
+        const iconTxt = this.add.text(cx, iconY, item.icon, { fontSize: compact ? '28px' : '34px' });
         if (typeof iconTxt.setOrigin === 'function') iconTxt.setOrigin(0.5);
         if (typeof iconTxt.setDepth === 'function') iconTxt.setDepth(61);
         this.tabGameObjects.push(iconTxt);
       }
 
-      const nameTxt = this.add.text(cx, cy - 2, item.nameEn, {
-        fontSize: compact ? '11px' : '13px',
+      const nameTxt = this.add.text(cx, cy - 2, item.name, {
+        fontSize: compact ? '13px' : '15px',
         fontFamily: "'Kenney Future', 'Noto Sans TC', sans-serif",
         color: isSelected ? '#1f1505' : '#ffffff',
         fontStyle: 'bold',
@@ -690,10 +694,10 @@ export class ShopScene extends Phaser.Scene {
       if (typeof nameTxt.setDepth === 'function') nameTxt.setDepth(61);
       this.tabGameObjects.push(nameTxt);
 
-      const zhTxt = this.add.text(cx, cy + 12, item.name, {
-        fontSize: compact ? '9px' : '11px',
+      const zhTxt = this.add.text(cx, cy + 13, item.nameEn, {
+        fontSize: compact ? '9px' : '10px',
         fontFamily: "'Noto Sans TC', 'Microsoft JhengHei', sans-serif",
-        color: isSelected ? '#3d2503' : '#ffd166',
+        color: isSelected ? '#3d2503' : '#d9e2ff',
         align: 'center',
         wordWrap: { width: Math.max(40, cardWidth - 10) },
       });
@@ -728,40 +732,40 @@ export class ShopScene extends Phaser.Scene {
     }
 
     if (this.add.text) {
-      const iconX = cx - cardWidth / 2 + (compact ? 24 : 34);
+      const iconX = cx - cardWidth / 2 + (compact ? 28 : 40);
       const thumbnail = wardrobeRegistry.get(item.id)?.assets.thumbnail;
       if (thumbnail && this.textures?.exists && this.textures.exists(thumbnail) && this.add.image) {
         const thumb = this.add.image(iconX, cy, thumbnail);
         if (typeof thumb.setOrigin === 'function') thumb.setOrigin(0.5);
-        if (typeof thumb.setScale === 'function') thumb.setScale(compact ? 0.42 : 0.58);
+        if (typeof thumb.setScale === 'function') thumb.setScale(compact ? 0.48 : 0.66);
         if (typeof thumb.setDepth === 'function') thumb.setDepth(61);
         this.tabGameObjects.push(thumb);
       } else {
         // Temporary catalog art only; this is never passed to the wearing renderer.
-        const iconTxt = this.add.text(iconX, cy, item.icon, { fontSize: compact ? '25px' : '34px' });
+        const iconTxt = this.add.text(iconX, cy, item.icon, { fontSize: compact ? '30px' : '42px' });
         if (typeof iconTxt.setOrigin === 'function') iconTxt.setOrigin(0.5);
         if (typeof iconTxt.setDepth === 'function') iconTxt.setDepth(61);
         this.tabGameObjects.push(iconTxt);
       }
 
       // Name
-      const nameTxt = this.add.text(cx - cardWidth / 2 + (compact || denseCatalog ? 42 : 64), cy - (compact ? 12 : 15), denseCatalog ? item.nameEn : `${item.name} (${item.nameEn})`, {
-        fontSize: denseCatalog ? (compact ? '12px' : '15px') : compact ? '15px' : '24px',
+      const nameTxt = this.add.text(cx - cardWidth / 2 + (compact || denseCatalog ? 42 : 76), cy - (compact ? 12 : 15), denseCatalog ? item.nameEn : item.name, {
+        fontSize: denseCatalog ? (compact ? '12px' : '15px') : compact ? '18px' : '26px',
         fontFamily: "'Kenney Future', 'Noto Sans TC', sans-serif",
         color: isSelected ? '#1f1505' : '#ffffff',
         fontStyle: 'bold',
-        wordWrap: { width: Math.max(40, cardWidth - (compact || denseCatalog ? 78 : 132)) },
+        wordWrap: { width: Math.max(40, cardWidth - (compact || denseCatalog ? 78 : 152)) },
       });
       if (typeof nameTxt.setOrigin === 'function') nameTxt.setOrigin(0, 0.5);
       if (typeof nameTxt.setDepth === 'function') nameTxt.setDepth(61);
       this.tabGameObjects.push(nameTxt);
 
       // Perk
-      const perkTxt = this.add.text(cx - cardWidth / 2 + (compact || denseCatalog ? 42 : 64), cy + (compact ? 14 : 15), denseCatalog ? item.name : item.perkDescription, {
-        fontSize: denseCatalog ? (compact ? '10px' : '12px') : compact ? '12px' : '17px',
+      const perkTxt = this.add.text(cx - cardWidth / 2 + (compact || denseCatalog ? 42 : 76), cy + (compact ? 14 : 15), denseCatalog ? item.name : item.nameEn, {
+        fontSize: denseCatalog ? (compact ? '10px' : '11px') : compact ? '12px' : '17px',
         fontFamily: "'Noto Sans TC', 'Microsoft JhengHei', sans-serif",
-        color: isSelected ? '#3d2503' : '#ffd166',
-        wordWrap: { width: Math.max(40, cardWidth - (compact || denseCatalog ? 78 : 132)) },
+        color: isSelected ? '#3d2503' : '#d9e2ff',
+        wordWrap: { width: Math.max(40, cardWidth - (compact || denseCatalog ? 78 : 152)) },
       });
       if (typeof perkTxt.setOrigin === 'function') perkTxt.setOrigin(0, 0.5);
       if (typeof perkTxt.setDepth === 'function') perkTxt.setDepth(61);
@@ -845,8 +849,28 @@ export class ShopScene extends Phaser.Scene {
     const width = this.sys?.game?.config ? Number(this.sys.game.config.width) : GAME_WIDTH;
     const height = this.sys?.game?.config ? Number(this.sys.game.config.height) : GAME_HEIGHT;
     this.renderCurrentTabList(width, height);
+    this.playWardrobeSelectionFeedback();
     this.updatePreviewDisplay();
     if (item && this.previewController) this.previewController.playTryOn(this.getPreviewWardrobe());
+  }
+
+  private playWardrobeSelectionFeedback(): void {
+    const button = this.wardrobeItemButtons[this.selectedWardrobeIndex];
+    if (!button) return;
+
+    button.setColor('yellow');
+    if (!this.tweens || typeof this.tweens.add !== 'function') return;
+    if (typeof this.tweens.killTweensOf === 'function') this.tweens.killTweensOf(button);
+    button.setScale(0.995);
+    this.tweens.add({
+      targets: button,
+      scaleX: 1.025,
+      scaleY: 1.025,
+      duration: 70,
+      yoyo: true,
+      ease: 'Sine.easeOut',
+      onComplete: () => button.setScale(1),
+    });
   }
 
   public getPreviewWardrobe(): EquippedWardrobe {
@@ -1071,6 +1095,20 @@ export class ShopScene extends Phaser.Scene {
       const stageY = layout.stage.y - panelY;
       g.fillStyle(0x1d2c64, 0.92);
       g.fillRoundedRect(stageX, stageY, layout.stage.width, layout.stage.height, 18);
+
+      // Quiet dressing-room silhouettes: one shared Graphics object keeps this
+      // atmosphere cheap while the character remains the highest-contrast focus.
+      g.fillStyle(0x8b5fb8, 0.09);
+      g.fillRoundedRect(stageX + layout.stage.width * 0.03, stageY + 8, layout.stage.width * 0.16, layout.stage.height - 16, 12);
+      g.fillRoundedRect(stageX + layout.stage.width * 0.81, stageY + 8, layout.stage.width * 0.16, layout.stage.height - 16, 12);
+      g.fillStyle(0x0b102c, 0.28);
+      g.fillRoundedRect(stageX + layout.stage.width * 0.08, stageY + layout.stage.height * 0.12, layout.stage.width * 0.16, layout.stage.height * 0.25, 10);
+      g.lineStyle(2, 0xd9bbff, 0.16);
+      g.strokeRoundedRect(stageX + layout.stage.width * 0.08, stageY + layout.stage.height * 0.12, layout.stage.width * 0.16, layout.stage.height * 0.25, 10);
+      g.lineStyle(2, 0xf5bd42, 0.18);
+      g.lineBetween(stageX + layout.stage.width * 0.72, stageY + layout.stage.height * 0.24, stageX + layout.stage.width * 0.91, stageY + layout.stage.height * 0.24);
+      g.lineBetween(stageX + layout.stage.width * 0.75, stageY + layout.stage.height * 0.24, stageX + layout.stage.width * 0.75, stageY + layout.stage.height * 0.52);
+      g.lineBetween(stageX + layout.stage.width * 0.88, stageY + layout.stage.height * 0.24, stageX + layout.stage.width * 0.88, stageY + layout.stage.height * 0.52);
       g.fillStyle(0x5b5ee8, 0.11);
       g.fillEllipse(stageX + layout.stage.width / 2, stageY + layout.stage.height * 0.38, layout.stage.width * 0.78, layout.stage.height * 0.92);
       g.lineStyle(2, 0x6f83e8, 0.45);
@@ -1081,6 +1119,9 @@ export class ShopScene extends Phaser.Scene {
       g.fillCircle(stageX + layout.stage.width * 0.16, stageY + 22, 2.5);
       g.fillCircle(stageX + layout.stage.width * 0.82, stageY + 48, 2);
       g.fillCircle(stageX + layout.stage.width * 0.74, stageY + layout.stage.height * 0.32, 2.5);
+      g.fillCircle(stageX + layout.stage.width * 0.27, stageY + layout.stage.height * 0.2, 1.5);
+      g.fillCircle(stageX + layout.stage.width * 0.9, stageY + layout.stage.height * 0.62, 1.5);
+      showcase.add(g);
     }
 
     const initSkin = this.skins[this.selectedSkinIndex];
@@ -1202,8 +1243,9 @@ export class ShopScene extends Phaser.Scene {
     const detailX = layout.details.x + layout.details.width / 2 - panelX;
     const detailY = layout.details.y - panelY;
     const detailFont = compact ? '13px' : '18px';
+    const detailTextScale = compact ? 0.9 : 0.72;
     if (this.add.text) {
-      this.previewNameText = this.add.text(detailX, detailY + 13, `${initSkin.name} (${initSkin.englishName})`, {
+      this.previewNameText = this.add.text(detailX, detailY + (compact ? 9 : 10), `${initSkin.name} (${initSkin.englishName})`, {
         fontSize: compact ? '18px' : '26px',
         fontFamily: "'Kenney Future', 'Noto Sans TC', sans-serif",
         color: '#ffd45b',
@@ -1214,7 +1256,7 @@ export class ShopScene extends Phaser.Scene {
       if (typeof this.previewNameText.setOrigin === 'function') this.previewNameText.setOrigin(0.5);
       showcase.add(this.previewNameText);
 
-      this.previewDescText = this.add.text(detailX, detailY + (compact ? 35 : 42), initSkin.description, {
+      this.previewDescText = this.add.text(detailX, detailY + (compact ? 25 : 26), initSkin.description, {
         fontSize: detailFont,
         fontFamily: "'Noto Sans TC', 'Microsoft JhengHei', sans-serif",
         color: '#c8d5ff',
@@ -1224,7 +1266,7 @@ export class ShopScene extends Phaser.Scene {
       if (typeof this.previewDescText.setOrigin === 'function') this.previewDescText.setOrigin(0.5);
       showcase.add(this.previewDescText);
 
-      this.previewSpeedText = this.add.text(detailX - layout.details.width * 0.44, detailY + layout.details.height - 32, `🏃 跑速加成: +${Math.round(initSkin.speedBonus * 100)}%`, {
+      this.previewSpeedText = this.add.text(detailX - layout.details.width * 0.44, detailY + layout.details.height - (compact ? 20 : 19), `🏃 跑速加成: +${Math.round(initSkin.speedBonus * 100)}%`, {
         fontSize: detailFont,
         fontFamily: "'Noto Sans TC', 'Microsoft JhengHei', sans-serif",
         color: '#ffffff',
@@ -1233,7 +1275,7 @@ export class ShopScene extends Phaser.Scene {
       if (typeof this.previewSpeedText.setOrigin === 'function') this.previewSpeedText.setOrigin(0, 0.5);
       showcase.add(this.previewSpeedText);
 
-      this.previewJumpText = this.add.text(detailX + layout.details.width * 0.04, detailY + layout.details.height - 32, `🦘 跳躍加成: +${Math.round(initSkin.jumpBonus * 100)}%`, {
+      this.previewJumpText = this.add.text(detailX + layout.details.width * 0.04, detailY + layout.details.height - (compact ? 20 : 19), `🦘 跳躍加成: +${Math.round(initSkin.jumpBonus * 100)}%`, {
         fontSize: detailFont,
         fontFamily: "'Noto Sans TC', 'Microsoft JhengHei', sans-serif",
         color: '#ffffff',
@@ -1242,8 +1284,8 @@ export class ShopScene extends Phaser.Scene {
       if (typeof this.previewJumpText.setOrigin === 'function') this.previewJumpText.setOrigin(0, 0.5);
       showcase.add(this.previewJumpText);
 
-      this.previewSpecialText = this.add.text(detailX, detailY + layout.details.height - (compact ? 12 : 8), initSkin.waterGlide ? '🌊 特殊能力：水面輕功滑行 (不沉水)' : `✨ 專屬特技：${initSkin.perkDescription}`, {
-        fontSize: compact ? '13px' : '18px',
+      this.previewSpecialText = this.add.text(detailX, detailY + layout.details.height - (compact ? 7 : 6), initSkin.waterGlide ? '🌊 特殊能力：水面輕功滑行 (不沉水)' : `✨ 專屬特技：${initSkin.perkDescription}`, {
+        fontSize: detailFont,
         fontFamily: "'Noto Sans TC', 'Microsoft JhengHei', sans-serif",
         color: '#ffd166',
         fontStyle: 'bold',
@@ -1252,6 +1294,16 @@ export class ShopScene extends Phaser.Scene {
       });
       if (typeof this.previewSpecialText.setOrigin === 'function') this.previewSpecialText.setOrigin(0.5);
       showcase.add(this.previewSpecialText);
+
+      if (detailTextScale < 1) {
+        [
+          this.previewNameText,
+          this.previewDescText,
+          this.previewSpeedText,
+          this.previewJumpText,
+          this.previewSpecialText,
+        ].forEach(text => text?.setScale?.(detailTextScale));
+      }
     }
 
     this.actionButton = new CanvasButton(this, {

@@ -54,3 +54,21 @@ Cute chibi primary-school character, full body, wearing a deep indigo apprentice
 ### Thumbnail prompt
 
 Cute premium shop item illustration of a deep indigo apprentice magic robe with gold star embroidery, purple belt and a small pointed wizard hat, gentle star dust, clean isolated product silhouette, soft cel shading, transparent background, children-friendly fantasy wardrobe icon, no character body, no text, no UI.
+
+## Star Hoodie / 閃爍星光連帽衛衣
+
+### Wearing sprite prompt
+
+Cute chibi primary-school boy character, full body, wearing a warm golden-orange star hoodie as a properly fitted top, softly rounded shoulder seams aligned to the base character shoulders, ribbed hood opening aligned to the neck, natural sleeves following both arms with visible hands in front of the cuffs, clean hem aligned to the torso waist, small white-gold star emblem on the chest, same hairstyle, face, head-to-body ratio, hand size, leg proportions and shoes as the base game character, front-facing neutral idle pose, transparent background, high-resolution polished mobile game sprite, soft cel shading, consistent dark outline, top-left soft light, gentle contact shadow, children friendly, no clothing card, no rectangle, no frame, no text, no UI, no background.
+
+### Run / cheer variation prompt
+
+Use the exact same chibi primary-school boy, hairstyle, face, hoodie construction, colors, outline, lighting, canvas size and registration point as the Star Hoodie idle wearing sprite. Create a clean full-body run pose and a clean full-body cheer pose with the hoodie sleeves, cuffs, hood and hem staying attached to the shoulders, arms and waist; both hands remain visible. Transparent background, high-resolution mobile game sprite, no text, no UI, no frame, no background.
+
+### Thumbnail prompt
+
+Cute premium shop item illustration of a golden-orange star hoodie with a small white-gold star emblem, soft ribbed hood and cuffs, clean isolated product silhouette, transparent background, children-friendly fantasy wardrobe icon, no character body, no rectangle card, no text, no UI.
+
+### Delivery notes
+
+Deliver separate files: `star_hoodie_thumbnail.png`, `star_hoodie_wearing.png`, `star_hoodie_run.png`, and `star_hoodie_cheer.png`. The thumbnail is for the item card only; the wearing files must be transparent full-body character art and share the base character registration.

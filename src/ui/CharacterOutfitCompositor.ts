@@ -43,7 +43,7 @@ export class CharacterOutfitCompositor {
     } else {
       // 3. Top / Shirt
       if (equipped.top) {
-        this.drawTop(graphics, equipped.top, ox, oy, scale, flip);
+        this.drawTop(graphics, equipped.top, ox, oy, scale, flip, true);
       }
       // 4. Bottom / Skirt / Shorts
       if (equipped.bottom) {
@@ -320,7 +320,8 @@ export class CharacterOutfitCompositor {
     ox: number,
     oy: number,
     s: number,
-    flip: number
+    flip: number,
+    allowLegacyHoodieFallback = false
   ): void {
     const topY = oy - 4 * s;
 
@@ -387,20 +388,20 @@ export class CharacterOutfitCompositor {
         g.fillRect(ox - 1 * s, topY - 3 * s, 2 * s, 6 * s);
         break;
       }
-      case 'hoodie_star': {
-        // Golden Amber Hoodie
+      case 'hoodie_star':
+      case 'star_hoodie': {
+        // The live wardrobe preview deliberately renders no vector garment.
+        // Keep the old runner-only fallback until production wearing art lands;
+        // this does not run through renderPreviewOutfit.
+        if (!allowLegacyHoodieFallback) break;
         g.fillStyle(0xf59e0b, 0.98);
         g.lineStyle(2 * s, 0xb45309, 1.0);
         g.fillRoundedRect(ox - 17 * s, topY - 10 * s, 34 * s, 24 * s, 6 * s);
         g.strokeRoundedRect(ox - 17 * s, topY - 10 * s, 34 * s, 24 * s, 6 * s);
-
-        // Star Chest Emblem
         g.fillStyle(0xffffff, 1.0);
         g.fillCircle(ox, topY - 2 * s, 5 * s);
         g.fillStyle(0xf59e0b, 1.0);
         g.fillCircle(ox, topY - 2 * s, 3 * s);
-
-        // Kangaroo Pocket
         g.fillStyle(0xd97706, 0.9);
         g.fillRoundedRect(ox - 10 * s, topY + 4 * s, 20 * s, 7 * s, 3 * s);
         break;

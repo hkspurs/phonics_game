@@ -191,6 +191,30 @@ export const OUTFIT_DEFINITIONS: readonly OutfitDefinition[] = [
     price: 280,
     effect: { type: 'coin_magnet_radius', value: 30 },
   }),
+  makeFullSpriteDefinition({
+    id: 'star_hoodie',
+    aliases: ['hoodie_star'],
+    nameZh: '閃爍星光連帽衛衣',
+    nameEn: 'Star Hoodie',
+    slot: OutfitSlot.TOP,
+    previewMode: 'fullSprite',
+    assets: {
+      thumbnail: 'assets/outfits/star_hoodie/star_hoodie_thumbnail.png',
+      idle: 'assets/character/outfits/star_hoodie/star_hoodie_wearing.png',
+      run: 'assets/character/outfits/star_hoodie/star_hoodie_run.png',
+      cheer: 'assets/character/outfits/star_hoodie/star_hoodie_cheer.png',
+    },
+    anchors: {
+      [CharacterAnchor.HEAD]: { x: 0, y: -1 },
+      [CharacterAnchor.NECK]: { x: 0, y: 2 },
+      [CharacterAnchor.SHOULDER]: { x: 0, y: 5 },
+      [CharacterAnchor.WAIST]: { x: 0, y: 18 },
+      [CharacterAnchor.LEFT_HAND]: { x: -18, y: 18 },
+      [CharacterAnchor.RIGHT_HAND]: { x: 18, y: 18 },
+    },
+    price: 90,
+    effect: { type: 'star_jump_sparkle', value: 1 },
+  }),
 ];
 
 export function getWardrobeSlot(item: WardrobeItem): OutfitSlot {

@@ -56,6 +56,13 @@ export class OutfitRenderer {
 
     if (target.sprite && typeof target.sprite.setTexture === 'function') {
       target.sprite.setTexture(textureKey);
+      if (target.sprite.texture?.setFilter) {
+        // The supplied Kenney fallback is pixel art enlarged for the dressing
+        // room; nearest sampling keeps its outline crisp until high-res art lands.
+        target.sprite.texture.setFilter(
+          mode === 'fullSprite' ? Phaser.Textures.FilterMode.LINEAR : Phaser.Textures.FilterMode.NEAREST
+        );
+      }
       if (typeof target.sprite.setVisible === 'function') target.sprite.setVisible(true);
     }
 
