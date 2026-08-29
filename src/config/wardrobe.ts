@@ -1,4 +1,5 @@
 export type WardrobeCategory = 'dress' | 'top' | 'bottom' | 'accessory';
+export type WardrobeFilter = WardrobeCategory | 'all' | 'owned';
 
 export interface WardrobeItem {
   id: string;
@@ -276,3 +277,13 @@ export const WARDROBE_ITEMS: readonly WardrobeItem[] = [
     speakZh: '星星小背囊',
   },
 ];
+
+export function getWardrobeItemsForFilter(
+  items: readonly WardrobeItem[],
+  filter: WardrobeFilter,
+  ownedIds: readonly string[]
+): readonly WardrobeItem[] {
+  if (filter === 'all') return items;
+  if (filter === 'owned') return items.filter(item => ownedIds.includes(item.id));
+  return items.filter(item => item.category === filter);
+}

@@ -7,6 +7,7 @@ import { SettingsScene, DIFFICULTY_OPTIONS } from './SettingsScene';
 import { DataManager, TROPHY_DEFINITIONS } from '../services/DataManager';
 import { SoundManager } from '../services/SoundManager';
 import { SpeechService } from '../services/SpeechService';
+import { WARDROBE_ITEMS } from '../config/wardrobe';
 
 function attachEventEmitter(obj: any): any {
   const listeners: Record<string, Function[]> = {};
@@ -503,6 +504,27 @@ describe('Meta & Support Scenes Suite', () => {
       expect(dataManager.getProfile().ownedSkins).toContain('heroine');
       expect(dataManager.getProfile().equippedSkin).toBe('heroine');
       expect(dataManager.getProfile().gems).toBeGreaterThanOrEqual(20); // 50 - 30 + trophy bonuses
+    });
+
+    it('adds a small celebration burst to the wardrobe purchase success modal', () => {
+      scene.create();
+      (scene as any).showWardrobePurchaseSuccess(WARDROBE_ITEMS[0]);
+
+      const content = (scene as any).purchaseModal.getContentContainer().list;
+      expect(content.some((child: any) => Array.isArray(child.list) && child.list.length >= 3)).toBe(true);
+      expect(content.some((child: any) => child.getText?.() === '👗 立即穿上')).toBe(true);
+    });
+
+    it('does not let legacy base-frame cycling overwrite dedicated outfit run art', () => {
+      scene.create();
+      const previewSprite = scene.previewSprite!;
+      (previewSprite.setTexture as any).mockClear();
+      (scene as any).currentPose = 'walk';
+      (scene as any).previewController = { lastRenderResult: { mode: 'fullSprite' } };
+
+      (scene as any).cyclePreviewAnimation();
+
+      expect((previewSprite.setTexture as any)).not.toHaveBeenCalled();
     });
 
     it('equips already owned skin when clicking action button', () => {

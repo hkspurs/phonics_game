@@ -68,6 +68,91 @@ export class CharacterOutfitCompositor {
     }
   }
 
+  /**
+   * Preview-only fallback. It keeps the legacy Runner coordinates untouched while
+   * fitting the fallback garments to the larger dressing-room character.
+   */
+  public static renderPreviewOutfit(
+    graphics: Phaser.GameObjects.Graphics,
+    equipped: EquippedWardrobe,
+    options: {
+      scale?: number;
+      offsetX?: number;
+      offsetY?: number;
+      flipX?: boolean;
+    } = {}
+  ): void {
+    if (!graphics || typeof graphics.clear !== 'function') return;
+
+    graphics.clear();
+    const scale = options.scale ?? 1;
+    const ox = options.offsetX ?? 0;
+    const oy = options.offsetY ?? 0;
+    const flip = options.flipX ? -1 : 1;
+    // The Kenney base's neck starts around local y=-2 (the image is 110px high).
+    // Moving garments down to this anchor keeps collars below the face and leaves hands visible.
+    const fittedY = oy + 17 * scale;
+
+    // Preserve the intended depth order: back pieces, garment, then face/head pieces.
+    if (equipped.wings || equipped.accessory === 'angel_wings') {
+      this.drawAngelWings(graphics, ox, fittedY, scale, flip);
+    }
+    if (equipped.accessory === 'star_backpack') {
+      this.drawStarBackpack(graphics, ox, fittedY, scale, flip);
+    }
+
+    if (equipped.dress) {
+      this.drawDress(graphics, equipped.dress, ox, fittedY, scale, flip);
+    } else {
+      if (equipped.top) this.drawTop(graphics, equipped.top, ox, fittedY, scale, flip);
+      if (equipped.bottom) this.drawBottom(graphics, equipped.bottom, ox, fittedY, scale, flip);
+    }
+
+    this.drawPreviewAccessories(graphics, equipped, scale, ox, oy, flip);
+  }
+
+  /** Draws only optional accessories over a dedicated full-body outfit sprite. */
+  public static renderPreviewAccessories(
+    graphics: Phaser.GameObjects.Graphics,
+    equipped: EquippedWardrobe,
+    options: {
+      scale?: number;
+      offsetX?: number;
+      offsetY?: number;
+      flipX?: boolean;
+    } = {}
+  ): void {
+    if (!graphics || typeof graphics.clear !== 'function') return;
+
+    graphics.clear();
+    const scale = options.scale ?? 1;
+    const ox = options.offsetX ?? 0;
+    const oy = options.offsetY ?? 0;
+    const flip = options.flipX ? -1 : 1;
+    this.drawPreviewAccessories(graphics, equipped, scale, ox, oy, flip);
+  }
+
+  private static drawPreviewAccessories(
+    graphics: Phaser.GameObjects.Graphics,
+    equipped: EquippedWardrobe,
+    scale: number,
+    ox: number,
+    oy: number,
+    flip: number
+  ): void {
+    if (equipped.wings || equipped.accessory === 'angel_wings') {
+      this.drawAngelWings(graphics, ox, oy + 5 * scale, scale, flip);
+    }
+    if (equipped.accessory === 'star_backpack') {
+      this.drawStarBackpack(graphics, ox, oy + 5 * scale, scale, flip);
+    }
+    if (equipped.accessory === 'star_glasses') {
+      this.drawSmartGlasses(graphics, ox, oy, scale, flip);
+    }
+    const hatId = equipped.hat || (['cat_ears', 'scholar_cap', 'tram_hat'].includes(equipped.accessory || '') ? equipped.accessory : undefined);
+    if (hatId) this.drawHat(graphics, hatId, ox, oy, scale, flip);
+  }
+
   // --- 🪽 Wings (Angel Wings) ---
   private static drawAngelWings(
     g: Phaser.GameObjects.Graphics,

@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import { GAME_WIDTH, GAME_HEIGHT, GAME_TITLE } from '../config';
+import { OUTFIT_DEFINITIONS } from '../config/outfits';
 import { SoundManager } from '../services/SoundManager';
 
 export const LEARNING_TIPS: string[] = [
@@ -30,6 +31,7 @@ export class PreloadScene extends Phaser.Scene {
     this.createLoadingUI(width, height);
     this.registerLoaderEvents(width, height);
     this.loadKenneyAssets();
+    this.loadWardrobeAssets();
     this.generateProceduralTextures();
   }
 
@@ -257,6 +259,24 @@ export class PreloadScene extends Phaser.Scene {
         this.load.image(key, path);
       }
     }
+  }
+
+  private loadWardrobeAssets(): void {
+    if (!this.load || typeof this.load.image !== 'function') return;
+
+    const paths = new Set<string>();
+    OUTFIT_DEFINITIONS.forEach(definition => {
+      Object.values(definition.assets).forEach(path => {
+        if (path) paths.add(path);
+      });
+      Object.values(definition.layers ?? {}).forEach(path => {
+        if (path) paths.add(path);
+      });
+    });
+
+    // Optional art is loaded under its path key. Missing files simply stay absent;
+    // OutfitRenderer then selects layered/composite/base fallback without crashing.
+    paths.forEach(path => this.load.image(path, path));
   }
 
   public generateProceduralTextures(): void {

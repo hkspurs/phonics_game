@@ -366,6 +366,20 @@ describe('Scene Lifecycle & Navigation Flow', () => {
       expect(loadedImageKeys).toContain('soldier_stand');
     });
 
+    it('registers wardrobe thumbnails and optional wearing poses with the asset loader', () => {
+      const preloadScene = new PreloadScene();
+      const mock = createMockSceneForTest('PreloadScene');
+      Object.assign(preloadScene, mock);
+
+      preloadScene.preload();
+
+      const loadedImageKeys = mock.load.image.mock.calls.map((call: any[]) => call[0]);
+      expect(loadedImageKeys).toContain('assets/outfits/scholar_gown/thumbnail.png');
+      expect(loadedImageKeys).toContain('assets/character/outfits/scholar_gown/idle.png');
+      expect(loadedImageKeys).toContain('assets/character/outfits/scholar_gown/run.png');
+      expect(loadedImageKeys).toContain('assets/character/outfits/scholar_gown/cheer.png');
+    });
+
     it('handles loader progress and complete events cleanly', () => {
       const preloadScene = new PreloadScene();
       const mock = createMockSceneForTest('PreloadScene');

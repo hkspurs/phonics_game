@@ -4,9 +4,20 @@ import { DataManager, PET_DEFINITIONS, GADGET_DEFINITIONS } from '../services/Da
 import { SoundManager } from '../services/SoundManager';
 import { SpeechService } from '../services/SpeechService';
 import { CanvasButton } from '../ui/CanvasButton';
+import { CanvasModal } from '../ui/CanvasModal';
 import { CharacterOutfitCompositor } from '../ui/CharacterOutfitCompositor';
-import { WARDROBE_ITEMS, WardrobeItem, WardrobeCategory } from '../config/wardrobe';
+import {
+  WARDROBE_ITEMS,
+  WardrobeItem,
+  WardrobeCategory,
+  WardrobeFilter,
+  getWardrobeItemsForFilter,
+} from '../config/wardrobe';
 import { EquippedWardrobe } from '../types';
+import { getWardrobeSlot as getItemWardrobeSlot, previewWardrobe, PreviewPose } from '../config/outfits';
+import { CharacterPreviewController, PreviewCharacterDefinition } from '../ui/CharacterPreviewController';
+import { getWardrobeLayout } from '../ui/wardrobeLayout';
+import { wardrobeRegistry } from '../ui/OutfitRegistry';
 
 export interface SkinDefinition {
   id: string;
@@ -122,6 +133,7 @@ export class ShopScene extends Phaser.Scene {
   // Tabs & Navigation State
   public currentTab: ShopTab = 'skins';
   public currentWardrobeCategory: WardrobeCategory = 'dress';
+  public currentWardrobeFilter: WardrobeFilter = 'dress';
   public selectedWardrobeIndex: number = 0;
   public selectedPetIndex: number = 0;
   public selectedGadgetIndex: number = 0;
@@ -138,6 +150,7 @@ export class ShopScene extends Phaser.Scene {
   public skinCardButtons: CanvasButton[] = [];
   public tabButtons: CanvasButton[] = [];
   public subCategoryButtons: CanvasButton[] = [];
+  public wardrobeFilterButtons: CanvasButton[] = [];
   public poseButtons: CanvasButton[] = [];
 
   // Top Bar Display Text
@@ -175,6 +188,9 @@ export class ShopScene extends Phaser.Scene {
   private listContainer: Phaser.GameObjects.Container | null = null;
   private tabGameObjects: Phaser.GameObjects.GameObject[] = [];
   private ootdModal: Phaser.GameObjects.Container | null = null;
+  private purchaseModal: CanvasModal | null = null;
+  private previewController: CharacterPreviewController | null = null;
+  private previewWardrobeState: EquippedWardrobe | null = null;
 
   private walkAnimTimer: Phaser.Time.TimerEvent | null = null;
   private currentWalkFrame: number = 0;
@@ -191,6 +207,7 @@ export class ShopScene extends Phaser.Scene {
     this.skinCardButtons = [];
     this.tabButtons = [];
     this.subCategoryButtons = [];
+    this.wardrobeFilterButtons = [];
     this.poseButtons = [];
     this.skinCardTextObjects = [];
 
@@ -198,6 +215,7 @@ export class ShopScene extends Phaser.Scene {
     const equipped = DataManager.getInstance().getProfile().equippedSkin || 'adventurer';
     const foundIdx = this.skins.findIndex((s) => s.id === equipped);
     this.selectedSkinIndex = foundIdx !== -1 ? foundIdx : 0;
+    this.previewWardrobeState = DataManager.getInstance().getEquippedWardrobe();
 
     // 1. Background
     this.createBackground(width, height);
@@ -265,6 +283,7 @@ export class ShopScene extends Phaser.Scene {
         }
       },
     });
+    this.homeButton.setDepth(60);
 
     // 2. 🗺️ 前往地圖 (MapScene)
     this.mapButton = new CanvasButton(this, {
@@ -282,6 +301,7 @@ export class ShopScene extends Phaser.Scene {
         }
       },
     });
+    this.mapButton.setDepth(60);
 
     // 3. Shop Title
     if (this.add.text) {
@@ -292,6 +312,7 @@ export class ShopScene extends Phaser.Scene {
         fontStyle: 'bold',
       });
       if (typeof title.setOrigin === 'function') title.setOrigin(0.5);
+      if (typeof title.setDepth === 'function') title.setDepth(55);
     }
 
     // 4. Top Currency Pill (Coins, Gems, Stars)
@@ -312,6 +333,7 @@ export class ShopScene extends Phaser.Scene {
       g.fillRoundedRect(currX - 170, barY - 22, 340, 44, 22);
       g.lineStyle(2, 0x4a90e2, 0.9);
       g.strokeRoundedRect(currX - 170, barY - 22, 340, 44, 22);
+      if (typeof g.setDepth === 'function') g.setDepth(55);
     }
 
     if (this.add.text) {
@@ -322,6 +344,7 @@ export class ShopScene extends Phaser.Scene {
         fontStyle: 'bold',
       });
       if (typeof this.coinText.setOrigin === 'function') this.coinText.setOrigin(0.5);
+      if (typeof this.coinText.setDepth === 'function') this.coinText.setDepth(56);
 
       this.gemText = this.add.text(currX, barY, `💎 ${profile.gems}`, {
         fontSize: '22px',
@@ -330,6 +353,7 @@ export class ShopScene extends Phaser.Scene {
         fontStyle: 'bold',
       });
       if (typeof this.gemText.setOrigin === 'function') this.gemText.setOrigin(0.5);
+      if (typeof this.gemText.setDepth === 'function') this.gemText.setDepth(56);
 
       this.starText = this.add.text(currX + 105, barY, `⭐ ${totalStars}`, {
         fontSize: '22px',
@@ -338,10 +362,11 @@ export class ShopScene extends Phaser.Scene {
         fontStyle: 'bold',
       });
       if (typeof this.starText.setOrigin === 'function') this.starText.setOrigin(0.5);
+      if (typeof this.starText.setDepth === 'function') this.starText.setDepth(56);
     }
   }
 
-  private createTabBar(_width: number): void {
+  private createTabBar(width: number): void {
     if (!this.add) return;
 
     const tabs: { key: ShopTab; label: string }[] = [
@@ -351,10 +376,13 @@ export class ShopScene extends Phaser.Scene {
       { key: 'gadgets', label: '🎒 冒險道具' },
     ];
 
-    const startX = 95;
-    const tabY = 90;
-    const tabW = 145;
-    const spacing = 152;
+    const compact = width < 1000;
+    const legacyDesktop = width >= 1200;
+    const leftPanelWidth = width * 0.4;
+    const tabW = legacyDesktop ? 145 : compact ? Math.max(70, leftPanelWidth * 0.21) : Math.min(145, leftPanelWidth * 0.2);
+    const spacing = legacyDesktop ? 152 : tabW + (compact ? 5 : 8);
+    const startX = legacyDesktop ? 95 : Math.max(12, width * 0.015) + tabW / 2;
+    const tabY = legacyDesktop ? 90 : compact ? 86 : 92;
 
     this.tabButtons = [];
     tabs.forEach((t, idx) => {
@@ -365,11 +393,14 @@ export class ShopScene extends Phaser.Scene {
         height: 44,
         text: t.label,
         color: this.currentTab === t.key ? 'yellow' : 'grey',
-        fontSize: '19px',
+        fontSize: legacyDesktop ? '19px' : compact ? '14px' : '17px',
+        scaleOnHover: 1.02,
+        scaleOnDown: 0.97,
         onClick: () => {
           this.switchTab(t.key);
         },
       });
+      btn.setDepth(55);
       this.tabButtons.push(btn);
     });
   }
@@ -378,6 +409,8 @@ export class ShopScene extends Phaser.Scene {
     if (this.currentTab === tab) return;
     this.currentTab = tab;
     SoundManager.play('click');
+
+    if (tab === 'wardrobe') this.previewSelectedWardrobeItem();
 
     // Update Tab button colors
     this.tabButtons.forEach((btn, idx) => {
@@ -409,6 +442,7 @@ export class ShopScene extends Phaser.Scene {
 
     this.skinCardButtons = [];
     this.subCategoryButtons = [];
+    this.wardrobeFilterButtons = [];
     this.skinCardTextObjects = [];
 
     this.listContainer = this.add.container ? this.add.container(0, 0) : null;
@@ -513,69 +547,113 @@ export class ShopScene extends Phaser.Scene {
   }
 
   // --- 👗 Wardrobe Selection List ---
-  private createWardrobeSelectionList(_width: number, _height: number): void {
+  private createWardrobeSelectionList(width: number, height: number): void {
     if (!this.add) return;
 
-    // 1. Sub-category pills: Dresses, Tops, Bottoms, Accessories
-    const subCategories: { key: WardrobeCategory; label: string }[] = [
-      { key: 'dress', label: '👗 洋裝/套裝' },
-      { key: 'top', label: '👕 潮流上衣' },
-      { key: 'bottom', label: '👖 褲子/短裙' },
-      { key: 'accessory', label: '🎀 萌趣配件' },
+    const layout = getWardrobeLayout(width, height);
+    const filters: { key: 'all' | 'owned'; label: string }[] = [
+      { key: 'all', label: '全部' },
+      { key: 'owned', label: '已擁有' },
     ];
+    const subCategories: { key: WardrobeCategory; label: string }[] = [
+      { key: 'dress', label: '👗 洋裝' },
+      { key: 'top', label: '👕 上衣' },
+      { key: 'bottom', label: '👖 下身' },
+      { key: 'accessory', label: '🎀 配件' },
+    ];
+    const buttonWidth = layout.items.width / (filters.length + subCategories.length);
+    const categoryY = layout.items.y + 50;
 
-    const startX = 85;
-    const subY = 140;
-    const subW = 125;
-    const spacingX = 135;
+    this.wardrobeFilterButtons = [];
+    filters.forEach((filter, idx) => {
+      const btn = new CanvasButton(this, {
+        x: layout.items.x + buttonWidth * (idx + 0.5),
+        y: categoryY,
+        width: Math.max(1, buttonWidth - 4),
+        height: layout.compact ? 38 : 40,
+        text: filter.label,
+        color: this.currentWardrobeFilter === filter.key ? 'yellow' : 'grey',
+        fontSize: layout.compact ? '14px' : '17px',
+        scaleOnHover: 1.02,
+        scaleOnDown: 0.97,
+        onClick: () => this.switchWardrobeFilter(filter.key),
+      });
+      btn.setDepth(60);
+      this.wardrobeFilterButtons.push(btn);
+      this.tabGameObjects.push(btn);
+    });
 
     this.subCategoryButtons = [];
-    subCategories.forEach((sc) => {
-      const isSelected = this.currentWardrobeCategory === sc.key;
+    subCategories.forEach((category, idx) => {
       const btn = new CanvasButton(this, {
-        x: startX + this.subCategoryButtons.length * spacingX,
-        y: subY,
-        width: subW,
-        height: 40,
-        text: sc.label,
-        color: isSelected ? 'green' : 'grey',
-        fontSize: '17px',
-        onClick: () => {
-          this.switchWardrobeCategory(sc.key);
-        },
+        x: layout.items.x + buttonWidth * (idx + filters.length + 0.5),
+        y: categoryY,
+        width: Math.max(1, buttonWidth - 4),
+        height: layout.compact ? 38 : 40,
+        text: category.label,
+        color: this.currentWardrobeFilter === category.key ? 'yellow' : 'grey',
+        fontSize: layout.compact ? '14px' : '17px',
+        scaleOnHover: 1.02,
+        scaleOnDown: 0.97,
+        onClick: () => this.switchWardrobeCategory(category.key),
       });
+      btn.setDepth(60);
       this.subCategoryButtons.push(btn);
       this.tabGameObjects.push(btn);
     });
 
-    // 2. Render items in current category
-    const items = DataManager.getInstance().getWardrobeItems(this.currentWardrobeCategory);
-    const listX = 300;
-    const startY = 200;
-    const spacingY = 92;
+    const items = this.getVisibleWardrobeItems();
+    const listTop = layout.items.y + (layout.compact ? 92 : 78);
+    const denseCatalog = this.currentWardrobeFilter === 'all' || this.currentWardrobeFilter === 'owned';
+    const columns = denseCatalog ? (layout.compact ? 2 : 3) : (layout.compact ? 2 : 1);
+    const cardGap = layout.compact ? 7 : 9;
+    const cardWidth = (layout.items.width - cardGap * (columns - 1)) / columns;
+    const rows = Math.max(1, Math.ceil(items.length / columns));
+    const cardHeight = Math.max(58, Math.min(denseCatalog ? (layout.compact ? 70 : 78) : (layout.compact ? 78 : 92), (layout.items.height - (listTop - layout.items.y) - cardGap * (rows - 1)) / rows));
 
     items.forEach((item, idx) => {
-      const y = startY + idx * spacingY;
+      const col = idx % columns;
+      const row = Math.floor(idx / columns);
+      const x = layout.items.x + cardWidth * (col + 0.5) + cardGap * (col - (columns - 1) / 2);
+      const y = listTop + cardHeight * (row + 0.5) + cardGap * row;
       const isSelected = idx === this.selectedWardrobeIndex;
-
       const cardBtn = new CanvasButton(this, {
-        x: listX,
-        y: y + 25,
-        width: 520,
-        height: 84,
+        x,
+        y,
+        width: Math.max(1, cardWidth),
+        height: cardHeight,
         color: isSelected ? 'yellow' : 'grey',
-        onClick: () => {
-          this.selectWardrobeItem(idx);
-        },
+        fontSize: layout.compact ? '12px' : '14px',
+        scaleOnHover: 1.015,
+        scaleOnDown: 0.97,
+        onClick: () => this.selectWardrobeItem(idx),
       });
-
+      cardBtn.setDepth(60);
       this.skinCardButtons.push(cardBtn);
       this.tabGameObjects.push(cardBtn);
-      this.populateWardrobeCard(item, listX, y + 25, idx);
+      if (isSelected && this.add.graphics) {
+        const glow = this.add.graphics();
+        glow.fillStyle(0xf5bd42, 0.08);
+        glow.fillRoundedRect(x - cardWidth / 2 - 3, y - cardHeight / 2 - 3, cardWidth + 6, cardHeight + 6, 14);
+        glow.lineStyle(2, 0xffdf70, 0.5);
+        glow.strokeRoundedRect(x - cardWidth / 2 - 3, y - cardHeight / 2 - 3, cardWidth + 6, cardHeight + 6, 14);
+        if (typeof glow.setDepth === 'function') glow.setDepth(59);
+        this.tabGameObjects.push(glow);
+      }
+      this.populateWardrobeCard(item, x, y, idx, cardWidth, cardHeight, layout.compact, denseCatalog);
     });
   }
 
-  private populateWardrobeCard(item: WardrobeItem, cx: number, cy: number, idx: number): void {
+  private populateWardrobeCard(
+    item: WardrobeItem,
+    cx: number,
+    cy: number,
+    idx: number,
+    cardWidth: number = 520,
+    cardHeight: number = 84,
+    compact: boolean = false,
+    denseCatalog: boolean = false
+  ): void {
     if (!this.add) return;
 
     const dm = DataManager.getInstance();
@@ -584,29 +662,109 @@ export class ShopScene extends Phaser.Scene {
     const isEquipped = Object.values(equipped).includes(item.id);
     const isSelected = idx === this.selectedWardrobeIndex;
 
-    if (this.add.text) {
-      // Big Emoji Icon
-      const iconTxt = this.add.text(cx - 210, cy, item.icon, { fontSize: '38px' });
-      if (typeof iconTxt.setOrigin === 'function') iconTxt.setOrigin(0.5);
-      this.tabGameObjects.push(iconTxt);
+    if (denseCatalog) {
+      const iconY = cy - cardHeight * 0.26;
+      const thumbnail = wardrobeRegistry.get(item.id)?.assets.thumbnail;
+      if (thumbnail && this.textures?.exists && this.textures.exists(thumbnail) && this.add.image) {
+        const thumb = this.add.image(cx, iconY, thumbnail);
+        if (typeof thumb.setOrigin === 'function') thumb.setOrigin(0.5);
+        if (typeof thumb.setScale === 'function') thumb.setScale(compact ? 0.26 : 0.34);
+        if (typeof thumb.setDepth === 'function') thumb.setDepth(61);
+        this.tabGameObjects.push(thumb);
+      } else if (this.add.text) {
+        const iconTxt = this.add.text(cx, iconY, item.icon, { fontSize: compact ? '22px' : '25px' });
+        if (typeof iconTxt.setOrigin === 'function') iconTxt.setOrigin(0.5);
+        if (typeof iconTxt.setDepth === 'function') iconTxt.setDepth(61);
+        this.tabGameObjects.push(iconTxt);
+      }
 
-      // Name
-      const nameTxt = this.add.text(cx - 165, cy - 15, `${item.name} (${item.nameEn})`, {
-        fontSize: '24px',
+      const nameTxt = this.add.text(cx, cy - 2, item.nameEn, {
+        fontSize: compact ? '11px' : '13px',
         fontFamily: "'Kenney Future', 'Noto Sans TC', sans-serif",
         color: isSelected ? '#1f1505' : '#ffffff',
         fontStyle: 'bold',
+        align: 'center',
+        wordWrap: { width: Math.max(40, cardWidth - 10) },
+      });
+      if (typeof nameTxt.setOrigin === 'function') nameTxt.setOrigin(0.5);
+      if (typeof nameTxt.setDepth === 'function') nameTxt.setDepth(61);
+      this.tabGameObjects.push(nameTxt);
+
+      const zhTxt = this.add.text(cx, cy + 12, item.name, {
+        fontSize: compact ? '9px' : '11px',
+        fontFamily: "'Noto Sans TC', 'Microsoft JhengHei', sans-serif",
+        color: isSelected ? '#3d2503' : '#ffd166',
+        align: 'center',
+        wordWrap: { width: Math.max(40, cardWidth - 10) },
+      });
+      if (typeof zhTxt.setOrigin === 'function') zhTxt.setOrigin(0.5);
+      if (typeof zhTxt.setDepth === 'function') zhTxt.setDepth(61);
+      this.tabGameObjects.push(zhTxt);
+
+      const statusLabel = isEquipped ? '✅ 已穿戴' : isOwned ? '📦 已擁有' : `🪙 ${item.costCoins}`;
+      const statusTxt = this.add.text(cx, cy + cardHeight * 0.34, statusLabel, {
+        fontSize: compact ? '10px' : '12px',
+        fontFamily: "'Noto Sans TC', 'Microsoft JhengHei', sans-serif",
+        color: isEquipped ? '#065f24' : isOwned ? '#1e3a8a' : isSelected ? '#7a4f01' : '#ffd700',
+        fontStyle: 'bold',
+        align: 'center',
+      });
+      if (typeof statusTxt.setOrigin === 'function') statusTxt.setOrigin(0.5);
+      if (typeof statusTxt.setDepth === 'function') statusTxt.setDepth(61);
+      this.tabGameObjects.push(statusTxt);
+
+      this.skinCardTextObjects.push({ name: nameTxt, perk: zhTxt, status: statusTxt });
+      if (isSelected) {
+        const check = this.add.text(cx + cardWidth / 2 - 10, cy - cardHeight / 2 + 11, '✓', {
+          fontSize: compact ? '14px' : '17px',
+          color: '#fff3c4',
+          fontStyle: 'bold',
+        });
+        if (typeof check.setOrigin === 'function') check.setOrigin(0.5);
+        if (typeof check.setDepth === 'function') check.setDepth(61);
+        this.tabGameObjects.push(check);
+      }
+      return;
+    }
+
+    if (this.add.text) {
+      const iconX = cx - cardWidth / 2 + (compact ? 24 : 34);
+      const thumbnail = wardrobeRegistry.get(item.id)?.assets.thumbnail;
+      if (thumbnail && this.textures?.exists && this.textures.exists(thumbnail) && this.add.image) {
+        const thumb = this.add.image(iconX, cy, thumbnail);
+        if (typeof thumb.setOrigin === 'function') thumb.setOrigin(0.5);
+        if (typeof thumb.setScale === 'function') thumb.setScale(compact ? 0.42 : 0.58);
+        if (typeof thumb.setDepth === 'function') thumb.setDepth(61);
+        this.tabGameObjects.push(thumb);
+      } else {
+        // Temporary catalog art only; this is never passed to the wearing renderer.
+        const iconTxt = this.add.text(iconX, cy, item.icon, { fontSize: compact ? '25px' : '34px' });
+        if (typeof iconTxt.setOrigin === 'function') iconTxt.setOrigin(0.5);
+        if (typeof iconTxt.setDepth === 'function') iconTxt.setDepth(61);
+        this.tabGameObjects.push(iconTxt);
+      }
+
+      // Name
+      const nameTxt = this.add.text(cx - cardWidth / 2 + (compact || denseCatalog ? 42 : 64), cy - (compact ? 12 : 15), denseCatalog ? item.nameEn : `${item.name} (${item.nameEn})`, {
+        fontSize: denseCatalog ? (compact ? '12px' : '15px') : compact ? '15px' : '24px',
+        fontFamily: "'Kenney Future', 'Noto Sans TC', sans-serif",
+        color: isSelected ? '#1f1505' : '#ffffff',
+        fontStyle: 'bold',
+        wordWrap: { width: Math.max(40, cardWidth - (compact || denseCatalog ? 78 : 132)) },
       });
       if (typeof nameTxt.setOrigin === 'function') nameTxt.setOrigin(0, 0.5);
+      if (typeof nameTxt.setDepth === 'function') nameTxt.setDepth(61);
       this.tabGameObjects.push(nameTxt);
 
       // Perk
-      const perkTxt = this.add.text(cx - 165, cy + 15, item.perkDescription, {
-        fontSize: '17px',
+      const perkTxt = this.add.text(cx - cardWidth / 2 + (compact || denseCatalog ? 42 : 64), cy + (compact ? 14 : 15), denseCatalog ? item.name : item.perkDescription, {
+        fontSize: denseCatalog ? (compact ? '10px' : '12px') : compact ? '12px' : '17px',
         fontFamily: "'Noto Sans TC', 'Microsoft JhengHei', sans-serif",
         color: isSelected ? '#3d2503' : '#ffd166',
+        wordWrap: { width: Math.max(40, cardWidth - (compact || denseCatalog ? 78 : 132)) },
       });
       if (typeof perkTxt.setOrigin === 'function') perkTxt.setOrigin(0, 0.5);
+      if (typeof perkTxt.setDepth === 'function') perkTxt.setDepth(61);
       this.tabGameObjects.push(perkTxt);
 
       // Status label
@@ -620,23 +778,37 @@ export class ShopScene extends Phaser.Scene {
         statusColor = isSelected ? '#1e3a8a' : '#a0c4ff';
       }
 
-      const statusTxt = this.add.text(cx + 195, cy, statusLabel, {
-        fontSize: '22px',
+      const statusTxt = this.add.text(cx + cardWidth / 2 - (compact ? 8 : 12), cy + cardHeight * 0.29, statusLabel, {
+        fontSize: compact ? '13px' : '22px',
         fontFamily: "'Kenney Future', 'Noto Sans TC', sans-serif",
         color: statusColor,
         fontStyle: 'bold',
       });
       if (typeof statusTxt.setOrigin === 'function') statusTxt.setOrigin(1, 0.5);
+      if (typeof statusTxt.setDepth === 'function') statusTxt.setDepth(61);
       this.tabGameObjects.push(statusTxt);
+
+      if (isSelected) {
+        const check = this.add.text(cx + cardWidth / 2 - (compact ? 22 : 28), cy - cardHeight * 0.28, '✓', {
+          fontSize: compact ? '15px' : '22px',
+          color: '#fff3c4',
+          fontStyle: 'bold',
+        });
+        if (typeof check.setOrigin === 'function') check.setOrigin(0.5);
+        if (typeof check.setDepth === 'function') check.setDepth(61);
+        this.tabGameObjects.push(check);
+      }
 
       this.skinCardTextObjects.push({ name: nameTxt, perk: perkTxt, status: statusTxt });
     }
   }
 
   public switchWardrobeCategory(cat: WardrobeCategory): void {
-    if (this.currentWardrobeCategory === cat) return;
+    if (this.currentWardrobeCategory === cat && this.currentWardrobeFilter === cat) return;
     this.currentWardrobeCategory = cat;
+    this.currentWardrobeFilter = cat;
     this.selectedWardrobeIndex = 0;
+    this.previewSelectedWardrobeItem();
     SoundManager.play('click');
 
     const width = this.sys?.game?.config ? Number(this.sys.game.config.width) : GAME_WIDTH;
@@ -646,13 +818,27 @@ export class ShopScene extends Phaser.Scene {
     this.updatePreviewDisplay();
   }
 
+  public switchWardrobeFilter(filter: 'all' | 'owned'): void {
+    if (this.currentWardrobeFilter === filter) return;
+    this.currentWardrobeFilter = filter;
+    this.selectedWardrobeIndex = 0;
+    this.previewSelectedWardrobeItem();
+    SoundManager.play('click');
+
+    const width = this.sys?.game?.config ? Number(this.sys.game.config.width) : GAME_WIDTH;
+    const height = this.sys?.game?.config ? Number(this.sys.game.config.height) : GAME_HEIGHT;
+    this.renderCurrentTabList(width, height);
+    this.updatePreviewDisplay();
+  }
+
   public selectWardrobeItem(idx: number): void {
     this.selectedWardrobeIndex = idx;
     SoundManager.playClothSnap();
 
-    const items = DataManager.getInstance().getWardrobeItems(this.currentWardrobeCategory);
+    const items = this.getVisibleWardrobeItems();
     const item = items[idx];
     if (item) {
+      this.previewWardrobeState = previewWardrobe(this.getPersistedWardrobe(), item);
       this.speakItemBilingual(item);
     }
 
@@ -660,6 +846,42 @@ export class ShopScene extends Phaser.Scene {
     const height = this.sys?.game?.config ? Number(this.sys.game.config.height) : GAME_HEIGHT;
     this.renderCurrentTabList(width, height);
     this.updatePreviewDisplay();
+    if (item && this.previewController) this.previewController.playTryOn(this.getPreviewWardrobe());
+  }
+
+  public getPreviewWardrobe(): EquippedWardrobe {
+    return { ...(this.previewWardrobeState ?? this.getPersistedWardrobe()) };
+  }
+
+  public getWardrobeSlot(item: WardrobeItem): keyof EquippedWardrobe {
+    return getItemWardrobeSlot(item) as keyof EquippedWardrobe;
+  }
+
+  private getPersistedWardrobe(): EquippedWardrobe {
+    return DataManager.getInstance().getEquippedWardrobe();
+  }
+
+  private getVisibleWardrobeItems(): readonly WardrobeItem[] {
+    const dm = DataManager.getInstance();
+    const owned = dm.getProfile().ownedWardrobe ?? [];
+    return getWardrobeItemsForFilter(WARDROBE_ITEMS, this.currentWardrobeFilter, owned);
+  }
+
+  private previewSelectedWardrobeItem(): void {
+    const item = this.getVisibleWardrobeItems()[this.selectedWardrobeIndex];
+    this.previewWardrobeState = item
+      ? previewWardrobe(this.getPersistedWardrobe(), item)
+      : this.getPersistedWardrobe();
+  }
+
+  private getPreviewCharacter(skin: SkinDefinition): PreviewCharacterDefinition {
+    return {
+      id: skin.id,
+      idle: skin.standSprite,
+      run: skin.walkSprites,
+      cheer: skin.cheerSprite,
+      tint: skin.tint,
+    };
   }
 
   // --- 🐾 Pet Selection List ---
@@ -825,306 +1047,244 @@ export class ShopScene extends Phaser.Scene {
   private createLivePreviewShowcase(width: number, height: number): void {
     if (!this.add) return;
 
-    const panelW = 560;
-    const panelH = 550;
-    const panelX = width - panelW / 2 - 40;
-    const panelY = height / 2 + 35;
-
+    const layout = getWardrobeLayout(width, height);
+    const panelX = layout.preview.x + layout.preview.width / 2;
+    const panelY = layout.preview.y + layout.preview.height / 2;
+    const panelW = layout.preview.width;
+    const panelH = layout.preview.height;
+    const compact = layout.compact;
     const showcase = this.add.container
       ? this.add.container(panelX, panelY)
       : new Phaser.GameObjects.Container(this, panelX, panelY);
-
     showcase.setDepth(40);
 
-    // 1. Pedestal Showcase Background
     if (this.add.graphics) {
       const g = this.add.graphics();
-      g.fillStyle(0x000000, 0.4);
-      g.fillRoundedRect(-panelW / 2 + 4, -panelH / 2 + 8, panelW, panelH, 20);
+      g.fillStyle(0x080612, 0.35);
+      g.fillRoundedRect(-panelW / 2 + 5, -panelH / 2 + 8, panelW, panelH, 22);
+      g.fillStyle(0x17112d, 0.98);
+      g.fillRoundedRect(-panelW / 2, -panelH / 2, panelW, panelH, 22);
+      g.lineStyle(3, 0xf5bd42, 0.95);
+      g.strokeRoundedRect(-panelW / 2, -panelH / 2, panelW, panelH, 22);
 
-      g.fillStyle(0x1a2133, 0.95);
-      g.fillRoundedRect(-panelW / 2, -panelH / 2, panelW, panelH, 20);
-
-      // Glistening stage circle
-      g.fillStyle(0x28354f, 0.8);
-      g.fillEllipse(0, -50, 280, 70);
-      g.fillStyle(0x38bdf8, 0.2);
-      g.fillEllipse(0, -50, 240, 50);
-
-      g.lineStyle(3, 0xf5a623, 1.0);
-      g.strokeRoundedRect(-panelW / 2, -panelH / 2, panelW, panelH, 20);
-
-      showcase.add(g);
+      const stageX = layout.stage.x - panelX;
+      const stageY = layout.stage.y - panelY;
+      g.fillStyle(0x1d2c64, 0.92);
+      g.fillRoundedRect(stageX, stageY, layout.stage.width, layout.stage.height, 18);
+      g.fillStyle(0x5b5ee8, 0.11);
+      g.fillEllipse(stageX + layout.stage.width / 2, stageY + layout.stage.height * 0.38, layout.stage.width * 0.78, layout.stage.height * 0.92);
+      g.lineStyle(2, 0x6f83e8, 0.45);
+      g.strokeRoundedRect(stageX + 7, stageY + 7, Math.max(1, layout.stage.width - 14), Math.max(1, layout.stage.height - 14), 14);
+      g.fillStyle(0x0a1028, 0.72);
+      g.fillEllipse(stageX + layout.stage.width / 2, stageY + layout.stage.height - 15, layout.stage.width * 0.58, compact ? 24 : 34);
+      g.fillStyle(0xf7c85b, 0.9);
+      g.fillCircle(stageX + layout.stage.width * 0.16, stageY + 22, 2.5);
+      g.fillCircle(stageX + layout.stage.width * 0.82, stageY + 48, 2);
+      g.fillCircle(stageX + layout.stage.width * 0.74, stageY + layout.stage.height * 0.32, 2.5);
     }
 
-    // 2. Character Sprite Display
     const initSkin = this.skins[this.selectedSkinIndex];
-    const initialTex =
-      this.textures?.exists && this.textures.exists(initSkin.standSprite)
-        ? initSkin.standSprite
-        : 'player_stand';
+    const characterLayer = this.add.container ? this.add.container(0, 0) : new Phaser.GameObjects.Container(this, 0, 0);
+    if (typeof characterLayer.setDepth === 'function') characterLayer.setDepth(42);
+    showcase.add(characterLayer);
+    const controller = new CharacterPreviewController(this, {
+      container: characterLayer,
+      character: this.getPreviewCharacter(initSkin),
+      wardrobe: this.getPreviewWardrobe(),
+      scale: layout.character.scale,
+    });
+    const characterX = layout.character.x + layout.character.width / 2 - panelX;
+    const characterY = layout.character.y + layout.character.height / 2 - panelY;
+    characterLayer.setPosition(characterX, characterY);
+    this.previewController = controller;
+    this.previewSprite = controller.sprite;
+    this.wardrobeGraphics = controller.wardrobeGraphics;
 
-    const sprite = this.add.image(0, -90, initialTex);
-    if (typeof sprite.setOrigin === 'function') sprite.setOrigin(0.5, 0.5);
-    if (typeof sprite.setScale === 'function') sprite.setScale(1.4);
-    if (initSkin.tint && typeof sprite.setTint === 'function') sprite.setTint(initSkin.tint);
+    // Kept as invisible compatibility handles for older scene integrations/tests.
+    this.wardrobeWingsLayer = this.createLegacyPreviewLayer(showcase, characterX, characterY, 35);
+    this.wardrobeDressLayer = this.createLegacyPreviewLayer(showcase, characterX, characterY, 44);
+    this.wardrobeTopLayer = this.createLegacyPreviewLayer(showcase, characterX, characterY, 45);
+    this.wardrobeBottomLayer = this.createLegacyPreviewLayer(showcase, characterX, characterY, 46);
+    this.wardrobeBackpackLayer = this.createLegacyPreviewLayer(showcase, characterX, characterY, 47);
+    this.wardrobeGlassesLayer = this.createLegacyPreviewLayer(showcase, characterX, characterY, 48);
+    this.wardrobeHatLayer = this.createLegacyPreviewLayer(showcase, characterX, characterY, 49);
+    this.previewWardrobeOverlay = this.wardrobeHatLayer;
 
-    // Wings Layer (behind sprite, depth 35)
-    if (this.add.text) {
-      this.wardrobeWingsLayer = this.add.text(0, -85, '', {
-        fontSize: '44px',
-        align: 'center',
-      });
-      if (typeof this.wardrobeWingsLayer.setOrigin === 'function') this.wardrobeWingsLayer.setOrigin(0.5, 0.5);
-      if (typeof this.wardrobeWingsLayer.setDepth === 'function') this.wardrobeWingsLayer.setDepth(35);
-      showcase.add(this.wardrobeWingsLayer);
-    }
-
-    if (typeof sprite.setDepth === 'function') sprite.setDepth(40);
-    this.previewSprite = sprite;
-    showcase.add(sprite);
-
-    // Anatomical Wardrobe Layers (depth > 40)
-    if (this.add.text) {
-      // Dress / Robe layer (torso through lower body)
-      this.wardrobeDressLayer = this.add.text(0, -68, '', {
-        fontSize: '40px',
-        align: 'center',
-      });
-      if (typeof this.wardrobeDressLayer.setOrigin === 'function') this.wardrobeDressLayer.setOrigin(0.5, 0.5);
-      if (typeof this.wardrobeDressLayer.setDepth === 'function') this.wardrobeDressLayer.setDepth(44);
-      showcase.add(this.wardrobeDressLayer);
-
-      // Top / Shirt layer (chest/torso)
-      this.wardrobeTopLayer = this.add.text(0, -80, '', {
-        fontSize: '36px',
-        align: 'center',
-      });
-      if (typeof this.wardrobeTopLayer.setOrigin === 'function') this.wardrobeTopLayer.setOrigin(0.5, 0.5);
-      if (typeof this.wardrobeTopLayer.setDepth === 'function') this.wardrobeTopLayer.setDepth(45);
-      showcase.add(this.wardrobeTopLayer);
-
-      // Bottom / Skirt / Shorts layer (waist/legs)
-      this.wardrobeBottomLayer = this.add.text(0, -52, '', {
-        fontSize: '34px',
-        align: 'center',
-      });
-      if (typeof this.wardrobeBottomLayer.setOrigin === 'function') this.wardrobeBottomLayer.setOrigin(0.5, 0.5);
-      if (typeof this.wardrobeBottomLayer.setDepth === 'function') this.wardrobeBottomLayer.setDepth(46);
-      showcase.add(this.wardrobeBottomLayer);
-
-      // Backpack layer (slung over right shoulder)
-      this.wardrobeBackpackLayer = this.add.text(32, -78, '', {
-        fontSize: '30px',
-        align: 'center',
-      });
-      if (typeof this.wardrobeBackpackLayer.setOrigin === 'function') this.wardrobeBackpackLayer.setOrigin(0.5, 0.5);
-      if (typeof this.wardrobeBackpackLayer.setDepth === 'function') this.wardrobeBackpackLayer.setDepth(47);
-      showcase.add(this.wardrobeBackpackLayer);
-
-      // Glasses layer (over eyes / face)
-      this.wardrobeGlassesLayer = this.add.text(0, -108, '', {
-        fontSize: '28px',
-        align: 'center',
-      });
-      if (typeof this.wardrobeGlassesLayer.setOrigin === 'function') this.wardrobeGlassesLayer.setOrigin(0.5, 0.5);
-      if (typeof this.wardrobeGlassesLayer.setDepth === 'function') this.wardrobeGlassesLayer.setDepth(48);
-      showcase.add(this.wardrobeGlassesLayer);
-
-      // Hat / Headwear layer (perched on top of head)
-      this.wardrobeHatLayer = this.add.text(0, -142, '', {
-        fontSize: '40px',
-        align: 'center',
-      });
-      if (typeof this.wardrobeHatLayer.setOrigin === 'function') this.wardrobeHatLayer.setOrigin(0.5, 0.5);
-      if (typeof this.wardrobeHatLayer.setDepth === 'function') this.wardrobeHatLayer.setDepth(49);
-      showcase.add(this.wardrobeHatLayer);
-
-      // Backward compatibility reference
-      this.previewWardrobeOverlay = this.wardrobeHatLayer;
-    }
-
-    // Dynamic Tailored Vector Wardrobe Graphics
-    if (this.add.graphics) {
-      this.wardrobeGraphics = this.add.graphics();
-      if (typeof this.wardrobeGraphics.setDepth === 'function') this.wardrobeGraphics.setDepth(45);
-      showcase.add(this.wardrobeGraphics);
-    }
-
-    // Live Character Bobbing Tween (syncs sprite and all wardrobe layers together)
+    // Legacy sync contract retained for old integrations; the controller owns the live 2px idle motion.
     if (this.tweens?.add) {
-      const targets = [
-        sprite,
-        this.wardrobeGraphics,
-        this.wardrobeWingsLayer,
-        this.wardrobeDressLayer,
-        this.wardrobeTopLayer,
-        this.wardrobeBottomLayer,
-        this.wardrobeBackpackLayer,
-        this.wardrobeGlassesLayer,
-        this.wardrobeHatLayer,
-      ].filter(Boolean);
-
       this.tweens.add({
-        targets,
+        targets: [
+          this.previewSprite,
+          this.wardrobeGraphics,
+          this.wardrobeWingsLayer,
+          this.wardrobeDressLayer,
+          this.wardrobeTopLayer,
+          this.wardrobeBottomLayer,
+          this.wardrobeBackpackLayer,
+          this.wardrobeGlassesLayer,
+          this.wardrobeHatLayer,
+        ].filter(Boolean),
         y: '-=12',
         duration: 900,
         yoyo: true,
         repeat: -1,
         ease: 'Sine.easeInOut',
+        paused: true,
       });
     }
 
-    // Walking / Idle Frame Switcher Timer
     if (this.time?.addEvent) {
       this.walkAnimTimer = this.time.addEvent({
         delay: 350,
         loop: true,
-        callback: () => {
-          this.cyclePreviewAnimation();
-        },
+        callback: () => this.cyclePreviewAnimation(),
       });
     }
 
-    // 3. Pose Switcher Buttons (Stand, Run, Cheer)
+    const poseY = layout.stage.y + Math.min(24, layout.stage.height * 0.1);
+    const poseWidth = Math.min(82, Math.max(62, layout.preview.width * 0.15));
+    const poseStartX = layout.preview.x + 18 + poseWidth / 2;
+    const poseGap = 6;
     const poseStand = new CanvasButton(this, {
-      x: panelX - 150,
-      y: panelY - 185,
-      width: 82,
-      height: 38,
+      x: poseStartX,
+      y: poseY,
+      width: poseWidth,
+      height: compact ? 34 : 38,
       text: '🧍 站立',
       color: this.currentPose === 'stand' ? 'yellow' : 'grey',
-      fontSize: '16px',
+      fontSize: compact ? '13px' : '16px',
+      scaleOnHover: 1.02,
+      scaleOnDown: 0.97,
       onClick: () => this.switchPose('stand'),
     });
     poseStand.setDepth(60);
-
     const poseWalk = new CanvasButton(this, {
-      x: panelX - 58,
-      y: panelY - 185,
-      width: 82,
-      height: 38,
+      x: poseStartX + poseWidth + poseGap,
+      y: poseY,
+      width: poseWidth,
+      height: compact ? 34 : 38,
       text: '🏃 奔跑',
       color: this.currentPose === 'walk' ? 'yellow' : 'grey',
-      fontSize: '16px',
+      fontSize: compact ? '13px' : '16px',
+      scaleOnHover: 1.02,
+      scaleOnDown: 0.97,
       onClick: () => this.switchPose('walk'),
     });
     poseWalk.setDepth(60);
-
     const poseCheer = new CanvasButton(this, {
-      x: panelX + 34,
-      y: panelY - 185,
-      width: 82,
-      height: 38,
+      x: poseStartX + (poseWidth + poseGap) * 2,
+      y: poseY,
+      width: poseWidth,
+      height: compact ? 34 : 38,
       text: '🎉 歡呼',
       color: this.currentPose === 'cheer' ? 'yellow' : 'grey',
-      fontSize: '16px',
+      fontSize: compact ? '13px' : '16px',
+      scaleOnHover: 1.02,
+      scaleOnDown: 0.97,
       onClick: () => this.switchPose('cheer'),
     });
     poseCheer.setDepth(60);
-
-    // 4. OOTD Photo Button
     this.ootdButton = new CanvasButton(this, {
-      x: panelX + 158,
-      y: panelY - 185,
-      width: 136,
-      height: 38,
+      x: layout.preview.x + layout.preview.width - 66,
+      y: poseY,
+      width: 112,
+      height: compact ? 34 : 38,
       text: '📸 今日穿搭',
       color: 'blue',
-      fontSize: '16px',
+      fontSize: compact ? '13px' : '17px',
+      scaleOnHover: 1.02,
+      scaleOnDown: 0.97,
       onClick: () => this.showOOTDPhotoModal(),
     });
     this.ootdButton.setDepth(60);
-
     this.poseButtons = [poseStand, poseWalk, poseCheer];
 
-    // 5. Skin / Wardrobe Name & Details Texts
+    const detailX = layout.details.x + layout.details.width / 2 - panelX;
+    const detailY = layout.details.y - panelY;
+    const detailFont = compact ? '13px' : '18px';
     if (this.add.text) {
-      this.previewNameText = this.add.text(0, 15, `${initSkin.name} (${initSkin.englishName})`, {
-        fontSize: '26px',
+      this.previewNameText = this.add.text(detailX, detailY + 13, `${initSkin.name} (${initSkin.englishName})`, {
+        fontSize: compact ? '18px' : '26px',
         fontFamily: "'Kenney Future', 'Noto Sans TC', sans-serif",
-        color: '#ffd700',
+        color: '#ffd45b',
         fontStyle: 'bold',
         align: 'center',
+        wordWrap: { width: layout.details.width },
       });
       if (typeof this.previewNameText.setOrigin === 'function') this.previewNameText.setOrigin(0.5);
       showcase.add(this.previewNameText);
 
-      this.previewDescText = this.add.text(0, 48, initSkin.description, {
-        fontSize: '17px',
+      this.previewDescText = this.add.text(detailX, detailY + (compact ? 35 : 42), initSkin.description, {
+        fontSize: detailFont,
         fontFamily: "'Noto Sans TC', 'Microsoft JhengHei', sans-serif",
-        color: '#a0c4ff',
+        color: '#c8d5ff',
         align: 'center',
+        wordWrap: { width: layout.details.width - 12 },
       });
       if (typeof this.previewDescText.setOrigin === 'function') this.previewDescText.setOrigin(0.5);
       showcase.add(this.previewDescText);
 
-      // Stats Pills
-      this.previewSpeedText = this.add.text(
-        -160,
-        95,
-        `🏃 跑速加成: +${Math.round(initSkin.speedBonus * 100)}%`,
-        {
-          fontSize: '18px',
-          fontFamily: "'Noto Sans TC', 'Microsoft JhengHei', sans-serif",
-          color: '#ffffff',
-          fontStyle: 'bold',
-        }
-      );
+      this.previewSpeedText = this.add.text(detailX - layout.details.width * 0.44, detailY + layout.details.height - 32, `🏃 跑速加成: +${Math.round(initSkin.speedBonus * 100)}%`, {
+        fontSize: detailFont,
+        fontFamily: "'Noto Sans TC', 'Microsoft JhengHei', sans-serif",
+        color: '#ffffff',
+        fontStyle: 'bold',
+      });
       if (typeof this.previewSpeedText.setOrigin === 'function') this.previewSpeedText.setOrigin(0, 0.5);
       showcase.add(this.previewSpeedText);
 
-      this.previewJumpText = this.add.text(
-        40,
-        95,
-        `🦘 跳躍加成: +${Math.round(initSkin.jumpBonus * 100)}%`,
-        {
-          fontSize: '18px',
-          fontFamily: "'Noto Sans TC', 'Microsoft JhengHei', sans-serif",
-          color: '#ffffff',
-          fontStyle: 'bold',
-        }
-      );
+      this.previewJumpText = this.add.text(detailX + layout.details.width * 0.04, detailY + layout.details.height - 32, `🦘 跳躍加成: +${Math.round(initSkin.jumpBonus * 100)}%`, {
+        fontSize: detailFont,
+        fontFamily: "'Noto Sans TC', 'Microsoft JhengHei', sans-serif",
+        color: '#ffffff',
+        fontStyle: 'bold',
+      });
       if (typeof this.previewJumpText.setOrigin === 'function') this.previewJumpText.setOrigin(0, 0.5);
       showcase.add(this.previewJumpText);
 
-      this.previewSpecialText = this.add.text(
-        0,
-        132,
-        initSkin.waterGlide ? '🌊 特殊能力：水面輕功滑行 (不沉水)' : `✨ 專屬特技：${initSkin.perkDescription}`,
-        {
-          fontSize: '18px',
-          fontFamily: "'Noto Sans TC', 'Microsoft JhengHei', sans-serif",
-          color: '#ffd166',
-          fontStyle: 'bold',
-          align: 'center',
-        }
-      );
+      this.previewSpecialText = this.add.text(detailX, detailY + layout.details.height - (compact ? 12 : 8), initSkin.waterGlide ? '🌊 特殊能力：水面輕功滑行 (不沉水)' : `✨ 專屬特技：${initSkin.perkDescription}`, {
+        fontSize: compact ? '13px' : '18px',
+        fontFamily: "'Noto Sans TC', 'Microsoft JhengHei', sans-serif",
+        color: '#ffd166',
+        fontStyle: 'bold',
+        align: 'center',
+        wordWrap: { width: layout.details.width - 12 },
+      });
       if (typeof this.previewSpecialText.setOrigin === 'function') this.previewSpecialText.setOrigin(0.5);
       showcase.add(this.previewSpecialText);
     }
 
-    // 6. Action Button (Buy / Equip / Unequip)
     this.actionButton = new CanvasButton(this, {
-      x: panelX,
-      y: panelY + 205,
-      width: 380,
-      height: 64,
+      x: layout.action.x + layout.action.width / 2,
+      y: layout.action.y + layout.action.height / 2,
+      width: layout.action.width,
+      height: layout.action.height,
       text: '👕 換上造型',
       color: 'green',
-      fontSize: '24px',
-      onClick: () => {
-        this.handleActionClick();
-      },
+      fontSize: compact ? '18px' : '24px',
+      scaleOnHover: 1.02,
+      scaleOnDown: 0.97,
+      onClick: () => this.handleActionClick(),
     });
-    if (typeof this.actionButton.setDepth === 'function') {
-      this.actionButton.setDepth(60);
-    }
+    this.actionButton.setDepth(60);
 
     this.previewContainer = showcase;
-    if (this.add && typeof this.add.existing === 'function') {
-      this.add.existing(showcase);
-    }
+    if (this.add && typeof this.add.existing === 'function') this.add.existing(showcase);
+  }
+
+  private createLegacyPreviewLayer(
+    showcase: Phaser.GameObjects.Container,
+    x: number,
+    y: number,
+    depth: number
+  ): Phaser.GameObjects.Text | null {
+    if (!this.add.text) return null;
+    const layer = this.add.text(x, y, '', { fontSize: '1px' });
+    if (typeof layer.setOrigin === 'function') layer.setOrigin(0.5);
+    if (typeof layer.setDepth === 'function') layer.setDepth(depth);
+    if (typeof layer.setAlpha === 'function') layer.setAlpha(0);
+    showcase.add(layer);
+    return layer;
   }
 
   public switchPose(pose: 'stand' | 'walk' | 'cheer'): void {
@@ -1137,11 +1297,15 @@ export class ShopScene extends Phaser.Scene {
     });
 
     this.updatePreviewDisplay();
+    if (pose === 'cheer') this.previewController?.playCheer();
   }
 
   private cyclePreviewAnimation(): void {
     if (!this.previewSprite) return;
     if (this.currentPose !== 'walk') return;
+    // A dedicated Outfit run texture is already authoritative; do not let the
+    // legacy base-character frame timer paint it away.
+    if (this.previewController?.lastRenderResult?.mode === 'fullSprite') return;
 
     const currentSkin = this.skins[this.selectedSkinIndex];
     if (!currentSkin || !currentSkin.walkSprites || currentSkin.walkSprites.length === 0) return;
@@ -1220,8 +1384,12 @@ export class ShopScene extends Phaser.Scene {
     const isOwned = profile.ownedSkins.includes(skin.id);
     const isEquipped = profile.equippedSkin === skin.id;
 
-    // Sprite texture based on pose
-    if (this.previewSprite) {
+    // Sprite texture based on pose. The controller keeps the outfit and body on the same rig.
+    if (this.previewController) {
+      this.previewController.setCharacter(this.getPreviewCharacter(skin));
+      this.previewController.setWardrobe(this.getPersistedWardrobe());
+      this.previewController.setPose(this.getPreviewPose());
+    } else if (this.previewSprite) {
       let texKey = skin.standSprite;
       if (this.currentPose === 'walk') {
         texKey = skin.walkSprites[0] || skin.standSprite;
@@ -1297,13 +1465,39 @@ export class ShopScene extends Phaser.Scene {
   }
 
   private updateWardrobePreviewDisplay(dm: DataManager, profile: any): void {
-    const items = dm.getWardrobeItems(this.currentWardrobeCategory);
+    const items = this.getVisibleWardrobeItems();
     const item = items[this.selectedWardrobeIndex];
-    if (!item) return;
+    if (!item) {
+      if (this.previewController) {
+        const skin = this.skins[this.selectedSkinIndex];
+        if (skin) this.previewController.setCharacter(this.getPreviewCharacter(skin));
+        this.previewController.setWardrobe(dm.getEquippedWardrobe());
+        this.previewController.setPose(this.getPreviewPose());
+      }
+      this.updateWardrobeOverlay();
+      this.previewNameText?.setText?.('🧺 你的衣櫥還是空的');
+      this.previewDescText?.setText?.('先到商品分類挑選一件喜歡的服裝吧！');
+      this.previewSpeedText?.setText?.('✨ 尚未擁有任何服裝');
+      this.previewJumpText?.setText?.('');
+      this.previewSpecialText?.setText?.('');
+      if (this.actionButton) {
+        this.actionButton.setText('尚未擁有服裝');
+        this.actionButton.setColor('grey');
+        this.actionButton.setEnabled(false);
+      }
+      return;
+    }
 
     const isOwned = dm.isWardrobeOwned(item.id);
     const equipped = dm.getEquippedWardrobe();
     const isEquipped = Object.values(equipped).includes(item.id);
+
+    if (this.previewController) {
+      const skin = this.skins[this.selectedSkinIndex];
+      if (skin) this.previewController.setCharacter(this.getPreviewCharacter(skin));
+      this.previewController.setWardrobe(this.getPreviewWardrobe());
+      this.previewController.setPose(this.getPreviewPose());
+    }
 
     // Overlay wardrobe symbols
     this.updateWardrobeOverlay();
@@ -1453,7 +1647,7 @@ export class ShopScene extends Phaser.Scene {
   }
 
   private updateWardrobeOverlay(): void {
-    const eq = DataManager.getInstance().getEquippedWardrobe();
+    const eq = this.getPreviewWardrobe();
 
     // 1. Hat / Headwear (cat_ears, scholar_cap, tram_hat)
     if (this.wardrobeHatLayer && typeof this.wardrobeHatLayer.setText === 'function') {
@@ -1561,14 +1755,13 @@ export class ShopScene extends Phaser.Scene {
       this.previewWardrobeOverlay.setText(allIcons.join(' '));
     }
 
-    // Dynamic Tailored Vector Wardrobe Rendering
-    if (this.wardrobeGraphics) {
-      CharacterOutfitCompositor.renderOutfit(this.wardrobeGraphics, eq, {
-        scale: 1.4,
-        offsetX: 0,
-        offsetY: -90,
-      });
-    }
+    // The CharacterPreviewController owns the live graphics target and its cache.
+  }
+
+  private getPreviewPose(): PreviewPose {
+    if (this.currentPose === 'walk') return 'run';
+    if (this.currentPose === 'cheer') return 'cheer';
+    return 'idle';
   }
 
   public speakItemBilingual(item: WardrobeItem): void {
@@ -1626,7 +1819,7 @@ export class ShopScene extends Phaser.Scene {
         }
       }
     } else if (this.currentTab === 'wardrobe') {
-      const items = dm.getWardrobeItems(this.currentWardrobeCategory);
+      const items = this.getVisibleWardrobeItems();
       const item = items[this.selectedWardrobeIndex];
       if (!item) return;
 
@@ -1638,44 +1831,25 @@ export class ShopScene extends Phaser.Scene {
         // Unequip
         const slot = Object.keys(equipped).find((k) => equipped[k as keyof EquippedWardrobe] === item.id) as keyof EquippedWardrobe;
         if (slot) dm.unequipWardrobeItem(slot);
+        this.previewWardrobeState = dm.getEquippedWardrobe();
         SoundManager.playClothSnap();
         this.refreshSceneState();
       } else if (isOwned) {
         // Equip
-        let slot: keyof EquippedWardrobe = 'dress';
-        if (item.category === 'top') slot = 'top';
-        else if (item.category === 'bottom') slot = 'bottom';
-        else if (item.category === 'accessory') {
-          if (item.id.includes('wings')) slot = 'wings';
-          else if (item.id.includes('hat') || item.id.includes('cap') || item.id.includes('ears')) slot = 'hat';
-          else slot = 'accessory';
-        }
+        const slot = this.getWardrobeSlot(item);
 
         dm.equipWardrobeItem(slot, item.id);
+        this.previewWardrobeState = dm.getEquippedWardrobe();
         dm.checkTrophies();
         SoundManager.playMagicTransform();
         this.speakCantonesePraise();
         this.refreshSceneState();
       } else {
         // Buy
-        const currency = profile.coins >= item.costCoins ? 'coins' : 'gems';
-        const ok = dm.buyWardrobeItem(item.id, currency);
-        if (ok) {
-          let slot: keyof EquippedWardrobe = 'dress';
-          if (item.category === 'top') slot = 'top';
-          else if (item.category === 'bottom') slot = 'bottom';
-          else if (item.category === 'accessory') {
-            if (item.id.includes('wings')) slot = 'wings';
-            else if (item.id.includes('hat') || item.id.includes('cap') || item.id.includes('ears')) slot = 'hat';
-            else slot = 'accessory';
-          }
-          dm.equipWardrobeItem(slot, item.id);
-          dm.checkTrophies();
-          SoundManager.playMagicTransform();
-          this.speakCantonesePraise();
-          this.refreshSceneState();
+        if (this.isLiveScene()) {
+          this.showWardrobePurchaseConfirm(item);
         } else {
-          SoundManager.play('wrong');
+          this.purchaseWardrobeItem(item);
         }
       }
     } else if (this.currentTab === 'pets') {
@@ -1713,6 +1887,156 @@ export class ShopScene extends Phaser.Scene {
         SoundManager.play('wrong');
       }
     }
+  }
+
+  private purchaseWardrobeItem(item: WardrobeItem): void {
+    const dm = DataManager.getInstance();
+    const profile = dm.getProfile();
+    const currency = profile.coins >= item.costCoins ? 'coins' : 'gems';
+    const ok = dm.buyWardrobeItem(item.id, currency);
+    if (!ok) {
+      SoundManager.play('wrong');
+      return;
+    }
+
+    dm.equipWardrobeItem(this.getWardrobeSlot(item), item.id);
+    this.previewWardrobeState = dm.getEquippedWardrobe();
+    dm.checkTrophies();
+    SoundManager.playMagicTransform();
+    this.speakCantonesePraise();
+    this.refreshSceneState();
+    this.showWardrobePurchaseSuccess(item);
+  }
+
+  private showWardrobePurchaseConfirm(item: WardrobeItem): void {
+    if (this.purchaseModal || !this.add) return;
+    const dm = DataManager.getInstance();
+    const profile = dm.getProfile();
+    const canAfford = profile.coins >= item.costCoins || profile.gems >= item.costGems;
+    if (!canAfford) {
+      SoundManager.play('wrong');
+      return;
+    }
+
+    const width = this.sys?.game?.config ? Number(this.sys.game.config.width) : GAME_WIDTH;
+    const height = this.sys?.game?.config ? Number(this.sys.game.config.height) : GAME_HEIGHT;
+    const modalWidth = Math.min(520, width * 0.68);
+    const modalHeight = Math.min(280, height * 0.48);
+    const modal = new CanvasModal(this, {
+      x: width / 2,
+      y: height / 2,
+      width: modalWidth,
+      height: modalHeight,
+      title: '🛒 確認購買',
+      theme: 'gold',
+      borderColor: 0xf5bd42,
+      onClose: () => {
+        this.purchaseModal = null;
+      },
+    });
+    const content = this.add.text(0, -35, `${item.name}\n${item.nameEn}\n\n🪙 ${item.costCoins} 金幣　💎 ${item.costGems} 寶石`, {
+      fontSize: width < 1000 ? '15px' : '19px',
+      fontFamily: "'Noto Sans TC', 'Microsoft JhengHei', sans-serif",
+      color: '#fff7df',
+      align: 'center',
+      lineSpacing: 5,
+    });
+    if (typeof content.setOrigin === 'function') content.setOrigin(0.5);
+    const confirmButton = new CanvasButton(this, {
+      x: 0,
+      y: modalHeight / 2 - 52,
+      width: Math.min(250, modalWidth - 64),
+      height: 48,
+      text: '✅ 確認購買',
+      color: 'yellow',
+      fontSize: width < 1000 ? '16px' : '19px',
+      scaleOnHover: 1.02,
+      scaleOnDown: 0.97,
+      onClick: () => {
+        modal.close();
+        if (this.time?.delayedCall) this.time.delayedCall(180, () => this.purchaseWardrobeItem(item));
+        else this.purchaseWardrobeItem(item);
+      },
+    });
+    confirmButton.setDepth(60);
+    modal.addContent([content, confirmButton]);
+    this.purchaseModal = modal;
+    modal.show(true);
+  }
+
+  private showWardrobePurchaseSuccess(item: WardrobeItem): void {
+    if (this.purchaseModal || !this.add) return;
+    const width = this.sys?.game?.config ? Number(this.sys.game.config.width) : GAME_WIDTH;
+    const height = this.sys?.game?.config ? Number(this.sys.game.config.height) : GAME_HEIGHT;
+    const modalWidth = Math.min(560, width * 0.72);
+    const modalHeight = Math.min(320, height * 0.54);
+    const modal = new CanvasModal(this, {
+      x: width / 2,
+      y: height / 2,
+      width: modalWidth,
+      height: modalHeight,
+      title: '✨ 購買成功！',
+      theme: 'gold',
+      borderColor: 0xf5bd42,
+      onClose: () => {
+        this.purchaseModal = null;
+      },
+    });
+    const content = this.add.text(0, -45, `${item.name}\n${item.nameEn}\n\n已加入你的夢幻衣櫥。`, {
+      fontSize: width < 1000 ? '16px' : '21px',
+      fontFamily: "'Noto Sans TC', 'Microsoft JhengHei', sans-serif",
+      color: '#fff7df',
+      align: 'center',
+      lineSpacing: 5,
+    });
+    if (typeof content.setOrigin === 'function') content.setOrigin(0.5);
+    const wearButton = new CanvasButton(this, {
+      x: 0,
+      y: modalHeight / 2 - 55,
+      width: Math.min(260, modalWidth - 64),
+      height: 48,
+      text: '👗 立即穿上',
+      color: 'yellow',
+      fontSize: width < 1000 ? '17px' : '20px',
+      scaleOnHover: 1.02,
+      scaleOnDown: 0.97,
+      onClick: () => modal.close(),
+    });
+    wearButton.setDepth(60);
+    modal.addContent([content, this.createPurchaseCelebration(modalWidth), wearButton]);
+    this.purchaseModal = modal;
+    modal.show(true);
+  }
+
+  private createPurchaseCelebration(modalWidth: number): Phaser.GameObjects.Container {
+    const burst = this.add.container
+      ? this.add.container(0, -82)
+      : new Phaser.GameObjects.Container(this, 0, -82);
+    const particles = ['✦', '✧', '•', '◇', '✨', '🪙'];
+    particles.forEach((symbol, index) => {
+      const direction = index % 2 === 0 ? -1 : 1;
+      const particle = this.add.text(
+        (index - 2.5) * Math.min(54, modalWidth * 0.1),
+        index % 3 * 8,
+        symbol,
+        { fontSize: symbol === '🪙' ? '25px' : '22px', color: '#ffd45b' }
+      );
+      if (typeof particle.setOrigin === 'function') particle.setOrigin(0.5);
+      burst.add(particle);
+      if (this.tweens?.add) {
+        this.tweens.add({
+          targets: particle,
+          x: particle.x + direction * 24,
+          y: particle.y - 34 - index * 3,
+          alpha: 0,
+          scale: 1.15,
+          duration: 720,
+          delay: index * 35,
+          ease: 'Cubic.easeOut',
+        });
+      }
+    });
+    return burst;
   }
 
   // --- 📸 OOTD Photo Booth Modal (Item 10) ---
@@ -1929,10 +2253,19 @@ export class ShopScene extends Phaser.Scene {
   }
 
   public refreshSceneState(): void {
+    this.previewWardrobeState = this.getPersistedWardrobe();
     this.updatePreviewDisplay();
-    if (this.scene) {
+    if (!this.isLiveScene() && this.scene && typeof this.scene.restart === 'function') {
+      // Compatibility for headless scene adapters; live Phaser keeps the modal and preview in place.
       this.scene.restart();
     }
+  }
+
+  private isLiveScene(): boolean {
+    const systems = this.sys as unknown as { isActive?: () => boolean; settings?: { active?: boolean } };
+    return typeof systems?.isActive === 'function'
+      ? systems.isActive()
+      : systems?.settings?.active === true;
   }
 
   public refreshCurrencyHUD(): void {
@@ -1972,5 +2305,11 @@ export class ShopScene extends Phaser.Scene {
       this.ootdModal.destroy();
       this.ootdModal = null;
     }
+    if (this.purchaseModal) {
+      this.purchaseModal.destroy();
+      this.purchaseModal = null;
+    }
+    this.previewController?.destroy();
+    this.previewController = null;
   }
 }
