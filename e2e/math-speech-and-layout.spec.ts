@@ -6,7 +6,7 @@ test('Verify: Math question spoken text uses explicit Chinese words (減/加/等
   await page.waitForTimeout(2000);
 
   // Start directly at QuestionScene with a Math Subtraction question
-  const speechCaptured = await page.evaluate(async () => {
+  await page.evaluate(() => {
     const game = (window as any).__PHASER_GAME__;
     const title = game.scene.getScene('TitleScene');
 
@@ -34,10 +34,10 @@ test('Verify: Math question spoken text uses explicit Chinese words (減/加/等
         }
       ]
     });
-
-    await new Promise(r => setTimeout(r, 2000));
-    return (window as any).__LAST_SPOKEN_TEXT__;
   });
+
+  await page.waitForFunction(() => !!(window as any).__LAST_SPOKEN_TEXT__, { timeout: 10000 });
+  const speechCaptured = await page.evaluate(() => (window as any).__LAST_SPOKEN_TEXT__);
 
   console.log('Spoken text captured for 5 - 2 = ?:', speechCaptured);
   expect(speechCaptured).toContain('減');

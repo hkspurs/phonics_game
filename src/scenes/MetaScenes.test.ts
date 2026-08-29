@@ -111,7 +111,10 @@ export function createMockSceneForMeta(sceneKey: string): any {
           strokePath: vi.fn().mockReturnThis(),
           fillPath: vi.fn().mockReturnThis(),
           closePath: vi.fn().mockReturnThis(),
-          setDepth: vi.fn().mockReturnThis(),
+          setDepth: vi.fn(function (d: number) {
+            g.depth = d;
+            return g;
+          }),
           setPosition: vi.fn().mockReturnThis(),
           setAlpha: vi.fn().mockReturnThis(),
           setVisible: vi.fn().mockReturnThis(),
@@ -146,7 +149,10 @@ export function createMockSceneForMeta(sceneKey: string): any {
           setShadow: vi.fn().mockReturnThis(),
           setAlpha: vi.fn().mockReturnThis(),
           setPosition: vi.fn().mockReturnThis(),
-          setDepth: vi.fn().mockReturnThis(),
+          setDepth: vi.fn(function (d: number) {
+            t.depth = d;
+            return t;
+          }),
           destroy: vi.fn(),
         };
         return attachEventEmitter(t);

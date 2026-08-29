@@ -4,6 +4,7 @@ import { DataManager, PET_DEFINITIONS, GADGET_DEFINITIONS } from '../services/Da
 import { SoundManager } from '../services/SoundManager';
 import { SpeechService } from '../services/SpeechService';
 import { CanvasButton } from '../ui/CanvasButton';
+import { CharacterOutfitCompositor } from '../ui/CharacterOutfitCompositor';
 import { WARDROBE_ITEMS, WardrobeItem, WardrobeCategory } from '../config/wardrobe';
 import { EquippedWardrobe } from '../types';
 
@@ -148,6 +149,14 @@ export class ShopScene extends Phaser.Scene {
   public previewContainer: Phaser.GameObjects.Container | null = null;
   public previewSprite: Phaser.GameObjects.Image | null = null;
   public previewWardrobeOverlay: Phaser.GameObjects.Text | null = null;
+  public wardrobeGraphics: Phaser.GameObjects.Graphics | null = null;
+  public wardrobeHatLayer: Phaser.GameObjects.Text | null = null;
+  public wardrobeGlassesLayer: Phaser.GameObjects.Text | null = null;
+  public wardrobeTopLayer: Phaser.GameObjects.Text | null = null;
+  public wardrobeBottomLayer: Phaser.GameObjects.Text | null = null;
+  public wardrobeDressLayer: Phaser.GameObjects.Text | null = null;
+  public wardrobeWingsLayer: Phaser.GameObjects.Text | null = null;
+  public wardrobeBackpackLayer: Phaser.GameObjects.Text | null = null;
   public previewNameText: Phaser.GameObjects.Text | null = null;
   public previewDescText: Phaser.GameObjects.Text | null = null;
   public previewPerkBadge: Phaser.GameObjects.Text | null = null;
@@ -860,24 +869,102 @@ export class ShopScene extends Phaser.Scene {
     if (typeof sprite.setScale === 'function') sprite.setScale(1.4);
     if (initSkin.tint && typeof sprite.setTint === 'function') sprite.setTint(initSkin.tint);
 
+    // Wings Layer (behind sprite, depth 35)
+    if (this.add.text) {
+      this.wardrobeWingsLayer = this.add.text(0, -85, '', {
+        fontSize: '44px',
+        align: 'center',
+      });
+      if (typeof this.wardrobeWingsLayer.setOrigin === 'function') this.wardrobeWingsLayer.setOrigin(0.5, 0.5);
+      if (typeof this.wardrobeWingsLayer.setDepth === 'function') this.wardrobeWingsLayer.setDepth(35);
+      showcase.add(this.wardrobeWingsLayer);
+    }
+
+    if (typeof sprite.setDepth === 'function') sprite.setDepth(40);
     this.previewSprite = sprite;
     showcase.add(sprite);
 
-    // Wardrobe Layer Overlay Text (Shows equipped hats/dresses/accessories)
+    // Anatomical Wardrobe Layers (depth > 40)
     if (this.add.text) {
-      this.previewWardrobeOverlay = this.add.text(0, -115, '', {
+      // Dress / Robe layer (torso through lower body)
+      this.wardrobeDressLayer = this.add.text(0, -68, '', {
+        fontSize: '40px',
+        align: 'center',
+      });
+      if (typeof this.wardrobeDressLayer.setOrigin === 'function') this.wardrobeDressLayer.setOrigin(0.5, 0.5);
+      if (typeof this.wardrobeDressLayer.setDepth === 'function') this.wardrobeDressLayer.setDepth(44);
+      showcase.add(this.wardrobeDressLayer);
+
+      // Top / Shirt layer (chest/torso)
+      this.wardrobeTopLayer = this.add.text(0, -80, '', {
         fontSize: '36px',
         align: 'center',
       });
-      if (typeof this.previewWardrobeOverlay.setOrigin === 'function') {
-        this.previewWardrobeOverlay.setOrigin(0.5, 0.5);
-      }
-      showcase.add(this.previewWardrobeOverlay);
+      if (typeof this.wardrobeTopLayer.setOrigin === 'function') this.wardrobeTopLayer.setOrigin(0.5, 0.5);
+      if (typeof this.wardrobeTopLayer.setDepth === 'function') this.wardrobeTopLayer.setDepth(45);
+      showcase.add(this.wardrobeTopLayer);
+
+      // Bottom / Skirt / Shorts layer (waist/legs)
+      this.wardrobeBottomLayer = this.add.text(0, -52, '', {
+        fontSize: '34px',
+        align: 'center',
+      });
+      if (typeof this.wardrobeBottomLayer.setOrigin === 'function') this.wardrobeBottomLayer.setOrigin(0.5, 0.5);
+      if (typeof this.wardrobeBottomLayer.setDepth === 'function') this.wardrobeBottomLayer.setDepth(46);
+      showcase.add(this.wardrobeBottomLayer);
+
+      // Backpack layer (slung over right shoulder)
+      this.wardrobeBackpackLayer = this.add.text(32, -78, '', {
+        fontSize: '30px',
+        align: 'center',
+      });
+      if (typeof this.wardrobeBackpackLayer.setOrigin === 'function') this.wardrobeBackpackLayer.setOrigin(0.5, 0.5);
+      if (typeof this.wardrobeBackpackLayer.setDepth === 'function') this.wardrobeBackpackLayer.setDepth(47);
+      showcase.add(this.wardrobeBackpackLayer);
+
+      // Glasses layer (over eyes / face)
+      this.wardrobeGlassesLayer = this.add.text(0, -108, '', {
+        fontSize: '28px',
+        align: 'center',
+      });
+      if (typeof this.wardrobeGlassesLayer.setOrigin === 'function') this.wardrobeGlassesLayer.setOrigin(0.5, 0.5);
+      if (typeof this.wardrobeGlassesLayer.setDepth === 'function') this.wardrobeGlassesLayer.setDepth(48);
+      showcase.add(this.wardrobeGlassesLayer);
+
+      // Hat / Headwear layer (perched on top of head)
+      this.wardrobeHatLayer = this.add.text(0, -142, '', {
+        fontSize: '40px',
+        align: 'center',
+      });
+      if (typeof this.wardrobeHatLayer.setOrigin === 'function') this.wardrobeHatLayer.setOrigin(0.5, 0.5);
+      if (typeof this.wardrobeHatLayer.setDepth === 'function') this.wardrobeHatLayer.setDepth(49);
+      showcase.add(this.wardrobeHatLayer);
+
+      // Backward compatibility reference
+      this.previewWardrobeOverlay = this.wardrobeHatLayer;
     }
 
-    // Live Character Bobbing Tween (syncs sprite and wardrobe overlay together)
+    // Dynamic Tailored Vector Wardrobe Graphics
+    if (this.add.graphics) {
+      this.wardrobeGraphics = this.add.graphics();
+      if (typeof this.wardrobeGraphics.setDepth === 'function') this.wardrobeGraphics.setDepth(45);
+      showcase.add(this.wardrobeGraphics);
+    }
+
+    // Live Character Bobbing Tween (syncs sprite and all wardrobe layers together)
     if (this.tweens?.add) {
-      const targets = this.previewWardrobeOverlay ? [sprite, this.previewWardrobeOverlay] : sprite;
+      const targets = [
+        sprite,
+        this.wardrobeGraphics,
+        this.wardrobeWingsLayer,
+        this.wardrobeDressLayer,
+        this.wardrobeTopLayer,
+        this.wardrobeBottomLayer,
+        this.wardrobeBackpackLayer,
+        this.wardrobeGlassesLayer,
+        this.wardrobeHatLayer,
+      ].filter(Boolean);
+
       this.tweens.add({
         targets,
         y: '-=12',
@@ -1366,38 +1453,121 @@ export class ShopScene extends Phaser.Scene {
   }
 
   private updateWardrobeOverlay(): void {
-    if (!this.previewWardrobeOverlay) return;
-
     const eq = DataManager.getInstance().getEquippedWardrobe();
-    const icons: string[] = [];
 
-    if (eq.hat) {
-      const w = WARDROBE_ITEMS.find((item) => item.id === eq.hat);
-      if (w) icons.push(w.icon);
-    }
-    if (eq.dress) {
-      const w = WARDROBE_ITEMS.find((item) => item.id === eq.dress);
-      if (w) icons.push(w.icon);
-    }
-    if (eq.top) {
-      const w = WARDROBE_ITEMS.find((item) => item.id === eq.top);
-      if (w) icons.push(w.icon);
-    }
-    if (eq.bottom) {
-      const w = WARDROBE_ITEMS.find((item) => item.id === eq.bottom);
-      if (w) icons.push(w.icon);
-    }
-    if (eq.wings) {
-      const w = WARDROBE_ITEMS.find((item) => item.id === eq.wings);
-      if (w) icons.push(w.icon);
-    }
-    if (eq.accessory) {
-      const w = WARDROBE_ITEMS.find((item) => item.id === eq.accessory);
-      if (w) icons.push(w.icon);
+    // 1. Hat / Headwear (cat_ears, scholar_cap, tram_hat)
+    if (this.wardrobeHatLayer && typeof this.wardrobeHatLayer.setText === 'function') {
+      let hatIcon = '';
+      if (eq.hat) {
+        const item = WARDROBE_ITEMS.find((w) => w.id === eq.hat);
+        if (item) hatIcon = item.icon;
+      } else if (eq.accessory && ['cat_ears', 'scholar_cap', 'tram_hat'].includes(eq.accessory)) {
+        const item = WARDROBE_ITEMS.find((w) => w.id === eq.accessory);
+        if (item) hatIcon = item.icon;
+      }
+      this.wardrobeHatLayer.setText(hatIcon);
     }
 
-    if (typeof this.previewWardrobeOverlay.setText === 'function') {
-      this.previewWardrobeOverlay.setText(icons.join(' '));
+    // 2. Glasses (star_glasses)
+    if (this.wardrobeGlassesLayer && typeof this.wardrobeGlassesLayer.setText === 'function') {
+      let glassesIcon = '';
+      if (eq.accessory === 'star_glasses') {
+        const item = WARDROBE_ITEMS.find((w) => w.id === 'star_glasses');
+        if (item) glassesIcon = item.icon;
+      }
+      this.wardrobeGlassesLayer.setText(glassesIcon);
+    }
+
+    // 3. Backpack (star_backpack)
+    if (this.wardrobeBackpackLayer && typeof this.wardrobeBackpackLayer.setText === 'function') {
+      let backpackIcon = '';
+      if (eq.accessory === 'star_backpack') {
+        const item = WARDROBE_ITEMS.find((w) => w.id === 'star_backpack');
+        if (item) backpackIcon = item.icon;
+      }
+      this.wardrobeBackpackLayer.setText(backpackIcon);
+    }
+
+    // 4. Wings (angel_wings)
+    if (this.wardrobeWingsLayer && typeof this.wardrobeWingsLayer.setText === 'function') {
+      let wingsIcon = '';
+      if (eq.wings) {
+        const item = WARDROBE_ITEMS.find((w) => w.id === eq.wings);
+        if (item) wingsIcon = item.icon;
+      } else if (eq.accessory === 'angel_wings') {
+        const item = WARDROBE_ITEMS.find((w) => w.id === 'angel_wings');
+        if (item) wingsIcon = item.icon;
+      }
+      this.wardrobeWingsLayer.setText(wingsIcon);
+    }
+
+    // 5. Dress / Robe / Onesie
+    if (this.wardrobeDressLayer && typeof this.wardrobeDressLayer.setText === 'function') {
+      let dressIcon = '';
+      if (eq.dress) {
+        const item = WARDROBE_ITEMS.find((w) => w.id === eq.dress);
+        if (item) dressIcon = item.icon;
+      }
+      this.wardrobeDressLayer.setText(dressIcon);
+    }
+
+    // 6. Top / Shirt
+    if (this.wardrobeTopLayer && typeof this.wardrobeTopLayer.setText === 'function') {
+      let topIcon = '';
+      if (eq.top) {
+        const item = WARDROBE_ITEMS.find((w) => w.id === eq.top);
+        if (item) topIcon = item.icon;
+      }
+      this.wardrobeTopLayer.setText(topIcon);
+    }
+
+    // 7. Bottom / Skirt / Shorts
+    if (this.wardrobeBottomLayer && typeof this.wardrobeBottomLayer.setText === 'function') {
+      let bottomIcon = '';
+      if (eq.bottom) {
+        const item = WARDROBE_ITEMS.find((w) => w.id === eq.bottom);
+        if (item) bottomIcon = item.icon;
+      }
+      this.wardrobeBottomLayer.setText(bottomIcon);
+    }
+
+    // Backward compatibility for legacy tests inspecting previewWardrobeOverlay
+    if (this.previewWardrobeOverlay && this.previewWardrobeOverlay !== this.wardrobeHatLayer && typeof this.previewWardrobeOverlay.setText === 'function') {
+      const allIcons: string[] = [];
+      if (eq.hat) {
+        const item = WARDROBE_ITEMS.find((w) => w.id === eq.hat);
+        if (item) allIcons.push(item.icon);
+      }
+      if (eq.dress) {
+        const item = WARDROBE_ITEMS.find((w) => w.id === eq.dress);
+        if (item) allIcons.push(item.icon);
+      }
+      if (eq.top) {
+        const item = WARDROBE_ITEMS.find((w) => w.id === eq.top);
+        if (item) allIcons.push(item.icon);
+      }
+      if (eq.bottom) {
+        const item = WARDROBE_ITEMS.find((w) => w.id === eq.bottom);
+        if (item) allIcons.push(item.icon);
+      }
+      if (eq.wings) {
+        const item = WARDROBE_ITEMS.find((w) => w.id === eq.wings);
+        if (item) allIcons.push(item.icon);
+      }
+      if (eq.accessory) {
+        const item = WARDROBE_ITEMS.find((w) => w.id === eq.accessory);
+        if (item) allIcons.push(item.icon);
+      }
+      this.previewWardrobeOverlay.setText(allIcons.join(' '));
+    }
+
+    // Dynamic Tailored Vector Wardrobe Rendering
+    if (this.wardrobeGraphics) {
+      CharacterOutfitCompositor.renderOutfit(this.wardrobeGraphics, eq, {
+        scale: 1.4,
+        offsetX: 0,
+        offsetY: -90,
+      });
     }
   }
 
@@ -1583,6 +1753,26 @@ export class ShopScene extends Phaser.Scene {
       modal.add(card);
     }
 
+    // Anatomical Wardrobe Overlay for Polaroid Photo
+    const eq = DataManager.getInstance().getEquippedWardrobe();
+
+    // Wings (behind sprite)
+    if (this.add.text) {
+      let wingsIcon = '';
+      if (eq.wings) {
+        const item = WARDROBE_ITEMS.find((w) => w.id === eq.wings);
+        if (item) wingsIcon = item.icon;
+      } else if (eq.accessory === 'angel_wings') {
+        const item = WARDROBE_ITEMS.find((w) => w.id === 'angel_wings');
+        if (item) wingsIcon = item.icon;
+      }
+      if (wingsIcon) {
+        const wTxt = this.add.text(0, -95, wingsIcon, { fontSize: '46px', align: 'center' });
+        if (typeof wTxt.setOrigin === 'function') wTxt.setOrigin(0.5);
+        modal.add(wTxt);
+      }
+    }
+
     // Polaroid Character Display
     const currentSkin = this.skins[this.selectedSkinIndex];
     const texKey = currentSkin?.standSprite || 'player_stand';
@@ -1591,6 +1781,86 @@ export class ShopScene extends Phaser.Scene {
       if (typeof spr.setScale === 'function') spr.setScale(1.5);
       if (currentSkin?.tint && typeof spr.setTint === 'function') spr.setTint(currentSkin.tint);
       modal.add(spr);
+    }
+
+    // Front anatomical wardrobe items (dress, top, bottom, backpack, glasses, hat)
+    if (this.add.text) {
+      // Dress
+      if (eq.dress) {
+        const item = WARDROBE_ITEMS.find((w) => w.id === eq.dress);
+        if (item) {
+          const dTxt = this.add.text(0, -68, item.icon, { fontSize: '42px', align: 'center' });
+          if (typeof dTxt.setOrigin === 'function') dTxt.setOrigin(0.5);
+          modal.add(dTxt);
+        }
+      }
+
+      // Top
+      if (eq.top) {
+        const item = WARDROBE_ITEMS.find((w) => w.id === eq.top);
+        if (item) {
+          const tTxt = this.add.text(0, -80, item.icon, { fontSize: '38px', align: 'center' });
+          if (typeof tTxt.setOrigin === 'function') tTxt.setOrigin(0.5);
+          modal.add(tTxt);
+        }
+      }
+
+      // Bottom
+      if (eq.bottom) {
+        const item = WARDROBE_ITEMS.find((w) => w.id === eq.bottom);
+        if (item) {
+          const bTxt = this.add.text(0, -50, item.icon, { fontSize: '36px', align: 'center' });
+          if (typeof bTxt.setOrigin === 'function') bTxt.setOrigin(0.5);
+          modal.add(bTxt);
+        }
+      }
+
+      // Backpack
+      if (eq.accessory === 'star_backpack') {
+        const item = WARDROBE_ITEMS.find((w) => w.id === 'star_backpack');
+        if (item) {
+          const bpTxt = this.add.text(34, -78, item.icon, { fontSize: '32px', align: 'center' });
+          if (typeof bpTxt.setOrigin === 'function') bpTxt.setOrigin(0.5);
+          modal.add(bpTxt);
+        }
+      }
+
+      // Glasses
+      if (eq.accessory === 'star_glasses') {
+        const item = WARDROBE_ITEMS.find((w) => w.id === 'star_glasses');
+        if (item) {
+          const gTxt = this.add.text(0, -110, item.icon, { fontSize: '30px', align: 'center' });
+          if (typeof gTxt.setOrigin === 'function') gTxt.setOrigin(0.5);
+          modal.add(gTxt);
+        }
+      }
+
+      // Hat / Headwear
+      let hatIcon = '';
+      if (eq.hat) {
+        const item = WARDROBE_ITEMS.find((w) => w.id === eq.hat);
+        if (item) hatIcon = item.icon;
+      } else if (eq.accessory && ['cat_ears', 'scholar_cap', 'tram_hat'].includes(eq.accessory)) {
+        const item = WARDROBE_ITEMS.find((w) => w.id === eq.accessory);
+        if (item) hatIcon = item.icon;
+      }
+      if (hatIcon) {
+        const hTxt = this.add.text(0, -145, hatIcon, { fontSize: '42px', align: 'center' });
+        if (typeof hTxt.setOrigin === 'function') hTxt.setOrigin(0.5);
+        modal.add(hTxt);
+      }
+    }
+
+    // Dynamic Tailored Vector Graphics for Polaroid
+    if (this.add.graphics) {
+      const ootdGraphics = this.add.graphics();
+      if (typeof ootdGraphics.setDepth === 'function') ootdGraphics.setDepth(15);
+      CharacterOutfitCompositor.renderOutfit(ootdGraphics, eq, {
+        scale: 1.5,
+        offsetX: 0,
+        offsetY: -90,
+      });
+      modal.add(ootdGraphics);
     }
 
     if (this.add.text) {

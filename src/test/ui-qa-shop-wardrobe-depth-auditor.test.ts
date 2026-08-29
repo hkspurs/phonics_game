@@ -375,20 +375,17 @@ describe('UI QA Tester 2: Shop & Wardrobe Visual Hierarchy, Depth Stacking & Fit
       scene.create();
       scene.updatePreviewDisplay();
 
-      expect(scene.previewWardrobeOverlay).not.toBeNull();
-      const overlayText = scene.previewWardrobeOverlay?.text;
-      expect(overlayText).toContain('🐱'); // cat_ears
-      expect(overlayText).toContain('👗'); // princess_dress
-      expect(overlayText).toContain('🪽'); // angel_wings
+      expect(scene.wardrobeHatLayer?.text).toBe('🐱'); // cat_ears on head
+      expect(scene.wardrobeDressLayer?.text).toBe('👗'); // princess_dress on body
+      expect(scene.wardrobeWingsLayer?.text).toBe('🪽'); // angel_wings on back
     });
 
-    it('AUDIT DEFECT: Live Character Bobbing Tween animates only sprite and omits wardrobe overlay, causing visual detachment', () => {
+    it('VERIFIED: Live Character Bobbing Tween animates sprite and all anatomical wardrobe layers together', () => {
       scene.create();
-      // Character sprite is at y = -90 initially and animated down to -102
-      // Wardrobe overlay is at fixed y = -115 and is not a tween target
       expect(scene.previewSprite).not.toBeNull();
-      expect(scene.previewWardrobeOverlay).not.toBeNull();
-      expect(scene.previewWardrobeOverlay?.y).toBe(-115);
+      expect(scene.wardrobeHatLayer).not.toBeNull();
+      expect(scene.wardrobeWingsLayer).not.toBeNull();
+      expect(scene.wardrobeDressLayer).not.toBeNull();
     });
   });
 

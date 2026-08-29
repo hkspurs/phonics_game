@@ -91,6 +91,13 @@ describe('Gamer Tester 2: Shop Gem/Coin Skin & Wardrobe Purchasing Auditor Suite
     scene.previewJumpText = mockTextObj() as any;
     scene.previewSpecialText = mockTextObj() as any;
     scene.previewWardrobeOverlay = mockTextObj() as any;
+    scene.wardrobeHatLayer = mockTextObj() as any;
+    scene.wardrobeGlassesLayer = mockTextObj() as any;
+    scene.wardrobeTopLayer = mockTextObj() as any;
+    scene.wardrobeBottomLayer = mockTextObj() as any;
+    scene.wardrobeDressLayer = mockTextObj() as any;
+    scene.wardrobeWingsLayer = mockTextObj() as any;
+    scene.wardrobeBackpackLayer = mockTextObj() as any;
 
     scene.previewSprite = {
       setTexture: vi.fn(),

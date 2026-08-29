@@ -5,7 +5,7 @@ test('Verify Sentence Scramble Speech: Reads prompt instruction before answering
   await page.goto('http://localhost:4173/');
   await page.waitForTimeout(2000);
 
-  const initialSpokenText = await page.evaluate(async () => {
+  await page.evaluate(() => {
     const game = (window as any).__PHASER_GAME__;
     const title = game.scene.getScene('TitleScene');
 
@@ -33,10 +33,10 @@ test('Verify Sentence Scramble Speech: Reads prompt instruction before answering
         }
       ]
     });
-
-    await new Promise(r => setTimeout(r, 2000));
-    return (window as any).__LAST_SPOKEN_TEXT__;
   });
+
+  await page.waitForFunction(() => !!(window as any).__LAST_SPOKEN_TEXT__, { timeout: 10000 });
+  const initialSpokenText = await page.evaluate(() => (window as any).__LAST_SPOKEN_TEXT__);
 
   console.log('1. Initial auto-read spoken text for sentence scramble:', initialSpokenText);
   expect(initialSpokenText).toContain('重組句子');

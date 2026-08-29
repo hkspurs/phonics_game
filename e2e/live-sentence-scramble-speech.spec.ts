@@ -5,7 +5,7 @@ test('Live Verify: Sentence scramble speaks prompt instruction first on GitHub P
   await page.goto(targetUrl);
   await page.waitForTimeout(2000);
 
-  const initialSpokenText = await page.evaluate(async () => {
+  await page.evaluate(() => {
     const game = (window as any).__PHASER_GAME__;
     const title = game.scene.getScene('TitleScene');
 
@@ -33,10 +33,10 @@ test('Live Verify: Sentence scramble speaks prompt instruction first on GitHub P
         }
       ]
     });
-
-    await new Promise(r => setTimeout(r, 2000));
-    return (window as any).__LAST_SPOKEN_TEXT__;
   });
+
+  await page.waitForFunction(() => !!(window as any).__LAST_SPOKEN_TEXT__, { timeout: 10000 });
+  const initialSpokenText = await page.evaluate(() => (window as any).__LAST_SPOKEN_TEXT__);
 
   console.log('Live Spoken Text for Sentence Scramble:', initialSpokenText);
   expect(initialSpokenText).toContain('重組句子');

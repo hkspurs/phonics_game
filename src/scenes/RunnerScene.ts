@@ -5,6 +5,7 @@ import { DataManager } from '../services/DataManager';
 import { SoundManager } from '../services/SoundManager';
 import { CanvasButton } from '../ui/CanvasButton';
 import { CompanionPet } from '../ui/CompanionPet';
+import { CharacterOutfitCompositor } from '../ui/CharacterOutfitCompositor';
 
 export interface RunnerSessionStats {
   hintsUsed: number;
@@ -213,6 +214,14 @@ export class RunnerScene extends Phaser.Scene {
 
   // Game Objects & Layers
   public playerSprite: Phaser.GameObjects.Image | any = null;
+  public runnerWardrobeGraphics: Phaser.GameObjects.Graphics | any = null;
+  public runnerWardrobeWings: Phaser.GameObjects.Text | any = null;
+  public runnerWardrobeDress: Phaser.GameObjects.Text | any = null;
+  public runnerWardrobeTop: Phaser.GameObjects.Text | any = null;
+  public runnerWardrobeBottom: Phaser.GameObjects.Text | any = null;
+  public runnerWardrobeBackpack: Phaser.GameObjects.Text | any = null;
+  public runnerWardrobeGlasses: Phaser.GameObjects.Text | any = null;
+  public runnerWardrobeHat: Phaser.GameObjects.Text | any = null;
   public playerShadow: Phaser.GameObjects.Graphics | any = null;
   public skyBackground: Phaser.GameObjects.Rectangle | any = null;
   public clouds: (Phaser.GameObjects.Image | any)[] = [];
@@ -933,6 +942,98 @@ export class RunnerScene extends Phaser.Scene {
       }
     }
 
+    // 2.1 Anatomical Wardrobe Layers for Player
+    try {
+      const dm = DataManager.getInstance();
+      const eq = dm.getEquippedWardrobe();
+
+      // Wings (behind player, depth 12)
+      if (this.add.text) {
+        let wingsIcon = '';
+        if (eq.wings) {
+          const w = dm.getWardrobeItems('accessory').find((i) => i.id === eq.wings) || { icon: '🪽' };
+          wingsIcon = w.icon;
+        } else if (eq.accessory === 'angel_wings') {
+          wingsIcon = '🪽';
+        }
+        if (wingsIcon) {
+          this.runnerWardrobeWings = this.add.text(this.playerScreenX, this.playerBaselineY + 2, wingsIcon, { fontSize: '28px' });
+          if (this.runnerWardrobeWings.setOrigin) this.runnerWardrobeWings.setOrigin(0.5);
+          if (this.runnerWardrobeWings.setDepth) this.runnerWardrobeWings.setDepth(12);
+        }
+
+        // Dress (depth 16)
+        if (eq.dress) {
+          const w = dm.getWardrobeItems('dress').find((i) => i.id === eq.dress);
+          if (w) {
+            this.runnerWardrobeDress = this.add.text(this.playerScreenX, this.playerBaselineY + 12, w.icon, { fontSize: '26px' });
+            if (this.runnerWardrobeDress.setOrigin) this.runnerWardrobeDress.setOrigin(0.5);
+            if (this.runnerWardrobeDress.setDepth) this.runnerWardrobeDress.setDepth(16);
+          }
+        }
+
+        // Top (depth 16)
+        if (eq.top) {
+          const w = dm.getWardrobeItems('top').find((i) => i.id === eq.top);
+          if (w) {
+            this.runnerWardrobeTop = this.add.text(this.playerScreenX, this.playerBaselineY + 6, w.icon, { fontSize: '24px' });
+            if (this.runnerWardrobeTop.setOrigin) this.runnerWardrobeTop.setOrigin(0.5);
+            if (this.runnerWardrobeTop.setDepth) this.runnerWardrobeTop.setDepth(16);
+          }
+        }
+
+        // Bottom (depth 17)
+        if (eq.bottom) {
+          const w = dm.getWardrobeItems('bottom').find((i) => i.id === eq.bottom);
+          if (w) {
+            this.runnerWardrobeBottom = this.add.text(this.playerScreenX, this.playerBaselineY + 20, w.icon, { fontSize: '22px' });
+            if (this.runnerWardrobeBottom.setOrigin) this.runnerWardrobeBottom.setOrigin(0.5);
+            if (this.runnerWardrobeBottom.setDepth) this.runnerWardrobeBottom.setDepth(17);
+          }
+        }
+
+        // Backpack (depth 18)
+        if (eq.accessory === 'star_backpack') {
+          this.runnerWardrobeBackpack = this.add.text(this.playerScreenX + 18, this.playerBaselineY + 8, '🎒', { fontSize: '20px' });
+          if (this.runnerWardrobeBackpack.setOrigin) this.runnerWardrobeBackpack.setOrigin(0.5);
+          if (this.runnerWardrobeBackpack.setDepth) this.runnerWardrobeBackpack.setDepth(18);
+        }
+
+        // Glasses (depth 19)
+        if (eq.accessory === 'star_glasses') {
+          this.runnerWardrobeGlasses = this.add.text(this.playerScreenX, this.playerBaselineY - 14, '👓', { fontSize: '18px' });
+          if (this.runnerWardrobeGlasses.setOrigin) this.runnerWardrobeGlasses.setOrigin(0.5);
+          if (this.runnerWardrobeGlasses.setDepth) this.runnerWardrobeGlasses.setDepth(19);
+        }
+
+        // Hat (depth 20)
+        let hatIcon = '';
+        if (eq.hat) {
+          const w = dm.getWardrobeItems('accessory').find((i) => i.id === eq.hat);
+          if (w) hatIcon = w.icon;
+        } else if (eq.accessory && ['cat_ears', 'scholar_cap', 'tram_hat'].includes(eq.accessory)) {
+          const w = dm.getWardrobeItems('accessory').find((i) => i.id === eq.accessory);
+          if (w) hatIcon = w.icon;
+        }
+        if (hatIcon) {
+          this.runnerWardrobeHat = this.add.text(this.playerScreenX, this.playerBaselineY - 34, hatIcon, { fontSize: '26px' });
+          if (this.runnerWardrobeHat.setOrigin) this.runnerWardrobeHat.setOrigin(0.5);
+          if (this.runnerWardrobeHat.setDepth) this.runnerWardrobeHat.setDepth(20);
+        }
+      }
+
+      // Dynamic Tailored Vector Graphics for Runner
+      if (this.add.graphics) {
+        this.runnerWardrobeGraphics = this.add.graphics();
+        if (typeof this.runnerWardrobeGraphics.setDepth === 'function') this.runnerWardrobeGraphics.setDepth(16);
+        CharacterOutfitCompositor.renderOutfit(this.runnerWardrobeGraphics, eq, {
+          scale: 0.9,
+          offsetX: this.playerScreenX,
+          offsetY: this.playerBaselineY,
+        });
+      }
+    } catch {}
+
     // 3. Companion Pet (if unlocked via 3-6-9 milestone and no shop pet equipped)
     try {
       if (!this.companionPet) {
@@ -1417,6 +1518,45 @@ export class RunnerScene extends Phaser.Scene {
 
     if (this.playerSprite && typeof this.playerSprite.setY === 'function') {
       this.playerSprite.setY(this.playerY);
+    }
+
+    // Update Anatomical Wardrobe Layers position
+    const isFlip = Boolean(this.playerSprite?.flipX);
+    const bpOffset = isFlip ? -18 : 18;
+    if (this.runnerWardrobeWings && typeof this.runnerWardrobeWings.setPosition === 'function') {
+      this.runnerWardrobeWings.setPosition(this.playerScreenX, this.playerY + 2);
+    }
+    if (this.runnerWardrobeDress && typeof this.runnerWardrobeDress.setPosition === 'function') {
+      this.runnerWardrobeDress.setPosition(this.playerScreenX, this.playerY + 12);
+    }
+    if (this.runnerWardrobeTop && typeof this.runnerWardrobeTop.setPosition === 'function') {
+      this.runnerWardrobeTop.setPosition(this.playerScreenX, this.playerY + 6);
+    }
+    if (this.runnerWardrobeBottom && typeof this.runnerWardrobeBottom.setPosition === 'function') {
+      this.runnerWardrobeBottom.setPosition(this.playerScreenX, this.playerY + 20);
+    }
+    if (this.runnerWardrobeBackpack && typeof this.runnerWardrobeBackpack.setPosition === 'function') {
+      this.runnerWardrobeBackpack.setPosition(this.playerScreenX + bpOffset, this.playerY + 8);
+    }
+    if (this.runnerWardrobeGlasses && typeof this.runnerWardrobeGlasses.setPosition === 'function') {
+      this.runnerWardrobeGlasses.setPosition(this.playerScreenX, this.playerY - 14);
+    }
+    if (this.runnerWardrobeHat && typeof this.runnerWardrobeHat.setPosition === 'function') {
+      this.runnerWardrobeHat.setPosition(this.playerScreenX, this.playerY - 34);
+    }
+
+    // Dynamic Tailored Vector Graphics for Runner Kinematics
+    if (this.runnerWardrobeGraphics) {
+      try {
+        const dm = DataManager.getInstance();
+        const eq = dm.getEquippedWardrobe();
+        CharacterOutfitCompositor.renderOutfit(this.runnerWardrobeGraphics, eq, {
+          scale: 0.9,
+          offsetX: this.playerScreenX,
+          offsetY: this.playerY,
+          flipX: isFlip,
+        });
+      } catch {}
     }
 
     // Update Shield Graphics position
