@@ -205,12 +205,12 @@ export class ResultScene extends Phaser.Scene {
         x: startX + Phaser.Math.Between(-80, 80),
         angle: Phaser.Math.Between(-180, 180),
         duration: Phaser.Math.Between(2600, 5200),
-        repeat: -1,
+        repeat: 0,
         delay: Phaser.Math.Between(0, 2000),
         ease: 'Linear',
-        onRepeat: () => {
-          p.y = -40;
-          p.x = Phaser.Math.Between(40, width - 40);
+        onComplete: () => {
+          if (typeof p.destroy === 'function') p.destroy();
+          this.confettiParticles = this.confettiParticles.filter(particle => particle !== p);
         },
       });
     }

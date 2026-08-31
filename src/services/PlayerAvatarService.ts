@@ -92,6 +92,8 @@ export interface PlayerAppearance {
   outfitDefinition?: OutfitDefinition;
 }
 
+export type AvatarPose = 'idle' | 'run' | 'jump' | 'cheer';
+
 export class PlayerAvatarService {
   private static instance: PlayerAvatarService;
 
@@ -137,7 +139,7 @@ export class PlayerAvatarService {
   /**
    * Resolves the primary texture key for a given pose
    */
-  public getTextureKey(pose: 'idle' | 'run' | 'cheer' = 'idle', scene?: Phaser.Scene): {
+  public getTextureKey(pose: AvatarPose = 'idle', scene?: Phaser.Scene): {
     textureKey: string;
     isFullSprite: boolean;
     tint?: number;
@@ -145,12 +147,23 @@ export class PlayerAvatarService {
     const appearance = this.getAppearance();
 
     // 1. Check for Level-1 Dedicated AI Outfit Sprite
-    if (appearance.outfitDefinition) {
-      const assetPath =
-        appearance.outfitDefinition.assets[pose] ||
-        appearance.outfitDefinition.assets.idle;
+    if (
+      appearance.outfitDefinition &&
+      appearance.outfitDefinition.artworkStatus !== 'placeholder'
+    ) {
+      const assets = appearance.outfitDefinition.assets;
+      const requestedAsset =
+        pose === 'idle' ? assets.idle :
+        pose === 'run' ? assets.run :
+        pose === 'cheer' ? assets.cheer :
+        undefined;
+      const candidates = pose === 'jump'
+        ? [assets.run, assets.idle]
+        : [requestedAsset, assets.idle];
 
-      if (assetPath) {
+      for (const assetPath of candidates.filter(
+        (path, index, all): path is string => Boolean(path) && all.indexOf(path) === index
+      )) {
         // If scene textures are available, verify existence; otherwise default to path
         if (!scene || !scene.textures || scene.textures.exists(assetPath)) {
           return {

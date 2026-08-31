@@ -338,6 +338,27 @@ describe('Meta & Support Scenes Suite', () => {
       expect(scene.homeButton).toBeDefined();
     });
 
+    it('uses one-shot result confetti instead of an infinite loop', () => {
+      mock.tweens.add.mockClear();
+
+      (scene as any).spawnConfettiParticles(1280, 720);
+
+      expect(mock.tweens.add.mock.calls.length).toBeGreaterThan(0);
+      expect(mock.tweens.add.mock.calls.every(([config]: any[]) => config.repeat !== -1)).toBe(true);
+    });
+
+    it('cleans each result confetti particle after its one-shot tween completes', () => {
+      mock.tweens.add.mockClear();
+
+      (scene as any).spawnConfettiParticles(1280, 720);
+      const configs = mock.tweens.add.mock.calls.map(([config]: any[]) => config);
+
+      configs.forEach((config: any) => config.onComplete?.());
+
+      expect(scene.confettiParticles).toHaveLength(0);
+      configs.forEach((config: any) => expect(config.targets.destroy).toHaveBeenCalled());
+    });
+
     it('navigates to MapScene when clicking map button', () => {
       scene.init({ stationId: 1 });
       scene.create();

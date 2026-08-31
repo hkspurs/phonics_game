@@ -27,6 +27,11 @@ export class OutfitRegistry {
     return this.get(id)?.id ?? id;
   }
 
+  isWearingArtworkReady(id: string): boolean {
+    const definition = this.get(id);
+    return !definition || definition.artworkStatus !== 'placeholder';
+  }
+
   getAssetKey(id: string, pose: PreviewPose): string {
     return `outfit:${this.resolveId(id)}:${pose}`;
   }

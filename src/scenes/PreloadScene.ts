@@ -266,6 +266,7 @@ export class PreloadScene extends Phaser.Scene {
 
     const paths = new Set<string>();
     OUTFIT_DEFINITIONS.forEach(definition => {
+      if (definition.artworkStatus === 'placeholder') return;
       Object.values(definition.assets).forEach(path => {
         if (path) paths.add(path);
       });

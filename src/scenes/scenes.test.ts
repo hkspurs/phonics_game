@@ -380,6 +380,29 @@ describe('Scene Lifecycle & Navigation Flow', () => {
       expect(loadedImageKeys).toContain('assets/character/outfits/scholar_gown/cheer.png');
     });
 
+    it('does not enqueue missing Star Hoodie placeholder art', () => {
+      const preloadScene = new PreloadScene();
+      const mock = createMockSceneForTest('PreloadScene');
+      Object.assign(preloadScene, mock);
+
+      preloadScene.preload();
+
+      const loadedImageKeys = mock.load.image.mock.calls.map((call: any[]) => call[0]);
+      expect(loadedImageKeys).not.toContain('assets/character/outfits/star_hoodie/star_hoodie_wearing.png');
+      expect(loadedImageKeys).not.toContain('assets/outfits/star_hoodie/star_hoodie_thumbnail.png');
+    });
+
+    it('does not enqueue synthetic future layer paths for full-sprite outfits', () => {
+      const preloadScene = new PreloadScene();
+      const mock = createMockSceneForTest('PreloadScene');
+      Object.assign(preloadScene, mock);
+
+      preloadScene.preload();
+
+      const loadedImageKeys = mock.load.image.mock.calls.map((call: any[]) => call[0]);
+      expect(loadedImageKeys.some((key: string) => key.endsWith('/dress_or_outfit.png'))).toBe(false);
+    });
+
     it('handles loader progress and complete events cleanly', () => {
       const preloadScene = new PreloadScene();
       const mock = createMockSceneForTest('PreloadScene');

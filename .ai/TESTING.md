@@ -8,7 +8,7 @@ npm run test:unit
 ```
 - **Engine**: Vitest
 - **Scope**: 43 test suites covering DataManager, QuestionEngine, SentenceEngine, MathGenerator, RunnerScene physics, and Wardrobe preview.
-- **Pass Criteria**: 100% tests green (1,120 / 1,120).
+- **Pass Criteria**: 100% tests green (1,158 / 1,158).
 
 ### B. Build Production Bundle
 ```bash

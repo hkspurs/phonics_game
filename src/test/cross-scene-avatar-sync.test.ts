@@ -51,6 +51,33 @@ describe('Top 10: Player Avatar Cross-Scene Synchronization & Shop Ecosystem Sui
       expect(texInfo.isFullSprite).toBe(true);
       expect(texInfo.textureKey).toBe('assets/character/outfits/scholar_gown/idle.png');
     });
+
+    it('does not treat placeholder Star Hoodie artwork as a full outfit sprite', () => {
+      const dm = DataManager.getInstance();
+      dm.getProfile()!.ownedWardrobe!.push('hoodie_star');
+      dm.equipWardrobeItem('top', 'hoodie_star');
+
+      const texInfo = PlayerAvatarService.getInstance().getTextureKey('idle');
+
+      expect(texInfo.isFullSprite).toBe(false);
+      expect(texInfo.textureKey).toBe('player_stand');
+    });
+
+    it('reuses dedicated idle art when a requested outfit pose is missing', () => {
+      const dm = DataManager.getInstance();
+      dm.getProfile()!.ownedWardrobe!.push('scholar_robe');
+      dm.equipWardrobeItem('dress', 'scholar_robe');
+
+      const scene = {
+        textures: {
+          exists: vi.fn((key: string) => key.endsWith('/idle.png')),
+        },
+      } as never;
+      const texInfo = PlayerAvatarService.getInstance().getTextureKey('run', scene);
+
+      expect(texInfo.isFullSprite).toBe(true);
+      expect(texInfo.textureKey).toBe('assets/character/outfits/scholar_gown/idle.png');
+    });
   });
 
   describe('2. PlayerAvatarBadge Component & Reactions', () => {

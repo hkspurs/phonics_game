@@ -611,7 +611,7 @@ export class ShopScene extends Phaser.Scene {
 
     const listTop = layout.items.y + (layout.compact ? 92 : 78);
     const denseCatalog = this.currentWardrobeFilter === 'all' || this.currentWardrobeFilter === 'owned';
-    const columns = denseCatalog ? (layout.compact ? 2 : 3) : (layout.compact ? 2 : 1);
+    const columns = layout.compact ? 1 : denseCatalog ? 3 : 1;
     const cardGap = layout.compact ? 7 : 9;
     const cardWidth = (layout.items.width - cardGap * (columns - 1)) / columns;
     const allItems = this.getVisibleWardrobeItems();
@@ -622,7 +622,7 @@ export class ShopScene extends Phaser.Scene {
     const items = allItems.slice(this.wardrobePageStart, this.wardrobePageStart + pageSize);
     const pagerPadding = layout.compact && denseCatalog && pageCount > 1 ? 38 : 0;
     const rows = Math.max(1, Math.ceil(items.length / columns));
-    const cardHeight = Math.max(58, Math.min(denseCatalog ? (layout.compact ? 70 : 78) : (layout.compact ? 78 : 92), (layout.items.height - (listTop - layout.items.y) - pagerPadding - cardGap * (rows - 1)) / rows));
+    const cardHeight = Math.max(58, Math.min(denseCatalog ? (layout.compact ? 108 : 78) : (layout.compact ? 106 : 92), (layout.items.height - (listTop - layout.items.y) - pagerPadding - cardGap * (rows - 1)) / rows));
 
     items.forEach((item, idx) => {
       const globalIdx = this.wardrobePageStart + idx;
@@ -721,26 +721,27 @@ export class ShopScene extends Phaser.Scene {
     const isOwned = dm.isWardrobeOwned(item.id);
     const equipped = dm.getEquippedWardrobe();
     const isEquipped = Object.values(equipped).includes(item.id);
+    const isArtworkReady = this.isWardrobePreviewReady(item);
     const isSelected = idx === this.selectedWardrobeIndex;
 
     if (denseCatalog) {
-      const iconY = cy - cardHeight * 0.26;
+      const iconY = cy - cardHeight * 0.3;
       const thumbnail = wardrobeRegistry.get(item.id)?.assets.thumbnail;
       if (thumbnail && this.textures?.exists && this.textures.exists(thumbnail) && this.add.image) {
         const thumb = this.add.image(cx, iconY, thumbnail);
         if (typeof thumb.setOrigin === 'function') thumb.setOrigin(0.5);
-        if (typeof thumb.setScale === 'function') thumb.setScale(compact ? 0.32 : 0.42);
+        if (typeof thumb.setScale === 'function') thumb.setScale(compact ? 0.42 : 0.42);
         if (typeof thumb.setDepth === 'function') thumb.setDepth(61);
         this.tabGameObjects.push(thumb);
       } else if (this.add.text) {
-        const iconTxt = this.add.text(cx, iconY, item.icon, { fontSize: compact ? '28px' : '34px' });
+        const iconTxt = this.add.text(cx, iconY, item.icon, { fontSize: compact ? '42px' : '34px' });
         if (typeof iconTxt.setOrigin === 'function') iconTxt.setOrigin(0.5);
         if (typeof iconTxt.setDepth === 'function') iconTxt.setDepth(61);
         this.tabGameObjects.push(iconTxt);
       }
 
       const nameTxt = this.add.text(cx, cy - 2, item.name, {
-        fontSize: compact ? '13px' : '15px',
+        fontSize: compact ? '24px' : '15px',
         fontFamily: "'Kenney Future', 'Noto Sans TC', sans-serif",
         color: isSelected ? '#1f1505' : '#ffffff',
         fontStyle: 'bold',
@@ -751,8 +752,8 @@ export class ShopScene extends Phaser.Scene {
       if (typeof nameTxt.setDepth === 'function') nameTxt.setDepth(61);
       this.tabGameObjects.push(nameTxt);
 
-      const zhTxt = this.add.text(cx, cy + 13, item.nameEn, {
-        fontSize: compact ? '9px' : '10px',
+      const zhTxt = this.add.text(cx, cy + 23, item.nameEn, {
+        fontSize: compact ? '15px' : '10px',
         fontFamily: "'Noto Sans TC', 'Microsoft JhengHei', sans-serif",
         color: isSelected ? '#3d2503' : '#d9e2ff',
         align: 'center',
@@ -762,11 +763,13 @@ export class ShopScene extends Phaser.Scene {
       if (typeof zhTxt.setDepth === 'function') zhTxt.setDepth(61);
       this.tabGameObjects.push(zhTxt);
 
-      const statusLabel = isEquipped ? '✅ 已穿戴' : isOwned ? '📦 已擁有' : `🪙 ${item.costCoins}`;
+      const statusLabel = !isArtworkReady
+        ? '🎨 美術準備中'
+        : isEquipped ? '✅ 已穿戴' : isOwned ? '📦 已擁有' : `🪙 ${item.costCoins}`;
       const statusTxt = this.add.text(cx, cy + cardHeight * 0.34, statusLabel, {
-        fontSize: compact ? '10px' : '12px',
+        fontSize: compact ? '18px' : '12px',
         fontFamily: "'Noto Sans TC', 'Microsoft JhengHei', sans-serif",
-        color: isEquipped ? '#065f24' : isOwned ? '#1e3a8a' : isSelected ? '#7a4f01' : '#ffd700',
+        color: !isArtworkReady ? '#c8d5ff' : isEquipped ? '#065f24' : isOwned ? '#1e3a8a' : isSelected ? '#7a4f01' : '#ffd700',
         fontStyle: 'bold',
         align: 'center',
       });
@@ -789,12 +792,12 @@ export class ShopScene extends Phaser.Scene {
     }
 
     if (this.add.text) {
-      const iconX = cx - cardWidth / 2 + (compact ? 28 : 40);
+      const iconX = cx - cardWidth / 2 + (compact ? 48 : 40);
       const thumbnail = wardrobeRegistry.get(item.id)?.assets.thumbnail;
       if (thumbnail && this.textures?.exists && this.textures.exists(thumbnail) && this.add.image) {
         const thumb = this.add.image(iconX, cy, thumbnail);
         if (typeof thumb.setOrigin === 'function') thumb.setOrigin(0.5);
-        if (typeof thumb.setScale === 'function') thumb.setScale(compact ? 0.48 : 0.66);
+        if (typeof thumb.setScale === 'function') thumb.setScale(compact ? 0.52 : 0.66);
         if (typeof thumb.setDepth === 'function') thumb.setDepth(61);
         this.tabGameObjects.push(thumb);
       } else {
@@ -806,41 +809,43 @@ export class ShopScene extends Phaser.Scene {
       }
 
       // Name
-      const nameTxt = this.add.text(cx - cardWidth / 2 + (compact || denseCatalog ? 42 : 76), cy - (compact ? 12 : 15), denseCatalog ? item.nameEn : item.name, {
-        fontSize: denseCatalog ? (compact ? '12px' : '15px') : compact ? '18px' : '26px',
+      const textX = cx - cardWidth / 2 + (compact ? 106 : denseCatalog ? 42 : 76);
+      const textWidth = Math.max(40, cardWidth - (compact ? 148 : compact || denseCatalog ? 78 : 152));
+      const nameTxt = this.add.text(textX, cy - (compact ? 17 : 15), denseCatalog ? item.nameEn : item.name, {
+        fontSize: denseCatalog ? (compact ? '18px' : '15px') : compact ? '24px' : '26px',
         fontFamily: "'Kenney Future', 'Noto Sans TC', sans-serif",
         color: isSelected ? '#1f1505' : '#ffffff',
         fontStyle: 'bold',
-        wordWrap: { width: Math.max(40, cardWidth - (compact || denseCatalog ? 78 : 152)) },
+        wordWrap: { width: textWidth },
       });
       if (typeof nameTxt.setOrigin === 'function') nameTxt.setOrigin(0, 0.5);
       if (typeof nameTxt.setDepth === 'function') nameTxt.setDepth(61);
       this.tabGameObjects.push(nameTxt);
 
       // Perk
-      const perkTxt = this.add.text(cx - cardWidth / 2 + (compact || denseCatalog ? 42 : 76), cy + (compact ? 14 : 15), denseCatalog ? item.name : item.perkDescription, {
-        fontSize: denseCatalog ? (compact ? '10px' : '11px') : compact ? '12px' : '17px',
+      const perkTxt = this.add.text(textX, cy + (compact ? 16 : 15), denseCatalog ? item.name : item.perkDescription, {
+        fontSize: denseCatalog ? (compact ? '14px' : '11px') : compact ? '16px' : '17px',
         fontFamily: "'Noto Sans TC', 'Microsoft JhengHei', sans-serif",
         color: isSelected ? '#3d2503' : '#d9e2ff',
-        wordWrap: { width: Math.max(40, cardWidth - (compact || denseCatalog ? 78 : 152)) },
+        wordWrap: { width: textWidth },
       });
       if (typeof perkTxt.setOrigin === 'function') perkTxt.setOrigin(0, 0.5);
       if (typeof perkTxt.setDepth === 'function') perkTxt.setDepth(61);
       this.tabGameObjects.push(perkTxt);
 
       // Status label
-      let statusLabel = `🪙 ${item.costCoins}`;
-      let statusColor = isSelected ? '#7a4f01' : '#ffd700';
-      if (isEquipped) {
+      let statusLabel = !isArtworkReady ? '🎨 美術準備中' : `🪙 ${item.costCoins}`;
+      let statusColor = !isArtworkReady ? '#c8d5ff' : isSelected ? '#7a4f01' : '#ffd700';
+      if (isArtworkReady && isEquipped) {
         statusLabel = '✅ 已穿戴';
         statusColor = isSelected ? '#065f24' : '#76d67c';
-      } else if (isOwned) {
+      } else if (isArtworkReady && isOwned) {
         statusLabel = '📦 已擁有';
         statusColor = isSelected ? '#1e3a8a' : '#a0c4ff';
       }
 
-      const statusTxt = this.add.text(cx + cardWidth / 2 - (compact ? 8 : 12), cy + cardHeight * 0.29, statusLabel, {
-        fontSize: compact ? '13px' : '22px',
+      const statusTxt = this.add.text(cx + cardWidth / 2 - (compact ? 12 : 12), cy + cardHeight * 0.29, statusLabel, {
+        fontSize: compact ? '16px' : '22px',
         fontFamily: "'Kenney Future', 'Noto Sans TC', sans-serif",
         color: statusColor,
         fontStyle: 'bold',
@@ -925,7 +930,7 @@ export class ShopScene extends Phaser.Scene {
       targets: button,
       scaleX: 1.025,
       scaleY: 1.025,
-      duration: 70,
+      duration: 140,
       yoyo: true,
       ease: 'Sine.easeOut',
       onComplete: () => button.setScale(1),
@@ -948,6 +953,10 @@ export class ShopScene extends Phaser.Scene {
     const dm = DataManager.getInstance();
     const owned = dm.getProfile().ownedWardrobe ?? [];
     return getWardrobeItemsForFilter(WARDROBE_ITEMS, this.currentWardrobeFilter, owned);
+  }
+
+  private isWardrobePreviewReady(item: WardrobeItem): boolean {
+    return wardrobeRegistry.isWearingArtworkReady(item.id);
   }
 
   private getResponsiveWardrobeLayout(width: number, height: number) {
@@ -1620,6 +1629,7 @@ export class ShopScene extends Phaser.Scene {
     const isOwned = dm.isWardrobeOwned(item.id);
     const equipped = dm.getEquippedWardrobe();
     const isEquipped = Object.values(equipped).includes(item.id);
+    const isArtworkReady = this.isWardrobePreviewReady(item);
 
     if (this.previewController) {
       const skin = this.skins[this.selectedSkinIndex];
@@ -1648,7 +1658,7 @@ export class ShopScene extends Phaser.Scene {
     }
 
     if (this.previewSpecialText && typeof this.previewSpecialText.setText === 'function') {
-      this.previewSpecialText.setText(`🎀 ${item.perkDescription}`);
+      this.previewSpecialText.setText(isArtworkReady ? `🎀 ${item.perkDescription}` : '🎨 正式穿戴圖製作中，暫不開放購買');
     }
 
     if (this.actionButton) {
@@ -1657,6 +1667,10 @@ export class ShopScene extends Phaser.Scene {
         this.actionButton.setText('❌ 脫下衣物');
         this.actionButton.setColor('red');
         this.actionButton.setEnabled(true);
+      } else if (!isArtworkReady) {
+        this.actionButton.setText('🎨 美術準備中');
+        this.actionButton.setColor('grey');
+        this.actionButton.setEnabled(false);
       } else if (isOwned) {
         this.actionButton.setText('👗 立即換上');
         this.actionButton.setColor('green');
@@ -1963,6 +1977,8 @@ export class ShopScene extends Phaser.Scene {
       const isOwned = dm.isWardrobeOwned(item.id);
       const equipped = dm.getEquippedWardrobe();
       const isEquipped = Object.values(equipped).includes(item.id);
+
+      if (!this.isWardrobePreviewReady(item) && !isEquipped) return;
 
       if (isEquipped) {
         // Unequip

@@ -106,6 +106,46 @@ describe('ShopScene 4 Tabs & Wardrobe Live Fitting Room', () => {
     expect(scene.currentPose).toBe('cheer');
   });
 
+  it('uses one readable compact catalogue column', () => {
+    const previousWidth = window.innerWidth;
+    const previousHeight = window.innerHeight;
+    Object.defineProperty(window, 'innerWidth', { configurable: true, value: 844 });
+    Object.defineProperty(window, 'innerHeight', { configurable: true, value: 390 });
+
+    try {
+      scene.create();
+      scene.switchTab('wardrobe');
+
+      const xPositions = new Set((scene as any).wardrobeItemButtons.map((button: any) => button.x));
+      expect(xPositions.size).toBe(1);
+    } finally {
+      Object.defineProperty(window, 'innerWidth', { configurable: true, value: previousWidth });
+      Object.defineProperty(window, 'innerHeight', { configurable: true, value: previousHeight });
+    }
+  });
+
+  it('keeps Star Hoodie unavailable while its wearing artwork is a placeholder', () => {
+    scene.create();
+    scene.switchTab('wardrobe');
+    scene.switchWardrobeCategory('top');
+    scene.selectWardrobeItem(3);
+
+    expect(scene.actionButton?.getText()).toContain('美術準備中');
+    expect(scene.actionButton?.isEnabled()).toBe(false);
+  });
+
+  it('uses the approved 120–160ms selected-card feedback', () => {
+    scene.create();
+    scene.switchTab('wardrobe');
+    mock.tweens.add.mockClear();
+
+    (scene as any).playWardrobeSelectionFeedback();
+
+    const feedbackTween = mock.tweens.add.mock.calls.at(-1)?.[0];
+    expect(feedbackTween.duration).toBeGreaterThanOrEqual(120);
+    expect(feedbackTween.duration).toBeLessThanOrEqual(160);
+  });
+
   it('opens and closes OOTD Photo Booth modal', () => {
     scene.create();
     scene.showOOTDPhotoModal();

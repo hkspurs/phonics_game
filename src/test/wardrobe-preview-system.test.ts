@@ -29,6 +29,7 @@ const mockGraphics = () => ({
   fillCircle: vi.fn(),
   fillRoundedRect: vi.fn(),
   strokeRoundedRect: vi.fn(),
+  strokeCircle: vi.fn(),
 });
 
 describe('Dream Wardrobe preview system', () => {
@@ -50,6 +51,11 @@ describe('Dream Wardrobe preview system', () => {
     expect(hoodie?.assets.thumbnail).toContain('star_hoodie_thumbnail.png');
     expect(hoodie?.assets.idle).toContain('star_hoodie_wearing.png');
     expect(hoodie?.assets.thumbnail).not.toBe(hoodie?.assets.idle);
+  });
+
+  it('marks Star Hoodie unavailable until formal wearing artwork is delivered', () => {
+    expect(wardrobeRegistry.isWearingArtworkReady('hoodie_star')).toBe(false);
+    expect(wardrobeRegistry.isWearingArtworkReady('scholar_robe')).toBe(true);
   });
 
   it('never draws a rectangle when Star Hoodie wearing art is unavailable', () => {
@@ -122,9 +128,15 @@ describe('Dream Wardrobe preview system', () => {
   it('resolves full sprite before layered, composite, and base fallback', () => {
     const registry = new OutfitRegistry([OUTFIT_DEFINITIONS[0]]);
     expect(registry.resolveMode('scholar_gown', 'idle', key => key.endsWith(':idle'))).toBe('fullSprite');
-    expect(registry.resolveMode('scholar_gown', 'idle', key => key.includes(':layer:'))).toBe('layered');
     expect(registry.resolveMode('scholar_gown', 'idle', () => false)).toBe('composite');
     expect(registry.resolveMode('unknown', 'idle', () => false)).toBe('base');
+
+    const layeredRegistry = new OutfitRegistry([{
+      ...OUTFIT_DEFINITIONS[0],
+      previewMode: 'layered',
+      layers: { [OutfitLayer.DRESS_OR_OUTFIT]: 'scholar-gown-layer.png' },
+    }]);
+    expect(layeredRegistry.resolveMode('scholar_robe', 'idle', key => key.includes(':layer:'))).toBe('layered');
   });
 
   it('reuses the idle wearing sprite when a run or cheer sprite is absent', () => {
@@ -395,6 +407,73 @@ describe('Dream Wardrobe preview system', () => {
 
     expect(controller.getWardrobe()).toEqual({ dress: 'scholar_robe' });
     expect(scene.tweens.add).toHaveBeenCalled();
+  });
+
+  it('pauses idle motion while a try-on or cheer animation is active', () => {
+    const idleTween = { stop: vi.fn(), pause: vi.fn(), resume: vi.fn() };
+    const actionTween = { stop: vi.fn(), pause: vi.fn(), resume: vi.fn() };
+    const sprite = {
+      setTexture: vi.fn(),
+      setTint: vi.fn(),
+      setPosition: vi.fn(),
+      setDepth: vi.fn(),
+      setVisible: vi.fn(),
+      destroy: vi.fn(),
+    };
+    const graphics = { ...mockGraphics(), setPosition: vi.fn(), setDepth: vi.fn(), destroy: vi.fn() };
+    const container = { add: vi.fn(), setScale: vi.fn(), setDepth: vi.fn() };
+    const scene = {
+      add: { image: vi.fn(() => sprite), graphics: vi.fn(() => graphics) },
+      textures: { exists: vi.fn(() => false) },
+      tweens: {
+        add: vi.fn((config: any) => config.repeat === -1 ? idleTween : actionTween),
+      },
+    };
+    const controller = new CharacterPreviewController(scene as never, {
+      container: container as never,
+      character: { id: 'boy01', idle: 'player_stand', run: 'player_walk1', cheer: 'player_cheer' },
+    });
+
+    controller.playTryOn({ dress: 'scholar_robe' });
+    controller.playCheer();
+
+    expect(idleTween.pause).toHaveBeenCalled();
+  });
+
+  it('cancels the previous preview action before starting another', () => {
+    const idleTween = { stop: vi.fn(), pause: vi.fn(), resume: vi.fn() };
+    const tryOnTween = { stop: vi.fn(), pause: vi.fn(), resume: vi.fn() };
+    const cheerTween = { stop: vi.fn(), pause: vi.fn(), resume: vi.fn() };
+    const actionTweens = [tryOnTween, cheerTween];
+    const sprite = {
+      setTexture: vi.fn(),
+      setTint: vi.fn(),
+      setPosition: vi.fn(),
+      setDepth: vi.fn(),
+      setVisible: vi.fn(),
+      destroy: vi.fn(),
+    };
+    const graphics = { ...mockGraphics(), setPosition: vi.fn(), setDepth: vi.fn(), destroy: vi.fn() };
+    const container = { add: vi.fn(), setScale: vi.fn(), setDepth: vi.fn() };
+    const scene = {
+      add: { image: vi.fn(() => sprite), graphics: vi.fn(() => graphics) },
+      textures: { exists: vi.fn(() => false) },
+      tweens: {
+        add: vi.fn((config: any) => config.repeat === -1 ? idleTween : actionTweens.shift()),
+      },
+    };
+    const controller = new CharacterPreviewController(scene as never, {
+      container: container as never,
+      character: { id: 'boy01', idle: 'player_stand', run: 'player_walk1', cheer: 'player_cheer' },
+    });
+
+    controller.playTryOn({ dress: 'scholar_robe' });
+    controller.playCheer();
+
+    expect(tryOnTween.stop).toHaveBeenCalled();
+
+    controller.playTryOn({ dress: 'princess_dress' });
+    expect(cheerTween.stop).toHaveBeenCalled();
   });
 
 });

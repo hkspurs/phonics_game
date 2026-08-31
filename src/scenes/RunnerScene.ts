@@ -1,11 +1,13 @@
 import Phaser from 'phaser';
 import { GAME_WIDTH, GAME_HEIGHT } from '../config';
 import { QuizQuestion } from '../types';
+import type { EquippedWardrobe } from '../types';
 import { DataManager } from '../services/DataManager';
 import { SoundManager } from '../services/SoundManager';
 import { CanvasButton } from '../ui/CanvasButton';
 import { CompanionPet } from '../ui/CompanionPet';
 import { CharacterOutfitCompositor } from '../ui/CharacterOutfitCompositor';
+import { wardrobeRegistry } from '../ui/OutfitRegistry';
 import { PlayerAvatarService } from '../services/PlayerAvatarService';
 
 export interface RunnerSessionStats {
@@ -224,6 +226,8 @@ export class RunnerScene extends Phaser.Scene {
   public runnerWardrobeBackpack: Phaser.GameObjects.Text | any = null;
   public runnerWardrobeGlasses: Phaser.GameObjects.Text | any = null;
   public runnerWardrobeHat: Phaser.GameObjects.Text | any = null;
+  private runnerUsesDedicatedOutfitSprite = false;
+  private runnerBaseScale = 0;
   public joystickTitleText: Phaser.GameObjects.Text | any = null;
   public playerShadow: Phaser.GameObjects.Graphics | any = null;
   public skyBackground: Phaser.GameObjects.Rectangle | any = null;
@@ -299,6 +303,8 @@ export class RunnerScene extends Phaser.Scene {
     this.clouds = [];
     this.stepTimer = 0;
     this.currentWalkFrame = 1;
+    this.runnerUsesDedicatedOutfitSprite = false;
+    this.runnerBaseScale = 0;
 
     // Resolve skin perks
     this.resolveEquippedSkin();
@@ -317,6 +323,58 @@ export class RunnerScene extends Phaser.Scene {
     }
 
     this.currentSpeed = this.baseSpeed * this.skinConfig.speedMultiplier;
+  }
+
+  /**
+   * Single Runner pose gateway. Full outfit art wins; missing outfit art uses
+   * the matching skin pose and leaves the compositor available for fallback layers.
+   */
+  public applyRunnerPose(pose: 'idle' | 'run' | 'jump' | 'cheer'): void {
+    if (!this.playerSprite || typeof this.playerSprite.setTexture !== 'function') return;
+
+    const textureInfo = PlayerAvatarService.getInstance().getTextureKey(pose, this);
+    const textureKey = textureInfo.isFullSprite
+      ? textureInfo.textureKey
+      : pose === 'idle'
+        ? this.skinConfig.standKey
+        : pose === 'run'
+          ? (this.currentWalkFrame === 1 ? this.skinConfig.walk1Key : this.skinConfig.walk2Key)
+          : pose === 'jump'
+            ? this.skinConfig.jumpKey
+            : this.skinConfig.cheerKey;
+
+    this.runnerUsesDedicatedOutfitSprite = textureInfo.isFullSprite;
+    const baseScale = textureInfo.isFullSprite ? 0.62 : 1.22;
+    if (this.runnerBaseScale !== baseScale && typeof this.playerSprite.setScale === 'function') {
+      this.playerSprite.setScale(baseScale);
+      this.runnerBaseScale = baseScale;
+    }
+
+    if (textureInfo.tint !== undefined && typeof this.playerSprite.setTint === 'function') {
+      this.playerSprite.setTint(textureInfo.tint);
+    } else if (typeof this.playerSprite.clearTint === 'function') {
+      this.playerSprite.clearTint();
+    }
+    this.playerSprite.setTexture(textureKey);
+  }
+
+  private getRunnerCompositorWardrobe(): EquippedWardrobe {
+    const equipped = { ...DataManager.getInstance().getEquippedWardrobe() };
+    const outfitId = equipped.dress || equipped.top || equipped.bottom;
+    const outfit = outfitId ? wardrobeRegistry.get(outfitId) : undefined;
+    if (outfitId && outfit && !wardrobeRegistry.isWearingArtworkReady(outfitId)) {
+      delete equipped[outfit.slot as keyof EquippedWardrobe];
+    }
+    if (this.runnerUsesDedicatedOutfitSprite) {
+      delete equipped.dress;
+      delete equipped.top;
+      delete equipped.bottom;
+    }
+    return equipped;
+  }
+
+  private getRunnerSquashScale(value: number): number {
+    return this.runnerBaseScale * (value / 1.22);
   }
 
   /**
@@ -1002,24 +1060,15 @@ export class RunnerScene extends Phaser.Scene {
       if (this.playerSprite.setDepth) {
         this.playerSprite.setDepth(15);
       }
-      if (this.playerSprite.setScale) {
-        if (textureInfo.isFullSprite) {
-          this.playerSprite.setScale(0.62);
-        } else {
-          this.playerSprite.setScale(1.22);
-        }
-      }
-
-      // Apply skin tint perk (e.g. Knight, Ninja)
-      if (textureInfo.tint !== undefined && typeof this.playerSprite.setTint === 'function') {
-        this.playerSprite.setTint(textureInfo.tint);
-      }
+      this.runnerUsesDedicatedOutfitSprite = textureInfo.isFullSprite;
+      this.runnerBaseScale = 0;
+      this.applyRunnerPose('run');
     }
 
     // 2.1 Tailored High-Fidelity Wardrobe Vector Graphics for Runner
     try {
       const dm = DataManager.getInstance();
-      const eq = dm.getEquippedWardrobe();
+      const eq = this.getRunnerCompositorWardrobe();
 
       // Compatibility text objects (retained for headless unit testing; transparent)
       if (this.add.text) {
@@ -1101,7 +1150,7 @@ export class RunnerScene extends Phaser.Scene {
         this.runnerWardrobeGraphics = this.add.graphics();
         if (typeof this.runnerWardrobeGraphics.setDepth === 'function') this.runnerWardrobeGraphics.setDepth(16);
         CharacterOutfitCompositor.renderOutfit(this.runnerWardrobeGraphics, eq, {
-          scale: 1.22,
+          scale: this.runnerUsesDedicatedOutfitSprite ? 0.62 : 1.22,
           offsetX: this.playerScreenX,
           offsetY: this.playerBaselineY,
         });
@@ -1329,15 +1378,13 @@ export class RunnerScene extends Phaser.Scene {
         this.isJumping = true;
         this.playerVelocityY = -600 * this.skinConfig.jumpMultiplier * multiplier;
 
-        if (this.playerSprite && typeof this.playerSprite.setTexture === 'function') {
-          this.playerSprite.setTexture(this.skinConfig.jumpKey);
-        }
+        this.applyRunnerPose('jump');
 
         if (this.playerSprite && this.tweens?.add) {
           this.tweens.add({
             targets: this.playerSprite,
-            scaleX: 1.18,
-            scaleY: 0.82,
+            scaleX: this.getRunnerSquashScale(1.18),
+            scaleY: this.getRunnerSquashScale(0.82),
             duration: 80,
             yoyo: true,
             ease: 'Quad.easeOut',
@@ -1361,15 +1408,13 @@ export class RunnerScene extends Phaser.Scene {
     this.isJumping = true;
     this.playerVelocityY = -660 * this.skinConfig.jumpMultiplier * multiplier;
 
-    if (this.playerSprite && typeof this.playerSprite.setTexture === 'function') {
-      this.playerSprite.setTexture(this.skinConfig.jumpKey);
-    }
+    this.applyRunnerPose('jump');
 
     if (this.playerSprite && this.tweens?.add) {
       this.tweens.add({
         targets: this.playerSprite,
-        scaleX: 1.2,
-        scaleY: 0.8,
+        scaleX: this.getRunnerSquashScale(1.2),
+        scaleY: this.getRunnerSquashScale(0.8),
         duration: 90,
         yoyo: true,
         ease: 'Quad.easeOut',
@@ -1410,7 +1455,7 @@ export class RunnerScene extends Phaser.Scene {
       if (this.tweens?.add) {
         this.tweens.add({
           targets: this.playerSprite,
-          scaleY: 0.85,
+          scaleY: this.getRunnerSquashScale(0.85),
           duration: 90,
           yoyo: true,
           onComplete: () => {
@@ -1473,15 +1518,13 @@ export class RunnerScene extends Phaser.Scene {
     const sprY = item.gameObject?.y ?? this.playerBaselineY;
     this.spawnSparkleParticles(sprX, sprY - 15, 0xffd700, 4);
 
-    if (this.playerSprite && typeof this.playerSprite.setTexture === 'function') {
-      this.playerSprite.setTexture(this.skinConfig.jumpKey);
-    }
+    this.applyRunnerPose('jump');
 
     if (this.playerSprite && this.tweens?.add) {
       this.tweens.add({
         targets: this.playerSprite,
-        scaleX: 1.2,
-        scaleY: 0.8,
+        scaleX: this.getRunnerSquashScale(1.2),
+        scaleY: this.getRunnerSquashScale(0.8),
         duration: 90,
         yoyo: true,
         ease: 'Quad.easeOut',
@@ -1606,9 +1649,8 @@ export class RunnerScene extends Phaser.Scene {
         this.isJumping = false;
         this.isSuperJumping = false;
 
-        if (this.playerSprite && typeof this.playerSprite.setTexture === 'function') {
-          this.playerSprite.setTexture(this.skinConfig.walk1Key);
-        }
+        this.currentWalkFrame = 1;
+        this.applyRunnerPose('run');
 
         // Landing squash compression and impact dust
         if (wasAirborne) {
@@ -1616,8 +1658,8 @@ export class RunnerScene extends Phaser.Scene {
           if (this.playerSprite && this.tweens?.add) {
             this.tweens.add({
               targets: this.playerSprite,
-              scaleX: 1.12,
-              scaleY: 0.88,
+              scaleX: this.getRunnerSquashScale(1.12),
+              scaleY: this.getRunnerSquashScale(0.88),
               duration: 80,
               yoyo: true,
               ease: 'Quad.easeOut',
@@ -1756,27 +1798,16 @@ export class RunnerScene extends Phaser.Scene {
         if (this.stepTimer >= stepDuration) {
           this.stepTimer = 0;
           this.currentWalkFrame = this.currentWalkFrame === 1 ? 2 : 1;
-          const textureKey =
-            this.currentWalkFrame === 1
-              ? this.skinConfig.walk1Key
-              : this.skinConfig.walk2Key;
-
-          if (this.playerSprite && typeof this.playerSprite.setTexture === 'function') {
-            this.playerSprite.setTexture(textureKey);
-          }
+          this.applyRunnerPose('run');
         }
       } else {
         // Idle Standing when no directional keys/buttons are pressed
         this.stepTimer = 0;
-        if (this.playerSprite && typeof this.playerSprite.setTexture === 'function') {
-          this.playerSprite.setTexture(this.skinConfig.standKey);
-        }
+        this.applyRunnerPose('idle');
       }
     } else {
       // Airborne Jumping Texture
-      if (this.playerSprite && typeof this.playerSprite.setTexture === 'function') {
-        this.playerSprite.setTexture(this.skinConfig.jumpKey);
-      }
+      this.applyRunnerPose('jump');
     }
 
     // 8. Update Distance Progress Bar
@@ -2038,10 +2069,9 @@ export class RunnerScene extends Phaser.Scene {
     // Dynamic Tailored Vector Graphics for Runner Kinematics
     if (this.runnerWardrobeGraphics) {
       try {
-        const dm = DataManager.getInstance();
-        const eq = dm.getEquippedWardrobe();
+        const eq = this.getRunnerCompositorWardrobe();
         CharacterOutfitCompositor.renderOutfit(this.runnerWardrobeGraphics, eq, {
-          scale: 1.22,
+          scale: this.runnerUsesDedicatedOutfitSprite ? 0.62 : 1.22,
           offsetX: x,
           offsetY: y,
           flipX: isFlip,
@@ -2073,9 +2103,7 @@ export class RunnerScene extends Phaser.Scene {
     }
 
     // 1. Switch Player Pose to Cheer Celebration
-    if (this.playerSprite && typeof this.playerSprite.setTexture === 'function') {
-      this.playerSprite.setTexture(this.skinConfig.cheerKey);
-    }
+    this.applyRunnerPose('cheer');
 
     if (this.companionPet && typeof this.companionPet.playVictoryDance === 'function') {
       this.companionPet.playVictoryDance();

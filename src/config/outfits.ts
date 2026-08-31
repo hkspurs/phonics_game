@@ -79,6 +79,8 @@ export interface OutfitDefinition {
   nameEn: string;
   slot: OutfitSlot;
   previewMode: PreviewMode;
+  /** Explicit art handoff state; placeholder outfits stay safe and unavailable in the shop. */
+  artworkStatus?: 'ready' | 'placeholder';
   aliases?: string[];
   assets: {
     idle?: string;
@@ -95,17 +97,7 @@ export interface OutfitDefinition {
   };
 }
 
-const futureLayer = (definition: OutfitDefinition, layer: OutfitLayer): string => {
-  const folder = definition.assets.idle?.split('/').slice(-2, -1)[0] ?? definition.id;
-  return `assets/character/outfits/${folder}/${layer}.png`;
-};
-
-const makeFullSpriteDefinition = (definition: OutfitDefinition): OutfitDefinition => ({
-  ...definition,
-  layers: {
-    [OutfitLayer.DRESS_OR_OUTFIT]: futureLayer(definition, OutfitLayer.DRESS_OR_OUTFIT),
-  },
-});
+const makeFullSpriteDefinition = (definition: OutfitDefinition): OutfitDefinition => ({ ...definition });
 
 export const OUTFIT_DEFINITIONS: readonly OutfitDefinition[] = [
   makeFullSpriteDefinition({
@@ -198,6 +190,7 @@ export const OUTFIT_DEFINITIONS: readonly OutfitDefinition[] = [
     nameEn: 'Star Hoodie',
     slot: OutfitSlot.TOP,
     previewMode: 'fullSprite',
+    artworkStatus: 'placeholder',
     assets: {
       thumbnail: 'assets/outfits/star_hoodie/star_hoodie_thumbnail.png',
       idle: 'assets/character/outfits/star_hoodie/star_hoodie_wearing.png',

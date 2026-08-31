@@ -7,6 +7,7 @@ import {
 import { DataManager } from '../services/DataManager';
 import { SoundManager } from '../services/SoundManager';
 import { QuizQuestion } from '../types';
+import { CharacterOutfitCompositor } from '../ui/CharacterOutfitCompositor';
 
 function attachEventEmitter(obj: any): any {
   const listeners: Record<string, Function[]> = {};
@@ -453,6 +454,61 @@ describe('RunnerScene (2D Platformer Runner Reward Scene)', () => {
       expect(scene.playerSprite).toBeDefined();
       expect(scene.playerSprite.texture.key).toBe('female_walk1');
       expect(scene.playerShadow).toBeDefined();
+    });
+
+    it('keeps dedicated outfit art across runner poses and only composites accessories', () => {
+      const dm = DataManager.getInstance();
+      dm.getProfile()!.ownedWardrobe!.push('scholar_robe', 'star_glasses');
+      dm.equipWardrobeItem('dress', 'scholar_robe');
+      dm.equipWardrobeItem('accessory', 'star_glasses');
+      mockScene.textures.exists = vi.fn((key: string) =>
+        key.includes('assets/character/outfits/scholar_gown/')
+      );
+
+      const compositorSpy = vi.spyOn(CharacterOutfitCompositor, 'renderOutfit');
+      try {
+        scene.init({ isStationComplete: false });
+        scene.create();
+
+        expect(scene.playerSprite.texture.key).toBe(
+          'assets/character/outfits/scholar_gown/run.png'
+        );
+        const initialWardrobe = compositorSpy.mock.calls.at(-1)?.[1];
+        expect(initialWardrobe).not.toHaveProperty('dress');
+        expect(initialWardrobe).toHaveProperty('accessory', 'star_glasses');
+
+        scene.triggerJump(1.0);
+        expect(scene.playerSprite.texture.key).toBe(
+          'assets/character/outfits/scholar_gown/run.png'
+        );
+
+        scene.onReachChest();
+        expect(scene.playerSprite.texture.key).toBe(
+          'assets/character/outfits/scholar_gown/cheer.png'
+        );
+        const cheerWardrobe = compositorSpy.mock.calls.at(-1)?.[1];
+        expect(cheerWardrobe).not.toHaveProperty('dress');
+        expect(cheerWardrobe).toHaveProperty('accessory', 'star_glasses');
+      } finally {
+        compositorSpy.mockRestore();
+      }
+    });
+
+    it('falls back to the base character instead of drawing placeholder hoodie art', () => {
+      const dm = DataManager.getInstance();
+      dm.getProfile()!.ownedWardrobe!.push('hoodie_star');
+      dm.equipWardrobeItem('top', 'hoodie_star');
+
+      const compositorSpy = vi.spyOn(CharacterOutfitCompositor, 'renderOutfit');
+      try {
+        scene.init();
+        scene.create();
+
+        expect(scene.playerSprite.texture.key).toBe(scene.skinConfig.walk1Key);
+        expect(compositorSpy.mock.calls.at(-1)?.[1]).not.toHaveProperty('top');
+      } finally {
+        compositorSpy.mockRestore();
+      }
     });
 
     it('creates HUD with currency counters, progress bar, and skip button', () => {

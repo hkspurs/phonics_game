@@ -58,7 +58,7 @@ p1-adventure/
 ## 3. Data & State Management
 - **Persistence**: Managed by `DataManager.getInstance()` using LocalStorage key `p1_adventure_save_v1`.
 - **Currency & Progression**: Coins, gems, unlocked worlds/stations, owned skins, and equipped wardrobe dictionary.
-- **Avatar Sync**: `PlayerAvatarService` provides consistent sprite keys and tints across scenes.
+- **Avatar Sync**: `PlayerAvatarService` provides consistent sprite keys and tints across scenes. `RunnerScene` routes idle, run, jump, and cheer poses through the same outfit-aware resolver; dedicated full-sprite outfits remain authoritative across poses, missing poses fall back to run/idle/base art, and the compositor only receives modular accessories while a full sprite is active.
 
 ## 4. Wardrobe & Rendering Depth Hierarchy
 ```
@@ -68,6 +68,12 @@ p1-adventure/
 [Depth 45] FRONT_ACCESSORY (star_glasses at eyes, cat_ears / scholar_cap on head)
 [Depth 50] FX & Sparkle Particle Bursts
 ```
+
+Full-sprite outfits are authoritative when their registered pose texture is
+available. Layered fallback is opt-in through explicit
+`OutfitDefinition.layers`; full-sprite definitions do not synthesize missing
+layer paths. If neither path is available, `OutfitRenderer` delegates to the
+cached `CharacterOutfitCompositor` fallback and ultimately the base character.
 
 ## 5. Audio & TTS Architecture
 - **SoundManager**: Procedural Web Audio oscillator synthesis (no external audio assets required).

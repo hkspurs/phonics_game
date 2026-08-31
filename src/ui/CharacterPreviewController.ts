@@ -99,9 +99,16 @@ export class CharacterPreviewController {
   }
 
   playTryOn(wardrobe: EquippedWardrobe): void {
+    this.idleTween?.pause?.();
+    this.cheerTween?.stop?.();
+    this.cheerTween = undefined;
     this.setWardrobe(wardrobe);
     if (this.tryOnTween && typeof this.tryOnTween.stop === 'function') this.tryOnTween.stop();
-    if (!this.scene.tweens || typeof this.scene.tweens.add !== 'function') return;
+    this.tryOnTween = undefined;
+    if (!this.scene.tweens || typeof this.scene.tweens.add !== 'function') {
+      this.idleTween?.resume?.();
+      return;
+    }
 
     this.options.container.setScale(this.baseScale * 0.96);
     this.tryOnTween = this.scene.tweens.add({
@@ -113,14 +120,25 @@ export class CharacterPreviewController {
       yoyo: true,
       hold: 0,
       repeat: 0,
-      onComplete: () => this.options.container.setScale(this.baseScale),
+      onComplete: () => {
+        this.options.container.setScale(this.baseScale);
+        this.idleTween?.resume?.();
+      },
     });
   }
 
   playCheer(): void {
+    this.idleTween?.pause?.();
+    this.tryOnTween?.stop?.();
+    this.tryOnTween = undefined;
     this.setPose('cheer');
-    if (!this.scene.tweens || typeof this.scene.tweens.add !== 'function') return;
+    if (!this.scene.tweens || typeof this.scene.tweens.add !== 'function') {
+      this.setPose('idle');
+      this.idleTween?.resume?.();
+      return;
+    }
     this.cheerTween?.stop();
+    this.cheerTween = undefined;
     this.cheerTween = this.scene.tweens.add({
       targets: this.getMotionTargets(),
       y: -8,
@@ -128,7 +146,10 @@ export class CharacterPreviewController {
       ease: 'Sine.easeInOut',
       yoyo: true,
       repeat: 2,
-      onComplete: () => this.setPose('idle'),
+      onComplete: () => {
+        this.setPose('idle');
+        this.idleTween?.resume?.();
+      },
     });
   }
 
@@ -136,6 +157,7 @@ export class CharacterPreviewController {
     this.tryOnTween?.stop();
     this.idleTween?.stop();
     this.cheerTween?.stop();
+    this.renderer.clearCache();
     this.sprite.texture?.setFilter?.(Phaser.Textures.FilterMode.LINEAR);
     if (typeof this.sprite.destroy === 'function') this.sprite.destroy();
     Object.values(this.layerSprites).forEach(layer => layer?.destroy());
