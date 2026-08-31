@@ -393,19 +393,34 @@ export class QuestionScene extends Phaser.Scene {
 
     banner.setDepth(90);
 
-    // Banner Background Card (Large, prominent container for question & audio)
+    // Banner Background Card (Chalkboard & Storybook styling - Item 6)
     if (this.add.graphics) {
       const bg = this.add.graphics();
-      bg.fillStyle(0x1a2333, 0.92);
-      bg.fillRoundedRect(-bannerW / 2, -bannerH / 2, bannerW, bannerH, 18);
+      // Drop Shadow
+      bg.fillStyle(0x0a0e17, 0.45);
+      bg.fillRoundedRect(-bannerW / 2 + 4, -bannerH / 2 + 6, bannerW, bannerH, 20);
+
+      // Deep Slate Chalkboard Body
+      bg.fillStyle(0x151e2e, 0.96);
+      bg.fillRoundedRect(-bannerW / 2, -bannerH / 2, bannerW, bannerH, 20);
+
+      // Inner Chalkboard Rim
+      bg.fillStyle(0x1e293b, 0.5);
+      bg.fillRoundedRect(-bannerW / 2 + 6, -bannerH / 2 + 6, bannerW - 12, bannerH - 12, 16);
 
       const subjectColor = this.getSubjectColor();
-      bg.lineStyle(2.5, subjectColor, 0.85);
-      bg.strokeRoundedRect(-bannerW / 2, -bannerH / 2, bannerW, bannerH, 18);
+      bg.lineStyle(2.5, subjectColor, 0.9);
+      bg.strokeRoundedRect(-bannerW / 2, -bannerH / 2, bannerW, bannerH, 20);
+
+      // Chalkboard corner accents
+      bg.lineStyle(1.5, 0x64748b, 0.4);
+      bg.strokeRoundedRect(-bannerW / 2 + 8, -bannerH / 2 + 8, bannerW - 16, bannerH - 16, 14);
 
       // Subject Badge Pill
       bg.fillStyle(subjectColor, 1.0);
       bg.fillRoundedRect(-bannerW / 2 + 20, -22, 110, 44, 12);
+      bg.lineStyle(2, 0xffffff, 0.35);
+      bg.strokeRoundedRect(-bannerW / 2 + 20, -22, 110, 44, 12);
       banner.add(bg);
     }
 
@@ -1103,17 +1118,17 @@ export class QuestionScene extends Phaser.Scene {
       celebration.add(msg);
     }
 
-    // Sparkles burst
+    // Multi-color Confetti & Sparkles burst (Item 7)
     if (this.add.text && this.tweens?.add) {
-      const emojis = ['⭐', '✨', '🌟', '🎊', '🎉'];
-      for (let i = 0; i < 8; i++) {
-        const angle = (i / 8) * Math.PI * 2;
-        const dist = 140;
+      const emojis = ['⭐', '✨', '🌟', '🎊', '🎉', '💫', '🎈', '🥇'];
+      for (let i = 0; i < 16; i++) {
+        const angle = (i / 16) * Math.PI * 2 + (Math.random() * 0.2 - 0.1);
+        const dist = 130 + (i % 3) * 35;
         const tx = Math.cos(angle) * dist;
-        const ty = Math.sin(angle) * dist;
+        const ty = Math.sin(angle) * dist - 20;
 
         const particle = this.add.text(0, 0, emojis[i % emojis.length], {
-          fontSize: '22px',
+          fontSize: (i % 2 === 0) ? '26px' : '20px',
         });
         if (typeof particle.setOrigin === 'function') particle.setOrigin(0.5);
         celebration.add(particle);
@@ -1122,9 +1137,10 @@ export class QuestionScene extends Phaser.Scene {
           targets: particle,
           x: tx,
           y: ty,
-          scale: { from: 0.5, to: 1.5 },
+          scale: { from: 0.4, to: 1.4 },
           alpha: { from: 1.0, to: 0.0 },
-          duration: 900,
+          rotation: (Math.random() - 0.5) * 1.5,
+          duration: 950 + (i % 4) * 80,
           ease: 'Cubic.easeOut',
         });
       }

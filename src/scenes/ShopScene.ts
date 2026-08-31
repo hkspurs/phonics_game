@@ -1162,17 +1162,35 @@ export class ShopScene extends Phaser.Scene {
       g.fillStyle(0x1d2c64, 0.92);
       g.fillRoundedRect(stageX, stageY, layout.stage.width, layout.stage.height, 18);
 
-      // Soft magical ambient gradient & spotlight
-      g.fillStyle(0x5b5ee8, 0.15);
+      // Soft magical ambient gradient & spotlight (Item 9)
+      g.fillStyle(0x5b5ee8, 0.18);
       g.fillEllipse(stageX + layout.stage.width / 2, stageY + layout.stage.height * 0.4, layout.stage.width * 0.85, layout.stage.height * 0.85);
+
+      // Conical Radial Spotlight Beam
+      g.fillStyle(0xfff3a0, 0.09);
+      g.beginPath();
+      g.moveTo(stageX + layout.stage.width / 2 - 45, stageY);
+      g.lineTo(stageX + layout.stage.width / 2 + 45, stageY);
+      g.lineTo(stageX + layout.stage.width / 2 + layout.stage.width * 0.38, stageY + layout.stage.height - 18);
+      g.lineTo(stageX + layout.stage.width / 2 - layout.stage.width * 0.38, stageY + layout.stage.height - 18);
+      g.closePath();
+      g.fillPath();
 
       // Subtle border
       g.lineStyle(2, 0x6f83e8, 0.45);
       g.strokeRoundedRect(stageX + 7, stageY + 7, Math.max(1, layout.stage.width - 14), Math.max(1, layout.stage.height - 14), 14);
 
       // Stage pedestal ground shadow
-      g.fillStyle(0x0a1028, 0.72);
+      g.fillStyle(0x0a1028, 0.75);
       g.fillEllipse(stageX + layout.stage.width / 2, stageY + layout.stage.height - 15, layout.stage.width * 0.62, compact ? 26 : 36);
+
+      // Pedestal golden glowing ring
+      g.lineStyle(2.5, 0xf5bd42, 0.75);
+      if (typeof (g as any).strokeEllipse === 'function') {
+        (g as any).strokeEllipse(stageX + layout.stage.width / 2, stageY + layout.stage.height - 15, layout.stage.width * 0.62, compact ? 26 : 36);
+      } else {
+        g.strokeRoundedRect(stageX + layout.stage.width / 2 - (layout.stage.width * 0.31), stageY + layout.stage.height - (compact ? 28 : 33), layout.stage.width * 0.62, compact ? 26 : 36, 14);
+      }
 
       // Soft twinkle star particles
       g.fillStyle(0xf7c85b, 0.9);
@@ -2194,6 +2212,26 @@ export class ShopScene extends Phaser.Scene {
       // Inner Photo Area
       card.fillStyle(0x1a2133, 1.0);
       card.fillRect(-190, -230, 380, 320);
+
+      // Top-Left Washi Tape (Diagonal pastel coral tape - Item 10)
+      card.fillStyle(0xff8a80, 0.88);
+      card.beginPath();
+      card.moveTo(-205, -260);
+      card.lineTo(-150, -260);
+      card.lineTo(-170, -232);
+      card.lineTo(-225, -232);
+      card.closePath();
+      card.fillPath();
+
+      // Top-Right Washi Tape (Diagonal pastel mint tape - Item 10)
+      card.fillStyle(0x80cbc4, 0.88);
+      card.beginPath();
+      card.moveTo(150, -260);
+      card.lineTo(205, -260);
+      card.lineTo(225, -232);
+      card.lineTo(170, -232);
+      card.closePath();
+      card.fillPath();
 
       modal.add(card);
     }

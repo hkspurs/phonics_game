@@ -583,27 +583,49 @@ export class PreloadScene extends Phaser.Scene {
       ctx.fillRect(6, 4, 36, 6);
     });
 
-    // 12. Procedural Obstacle Rock
+    // 12. Procedural Obstacle Rock (Stylized Rounded Mossy Boulder with Jump Warning Halo)
     createSafeCanvasTexture('obstacle_rock', 48, 40, (ctx) => {
-      ctx.fillStyle = '#7f8c8d';
+      // Base shadow
+      ctx.fillStyle = 'rgba(0,0,0,0.25)';
       ctx.beginPath();
-      ctx.moveTo(6, 38);
-      ctx.lineTo(14, 14);
-      ctx.lineTo(26, 6);
-      ctx.lineTo(40, 18);
-      ctx.lineTo(44, 38);
+      ctx.ellipse(24, 37, 20, 3, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Rounded Boulder Body
+      ctx.fillStyle = '#64748b';
+      ctx.beginPath();
+      ctx.moveTo(8, 36);
+      ctx.quadraticCurveTo(4, 18, 18, 10);
+      ctx.quadraticCurveTo(24, 6, 34, 12);
+      ctx.quadraticCurveTo(44, 18, 42, 36);
       ctx.closePath();
       ctx.fill();
-      // Highlights & Moss
-      ctx.fillStyle = '#95a5a6';
+
+      // Stone highlights & cracks
+      ctx.fillStyle = '#94a3b8';
       ctx.beginPath();
-      ctx.moveTo(16, 16);
-      ctx.lineTo(26, 8);
-      ctx.lineTo(32, 18);
+      ctx.moveTo(16, 12);
+      ctx.quadraticCurveTo(24, 8, 30, 14);
+      ctx.lineTo(26, 22);
       ctx.closePath();
       ctx.fill();
-      ctx.fillStyle = '#27ae60';
-      ctx.fillRect(10, 34, 12, 4);
+
+      // Lush Cartoon Moss Patch on Top
+      ctx.fillStyle = '#22c55e';
+      ctx.beginPath();
+      ctx.ellipse(24, 11, 12, 5, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#4ade80';
+      ctx.beginPath();
+      ctx.ellipse(21, 10, 6, 3, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Subtle golden warning indicator
+      ctx.strokeStyle = '#f59e0b';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.arc(24, 22, 18, Math.PI * 0.8, Math.PI * 1.2);
+      ctx.stroke();
     });
 
     // 13. Procedural Platform Block
