@@ -1,9 +1,23 @@
 # AI Coordination Changelog
 
+## 2026-08-31 — Codex — TASK-20260831-006
+
+Summary:
+Published the verified implementation to `main`, the branch actually used by the repository's managed GitHub Pages deployment.
+
+Changed:
+- Fast-forwarded `origin/main` from `6fd89df2` to `ef320675` with no force-push.
+- Triggered the managed `pages build and deployment` workflow from the correct source branch.
+
+Verification:
+- GitHub Pages dynamic run #52 — success.
+- Custom build/deploy run #313 — unit tests, production build, and `gh-pages` publish all passed.
+- Public URL now serves `assets/index-DqhY_5sP.js` with `ver 1.1.0 (202608311450)`.
+
 ## 2026-08-31 — Codex — TASK-20260831-005
 
 Summary:
-Synchronized the tracked GitHub Pages `master/docs` artifact after confirming that the public site was serving that source rather than the separately published `gh-pages` branch.
+Synchronized the tracked Pages artifact while tracing the public deployment-source mismatch; the final live source was confirmed as `main/docs`, not `master/docs` or `gh-pages`.
 
 Changed:
 - Updated `docs/index.html` to reference the current production bundle.
@@ -13,10 +27,10 @@ Changed:
 Verification:
 - `npm run build` passed.
 - Synced artifact displays `ver 1.1.0 (202608311450)`.
-- Live response was reproduced before the sync as `ver 1.1.0 (202608311146)`.
+- Live response was reproduced before the branch sync as `ver 1.1.0 (202608311146)`.
 
 Follow-up:
-- Repository Pages settings should eventually use the same source as the deployment workflow (`gh-pages`), or the workflow should keep `master/docs` synchronized.
+- The custom workflow still publishes `gh-pages`; future source changes must continue to update `main` or the repository Pages source should be switched to `gh-pages`.
 
 ## 2026-08-31 — Codex — TASK-20260831-004
 

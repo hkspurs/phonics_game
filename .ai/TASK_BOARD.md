@@ -10,6 +10,30 @@ None.
 
 ## RECENTLY COMPLETED
 
+### TASK-20260831-006
+
+Agent: Codex
+Status: DONE
+Started: 2026-08-31
+Completed: 2026-08-31
+
+Description:
+Published the verified master implementation to the repository's actual GitHub Pages source branch.
+
+Scope:
+- Fast-forwarded `main` to the verified `master` commit because managed Pages deploys from `main`.
+- Verified the public URL serves the current bundle and timestamp.
+- Did not force-push or modify gameplay/economy systems.
+
+Files / Modules:
+- `main` GitHub Pages deployment source
+- `.ai/TASK_BOARD.md`, `.ai/OWNERSHIP.md`, `.ai/CHANGELOG.md`, `.ai/CURRENT_STATE.md`
+
+Verification:
+- GitHub Pages dynamic run #52 — success
+- Custom build/deploy run #313 — unit tests, build, and `gh-pages` publish success
+- Live bundle — `assets/index-DqhY_5sP.js`, `ver 1.1.0 (202608311450)`
+
 ### TASK-20260831-005
 
 Agent: Codex
@@ -21,7 +45,7 @@ Description:
 Aligned the live GitHub Pages artifact with the verified wardrobe implementation.
 
 Scope:
-- Synced the tracked `master/docs` Pages artifact from the current production build.
+- Synced the tracked Pages artifact from the current production build.
 - Verified the public page artifact references the new bundle and build timestamp.
 - Did not change game systems or purchase/inventory behavior.
 
@@ -33,7 +57,7 @@ Verification:
 - `npm run build` — TypeScript and Vite build passed
 - `docs/index.html` references `index-DqhY_5sP.js`
 - Synced bundle timestamp: `ver 1.1.0 (202608311450)`
-- Live source mismatch was reproduced and traced to `master/docs` versus `gh-pages`
+- Live source mismatch was reproduced and traced to `main/docs` versus `gh-pages`
 
 ### TASK-20260831-004
 

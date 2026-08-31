@@ -35,9 +35,10 @@
 - Curriculum expansion for World 2 (Kowloon) and World 3 (New Territories).
 
 ## Deployment State
-- The public GitHub Pages site currently consumes the tracked `master/docs` artifact through the managed `pages build and deployment` workflow.
-- The custom deploy workflow also publishes `dist` to `gh-pages`; these two deployment sources must remain aligned until the repository Pages source is switched to `gh-pages`.
-- The latest wardrobe implementation has been synchronized into `master/docs` with build timestamp `202608311450`.
+- The public GitHub Pages site currently consumes the tracked `main/docs` artifact through the managed `pages build and deployment` workflow.
+- The custom deploy workflow also publishes `dist` to `gh-pages`; future source changes must update `main` or the repository Pages source should be switched to `gh-pages`.
+- `origin/main` is currently fast-forwarded to the verified implementation commit `ef320675`.
+- The live bundle is `assets/index-DqhY_5sP.js` with build timestamp `202608311450`.
 
 ## Completed Major Features
 - Complete Grade 1 Chinese, English, and Math interactive question mechanics.
