@@ -1435,7 +1435,7 @@ export class RunnerScene extends Phaser.Scene {
   }
 
   /**
-   * Triggers springboard super-jump with physical compression
+   * Triggers springboard super-jump with physical compression (Item 03)
    */
   public triggerSpringboard(item: RunnerWorldItem): void {
     this.isSuperJumping = true;
@@ -1445,7 +1445,21 @@ export class RunnerScene extends Phaser.Scene {
 
     if (item.gameObject && typeof item.gameObject.setTexture === 'function') {
       item.gameObject.setTexture('springboard_down');
-      if (this.time?.delayedCall) {
+      if (this.tweens?.add) {
+        this.tweens.add({
+          targets: item.gameObject,
+          scaleY: 0.55,
+          duration: 90,
+          yoyo: true,
+          ease: 'Quad.easeOut',
+          onComplete: () => {
+            if (item.gameObject && typeof item.gameObject.setTexture === 'function') {
+              item.gameObject.setTexture('springboard_up');
+              if (item.gameObject.setScale) item.gameObject.setScale(1.0);
+            }
+          },
+        });
+      } else if (this.time?.delayedCall) {
         this.time.delayedCall(220, () => {
           if (item.gameObject && typeof item.gameObject.setTexture === 'function') {
             item.gameObject.setTexture('springboard_up');
@@ -1453,6 +1467,11 @@ export class RunnerScene extends Phaser.Scene {
         });
       }
     }
+
+    // Spawn spring celebration sparkles
+    const sprX = item.gameObject?.x ?? this.playerScreenX;
+    const sprY = item.gameObject?.y ?? this.playerBaselineY;
+    this.spawnSparkleParticles(sprX, sprY - 15, 0xffd700, 4);
 
     if (this.playerSprite && typeof this.playerSprite.setTexture === 'function') {
       this.playerSprite.setTexture(this.skinConfig.jumpKey);
@@ -1652,48 +1671,7 @@ export class RunnerScene extends Phaser.Scene {
       }
     }
     // Update Anatomical Wardrobe Layers position (compatibility text handles)
-    const isFlip = Boolean(this.playerSprite?.flipX);
-    const bpOffset = isFlip ? -18 : 18;
-    if (this.runnerWardrobeWings && typeof this.runnerWardrobeWings.setPosition === 'function') {
-      this.runnerWardrobeWings.setPosition(this.playerScreenX, this.playerY + 2);
-    }
-    if (this.runnerWardrobeDress && typeof this.runnerWardrobeDress.setPosition === 'function') {
-      this.runnerWardrobeDress.setPosition(this.playerScreenX, this.playerY + 12);
-    }
-    if (this.runnerWardrobeTop && typeof this.runnerWardrobeTop.setPosition === 'function') {
-      this.runnerWardrobeTop.setPosition(this.playerScreenX, this.playerY + 6);
-    }
-    if (this.runnerWardrobeBottom && typeof this.runnerWardrobeBottom.setPosition === 'function') {
-      this.runnerWardrobeBottom.setPosition(this.playerScreenX, this.playerY + 20);
-    }
-    if (this.runnerWardrobeBackpack && typeof this.runnerWardrobeBackpack.setPosition === 'function') {
-      this.runnerWardrobeBackpack.setPosition(this.playerScreenX + bpOffset, this.playerY + 8);
-    }
-    if (this.runnerWardrobeGlasses && typeof this.runnerWardrobeGlasses.setPosition === 'function') {
-      this.runnerWardrobeGlasses.setPosition(this.playerScreenX, this.playerY - 14);
-    }
-    if (this.runnerWardrobeHat && typeof this.runnerWardrobeHat.setPosition === 'function') {
-      this.runnerWardrobeHat.setPosition(this.playerScreenX, this.playerY - 34);
-    }
-
-    // Dynamic Tailored Vector Graphics for Runner Kinematics
-    if (this.runnerWardrobeGraphics) {
-      try {
-        const dm = DataManager.getInstance();
-        const eq = dm.getEquippedWardrobe();
-        CharacterOutfitCompositor.renderOutfit(this.runnerWardrobeGraphics, eq, {
-          scale: 1.22,
-          offsetX: this.playerScreenX,
-          offsetY: this.playerY,
-          flipX: isFlip,
-        });
-      } catch {}
-    }
-
-    // Update Shield Graphics position
-    if (this.shieldGraphics && typeof this.shieldGraphics.setPosition === 'function') {
-      this.shieldGraphics.setPosition(this.playerScreenX, this.playerY - 30);
-    }
+    this.syncWardrobeLayersToPlayer(this.playerScreenX, this.playerY);
 
     // Update Companion Pet follow kinematics
     if (this.companionPet && typeof this.companionPet.updatePet === 'function') {
@@ -1806,7 +1784,7 @@ export class RunnerScene extends Phaser.Scene {
   }
 
   /**
-   * Updates distance progress bar on HUD
+   * Updates distance progress bar on HUD (Item 06)
    */
   public updateProgressBar(width: number): void {
     if (!this.progressBarFill) return;
@@ -1821,6 +1799,13 @@ export class RunnerScene extends Phaser.Scene {
     this.progressBarFill.clear();
     this.progressBarFill.fillStyle(0x48b64e, 1.0);
     this.progressBarFill.fillRoundedRect(barX + 2, barY + 2, Math.max(0, (barW - 4) * progress), barH - 4, 7);
+
+    // Glowing Runner Pin Star Indicator (Item 06)
+    const pinX = barX + 2 + (barW - 4) * progress;
+    this.progressBarFill.fillStyle(0xffe082, 1.0);
+    this.progressBarFill.fillCircle(pinX, barY + barH / 2, 7);
+    this.progressBarFill.fillStyle(0xffffff, 0.95);
+    this.progressBarFill.fillCircle(pinX, barY + barH / 2, 3.5);
   }
 
   /**
@@ -2023,11 +2008,69 @@ export class RunnerScene extends Phaser.Scene {
   }
 
   /**
+   * Synchronizes all wardrobe layers and accessories with current player coordinates
+   */
+  public syncWardrobeLayersToPlayer(x: number, y: number): void {
+    const isFlip = Boolean(this.playerSprite?.flipX);
+    const bpOffset = isFlip ? -18 : 18;
+    if (this.runnerWardrobeWings && typeof this.runnerWardrobeWings.setPosition === 'function') {
+      this.runnerWardrobeWings.setPosition(x, y + 2);
+    }
+    if (this.runnerWardrobeDress && typeof this.runnerWardrobeDress.setPosition === 'function') {
+      this.runnerWardrobeDress.setPosition(x, y + 12);
+    }
+    if (this.runnerWardrobeTop && typeof this.runnerWardrobeTop.setPosition === 'function') {
+      this.runnerWardrobeTop.setPosition(x, y + 6);
+    }
+    if (this.runnerWardrobeBottom && typeof this.runnerWardrobeBottom.setPosition === 'function') {
+      this.runnerWardrobeBottom.setPosition(x, y + 20);
+    }
+    if (this.runnerWardrobeBackpack && typeof this.runnerWardrobeBackpack.setPosition === 'function') {
+      this.runnerWardrobeBackpack.setPosition(x + bpOffset, y + 8);
+    }
+    if (this.runnerWardrobeGlasses && typeof this.runnerWardrobeGlasses.setPosition === 'function') {
+      this.runnerWardrobeGlasses.setPosition(x, y - 14);
+    }
+    if (this.runnerWardrobeHat && typeof this.runnerWardrobeHat.setPosition === 'function') {
+      this.runnerWardrobeHat.setPosition(x, y - 34);
+    }
+
+    // Dynamic Tailored Vector Graphics for Runner Kinematics
+    if (this.runnerWardrobeGraphics) {
+      try {
+        const dm = DataManager.getInstance();
+        const eq = dm.getEquippedWardrobe();
+        CharacterOutfitCompositor.renderOutfit(this.runnerWardrobeGraphics, eq, {
+          scale: 1.22,
+          offsetX: x,
+          offsetY: y,
+          flipX: isFlip,
+        });
+      } catch {}
+    }
+
+    // Update Shield Graphics position
+    if (this.shieldGraphics && typeof this.shieldGraphics.setPosition === 'function') {
+      this.shieldGraphics.setPosition(x, y - 30);
+    }
+  }
+
+  /**
    * Reaching the final treasure chest: cheers, opens chest, fountain explosion, bonus loot
    */
   public onReachChest(): void {
     if (this.isCelebrating) return;
     this.isCelebrating = true;
+
+    // Force player and all accessories down to ground baseline immediately (Item 01 fix)
+    this.playerY = this.playerBaselineY;
+    if (this.playerSprite && typeof this.playerSprite.setPosition === 'function') {
+      this.playerSprite.setPosition(this.playerScreenX, this.playerBaselineY);
+    }
+    this.syncWardrobeLayersToPlayer(this.playerScreenX, this.playerBaselineY);
+    if (this.companionPet && typeof this.companionPet.updatePet === 'function') {
+      this.companionPet.updatePet(0.016, this.playerScreenX, this.playerBaselineY, false);
+    }
 
     // 1. Switch Player Pose to Cheer Celebration
     if (this.playerSprite && typeof this.playerSprite.setTexture === 'function') {
@@ -2046,6 +2089,19 @@ export class RunnerScene extends Phaser.Scene {
         yoyo: true,
         repeat: 3,
         ease: 'Sine.easeInOut',
+        onUpdate: () => {
+          const curY = this.playerSprite?.y ?? this.playerBaselineY;
+          this.syncWardrobeLayersToPlayer(this.playerScreenX, curY);
+          if (this.companionPet && typeof this.companionPet.updatePet === 'function') {
+            this.companionPet.updatePet(0.016, this.playerScreenX, curY, false);
+          }
+        },
+        onComplete: () => {
+          this.syncWardrobeLayersToPlayer(this.playerScreenX, this.playerBaselineY);
+          if (this.companionPet && typeof this.companionPet.updatePet === 'function') {
+            this.companionPet.updatePet(0.016, this.playerScreenX, this.playerBaselineY, false);
+          }
+        },
       });
     }
 
@@ -2078,15 +2134,36 @@ export class RunnerScene extends Phaser.Scene {
 
     this.spawnFountainLoot(chestX, chestY);
 
-    // 6. Celebration Banner
+    // 6. Celebration Banner Card & Text (Item 02)
     const width = this.sys?.game?.config ? Number(this.sys.game.config.width) : GAME_WIDTH;
+    if (this.add?.graphics) {
+      const bannerCard = this.add.graphics();
+      bannerCard.setDepth(119);
+      bannerCard.fillStyle(0x0e1726, 0.94);
+      bannerCard.fillRoundedRect(width / 2 - 310, 140, 620, 80, 20);
+      bannerCard.lineStyle(3, 0xf5bd42, 1.0);
+      bannerCard.strokeRoundedRect(width / 2 - 310, 140, 620, 80, 20);
+      bannerCard.lineStyle(1.5, 0xffffff, 0.35);
+      bannerCard.strokeRoundedRect(width / 2 - 304, 146, 608, 68, 14);
+
+      if (this.tweens?.add) {
+        bannerCard.setAlpha(0);
+        this.tweens.add({
+          targets: bannerCard,
+          alpha: 1,
+          duration: 300,
+          ease: 'Back.easeOut',
+        });
+      }
+    }
+
     if (this.add?.text) {
       const banner = this.add.text(
         width / 2,
         180,
         '🎉 衝刺大成功！獲得寶箱獎勵！ (+5 🪙 +1 💎)',
         {
-          fontSize: '28px',
+          fontSize: '26px',
           fontFamily: "'Kenney Future', 'Noto Sans TC', sans-serif",
           color: '#ffd700',
           fontStyle: 'bold',
@@ -2100,8 +2177,8 @@ export class RunnerScene extends Phaser.Scene {
         banner.setScale ? banner.setScale(0.6) : null;
         this.tweens.add({
           targets: banner,
-          scaleX: 1.1,
-          scaleY: 1.1,
+          scaleX: 1.05,
+          scaleY: 1.05,
           duration: 350,
           yoyo: true,
           repeat: 1,
@@ -2112,7 +2189,7 @@ export class RunnerScene extends Phaser.Scene {
 
     // 7. Transition after celebration
     if (this.time?.delayedCall) {
-      this.time.delayedCall(1500, () => {
+      this.time.delayedCall(1600, () => {
         this.finishRunner();
       });
     } else {
@@ -2345,6 +2422,16 @@ export class RunnerScene extends Phaser.Scene {
       fontSize: '22px',
     });
     this.jumpBtn.on('pointerdown', () => {
+      if (this.tweens?.add && this.jumpBtn) {
+        this.tweens.add({
+          targets: this.jumpBtn,
+          scaleX: 0.92,
+          scaleY: 0.92,
+          duration: 70,
+          yoyo: true,
+          ease: 'Quad.easeOut',
+        });
+      }
       this.handleJumpInput();
     });
     this.virtualGamepadContainer.add(this.jumpBtn);
