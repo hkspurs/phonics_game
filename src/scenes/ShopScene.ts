@@ -2220,16 +2220,31 @@ export class ShopScene extends Phaser.Scene {
 
     // Polaroid Character Display
     const currentSkin = this.skins[this.selectedSkinIndex];
-    const texKey = currentSkin?.standSprite || 'player_stand';
+    let texKey = currentSkin?.standSprite || 'player_stand';
+    let isFullOutfit = false;
+
+    const outfitId = eq.dress || eq.top || eq.bottom;
+    if (outfitId) {
+      const def = wardrobeRegistry.get(outfitId);
+      if (def?.assets?.idle && this.textures?.exists(def.assets.idle)) {
+        texKey = def.assets.idle;
+        isFullOutfit = true;
+      }
+    }
+
     if (this.textures?.exists && this.textures.exists(texKey)) {
-      const spr = this.add.image(0, -90, texKey);
-      if (typeof spr.setScale === 'function') spr.setScale(1.5);
-      if (currentSkin?.tint && typeof spr.setTint === 'function') spr.setTint(currentSkin.tint);
+      const spr = this.add.image(0, isFullOutfit ? -70 : -90, texKey);
+      if (typeof spr.setScale === 'function') {
+        spr.setScale(isFullOutfit ? 0.42 : 1.5);
+      }
+      if (!isFullOutfit && currentSkin?.tint && typeof spr.setTint === 'function') {
+        spr.setTint(currentSkin.tint);
+      }
       modal.add(spr);
     }
 
     // Front anatomical wardrobe items (dress, top, bottom, backpack, glasses, hat)
-    if (this.add.text) {
+    if (this.add.text && !isFullOutfit) {
       // Dress
       if (eq.dress) {
         const item = WARDROBE_ITEMS.find((w) => w.id === eq.dress);
@@ -2300,11 +2315,19 @@ export class ShopScene extends Phaser.Scene {
     if (this.add.graphics) {
       const ootdGraphics = this.add.graphics();
       if (typeof ootdGraphics.setDepth === 'function') ootdGraphics.setDepth(15);
-      CharacterOutfitCompositor.renderOutfit(ootdGraphics, eq, {
-        scale: 1.5,
-        offsetX: 0,
-        offsetY: -90,
-      });
+      if (isFullOutfit) {
+        CharacterOutfitCompositor.renderPreviewAccessories(ootdGraphics, eq, {
+          scale: 1.5,
+          offsetX: 0,
+          offsetY: -70,
+        });
+      } else {
+        CharacterOutfitCompositor.renderOutfit(ootdGraphics, eq, {
+          scale: 1.5,
+          offsetX: 0,
+          offsetY: -90,
+        });
+      }
       modal.add(ootdGraphics);
     }
 

@@ -33,7 +33,7 @@ const mockGraphics = () => ({
 
 describe('Dream Wardrobe preview system', () => {
   it('keeps every outfit definition separate from its wearing asset', () => {
-    expect(OUTFIT_DEFINITIONS).toHaveLength(5);
+    expect(OUTFIT_DEFINITIONS).toHaveLength(6);
     for (const outfit of OUTFIT_DEFINITIONS) {
       expect(outfit.assets.thumbnail).toBeTruthy();
       expect(outfit.assets.idle).toBeTruthy();

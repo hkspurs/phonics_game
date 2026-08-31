@@ -215,6 +215,28 @@ export const OUTFIT_DEFINITIONS: readonly OutfitDefinition[] = [
     price: 90,
     effect: { type: 'star_jump_sparkle', value: 1 },
   }),
+  makeFullSpriteDefinition({
+    id: 'school_uniform',
+    aliases: ['hk_school_shirt'],
+    nameZh: '經典名校白色校服',
+    nameEn: 'School Uniform',
+    slot: OutfitSlot.TOP,
+    previewMode: 'fullSprite',
+    assets: {
+      thumbnail: 'assets/character/outfits/school_uniform/thumbnail.png',
+      idle: 'assets/character/outfits/school_uniform/idle.png',
+      run: 'assets/character/outfits/school_uniform/run.png',
+      cheer: 'assets/character/outfits/school_uniform/cheer.png',
+    },
+    anchors: {
+      [CharacterAnchor.HEAD]: { x: 0, y: -1 },
+      [CharacterAnchor.NECK]: { x: 0, y: 2 },
+      [CharacterAnchor.SHOULDER]: { x: 0, y: 5 },
+      [CharacterAnchor.WAIST]: { x: 0, y: 18 },
+    },
+    price: 60,
+    effect: { type: 'school_uniform_bonus', value: 1 },
+  }),
 ];
 
 export function getWardrobeSlot(item: WardrobeItem): OutfitSlot {

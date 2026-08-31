@@ -7,6 +7,7 @@ import { OutfitRegistry, wardrobeRegistry } from './OutfitRegistry';
 export interface OutfitRenderTarget {
   sprite?: Phaser.GameObjects.Image;
   graphics?: Phaser.GameObjects.Graphics;
+  backGraphics?: Phaser.GameObjects.Graphics;
   layerSprites?: Partial<Record<OutfitLayer, Phaser.GameObjects.Image>>;
 }
 
@@ -60,7 +61,7 @@ export class OutfitRenderer {
       target.sprite.setTexture(textureKey);
       if (mode === 'fullSprite' && (target.sprite.height > 150 || target.sprite.width > 150)) {
         if (typeof target.sprite.setScale === 'function') {
-          target.sprite.setScale(0.45 * (request.scale ?? 1));
+          target.sprite.setScale(0.23 * (request.scale ?? 1));
         }
       } else if (typeof target.sprite.setScale === 'function') {
         target.sprite.setScale(request.scale ?? 1);
@@ -73,19 +74,25 @@ export class OutfitRenderer {
       if (typeof target.sprite.setVisible === 'function') target.sprite.setVisible(true);
     }
 
+    // Render modular back accessories (Angel Wings, Star Backpack)
+    if (target.backGraphics) {
+      target.backGraphics.clear();
+      CharacterOutfitCompositor.renderPreviewBackAccessories(target.backGraphics, request.wardrobe, {
+        scale: request.scale ?? 1,
+      });
+    }
+
     if (mode === 'fullSprite') {
       if (target.graphics) {
-        if (request.wardrobe.hat || request.wardrobe.wings || request.wardrobe.accessory) {
-          CharacterOutfitCompositor.renderPreviewAccessories(target.graphics, request.wardrobe, {
-            scale: request.scale ?? 1,
-          });
-        } else if (typeof target.graphics.clear === 'function') {
-          target.graphics.clear();
-        }
+        target.graphics.clear();
+        CharacterOutfitCompositor.renderPreviewAccessories(target.graphics, request.wardrobe, {
+          scale: request.scale ?? 1,
+        });
       }
       this.hideLayers(target);
     } else if (mode === 'layered' && this.renderLayered(target, outfitId, request)) {
       if (target.graphics) {
+        target.graphics.clear();
         CharacterOutfitCompositor.renderPreviewAccessories(target.graphics, request.wardrobe, {
           scale: request.scale ?? 1,
         });

@@ -132,6 +132,63 @@ export class CharacterOutfitCompositor {
     this.drawPreviewAccessories(graphics, equipped, scale, ox, oy, flip);
   }
 
+  /**
+   * Renders modular BACK accessories (Angel Wings, Star Backpack) behind the character sprite
+   */
+  public static renderPreviewBackAccessories(
+    graphics: Phaser.GameObjects.Graphics,
+    equipped: EquippedWardrobe,
+    options: {
+      scale?: number;
+      offsetX?: number;
+      offsetY?: number;
+      flipX?: boolean;
+    } = {}
+  ): void {
+    if (!graphics || typeof graphics.clear !== 'function') return;
+
+    graphics.clear();
+    const scale = options.scale ?? 1;
+    const ox = options.offsetX ?? 0;
+    const oy = options.offsetY ?? 0;
+    const flip = options.flipX ? -1 : 1;
+
+    if (equipped.wings || equipped.accessory === 'angel_wings') {
+      this.drawAngelWings(graphics, ox, oy + 5 * scale, scale, flip);
+    }
+    if (equipped.accessory === 'star_backpack') {
+      this.drawStarBackpack(graphics, ox, oy + 5 * scale, scale, flip);
+    }
+  }
+
+  /**
+   * Renders modular FRONT accessories (Glasses, Hats) in front of the character sprite
+   */
+  public static renderPreviewFrontAccessories(
+    graphics: Phaser.GameObjects.Graphics,
+    equipped: EquippedWardrobe,
+    options: {
+      scale?: number;
+      offsetX?: number;
+      offsetY?: number;
+      flipX?: boolean;
+    } = {}
+  ): void {
+    if (!graphics || typeof graphics.clear !== 'function') return;
+
+    graphics.clear();
+    const scale = options.scale ?? 1;
+    const ox = options.offsetX ?? 0;
+    const oy = options.offsetY ?? 0;
+    const flip = options.flipX ? -1 : 1;
+
+    if (equipped.accessory === 'star_glasses') {
+      this.drawSmartGlasses(graphics, ox, oy, scale, flip);
+    }
+    const hatId = equipped.hat || (['cat_ears', 'scholar_cap', 'tram_hat'].includes(equipped.accessory || '') ? equipped.accessory : undefined);
+    if (hatId) this.drawHat(graphics, hatId, ox, oy, scale, flip);
+  }
+
   private static drawPreviewAccessories(
     graphics: Phaser.GameObjects.Graphics,
     equipped: EquippedWardrobe,
@@ -433,9 +490,9 @@ export class CharacterOutfitCompositor {
 
         // Pleat Folds
         g.lineStyle(1.5 * s, 0x334155, 1.0);
-        g.lineBetween(ox - 8 * s, bottomY - 2 * s, ox - 11 * s, bottomY + 14 * s);
-        g.lineBetween(ox, bottomY - 2 * s, ox, bottomY + 14 * s);
-        g.lineBetween(ox + 8 * s, bottomY - 2 * s, ox + 11 * s, bottomY + 14 * s);
+        this.drawLine(g, ox - 8 * s, bottomY - 2 * s, ox - 11 * s, bottomY + 14 * s);
+        this.drawLine(g, ox, bottomY - 2 * s, ox, bottomY + 14 * s);
+        this.drawLine(g, ox + 8 * s, bottomY - 2 * s, ox + 11 * s, bottomY + 14 * s);
         break;
       }
       case 'denim_shorts': {
@@ -486,6 +543,17 @@ export class CharacterOutfitCompositor {
     }
   }
 
+  private static drawLine(g: Phaser.GameObjects.Graphics, x1: number, y1: number, x2: number, y2: number): void {
+    if (typeof (g as any).lineBetween === 'function') {
+      (g as any).lineBetween(x1, y1, x2, y2);
+    } else {
+      g.beginPath();
+      g.moveTo(x1, y1);
+      g.lineTo(x2, y2);
+      g.strokePath();
+    }
+  }
+
   // --- 🎒 Backpack (Star Backpack) ---
   private static drawStarBackpack(
     g: Phaser.GameObjects.Graphics,
@@ -501,7 +569,11 @@ export class CharacterOutfitCompositor {
     g.fillStyle(0xeab308, 1.0);
     g.lineStyle(2 * s, 0xca8a04, 1.0);
     g.fillCircle(bpX, bpY, 11 * s);
-    g.strokeCircle(bpX, bpY, 11 * s);
+    if (typeof (g as any).strokeCircle === 'function') {
+      (g as any).strokeCircle(bpX, bpY, 11 * s);
+    } else if (typeof g.strokeCircleShape === 'function') {
+      g.strokeCircleShape(new Phaser.Geom.Circle(bpX, bpY, 11 * s));
+    }
 
     // Star Emblem
     g.fillStyle(0xffffff, 1.0);
@@ -511,7 +583,7 @@ export class CharacterOutfitCompositor {
 
     // Shoulder Strap
     g.lineStyle(2.5 * s, 0x854d0e, 0.9);
-    g.lineBetween(bpX - 4 * s * flip, bpY - 10 * s, ox + 6 * s * flip, oy - 14 * s);
+    this.drawLine(g, bpX - 4 * s * flip, bpY - 10 * s, ox + 6 * s * flip, oy - 14 * s);
   }
 
   // --- 👓 Glasses (Smart Glasses) ---
@@ -530,14 +602,22 @@ export class CharacterOutfitCompositor {
 
     // Left Lens
     g.fillCircle(ox - 8 * s, glassY, 6 * s);
-    g.strokeCircle(ox - 8 * s, glassY, 6 * s);
+    if (typeof (g as any).strokeCircle === 'function') {
+      (g as any).strokeCircle(ox - 8 * s, glassY, 6 * s);
+    } else if (typeof g.strokeCircleShape === 'function') {
+      g.strokeCircleShape(new Phaser.Geom.Circle(ox - 8 * s, glassY, 6 * s));
+    }
 
     // Right Lens
     g.fillCircle(ox + 8 * s, glassY, 6 * s);
-    g.strokeCircle(ox + 8 * s, glassY, 6 * s);
+    if (typeof (g as any).strokeCircle === 'function') {
+      (g as any).strokeCircle(ox + 8 * s, glassY, 6 * s);
+    } else if (typeof g.strokeCircleShape === 'function') {
+      g.strokeCircleShape(new Phaser.Geom.Circle(ox + 8 * s, glassY, 6 * s));
+    }
 
     // Nose Bridge
-    g.lineBetween(ox - 2 * s, glassY, ox + 2 * s, glassY);
+    this.drawLine(g, ox - 2 * s, glassY, ox + 2 * s, glassY);
 
     // Lens Glimmer
     g.fillStyle(0xffffff, 0.7);
@@ -577,7 +657,7 @@ export class CharacterOutfitCompositor {
         g.fillStyle(0xf59e0b, 1.0);
         g.fillCircle(ox, headY - 1 * s, 3 * s);
         g.lineStyle(2 * s, 0xf59e0b, 1.0);
-        g.lineBetween(ox, headY - 1 * s, ox + 16 * s * flip, headY + 8 * s);
+        this.drawLine(g, ox, headY - 1 * s, ox + 16 * s * flip, headY + 8 * s);
         g.fillCircle(ox + 16 * s * flip, headY + 8 * s, 2.5 * s);
         break;
       }

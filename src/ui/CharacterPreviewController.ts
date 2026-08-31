@@ -24,6 +24,7 @@ export class CharacterPreviewController {
   public readonly sprite: Phaser.GameObjects.Image;
   public readonly layerSprites: Partial<Record<OutfitLayer, Phaser.GameObjects.Image>> = {};
   public readonly wardrobeGraphics: Phaser.GameObjects.Graphics;
+  public readonly backWardrobeGraphics: Phaser.GameObjects.Graphics;
   public currentPose: PreviewPose = 'idle';
   public lastRenderResult: OutfitRenderResult | null = null;
 
@@ -43,8 +44,10 @@ export class CharacterPreviewController {
     this.character = options.character;
     this.wardrobe = { ...(options.wardrobe ?? {}) };
     this.baseScale = options.scale ?? 1;
+    this.backWardrobeGraphics = scene.add.graphics();
     this.sprite = scene.add.image(0, 0, this.character.idle);
     this.wardrobeGraphics = scene.add.graphics();
+    if (typeof this.backWardrobeGraphics.setDepth === 'function') this.backWardrobeGraphics.setDepth(35);
     if (typeof this.sprite.setOrigin === 'function') this.sprite.setOrigin(0.5, 0.5);
     if (typeof this.sprite.setDepth === 'function') this.sprite.setDepth(40);
     OUTFIT_LAYER_ORDER.forEach((layer, index) => {
@@ -56,6 +59,7 @@ export class CharacterPreviewController {
     });
     if (typeof this.wardrobeGraphics.setDepth === 'function') this.wardrobeGraphics.setDepth(45);
     options.container.add([
+      this.backWardrobeGraphics,
       this.sprite,
       ...Object.values(this.layerSprites).filter(
         (layer): layer is Phaser.GameObjects.Image => Boolean(layer)
@@ -136,11 +140,17 @@ export class CharacterPreviewController {
     if (typeof this.sprite.destroy === 'function') this.sprite.destroy();
     Object.values(this.layerSprites).forEach(layer => layer?.destroy());
     if (typeof this.wardrobeGraphics.destroy === 'function') this.wardrobeGraphics.destroy();
+    if (typeof this.backWardrobeGraphics.destroy === 'function') this.backWardrobeGraphics.destroy();
   }
 
   private render(): void {
     this.lastRenderResult = this.renderer.render(
-      { sprite: this.sprite, graphics: this.wardrobeGraphics, layerSprites: this.layerSprites },
+      {
+        sprite: this.sprite,
+        graphics: this.wardrobeGraphics,
+        backGraphics: this.backWardrobeGraphics,
+        layerSprites: this.layerSprites,
+      },
       {
         characterId: this.character.id,
         baseTextureKey: this.getPoseTexture(this.currentPose),
@@ -171,6 +181,11 @@ export class CharacterPreviewController {
   }
 
   private getMotionTargets(): Phaser.GameObjects.GameObject[] {
-    return [this.sprite, ...Object.values(this.layerSprites), this.wardrobeGraphics].filter(Boolean) as Phaser.GameObjects.GameObject[];
+    return [
+      this.backWardrobeGraphics,
+      this.sprite,
+      ...Object.values(this.layerSprites),
+      this.wardrobeGraphics,
+    ].filter(Boolean) as Phaser.GameObjects.GameObject[];
   }
 }
