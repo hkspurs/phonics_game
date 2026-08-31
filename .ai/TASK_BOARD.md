@@ -10,6 +10,31 @@ None.
 
 ## RECENTLY COMPLETED
 
+### TASK-20260831-005
+
+Agent: Codex
+Status: DONE
+Started: 2026-08-31
+Completed: 2026-08-31
+
+Description:
+Aligned the live GitHub Pages artifact with the verified wardrobe implementation.
+
+Scope:
+- Synced the tracked `master/docs` Pages artifact from the current production build.
+- Verified the public page artifact references the new bundle and build timestamp.
+- Did not change game systems or purchase/inventory behavior.
+
+Files / Modules:
+- `docs/` generated GitHub Pages artifact
+- `.ai/TASK_BOARD.md`, `.ai/OWNERSHIP.md`, `.ai/CHANGELOG.md`, `.ai/CURRENT_STATE.md`
+
+Verification:
+- `npm run build` — TypeScript and Vite build passed
+- `docs/index.html` references `index-DqhY_5sP.js`
+- Synced bundle timestamp: `ver 1.1.0 (202608311450)`
+- Live source mismatch was reproduced and traced to `master/docs` versus `gh-pages`
+
 ### TASK-20260831-004
 
 Agent: Codex

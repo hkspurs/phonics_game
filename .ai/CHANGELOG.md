@@ -1,5 +1,23 @@
 # AI Coordination Changelog
 
+## 2026-08-31 — Codex — TASK-20260831-005
+
+Summary:
+Synchronized the tracked GitHub Pages `master/docs` artifact after confirming that the public site was serving that source rather than the separately published `gh-pages` branch.
+
+Changed:
+- Updated `docs/index.html` to reference the current production bundle.
+- Added the current production bundle and source map under `docs/assets/`.
+- Documented the Pages source mismatch and verification in shared project state.
+
+Verification:
+- `npm run build` passed.
+- Synced artifact displays `ver 1.1.0 (202608311450)`.
+- Live response was reproduced before the sync as `ver 1.1.0 (202608311146)`.
+
+Follow-up:
+- Repository Pages settings should eventually use the same source as the deployment workflow (`gh-pages`), or the workflow should keep `master/docs` synchronized.
+
 ## 2026-08-31 — Codex — TASK-20260831-004
 
 Summary:
