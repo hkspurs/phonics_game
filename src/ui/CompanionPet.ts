@@ -20,12 +20,14 @@ export class CompanionPet extends Phaser.GameObjects.Container {
     const found = PET_DEFINITIONS.find((p) => p.id === config.petId);
     this.petDefinition = found || PET_DEFINITIONS[0];
 
-    // Aura Glow Circle
+    // Soft Ethereal Aura Glow (Outer halo + Inner sparkle, no harsh solid stroke)
     this.auraGraphics = scene.add.graphics();
-    this.auraGraphics.fillStyle(this.petDefinition.tint, 0.35);
-    this.auraGraphics.fillCircle(0, 0, 26);
-    this.auraGraphics.lineStyle(2, this.petDefinition.tint, 0.85);
-    this.auraGraphics.strokeCircle(0, 0, 26);
+    this.auraGraphics.fillStyle(this.petDefinition.tint, 0.16);
+    this.auraGraphics.fillCircle(0, 0, 28);
+    this.auraGraphics.fillStyle(this.petDefinition.tint, 0.30);
+    this.auraGraphics.fillCircle(0, 0, 20);
+    this.auraGraphics.fillStyle(0xffffff, 0.40);
+    this.auraGraphics.fillCircle(0, 0, 10);
     this.add(this.auraGraphics);
 
     // Pet Icon Emoji / Graphic

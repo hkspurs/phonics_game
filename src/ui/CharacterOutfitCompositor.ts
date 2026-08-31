@@ -327,7 +327,7 @@ export class CharacterOutfitCompositor {
 
     switch (topId) {
       case 'sailor_top': {
-        // White Sailor Shirt
+        // White Sailor Shirt Body
         g.fillStyle(0xf8fafc, 0.98);
         g.lineStyle(2 * s, 0x1e3a8a, 1.0);
         g.fillRoundedRect(ox - 16 * s, topY - 10 * s, 32 * s, 22 * s, 5 * s);
@@ -354,7 +354,7 @@ export class CharacterOutfitCompositor {
         break;
       }
       case 'hk_school_shirt': {
-        // Crisp White School Uniform
+        // Crisp White School Uniform Body
         g.fillStyle(0xffffff, 0.98);
         g.lineStyle(1.5 * s, 0x94a3b8, 1.0);
         g.fillRoundedRect(ox - 15 * s, topY - 10 * s, 30 * s, 22 * s, 4 * s);
@@ -370,7 +370,7 @@ export class CharacterOutfitCompositor {
         break;
       }
       case 'sport_jersey': {
-        // Athletic Cyan Jersey
+        // Athletic Cyan Jersey Body
         g.fillStyle(0x06b6d4, 0.95);
         g.lineStyle(2 * s, 0x0891b2, 1.0);
         g.fillRoundedRect(ox - 16 * s, topY - 10 * s, 32 * s, 22 * s, 5 * s);
@@ -390,9 +390,6 @@ export class CharacterOutfitCompositor {
       }
       case 'hoodie_star':
       case 'star_hoodie': {
-        // The live wardrobe preview deliberately renders no vector garment.
-        // Keep the old runner-only fallback until production wearing art lands;
-        // this does not run through renderPreviewOutfit.
         if (!allowLegacyHoodieFallback) break;
         g.fillStyle(0xf59e0b, 0.98);
         g.lineStyle(2 * s, 0xb45309, 1.0);
@@ -503,7 +500,6 @@ export class CharacterOutfitCompositor {
     // Golden Star Shape Backpack Sphere
     g.fillStyle(0xeab308, 1.0);
     g.lineStyle(2 * s, 0xca8a04, 1.0);
-
     g.fillCircle(bpX, bpY, 11 * s);
     g.strokeCircle(bpX, bpY, 11 * s);
 

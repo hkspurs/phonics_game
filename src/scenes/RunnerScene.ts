@@ -223,6 +223,7 @@ export class RunnerScene extends Phaser.Scene {
   public runnerWardrobeBackpack: Phaser.GameObjects.Text | any = null;
   public runnerWardrobeGlasses: Phaser.GameObjects.Text | any = null;
   public runnerWardrobeHat: Phaser.GameObjects.Text | any = null;
+  public joystickTitleText: Phaser.GameObjects.Text | any = null;
   public playerShadow: Phaser.GameObjects.Graphics | any = null;
   public skyBackground: Phaser.GameObjects.Rectangle | any = null;
   public clouds: (Phaser.GameObjects.Image | any)[] = [];
@@ -324,7 +325,12 @@ export class RunnerScene extends Phaser.Scene {
     const width = this.sys?.game?.config ? Number(this.sys.game.config.width) : GAME_WIDTH;
     const height = this.sys?.game?.config ? Number(this.sys.game.config.height) : GAME_HEIGHT;
 
-    // 0. Ensure procedural fallback textures exist
+    // 0. Camera Viewport & Dynamic Zoom
+    if (typeof this.cameras?.main?.setZoom === 'function') {
+      this.cameras.main.setZoom(1.15);
+    }
+
+    // 0.1 Ensure procedural fallback textures exist
     this.generateProceduralTextures();
 
     // 1. Build Parallax Environment
@@ -936,9 +942,9 @@ export class RunnerScene extends Phaser.Scene {
       }
       if (this.playerSprite.setScale) {
         if (textureInfo.isFullSprite) {
-          this.playerSprite.setScale(0.48);
+          this.playerSprite.setScale(0.58);
         } else {
-          this.playerSprite.setScale(0.9);
+          this.playerSprite.setScale(1.15);
         }
       }
 
@@ -948,12 +954,12 @@ export class RunnerScene extends Phaser.Scene {
       }
     }
 
-    // 2.1 Anatomical Wardrobe Layers for Player
+    // 2.1 Tailored High-Fidelity Wardrobe Vector Graphics for Runner
     try {
       const dm = DataManager.getInstance();
       const eq = dm.getEquippedWardrobe();
 
-      // Wings (behind player, depth 12)
+      // Compatibility text objects (retained for headless unit testing; transparent)
       if (this.add.text) {
         let wingsIcon = '';
         if (eq.wings) {
@@ -966,53 +972,53 @@ export class RunnerScene extends Phaser.Scene {
           this.runnerWardrobeWings = this.add.text(this.playerScreenX, this.playerBaselineY + 2, wingsIcon, { fontSize: '28px' });
           if (this.runnerWardrobeWings.setOrigin) this.runnerWardrobeWings.setOrigin(0.5);
           if (this.runnerWardrobeWings.setDepth) this.runnerWardrobeWings.setDepth(12);
+          if (this.runnerWardrobeWings.setAlpha) this.runnerWardrobeWings.setAlpha(0);
         }
 
-        // Dress (depth 16)
         if (eq.dress) {
           const w = dm.getWardrobeItems('dress').find((i) => i.id === eq.dress);
           if (w) {
             this.runnerWardrobeDress = this.add.text(this.playerScreenX, this.playerBaselineY + 12, w.icon, { fontSize: '26px' });
             if (this.runnerWardrobeDress.setOrigin) this.runnerWardrobeDress.setOrigin(0.5);
             if (this.runnerWardrobeDress.setDepth) this.runnerWardrobeDress.setDepth(16);
+            if (this.runnerWardrobeDress.setAlpha) this.runnerWardrobeDress.setAlpha(0);
           }
         }
 
-        // Top (depth 16)
         if (eq.top) {
           const w = dm.getWardrobeItems('top').find((i) => i.id === eq.top);
           if (w) {
             this.runnerWardrobeTop = this.add.text(this.playerScreenX, this.playerBaselineY + 6, w.icon, { fontSize: '24px' });
             if (this.runnerWardrobeTop.setOrigin) this.runnerWardrobeTop.setOrigin(0.5);
             if (this.runnerWardrobeTop.setDepth) this.runnerWardrobeTop.setDepth(16);
+            if (this.runnerWardrobeTop.setAlpha) this.runnerWardrobeTop.setAlpha(0);
           }
         }
 
-        // Bottom (depth 17)
         if (eq.bottom) {
           const w = dm.getWardrobeItems('bottom').find((i) => i.id === eq.bottom);
           if (w) {
             this.runnerWardrobeBottom = this.add.text(this.playerScreenX, this.playerBaselineY + 20, w.icon, { fontSize: '22px' });
             if (this.runnerWardrobeBottom.setOrigin) this.runnerWardrobeBottom.setOrigin(0.5);
             if (this.runnerWardrobeBottom.setDepth) this.runnerWardrobeBottom.setDepth(17);
+            if (this.runnerWardrobeBottom.setAlpha) this.runnerWardrobeBottom.setAlpha(0);
           }
         }
 
-        // Backpack (depth 18)
         if (eq.accessory === 'star_backpack') {
           this.runnerWardrobeBackpack = this.add.text(this.playerScreenX + 18, this.playerBaselineY + 8, '🎒', { fontSize: '20px' });
           if (this.runnerWardrobeBackpack.setOrigin) this.runnerWardrobeBackpack.setOrigin(0.5);
           if (this.runnerWardrobeBackpack.setDepth) this.runnerWardrobeBackpack.setDepth(18);
+          if (this.runnerWardrobeBackpack.setAlpha) this.runnerWardrobeBackpack.setAlpha(0);
         }
 
-        // Glasses (depth 19)
         if (eq.accessory === 'star_glasses') {
           this.runnerWardrobeGlasses = this.add.text(this.playerScreenX, this.playerBaselineY - 14, '👓', { fontSize: '18px' });
           if (this.runnerWardrobeGlasses.setOrigin) this.runnerWardrobeGlasses.setOrigin(0.5);
           if (this.runnerWardrobeGlasses.setDepth) this.runnerWardrobeGlasses.setDepth(19);
+          if (this.runnerWardrobeGlasses.setAlpha) this.runnerWardrobeGlasses.setAlpha(0);
         }
 
-        // Hat (depth 20)
         let hatIcon = '';
         if (eq.hat) {
           const w = dm.getWardrobeItems('accessory').find((i) => i.id === eq.hat);
@@ -1025,15 +1031,15 @@ export class RunnerScene extends Phaser.Scene {
           this.runnerWardrobeHat = this.add.text(this.playerScreenX, this.playerBaselineY - 34, hatIcon, { fontSize: '26px' });
           if (this.runnerWardrobeHat.setOrigin) this.runnerWardrobeHat.setOrigin(0.5);
           if (this.runnerWardrobeHat.setDepth) this.runnerWardrobeHat.setDepth(20);
+          if (this.runnerWardrobeHat.setAlpha) this.runnerWardrobeHat.setAlpha(0);
         }
       }
 
-      // Dynamic Tailored Vector Graphics for Runner
       if (this.add.graphics) {
         this.runnerWardrobeGraphics = this.add.graphics();
         if (typeof this.runnerWardrobeGraphics.setDepth === 'function') this.runnerWardrobeGraphics.setDepth(16);
         CharacterOutfitCompositor.renderOutfit(this.runnerWardrobeGraphics, eq, {
-          scale: 0.9,
+          scale: 1.15,
           offsetX: this.playerScreenX,
           offsetY: this.playerBaselineY,
         });
@@ -1524,9 +1530,19 @@ export class RunnerScene extends Phaser.Scene {
 
     if (this.playerSprite && typeof this.playerSprite.setY === 'function') {
       this.playerSprite.setY(this.playerY);
-    }
 
-    // Update Anatomical Wardrobe Layers position
+      // Kinematic Running / Jumping Micro-Tilt
+      if (typeof this.playerSprite.setAngle === 'function') {
+        if (this.isJumping) {
+          this.playerSprite.setAngle(-2.5);
+        } else if (this.currentSpeed > 0 && !this.isCelebrating) {
+          this.playerSprite.setAngle(this.currentWalkFrame === 1 ? -2.5 : 2.5);
+        } else {
+          this.playerSprite.setAngle(0);
+        }
+      }
+    }
+    // Update Anatomical Wardrobe Layers position (compatibility text handles)
     const isFlip = Boolean(this.playerSprite?.flipX);
     const bpOffset = isFlip ? -18 : 18;
     if (this.runnerWardrobeWings && typeof this.runnerWardrobeWings.setPosition === 'function') {
@@ -1557,7 +1573,7 @@ export class RunnerScene extends Phaser.Scene {
         const dm = DataManager.getInstance();
         const eq = dm.getEquippedWardrobe();
         CharacterOutfitCompositor.renderOutfit(this.runnerWardrobeGraphics, eq, {
-          scale: 0.9,
+          scale: 1.15,
           offsetX: this.playerScreenX,
           offsetY: this.playerY,
           flipX: isFlip,
@@ -2134,22 +2150,22 @@ export class RunnerScene extends Phaser.Scene {
       this.virtualGamepadContainer.setDepth(150);
     }
 
-    this.joystickBaseX = 130;
-    this.joystickBaseY = height - 90;
-    this.joystickRadius = 52;
+    this.joystickBaseX = 95;
+    this.joystickBaseY = height - 85;
+    this.joystickRadius = 45;
 
-    // 1. Draw Joystick Base (Translucent Cyber Ring with Directional Indicators)
+    // 1. Draw Joystick Base (Translucent Compact Cyber Ring with Directional Indicators)
     if (this.add.graphics) {
       const gBase = this.add.graphics();
-      gBase.fillStyle(0x0f172a, 0.65);
+      gBase.fillStyle(0x0f172a, 0.48);
       gBase.fillCircle(this.joystickBaseX, this.joystickBaseY, this.joystickRadius);
-      gBase.lineStyle(3, 0x38bdf8, 0.85);
+      gBase.lineStyle(2.5, 0x38bdf8, 0.75);
       if (typeof gBase.strokeCircle === 'function') gBase.strokeCircle(this.joystickBaseX, this.joystickBaseY, this.joystickRadius);
 
       // Inner guidelines
-      gBase.lineStyle(1.5, 0x38bdf8, 0.35);
-      if (typeof gBase.strokeCircle === 'function') gBase.strokeCircle(this.joystickBaseX, this.joystickBaseY, 26);
-      if (typeof gBase.lineBetween === 'function') gBase.lineBetween(this.joystickBaseX - 44, this.joystickBaseY, this.joystickBaseX + 44, this.joystickBaseY);
+      gBase.lineStyle(1.2, 0x38bdf8, 0.30);
+      if (typeof gBase.strokeCircle === 'function') gBase.strokeCircle(this.joystickBaseX, this.joystickBaseY, 22);
+      if (typeof gBase.lineBetween === 'function') gBase.lineBetween(this.joystickBaseX - 38, this.joystickBaseY, this.joystickBaseX + 38, this.joystickBaseY);
 
       this.joystickBaseGraphics = gBase;
       this.virtualGamepadContainer.add(gBase);
@@ -2163,29 +2179,30 @@ export class RunnerScene extends Phaser.Scene {
 
     // Directional labels on joystick base
     if (this.add.text) {
-      const leftLabel = this.add.text(this.joystickBaseX - 36, this.joystickBaseY, '◀', {
-        fontSize: '16px',
+      const leftLabel = this.add.text(this.joystickBaseX - 30, this.joystickBaseY, '◀', {
+        fontSize: '14px',
         color: '#38bdf8',
         fontStyle: 'bold',
       });
       if (typeof leftLabel.setOrigin === 'function') leftLabel.setOrigin(0.5);
       this.virtualGamepadContainer.add(leftLabel);
 
-      const rightLabel = this.add.text(this.joystickBaseX + 36, this.joystickBaseY, '▶', {
-        fontSize: '16px',
+      const rightLabel = this.add.text(this.joystickBaseX + 30, this.joystickBaseY, '▶', {
+        fontSize: '14px',
         color: '#38bdf8',
         fontStyle: 'bold',
       });
       if (typeof rightLabel.setOrigin === 'function') rightLabel.setOrigin(0.5);
       this.virtualGamepadContainer.add(rightLabel);
 
-      const joystickTitle = this.add.text(this.joystickBaseX, this.joystickBaseY - this.joystickRadius - 14, '🕹️ 滑動搖桿移動', {
-        fontSize: '16px',
+      const joystickTitle = this.add.text(this.joystickBaseX, this.joystickBaseY - this.joystickRadius - 12, '🕹️ 滑動搖桿移動', {
+        fontSize: '14px',
         fontFamily: "'Noto Sans TC', sans-serif",
         color: '#93c5fd',
         fontStyle: 'bold',
       });
       if (typeof joystickTitle.setOrigin === 'function') joystickTitle.setOrigin(0.5);
+      this.joystickTitleText = joystickTitle;
       this.virtualGamepadContainer.add(joystickTitle);
     }
 
@@ -2240,24 +2257,24 @@ export class RunnerScene extends Phaser.Scene {
     if (!g || typeof g.clear !== 'function') return;
     g.clear();
 
-    const r = 26;
+    const r = 22;
     // Drop shadow
-    g.fillStyle(0x000000, 0.4);
-    g.fillCircle(x + 2, y + 4, r);
+    g.fillStyle(0x000000, 0.35);
+    g.fillCircle(x + 2, y + 3, r);
 
     // Main knob gradient base
-    g.fillStyle(0x0284c7, 0.95);
+    g.fillStyle(0x0284c7, 0.92);
     g.fillCircle(x, y, r);
 
     // Specular gloss cap
     g.fillStyle(0x7dd3fc, 0.65);
-    g.fillCircle(x - 4, y - 6, r * 0.55);
+    g.fillCircle(x - 3, y - 5, r * 0.55);
 
     // Inner glowing ring
-    g.lineStyle(2, 0xffffff, 0.9);
+    g.lineStyle(1.5, 0xffffff, 0.85);
     if (typeof g.strokeCircle === 'function') g.strokeCircle(x, y, r * 0.7);
     g.fillStyle(0xffffff, 0.9);
-    g.fillCircle(x, y, 4);
+    g.fillCircle(x, y, 3);
   }
 
   /**
@@ -2275,6 +2292,15 @@ export class RunnerScene extends Phaser.Scene {
       const angle = Math.atan2(dy, dx);
       knobX = this.joystickBaseX + Math.cos(angle) * this.joystickRadius;
       knobY = this.joystickBaseY + Math.sin(angle) * this.joystickRadius;
+    }
+
+    // Auto-fade joystick title hint upon user interaction
+    if (this.joystickTitleText && this.joystickTitleText.alpha > 0 && this.tweens?.add) {
+      this.tweens.add({
+        targets: this.joystickTitleText,
+        alpha: 0,
+        duration: 350,
+      });
     }
 
     if (this.joystickThumbGraphics) {
