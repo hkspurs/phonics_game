@@ -1,36 +1,32 @@
-# Google AGY / Antigravity Entry Point
+# Google Antigravity Repository Instructions
 
-Welcome, Google AGY / Antigravity Agent.
+This repository uses a mandatory shared AI development protocol.
 
-This repository uses a shared AI coordination system to coordinate development between **Google AGY** and **OpenAI Codex**.
+Before performing ANY coding task:
 
-`.ai/` is the **single source of truth** for all project state, architecture, conventions, task tracking, and ownership.
+Read and follow:
 
----
+[AGENTS.md](./AGENTS.md)
 
-## MANDATORY STARTUP PROTOCOL
+AGENTS.md is the MASTER AI instruction file.
 
-Before touching source code:
+The rules in AGENTS.md automatically apply to every task handled by Google Antigravity.
 
-[ ] Read .ai/CURRENT_STATE.md
-[ ] Read .ai/TASK_BOARD.md
-[ ] Read .ai/OWNERSHIP.md
-[ ] Read .ai/ARCHITECTURE.md
-[ ] Read .ai/CONVENTIONS.md
-[ ] Run git status
-[ ] Inspect recent git commits
-[ ] Confirm no ownership conflict
-[ ] Register current task before editing
+`.ai/` is the shared source of truth between:
+- Google Antigravity
+- OpenAI Codex
+- other coding agents
 
-Only after this process may implementation begin.
+The user does not need to explicitly request:
+- startup protocol
+- reading project state
+- checking other agents
+- task registration
+- ownership checking
+- changelog updates
+- project-state updates
+- ownership release
 
----
+These actions are automatic parts of every coding task.
 
-## Key References
-- 📊 **Current Project State**: [`.ai/CURRENT_STATE.md`](./.ai/CURRENT_STATE.md)
-- 📌 **Task Board**: [`.ai/TASK_BOARD.md`](./.ai/TASK_BOARD.md)
-- 🔒 **Ownership Registry**: [`.ai/OWNERSHIP.md`](./.ai/OWNERSHIP.md)
-- 🏛️ **Architecture Reference**: [`.ai/ARCHITECTURE.md`](./.ai/ARCHITECTURE.md)
-- 📐 **Coding Conventions**: [`.ai/CONVENTIONS.md`](./.ai/CONVENTIONS.md)
-- 🧪 **Testing Protocol**: [`.ai/TESTING.md`](./.ai/TESTING.md)
-- 📝 **Changelog**: [`.ai/CHANGELOG.md`](./.ai/CHANGELOG.md)
+Always read the latest repository state before modifying source code.

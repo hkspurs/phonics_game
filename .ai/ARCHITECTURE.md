@@ -1,104 +1,74 @@
-# Architecture of P1 Adventure (升夢大冒險)
+# Architecture Reference
 
-## 1. High-Level Technology Stack
-- **Game Engine**: Phaser 3 (`^3.87.0`)
-- **Language**: TypeScript (`^5.5.3`) with strict mode
-- **Bundler & Dev Server**: Vite (`^5.3.3`)
-- **Unit Test Runner**: Vitest (`^2.0.2`) with JSDOM environment
-- **E2E & Visual QA**: Playwright (`^1.47.0`)
-- **Deployment**: GitHub Pages via GitHub Actions (`.github/workflows/deploy.yml`)
-
----
-
-## 2. Directory Layout & Module Structure
+## 1. Directory Structure
 
 ```
 p1-adventure/
-├── .ai/                       # AI Coordination System (Single Source of Truth)
-│   ├── CURRENT_STATE.md       # Real-time state of codebase & features
-│   ├── TASK_BOARD.md          # Active & planned AI tasks
-│   ├── OWNERSHIP.md           # Module locking to avoid collision
-│   ├── CHANGELOG.md           # History of AI modifications
+├── .ai/                       # Shared AI Coordination Control Plane
+│   ├── CURRENT_STATE.md       # Concise current project overview
+│   ├── TASK_BOARD.md          # Active & completed AI tasks
+│   ├── OWNERSHIP.md           # File/module locks
+│   ├── CHANGELOG.md           # Chronological development log
 │   ├── ARCHITECTURE.md        # Technical architecture reference
 │   ├── CONVENTIONS.md         # Coding style & safety rules
-│   ├── TESTING.md             # Testing & verification procedures
-│   └── decisions/             # Architecture Decision Records (ADRs)
-├── docs/                      # Production build distribution & specifications
+│   ├── TESTING.md             # Testing commands & QA protocols
+│   └── decisions/             # Architecture Decision Records
+├── docs/                      # Production build & specifications
 │   ├── character-art-spec.md  # Master Character Specification
-│   └── index.html             # GitHub Pages landing bundle
-├── public/                    # Static runtime assets
-│   └── assets/
-│       └── character/outfits/ # 512x512 Master transparent PNG sprites
+│   └── index.html             # Static web bundle
+├── public/
+│   └── assets/character/      # 512x512 transparent character sprites
 ├── src/
-│   ├── config/                # Game configuration & registries
-│   │   ├── curriculum.ts      # Primary 1 questions (Chinese, English, Math)
-│   │   ├── outfits.ts         # Full character sprite outfit definitions
-│   │   ├── wardrobe.ts        # 18 modular clothing items & categories
-│   │   ├── pets.ts            # Companion pet stats and animations
-│   │   ├── skins.ts           # 5 playable character skins & perk bonuses
-│   │   └── worlds.ts          # World map nodes & station IDs
-│   ├── engine/                # Core pedagogical & gameplay engines
-│   │   ├── QuestionEngine.ts  # Question evaluation, scoring, and streaks
-│   │   ├── SentenceEngine.ts  # Chinese/English sentence token scrambler & slot validator
-│   │   └── MathGenerator.ts   # Dynamic Grade 1 math problem generator
-│   ├── scenes/                # Phaser 3 Scene State Machine
-│   │   ├── PreloadScene.ts    # Asset preloading & procedural texture generation
-│   │   ├── TitleScene.ts      # Title screen, menu, profile modal
-│   │   ├── MapScene.ts        # World map, station selection, world unlock gates
-│   │   ├── QuestionScene.ts   # Interactive quiz screen with token/card slots
-│   │   ├── RunnerScene.ts     # 2D platforming runner with physics & collectibles
-│   │   └── ShopScene.ts       # Dream Wardrobe, skin purchase, OOTD photo booth
-│   ├── services/              # Cross-cutting state managers & APIs
-│   │   ├── DataManager.ts     # LocalStorage persistence (`p1_adventure_save_v1`)
-│   │   ├── SoundManager.ts    # Procedural Web Audio API sound synthesizer
-│   │   ├── SpeechService.ts   # Web Speech API multi-language TTS synthesizer
-│   │   └── PlayerAvatarService.ts # Cross-scene character sprite sync
-│   ├── ui/                    # Reusable Phaser UI components
-│   │   ├── CanvasButton.ts    # Vector button with glossy gradient & hover feedback
-│   │   ├── CanvasCard.ts      # Word chip draggable/tappable card component
-│   │   ├── SlotBox.ts         # Word insertion slot with border glow & error state
-│   │   ├── CharacterOutfitCompositor.ts # Wardrobe positioning & vector compositing
-│   │   ├── OutfitRenderer.ts  # Hybrid sprite & accessory layer renderer
-│   │   └── CharacterPreviewController.ts # Live wardrobe showcase controller
-│   └── main.ts                # Phaser.Game initialization & Scale FIT configuration
-├── GEMINI.md                  # Google AGY startup protocol
-└── AGENTS.md                  # OpenAI Codex startup protocol
+│   ├── config/                # Curriculum, outfits, wardrobe, pets, skins
+│   ├── engine/                # QuestionEngine, SentenceEngine, MathGenerator
+│   ├── scenes/                # Phaser 3 Scenes (Preload, Title, Map, Question, Runner, Shop)
+│   ├── services/              # DataManager, SoundManager, SpeechService, PlayerAvatarService
+│   ├── ui/                    # CanvasButton, CanvasCard, SlotBox, OutfitRenderer, Compositor
+│   └── main.ts                # Phaser game bootstrap & Scale FIT
+├── AGENTS.md                  # Master AI Development Protocol
+└── GEMINI.md                  # Google Antigravity entry point
 ```
 
----
+## 2. Scene Flow & State Machine
 
-## 3. Core Subsystems
-
-### A. Scene Transition Flow
 ```
-[PreloadScene] 
-      │
-      ▼
- [TitleScene] ──► [ShopScene] (Wardrobe & Skins)
-      │
-      ▼
-  [MapScene] (World & Station Select)
-      │
-      ▼
-[QuestionScene] (1-3 Educational Questions)
-      │ (onCorrectAnswer)
-      ▼
- [RunnerScene] (Platforming & Treasure Chest Loot)
-      │ (onReachChest)
-      ▼
- [Return to Map / Next Question]
+               ┌──────────────┐
+               │ PreloadScene │
+               └──────┬───────┘
+                      ▼
+               ┌──────────────┐       ┌───────────┐
+               │  TitleScene  │◄─────►│ ShopScene │
+               └──────┬───────┘       └───────────┘
+                      ▼
+               ┌──────────────┐
+               │   MapScene   │
+               └──────┬───────┘
+                      ▼
+               ┌──────────────┐
+               │QuestionScene │
+               └──────┬───────┘
+                      ▼ (onCorrectAnswer)
+               ┌──────────────┐
+               │ RunnerScene  │
+               └──────┬───────┘
+                      ▼ (onReachChest)
+           [Next Question / Map]
 ```
 
-### B. Scaled Display Standard
-- **Internal Resolution**: `1280 x 720 px` (16:9 Landscape)
-- **Scale Mode**: `Phaser.Scale.FIT` with `Phaser.Scale.CENTER_BOTH`
-- **Retina Crispness**: Text objects specify `resolution: Math.max(2, window.devicePixelRatio || 2)` for sharp Retina text rendering.
+## 3. Data & State Management
+- **Persistence**: Managed by `DataManager.getInstance()` using LocalStorage key `p1_adventure_save_v1`.
+- **Currency & Progression**: Coins, gems, unlocked worlds/stations, owned skins, and equipped wardrobe dictionary.
+- **Avatar Sync**: `PlayerAvatarService` provides consistent sprite keys and tints across scenes.
 
-### C. Wardrobe & Layer Stacking Hierarchy
+## 4. Wardrobe & Rendering Depth Hierarchy
 ```
-[Depth 35] Back Accessories (angel_wings, star_backpack rear anchor)
+[Depth 35] BACK_ACCESSORY (angel_wings, star_backpack rear anchor)
 [Depth 40] Character Body Sprite (Full-Sprite Outfit or Base Character)
 [Depth 41-44] Rigged Modular Costume Layers
-[Depth 45] Front Accessories (star_glasses at eyes, cat_ears / scholar_cap on crown)
-[Depth 50] Gold Sparkle FX & Celebration Particles
+[Depth 45] FRONT_ACCESSORY (star_glasses at eyes, cat_ears / scholar_cap on head)
+[Depth 50] FX & Sparkle Particle Bursts
 ```
+
+## 5. Audio & TTS Architecture
+- **SoundManager**: Procedural Web Audio oscillator synthesis (no external audio assets required).
+- **SpeechService**: Web Speech API (`window.speechSynthesis`) with voice selection for Cantonese (`zh-HK`), Mandarin (`zh-TW`), and English (`en-US`).

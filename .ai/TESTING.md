@@ -1,41 +1,45 @@
-# Testing & Quality Assurance Protocol
+# Testing & Verification Guide
 
-## 1. Test Suites Overview
-The project contains **43 test suites** and **1,120 unit tests** ensuring zero regressions across all game mechanics.
+## 1. Available Test & Build Commands
 
-### Key Test Suites:
-- `src/services/DataManager.test.ts`: Currency math, inventory save/load, profile migration.
-- `src/scenes/QuestionScene.test.ts`: Choice quizzes, sentence scrambling, reset clearing, audio triggers.
-- `src/scenes/RunnerScene.test.ts`: Kinematics, gravity, jump/double jump, springboard, coin magnet, obstacle damage.
-- `src/test/wardrobe-preview-system.test.ts`: 18 wardrobe items, 5 full outfits, mutual exclusivity.
-- `src/test/gamer-tester-*.test.ts`: Adversarial edge case hunting (currency exploits, coordinate drift, slot desync).
-
----
-
-## 2. Mandatory Verification Commands
-
-### A. Run All Unit Tests
+### A. Run Unit Test Suite
 ```bash
 npm run test:unit
 ```
-*Criteria*: All 43 test suites must pass (100% green, 0 failures).
+- **Engine**: Vitest
+- **Scope**: 43 test suites covering DataManager, QuestionEngine, SentenceEngine, MathGenerator, RunnerScene physics, and Wardrobe preview.
+- **Pass Criteria**: 100% tests green (1,120 / 1,120).
 
 ### B. Build Production Bundle
 ```bash
 npm run build
 ```
-*Criteria*: TypeScript typecheck (`tsc`) passes with 0 errors, Vite outputs `dist/`.
+- **Engine**: TypeScript compiler (`tsc`) + Vite
+- **Output**: `dist/` directory with optimized JavaScript and assets.
 
-### C. Sync Distribution Bundle
+### C. Local Development Server
 ```bash
-rm -rf docs/*
-cp -r dist/* docs/
-cp -r docs/* /data/phonics_game/docs/
+npm run dev
 ```
+- Starts Vite dev server at `http://localhost:5173`.
 
-### D. Multi-Branch Parity Verification
+### D. Production Preview
 ```bash
-git push origin master
-git push origin master:main
-git push origin master:p1-adventure
+npm run preview
 ```
+- Previews production bundle at `http://localhost:4173`.
+
+### E. E2E & Visual Testing
+```bash
+npm run test:e2e
+```
+- Runs Playwright tests against built bundle.
+
+---
+
+## 2. Manual Visual Verification Checklist
+- [ ] **Wardrobe Preview**: Outfit sprite loads at correct scale (0.23x) on showcase pedestal with no overflow.
+- [ ] **Angel Wings**: Renders strictly behind character torso (Depth 35).
+- [ ] **Runner Jump**: Dynamic contact shadow shrinks smoothly during jump and restores on landing.
+- [ ] **OOTD Photo Booth**: Polaroid modal displays high-contrast card with washi tape corners and correct character outfit.
+- [ ] **Question Scramble**: Tapping word tokens snaps cleanly into target slots with no text clipping.
