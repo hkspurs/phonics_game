@@ -753,17 +753,17 @@ export class MapScene extends Phaser.Scene {
     if (!this.add) return;
 
     const pinContainer = this.add.container
-      ? this.add.container(0, -96)
-      : new Phaser.GameObjects.Container(this, 0, -96);
+      ? this.add.container(0, -118)
+      : new Phaser.GameObjects.Container(this, 0, -118);
 
     // 1. Mini Pointer Graphic pointing down to station
     if (this.add.graphics) {
       const g = this.add.graphics();
       g.fillStyle(0xf59e0b, 1.0);
       g.beginPath();
-      g.moveTo(-10, 24);
-      g.lineTo(10, 24);
-      g.lineTo(0, 36);
+      g.moveTo(-8, 22);
+      g.lineTo(8, 22);
+      g.lineTo(0, 32);
       g.closePath();
       g.fillPath();
       pinContainer.add(g);
@@ -782,14 +782,14 @@ export class MapScene extends Phaser.Scene {
     // 3. Name Pill Tag Below Avatar
     if (this.add.graphics && this.add.text) {
       const tagBg = this.add.graphics();
-      tagBg.fillStyle(0x0f172a, 0.85);
-      tagBg.fillRoundedRect(-36, 18, 72, 20, 8);
-      tagBg.lineStyle(1.5, 0xf59e0b, 0.9);
-      tagBg.strokeRoundedRect(-36, 18, 72, 20, 8);
+      tagBg.fillStyle(0x0f172a, 0.90);
+      tagBg.fillRoundedRect(-34, 16, 68, 18, 7);
+      tagBg.lineStyle(1.5, 0xf59e0b, 0.95);
+      tagBg.strokeRoundedRect(-34, 16, 68, 18, 7);
       pinContainer.add(tagBg);
 
-      const tagText = this.add.text(0, 28, '我喺呢度', {
-        fontSize: '12px',
+      const tagText = this.add.text(0, 25, '我喺呢度', {
+        fontSize: '11px',
         fontFamily: "'Noto Sans TC', 'Microsoft JhengHei', sans-serif",
         color: '#fef08a',
         fontStyle: 'bold',
@@ -802,7 +802,7 @@ export class MapScene extends Phaser.Scene {
     if (this.tweens?.add) {
       this.tweens.add({
         targets: pinContainer,
-        y: -106,
+        y: -128,
         duration: 900,
         yoyo: true,
         repeat: -1,

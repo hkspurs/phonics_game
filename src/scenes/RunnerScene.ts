@@ -325,9 +325,9 @@ export class RunnerScene extends Phaser.Scene {
     const width = this.sys?.game?.config ? Number(this.sys.game.config.width) : GAME_WIDTH;
     const height = this.sys?.game?.config ? Number(this.sys.game.config.height) : GAME_HEIGHT;
 
-    // 0. Camera Viewport & Dynamic Zoom
+    // 0. Camera Viewport
     if (typeof this.cameras?.main?.setZoom === 'function') {
-      this.cameras.main.setZoom(1.15);
+      this.cameras.main.setZoom(1.0);
     }
 
     // 0.1 Ensure procedural fallback textures exist
@@ -356,17 +356,6 @@ export class RunnerScene extends Phaser.Scene {
     } catch {
       this.hasShield = false;
     }
-
-    try {
-      const equippedPet = DataManager.getInstance().getProfile().equippedPet;
-      if (equippedPet) {
-        this.companionPet = new CompanionPet(this, {
-          petId: equippedPet,
-          x: this.playerScreenX - 45,
-          y: this.playerBaselineY - 35,
-        });
-      }
-    } catch {}
 
     // 4. Build HUD & Controls (Currency, Progress Bar, Skip Button)
     this.createHUD(width, height);
@@ -942,9 +931,9 @@ export class RunnerScene extends Phaser.Scene {
       }
       if (this.playerSprite.setScale) {
         if (textureInfo.isFullSprite) {
-          this.playerSprite.setScale(0.58);
+          this.playerSprite.setScale(0.62);
         } else {
-          this.playerSprite.setScale(1.15);
+          this.playerSprite.setScale(1.22);
         }
       }
 
@@ -1039,18 +1028,26 @@ export class RunnerScene extends Phaser.Scene {
         this.runnerWardrobeGraphics = this.add.graphics();
         if (typeof this.runnerWardrobeGraphics.setDepth === 'function') this.runnerWardrobeGraphics.setDepth(16);
         CharacterOutfitCompositor.renderOutfit(this.runnerWardrobeGraphics, eq, {
-          scale: 1.15,
+          scale: 1.22,
           offsetX: this.playerScreenX,
           offsetY: this.playerBaselineY,
         });
       }
     } catch {}
 
-    // 3. Companion Pet (if unlocked via 3-6-9 milestone and no shop pet equipped)
+    // 3. Companion Pet (equipped shop pet with soft breathing aura, or fallback to milestone pet)
     try {
-      if (!this.companionPet) {
-        const petData = DataManager.getInstance().getPetCompanion();
-        if (petData.stage !== 'none' && this.add.text) {
+      const dm = DataManager.getInstance();
+      const equippedPet = dm.getProfile()?.equippedPet;
+      if (equippedPet) {
+        this.companionPet = new CompanionPet(this, {
+          petId: equippedPet,
+          x: this.playerScreenX - 45,
+          y: this.playerBaselineY - 35,
+        });
+      } else {
+        const petData = dm.getPetCompanion();
+        if (petData && petData.stage !== 'none' && this.add.text) {
           const petObj = this.add.text(
             this.playerScreenX - 45,
             this.playerBaselineY - 35,
@@ -1573,7 +1570,7 @@ export class RunnerScene extends Phaser.Scene {
         const dm = DataManager.getInstance();
         const eq = dm.getEquippedWardrobe();
         CharacterOutfitCompositor.renderOutfit(this.runnerWardrobeGraphics, eq, {
-          scale: 1.15,
+          scale: 1.22,
           offsetX: this.playerScreenX,
           offsetY: this.playerY,
           flipX: isFlip,
@@ -2195,15 +2192,6 @@ export class RunnerScene extends Phaser.Scene {
       if (typeof rightLabel.setOrigin === 'function') rightLabel.setOrigin(0.5);
       this.virtualGamepadContainer.add(rightLabel);
 
-      const joystickTitle = this.add.text(this.joystickBaseX, this.joystickBaseY - this.joystickRadius - 12, '🕹️ 滑動搖桿移動', {
-        fontSize: '14px',
-        fontFamily: "'Noto Sans TC', sans-serif",
-        color: '#93c5fd',
-        fontStyle: 'bold',
-      });
-      if (typeof joystickTitle.setOrigin === 'function') joystickTitle.setOrigin(0.5);
-      this.joystickTitleText = joystickTitle;
-      this.virtualGamepadContainer.add(joystickTitle);
     }
 
     // 3. Register Left-Side Touch Joystick Drag / Slide Events
