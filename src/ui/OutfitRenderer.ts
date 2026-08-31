@@ -58,6 +58,13 @@ export class OutfitRenderer {
 
     if (target.sprite && typeof target.sprite.setTexture === 'function') {
       target.sprite.setTexture(textureKey);
+      if (mode === 'fullSprite' && (target.sprite.height > 150 || target.sprite.width > 150)) {
+        if (typeof target.sprite.setScale === 'function') {
+          target.sprite.setScale(0.45 * (request.scale ?? 1));
+        }
+      } else if (typeof target.sprite.setScale === 'function') {
+        target.sprite.setScale(request.scale ?? 1);
+      }
       if (target.sprite.texture?.setFilter) {
         target.sprite.texture.setFilter(
           mode === 'fullSprite' ? Phaser.Textures.FilterMode.LINEAR : Phaser.Textures.FilterMode.NEAREST
