@@ -1162,31 +1162,24 @@ export class ShopScene extends Phaser.Scene {
       g.fillStyle(0x1d2c64, 0.92);
       g.fillRoundedRect(stageX, stageY, layout.stage.width, layout.stage.height, 18);
 
-      // Quiet dressing-room silhouettes: one shared Graphics object keeps this
-      // atmosphere cheap while the character remains the highest-contrast focus.
-      g.fillStyle(0x8b5fb8, 0.09);
-      g.fillRoundedRect(stageX + layout.stage.width * 0.03, stageY + 8, layout.stage.width * 0.16, layout.stage.height - 16, 12);
-      g.fillRoundedRect(stageX + layout.stage.width * 0.81, stageY + 8, layout.stage.width * 0.16, layout.stage.height - 16, 12);
-      g.fillStyle(0x0b102c, 0.28);
-      g.fillRoundedRect(stageX + layout.stage.width * 0.08, stageY + layout.stage.height * 0.12, layout.stage.width * 0.16, layout.stage.height * 0.25, 10);
-      g.lineStyle(2, 0xd9bbff, 0.16);
-      g.strokeRoundedRect(stageX + layout.stage.width * 0.08, stageY + layout.stage.height * 0.12, layout.stage.width * 0.16, layout.stage.height * 0.25, 10);
-      g.lineStyle(2, 0xf5bd42, 0.18);
-      g.lineBetween(stageX + layout.stage.width * 0.72, stageY + layout.stage.height * 0.24, stageX + layout.stage.width * 0.91, stageY + layout.stage.height * 0.24);
-      g.lineBetween(stageX + layout.stage.width * 0.75, stageY + layout.stage.height * 0.24, stageX + layout.stage.width * 0.75, stageY + layout.stage.height * 0.52);
-      g.lineBetween(stageX + layout.stage.width * 0.88, stageY + layout.stage.height * 0.24, stageX + layout.stage.width * 0.88, stageY + layout.stage.height * 0.52);
-      g.fillStyle(0x5b5ee8, 0.11);
-      g.fillEllipse(stageX + layout.stage.width / 2, stageY + layout.stage.height * 0.38, layout.stage.width * 0.78, layout.stage.height * 0.92);
+      // Soft magical ambient gradient & spotlight
+      g.fillStyle(0x5b5ee8, 0.15);
+      g.fillEllipse(stageX + layout.stage.width / 2, stageY + layout.stage.height * 0.4, layout.stage.width * 0.85, layout.stage.height * 0.85);
+
+      // Subtle border
       g.lineStyle(2, 0x6f83e8, 0.45);
       g.strokeRoundedRect(stageX + 7, stageY + 7, Math.max(1, layout.stage.width - 14), Math.max(1, layout.stage.height - 14), 14);
+
+      // Stage pedestal ground shadow
       g.fillStyle(0x0a1028, 0.72);
-      g.fillEllipse(stageX + layout.stage.width / 2, stageY + layout.stage.height - 15, layout.stage.width * 0.58, compact ? 24 : 34);
+      g.fillEllipse(stageX + layout.stage.width / 2, stageY + layout.stage.height - 15, layout.stage.width * 0.62, compact ? 26 : 36);
+
+      // Soft twinkle star particles
       g.fillStyle(0xf7c85b, 0.9);
       g.fillCircle(stageX + layout.stage.width * 0.16, stageY + 22, 2.5);
-      g.fillCircle(stageX + layout.stage.width * 0.82, stageY + 48, 2);
-      g.fillCircle(stageX + layout.stage.width * 0.74, stageY + layout.stage.height * 0.32, 2.5);
-      g.fillCircle(stageX + layout.stage.width * 0.27, stageY + layout.stage.height * 0.2, 1.5);
-      g.fillCircle(stageX + layout.stage.width * 0.9, stageY + layout.stage.height * 0.62, 1.5);
+      g.fillCircle(stageX + layout.stage.width * 0.84, stageY + 36, 2);
+      g.fillCircle(stageX + layout.stage.width * 0.78, stageY + layout.stage.height * 0.28, 2.5);
+      g.fillCircle(stageX + layout.stage.width * 0.22, stageY + layout.stage.height * 0.24, 2);
       showcase.add(g);
     }
 

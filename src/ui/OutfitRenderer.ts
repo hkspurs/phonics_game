@@ -27,11 +27,12 @@ export interface OutfitRenderResult {
 
 export class OutfitRenderer {
   private readonly targetCache = new WeakMap<object, OutfitRenderResult>();
-  private readonly filteredTextures = new Set<Phaser.Textures.Texture>();
+  private readonly trackedTargets = new Set<OutfitRenderTarget>();
 
   constructor(private readonly registry: OutfitRegistry = wardrobeRegistry) {}
 
   render(target: OutfitRenderTarget, request: OutfitRenderRequest): OutfitRenderResult {
+    this.trackedTargets.add(target);
     const cacheKey = this.registry.getCacheKey(request.characterId, request.wardrobe, request.pose);
     const previous = this.targetCache.get(target);
     if (previous?.cacheKey === cacheKey) {
@@ -57,12 +58,8 @@ export class OutfitRenderer {
 
     if (target.sprite && typeof target.sprite.setTexture === 'function') {
       target.sprite.setTexture(textureKey);
-      const texture = target.sprite.texture;
-      if (texture?.setFilter) {
-        this.filteredTextures.add(texture);
-        // The supplied Kenney fallback is pixel art enlarged for the dressing
-        // room; nearest sampling keeps its outline crisp until high-res art lands.
-        texture.setFilter(
+      if (target.sprite.texture?.setFilter) {
+        target.sprite.texture.setFilter(
           mode === 'fullSprite' ? Phaser.Textures.FilterMode.LINEAR : Phaser.Textures.FilterMode.NEAREST
         );
       }
@@ -99,8 +96,12 @@ export class OutfitRenderer {
   }
 
   clearCache(): void {
-    this.filteredTextures.forEach(texture => texture.setFilter(Phaser.Textures.FilterMode.LINEAR));
-    this.filteredTextures.clear();
+    for (const target of this.trackedTargets) {
+      if (target.sprite?.texture?.setFilter) {
+        target.sprite.texture.setFilter(Phaser.Textures.FilterMode.LINEAR);
+      }
+    }
+    this.trackedTargets.clear();
   }
 
   private renderLayered(

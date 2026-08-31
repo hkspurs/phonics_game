@@ -1,74 +1,153 @@
-# Dream Wardrobe Outfit Art Prompts
+# 🎨 角色服飾美術提示詞工程規範 (Nano Banana / AI Character Outfit Prompts)
 
-These prompts describe production assets, not generated placeholders. Until the PNGs are delivered, the game uses the safe `CharacterOutfitCompositor` fallback.
+本文件定義《升夢大冒險》（P1 Adventure）中所有角色服飾在 **Nano Banana / Midjourney / Stable Diffusion / DALL-E 3** 中的標準提示詞工程模版與一致性參數。
 
-## Shared art direction
+---
 
-Create a full-body character sprite for the existing P1 Adventure base character. Keep the same character identity, hairstyle, face, head-to-body ratio, hand and foot proportions, camera angle, outline thickness, top-left soft lighting, cel-shading, shadow softness, transparent background, and neutral front-facing idle pose. The clothing must be designed as part of the character, with visible neck, sleeves, hands, waist and legs; it must not look like a floating icon or a rectangular overlay. No text, UI, frame, watermark, or background.
+## 📐 1. 核心風格與一致性參數 (Universal Consistency Guidelines)
 
-For every outfit, deliver separate files:
+為確保所有生成的角色服裝與現有遊戲美術 100% 融合，所有提示詞必須嚴格遵循以下約束：
 
-- `thumbnail.png`: isolated product illustration for the shop card only.
-- `idle.png`: full-body character wearing the outfit.
-- `run.png`: same character and outfit in the run pose.
-- `cheer.png`: same character and outfit cheering with raised arms.
+- **頭身比例**: 2.5 頭身 Q 版小學生 (2.5-head chibi proportion, cute primary-school child).
+- **美術風格**: 乾淨柔和賽璐珞動漫風 (Clean soft cel-shaded anime mobile game sprite art).
+- **光影方向**: 左上方 45 度柔和頂光 (Top-left soft lighting, subtle gradient shading).
+- **線條標準**: 統一清晰深色描邊 (Consistent clean dark outlines, 2px stroke width).
+- **視角與姿勢**: 正面站立/三態動作 (Front-facing neutral pose, orthographic 2D view).
+- **背景規範**: 絕對純透明背景 (Pure transparent background, alpha PNG, isolated character).
+- **負向提示詞 (Negative Prompts)**: `realistic, 3D render, photorealistic, adult, tall, distorted limbs, text, watermark, UI, buttons, blurry, messy outlines, noisy background`.
 
-All wearing sprites must share the same canvas size and registration point as the base character. The thumbnail must never be used as a wearing asset.
+---
 
-## Scholar Gown / 升小一榮譽學士袍
+## 👘 2. 四大核心連身洋裝 / 長袍套裝 (Level 1 Full-Body Outfits)
 
-### Wearing sprite prompt
+### 🎓 套裝 1：升小一榮譽學士袍 (Scholar Gown)
+- **道具 ID**: `scholar_robe`
+- **中文名稱**: 升小一榮譽學士袍
+- **英文名稱**: Scholar Gown
+- **部位分類**: `dress` (連身套裝)
+- **Prompt (Idle 站立/呼吸姿勢)**:
+  ```text
+  Cute chibi 2.5-head primary-school boy character, full body, wearing an elegant royal navy-blue graduation scholar gown, gold embroidered lapels and golden sash down the center, crisp white collared shirt visible at neck with a small navy necktie, wearing a black square mortarboard cap with a golden hanging tassel, brown clean short hair, cheerful smiling face with large sparkling eyes, front-facing, neutral idle standing pose, clean 2D vector-style mobile game sprite, soft cel shading, consistent dark outline, transparent background, isolated, no UI, no text, children friendly --ar 1:1 --no background, photorealistic, 3d, watermark
+  ```
+- **Prompt (Run 奔跑姿勢)**:
+  ```text
+  Cute chibi 2.5-head primary-school boy character, full body running to the right, dynamic side-angle 3/4 view, wearing an elegant royal navy-blue graduation scholar gown billowing slightly behind, gold embroidered lapels, black mortarboard cap with swinging golden tassel, energetic running pose with bent knees and swinging arms, clean 2D game sprite, transparent background --ar 1:1 --no background
+  ```
+- **Prompt (Cheer 歡呼姿勢)**:
+  ```text
+  Cute chibi 2.5-head primary-school boy character, full body jumping in celebration, both arms raised high in victory holding a rolled golden graduation diploma with red ribbon, wearing royal navy graduation scholar gown and black mortarboard cap, joyful open-mouth smiling expression, sparkling star particles around, transparent background --ar 1:1 --no background
+  ```
+- **Prompt (Thumbnail 商城展示圖)**:
+  ```text
+  Item illustration of an elegant folded royal navy graduation scholar gown with gold embroidered lapel ribbons and a miniature black graduation cap with golden tassel beside it, soft floating sparkles, 2.5D isometric view, cute children game inventory icon, clean vector graphic, solid white background, high contrast --ar 1:1
+  ```
 
-Cute chibi primary-school boy character, full body, wearing an elegant deep navy-black graduation scholar gown, warm gold embroidered trim and fitted gold lapels, small red striped necktie visible at the collar, black mortarboard with a golden tassel, natural sleeves with both hands visible, clean waist transition and correctly aligned shoes, same facial proportions and body proportions as the base game character, same hairstyle and face, front-facing neutral idle pose, transparent background, polished mobile game sprite, soft cel shading, consistent dark outline, top-left soft light, gentle contact shadow, children friendly, no text, no UI, no background.
+---
 
-### Thumbnail prompt
+### 👗 套裝 2：夢幻粉紅公主裙 (Princess Dress)
+- **道具 ID**: `princess_dress`
+- **中文名稱**: 夢幻粉紅公主裙
+- **英文名稱**: Princess Dress
+- **部位分類**: `dress` (連身套裝)
+- **Prompt (Idle 站立姿勢)**:
+  ```text
+  Cute chibi 2.5-head primary-school girl character, full body, wearing a fairytale pastel pink layered princess dress with soft magenta ruffles, white lace waist sash, small sparkling golden star brooch at neckline, wearing a petite golden princess tiara on head, cheerful friendly expression with sparkling eyes, front-facing idle pose, clean 2D anime mobile game sprite, soft cel shading, transparent background --ar 1:1 --no background
+  ```
+- **Prompt (Thumbnail 商城展示圖)**:
+  ```text
+  Item illustration of a luxurious pastel pink princess gown on a miniature wooden mannequin, sparkling diamond accents, golden tiara resting beside, soft glowing fairy sparkles, isometric inventory icon, clean vector art, transparent background --ar 1:1
+  ```
 
-Cute premium shop item illustration of a tiny navy graduation scholar gown with gold embroidered trim, red striped necktie and black mortarboard with golden tassel, three-quarter product angle, clean silhouette, soft cel shading, warm gold highlights, transparent background, children-friendly fantasy wardrobe icon, no character body, no text, no UI.
+---
 
-## Princess Dress / 夢幻粉紅公主裙
+### 🦖 套裝 3：萌萌小恐龍連身衣 (Dino Onesie)
+- **道具 ID**: `dino_onesie`
+- **中文名稱**: 萌萌小恐龍連身衣
+- **英文名稱**: Dino Onesie
+- **部位分類**: `dress` (連身套裝)
+- **Prompt (Idle 站立姿勢)**:
+  ```text
+  Cute chibi 2.5-head primary-school child character, full body, wearing an emerald green plush dinosaur onesie costume with a soft pastel yellow oval tummy patch, soft yellow dinosaur back ridges along spine and hood, dinosaur face hood resting over forehead with cute round eyes, front-facing cute standing pose, clean 2D mobile game sprite, transparent background --ar 1:1 --no background
+  ```
+- **Prompt (Thumbnail 商城展示圖)**:
+  ```text
+  Item illustration of an adorable folded emerald green dinosaur onesie pajama with yellow felt spikes and dino hood, cute cozy children game inventory icon, clean 2D vector art, transparent background --ar 1:1
+  ```
 
-### Wearing sprite prompt
+---
 
-Cute chibi primary-school character, full body, wearing a soft pink fantasy princess dress with a fitted bodice, visible neckline, puff sleeves that leave both hands unobstructed, natural waist sash, layered flowing skirt, small gold star brooch and matching pink shoes, same facial proportions, hairstyle, face, head-to-body ratio and limb proportions as the base game character, same front-facing neutral idle pose, transparent background, polished mobile game sprite, soft cel shading, consistent outline, top-left soft light, gentle contact shadow, children friendly, no text, no UI, no background.
+### 🧙‍♀️ 套裝 4：星光魔法學徒袍 (Magic Robe)
+- **道具 ID**: `magic_robe`
+- **中文名稱**: 星光魔法學徒袍
+- **英文名稱**: Magic Robe
+- **部位分類**: `dress` (連身套裝)
+- **Prompt (Idle 站立姿勢)**:
+  ```text
+  Cute chibi 2.5-head primary-school child character, full body, wearing a celestial deep indigo-purple wizard apprentice robe with golden crescent moon and star runes embroidered along the hem and sleeves, glowing violet leather sash belt with a small potion vial, pointy wizard hat with a golden buckle, front-facing magical stance, transparent background --ar 1:1 --no background
+  ```
 
-### Thumbnail prompt
+---
 
-Cute premium shop item illustration of a dreamy pink princess dress with a gold star brooch, satin waist sash and layered skirt, tiny sparkles around the hem, clean isolated product silhouette, soft cel shading, transparent background, children-friendly fantasy wardrobe icon, no character body, no text, no UI.
+## 👕 3. 潮流上衣與校服部件 (Level 2 Layered Tops)
 
-## Dino Onesie / 萌萌小恐龍連身衣
+### ⚓ 上衣 1：天星小輪水手襯衫 (`sailor_top`)
+- **Prompt (Layered Top)**:
+  ```text
+  Crisp white sailor uniform shirt for a chibi child character, navy blue sailor flap collar on back and shoulders, small red silk ribbon bowtie at chest, tailored short sleeves, clean 2D game sprite asset, front-facing, perfectly centered, transparent background, no character body, item only --ar 1:1
+  ```
 
-### Wearing sprite prompt
+### 🏫 上衣 2：經典名校白色校服衫 (`hk_school_shirt`)
+- **Prompt (Layered Top)**:
+  ```text
+  Crisp ironed pure white school uniform button-down shirt for a primary school child, neat stiff collar with royal blue necktie, left chest pocket with miniature blue school crest badge, clean 2D sprite asset, transparent background --ar 1:1
+  ```
 
-Cute chibi primary-school character, full body, wearing a soft mint-green dinosaur onesie with a rounded hood, friendly dinosaur face details, yellow belly panel, small back spikes visible in side silhouette, fitted cuffs with hands visible, natural waist and separated feet with cozy dinosaur slippers, same facial proportions and body proportions as the base game character, same hairstyle and face visible inside the hood, front-facing neutral idle pose, transparent background, polished mobile game sprite, soft cel shading, consistent outline, top-left soft light, gentle contact shadow, children friendly, no scary features, no text, no UI, no background.
+### 🎽 上衣 3：運動健將亮藍球衣 (`sport_jersey`)
+- **Prompt (Layered Top)**:
+  ```text
+  Vibrant cyan-blue athletic sports jersey shirt for a chibi child, dual white racing stripes along sides, circular white chest badge with bold number '1', clean 2D vector game sprite, transparent background --ar 1:1
+  ```
 
-### Thumbnail prompt
+### 🧥 上衣 4：暖陽金星連帽衛衣 (`hoodie_star`)
+- **Prompt (Layered Top)**:
+  ```text
+  Warm golden amber hoodie sweater for a chibi child, thick drawstring hood resting behind neck, front kangaroo hand pocket, white five-pointed star emblem printed on chest, clean 2D game asset, transparent background --ar 1:1
+  ```
 
-Cute premium shop item illustration of a mint-green dinosaur onesie with a yellow belly, rounded hood and soft golden back spikes, friendly kawaii expression, clean isolated product silhouette, soft cel shading, transparent background, children-friendly wardrobe icon, no character body, no text, no UI.
+---
 
-## Magic Robe / 星光魔法學徒袍
+## 👖 4. 褲裝與裙裝部件 (Level 2 Layered Bottoms)
 
-### Wearing sprite prompt
+### 🩳 下裝 1：英倫名校深藍百褶短裙 (`pleated_skirt`)
+- **Prompt (Layered Bottom)**:
+  ```text
+  Traditional British navy-blue pleated school uniform skirt for a chibi child, sharp vertical pleat folds with soft lighting shadows, neat waistband, clean 2D game sprite asset, transparent background --ar 1:1
+  ```
 
-Cute chibi primary-school character, full body, wearing a deep indigo apprentice magic robe with a neat collar, warm gold star embroidery, purple waist belt, open sleeve shapes with both hands visible, natural hem over separate legs and polished little boots, small pointed wizard hat aligned to the head, same facial proportions and body proportions as the base game character, same hairstyle and face, front-facing neutral idle pose, transparent background, polished mobile game sprite, soft cel shading, consistent outline, top-left soft light, gentle contact shadow, subtle tiny star accents only, children friendly, no text, no UI, no background.
+### 👖 下裝 2：經典百搭牛仔短褲 (`denim_shorts`)
+- **Prompt (Layered Bottom)**:
+  ```text
+  Casual denim blue shorts for a chibi child, copper rivet details, double-stitched hem lines, neat belt loops, clean 2D game sprite, transparent background --ar 1:1
+  ```
 
-### Thumbnail prompt
+---
 
-Cute premium shop item illustration of a deep indigo apprentice magic robe with gold star embroidery, purple belt and a small pointed wizard hat, gentle star dust, clean isolated product silhouette, soft cel shading, transparent background, children-friendly fantasy wardrobe icon, no character body, no text, no UI.
+## 🎀 5. 配件與飾品部件 (Level 3 Accessories)
 
-## Star Hoodie / 閃爍星光連帽衛衣
+### 🪽 配件 1：潔白天使羽翼 (`angel_wings`)
+- **Prompt**: `Dual layered pure white feathered angel wings for a chibi child game character, soft sky-blue inner glow, spread symmetrically, clean 2D game asset, transparent background --ar 1:1`
 
-### Wearing sprite prompt
+### 🎒 配件 2：星星探險小背囊 (`star_backpack`)
+- **Prompt**: `Cute golden yellow five-pointed star shaped small adventure backpack for a child, dark brown leather shoulder straps, zipper pull tab, 3D isometric angle, clean vector game asset, transparent background --ar 1:1`
 
-Cute chibi primary-school boy character, full body, wearing a warm golden-orange star hoodie as a properly fitted top, softly rounded shoulder seams aligned to the base character shoulders, ribbed hood opening aligned to the neck, natural sleeves following both arms with visible hands in front of the cuffs, clean hem aligned to the torso waist, small white-gold star emblem on the chest, same hairstyle, face, head-to-body ratio, hand size, leg proportions and shoes as the base game character, front-facing neutral idle pose, transparent background, high-resolution polished mobile game sprite, soft cel shading, consistent dark outline, top-left soft light, gentle contact shadow, children friendly, no clothing card, no rectangle, no frame, no text, no UI, no background.
+### 👓 配件 3：智慧小博士星光眼鏡 (`star_glasses`)
+- **Prompt**: `Cute round golden metallic wireframe glasses for a chibi child face, thin metal bridge and temples, transparent lenses with subtle white light reflection glint, clean 2D sprite, transparent background --ar 1:1`
 
-### Run / cheer variation prompt
+### 🎓 配件 4：小一榮譽學士帽 (`scholar_cap`)
+- **Prompt**: `Classic black square mortarboard graduation cap for a child, gold button on top with hanging golden tassel draped to the right, isometric 2.5D angle, clean vector game icon, transparent background --ar 1:1`
 
-Use the exact same chibi primary-school boy, hairstyle, face, hoodie construction, colors, outline, lighting, canvas size and registration point as the Star Hoodie idle wearing sprite. Create a clean full-body run pose and a clean full-body cheer pose with the hoodie sleeves, cuffs, hood and hem staying attached to the shoulders, arms and waist; both hands remain visible. Transparent background, high-resolution mobile game sprite, no text, no UI, no frame, no background.
+### 🐱 配件 5：萌萌貓耳髮箍 (`cat_ears`)
+- **Prompt**: `Adorable pastel pink cat ears headband for a child character, soft inner pink fluff, thin black headband band, clean 2D vector game sprite, transparent background --ar 1:1`
 
-### Thumbnail prompt
-
-Cute premium shop item illustration of a golden-orange star hoodie with a small white-gold star emblem, soft ribbed hood and cuffs, clean isolated product silhouette, transparent background, children-friendly fantasy wardrobe icon, no character body, no rectangle card, no text, no UI.
-
-### Delivery notes
-
-Deliver separate files: `star_hoodie_thumbnail.png`, `star_hoodie_wearing.png`, `star_hoodie_run.png`, and `star_hoodie_cheer.png`. The thumbnail is for the item card only; the wearing files must be transparent full-body character art and share the base character registration.
+### 🧢 配件 6：叮叮車可愛車長帽 (`tram_hat`)
+- **Prompt**: `Vintage Hong Kong dark green tram conductor visor cap for a child, golden braided rope band above glossy black visor brim, clean 2D game icon, transparent background --ar 1:1`

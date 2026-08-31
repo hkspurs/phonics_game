@@ -33,7 +33,7 @@ export class CharacterOutfitCompositor {
     const flip = options.flipX ? -1 : 1;
 
     // 1. Wings Layer (Rendered behind body)
-    if (equipped.wings || equipped.accessory === 'angel_wings') {
+    if (equipped.wings || (equipped as any).accessory === 'angel_wings') {
       this.drawAngelWings(graphics, ox, oy, scale, flip);
     }
 
@@ -52,17 +52,17 @@ export class CharacterOutfitCompositor {
     }
 
     // 5. Backpack (Over shoulder)
-    if (equipped.accessory === 'star_backpack') {
+    if ((equipped as any).backpack === 'star_backpack' || (equipped as any).accessory === 'star_backpack') {
       this.drawStarBackpack(graphics, ox, oy, scale, flip);
     }
 
     // 6. Glasses (Over face)
-    if (equipped.accessory === 'star_glasses') {
+    if ((equipped as any).glasses === 'star_glasses' || (equipped as any).accessory === 'star_glasses') {
       this.drawSmartGlasses(graphics, ox, oy, scale, flip);
     }
 
     // 7. Hat / Headwear (On head)
-    const hatId = equipped.hat || (['cat_ears', 'scholar_cap', 'tram_hat'].includes(equipped.accessory || '') ? equipped.accessory : undefined);
+    const hatId = (equipped as any).hat || (['cat_ears', 'scholar_cap', 'tram_hat'].includes((equipped as any).accessory || '') ? (equipped as any).accessory : undefined);
     if (hatId) {
       this.drawHat(graphics, hatId, ox, oy, scale, flip);
     }
@@ -500,7 +500,7 @@ export class CharacterOutfitCompositor {
     const bpX = ox + 18 * s * flip;
     const bpY = oy - 2 * s;
 
-    // Golden Star Shape Backpack
+    // Golden Star Shape Backpack Sphere
     g.fillStyle(0xeab308, 1.0);
     g.lineStyle(2 * s, 0xca8a04, 1.0);
 
