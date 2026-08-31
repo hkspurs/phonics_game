@@ -1592,8 +1592,8 @@ export class ShopScene extends Phaser.Scene {
       this.previewJumpText?.setText?.('');
       this.previewSpecialText?.setText?.('');
       if (this.actionButton) {
-        this.actionButton.setText('尚未擁有服裝');
-        this.actionButton.setColor('grey');
+        this.actionButton.setText('🛍️ 挑選第一套服裝 ➔');
+        this.actionButton.setColor('yellow');
         this.actionButton.setEnabled(false);
       }
       return;
@@ -2337,6 +2337,25 @@ export class ShopScene extends Phaser.Scene {
       });
       if (typeof subTxt.setOrigin === 'function') subTxt.setOrigin(0.5);
       modal.add(subTxt);
+
+      // Golden Stamp
+      if (this.add.graphics && this.add.text) {
+        const stampG = this.add.graphics();
+        stampG.lineStyle(2, 0xd97706, 0.9);
+        stampG.strokeRoundedRect(68, 85, 100, 42, 8);
+        modal.add(stampG);
+
+        const stampText = this.add.text(118, 106, '🏆 潮流之星\n  滿分穿搭', {
+          fontSize: '12px',
+          fontFamily: "'Noto Sans TC', sans-serif",
+          color: '#b45309',
+          fontStyle: 'bold',
+          align: 'center',
+        });
+        if (typeof stampText.setOrigin === 'function') stampText.setOrigin(0.5);
+        if (typeof stampText.setRotation === 'function') stampText.setRotation(-0.10);
+        modal.add(stampText);
+      }
     }
 
     // Close Button

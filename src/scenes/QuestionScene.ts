@@ -295,10 +295,12 @@ export class QuestionScene extends Phaser.Scene {
     });
     header.add(restartBtn);
 
-    // 2. Station & Level Header (e.g. 第 3-1 關 櫻花樹・中文)
-    const levelNumber = `${this.stationId}-${this.questionIndex + 1}`;
+    // 2. Station & Level Header (e.g. 第 3-1 關  櫻花樹・中文)
+    const stationNumber = this.getStationNumber();
+    const levelNumber = `${stationNumber}-${this.questionIndex + 1}`;
+    const stationTitle = this.getStationDisplayName();
     const subjectName = this.getCurrentSubjectName();
-    const titleString = `第 ${levelNumber} 關  ${this.stationName}・${subjectName}`;
+    const titleString = `第 ${levelNumber} 關  ${stationTitle}・${subjectName}`;
 
     if (this.add.text) {
       const title = this.add.text(width / 2, 28, titleString, {
@@ -1074,18 +1076,25 @@ export class QuestionScene extends Phaser.Scene {
     celebration.setDepth(500);
 
     // Feedback Toast Banner
+    const isCombo = (this.sessionStats?.correctCount || 0) >= 2;
+    const bannerColor = isCombo ? 0xf59e0b : 0x2ecc71;
+    const bannerBorder = isCombo ? 0xfffbeb : 0xffffff;
+    const msgText = isCombo
+      ? `🔥 連對 x${this.sessionStats.correctCount}！連勝衝刺`
+      : '🎉 太棒了！答對了！';
+
     if (this.add.graphics) {
       const g = this.add.graphics();
-      g.fillStyle(0x2ecc71, 0.95);
-      g.fillRoundedRect(-180, -35, 360, 70, 20);
-      g.lineStyle(3, 0xffffff, 1.0);
-      g.strokeRoundedRect(-180, -35, 360, 70, 20);
+      g.fillStyle(bannerColor, 0.95);
+      g.fillRoundedRect(-200, -38, 400, 76, 22);
+      g.lineStyle(3, bannerBorder, 1.0);
+      g.strokeRoundedRect(-200, -38, 400, 76, 22);
       celebration.add(g);
     }
 
     if (this.add.text) {
-      const msg = this.add.text(0, 0, '🎉 太棒了！答對了！', {
-        fontSize: '24px',
+      const msg = this.add.text(0, 0, msgText, {
+        fontSize: '25px',
         fontFamily: "'Noto Sans TC', 'Microsoft JhengHei', sans-serif",
         color: '#ffffff',
         fontStyle: 'bold',
@@ -1186,5 +1195,43 @@ export class QuestionScene extends Phaser.Scene {
       default:
         return 0x4a90e2;
     }
+  }
+
+  /**
+   * Resolves numeric station index for clean level display
+   */
+  public getStationNumber(): number | string {
+    const stationMap: Record<string, number> = {
+      st_central: 1,
+      st_green: 2,
+      st_cherry: 3,
+      st_firefly: 4,
+      st_ocean: 5,
+    };
+    const key = String(this.stationId || 'st_central');
+    return stationMap[key] || this.stationId || 1;
+  }
+
+  /**
+   * Resolves localized station name to prevent raw developer IDs
+   */
+  public getStationDisplayName(): string {
+    if (this.stationName && this.stationName !== '冒險關卡') {
+      return this.stationName;
+    }
+    const stationMap: Record<string, string> = {
+      st_central: '中環冒險島',
+      st_green: '綠野小徑',
+      st_cherry: '櫻花樹',
+      st_firefly: '螢火森林',
+      st_ocean: '星光海岸',
+      '1': '中環冒險島',
+      '2': '綠野小徑',
+      '3': '櫻花樹',
+      '4': '螢火森林',
+      '5': '星光海岸',
+    };
+    const key = String(this.stationId || 'st_central');
+    return stationMap[key] || '中環冒險島';
   }
 }

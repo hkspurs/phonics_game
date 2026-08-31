@@ -212,6 +212,7 @@ export class RunnerScene extends Phaser.Scene {
   public currentWalkFrame: number = 1;
   public stepTimer: number = 0;
   public stumbleTimer: number = 0;
+  public dustTimer: number = 0;
 
   // Game Objects & Layers
   public playerSprite: Phaser.GameObjects.Image | any = null;
@@ -654,6 +655,31 @@ export class RunnerScene extends Phaser.Scene {
 
     if (this.add.rectangle) {
       this.skyBackground = this.add.rectangle(width / 2, height / 2, width, height, skyTop);
+    }
+
+    // 1.5 Twinkling Stars in Sky
+    if (this.add.text && this.tweens?.add) {
+      const starPositions = [
+        { x: 180, y: 70, size: '14px', delay: 0 },
+        { x: 490, y: 110, size: '12px', delay: 400 },
+        { x: 820, y: 65, size: '16px', delay: 800 },
+        { x: 1120, y: 95, size: '14px', delay: 200 },
+      ];
+      for (const pos of starPositions) {
+        const star = this.add.text(pos.x, pos.y, '✨', { fontSize: pos.size });
+        if (star.setOrigin) star.setOrigin(0.5);
+        if (star.setDepth) star.setDepth(2);
+        this.tweens.add({
+          targets: star,
+          alpha: { from: 0.25, to: 0.85 },
+          scale: { from: 0.8, to: 1.2 },
+          duration: 1500,
+          yoyo: true,
+          repeat: -1,
+          delay: pos.delay,
+          ease: 'Sine.easeInOut',
+        });
+      }
     }
 
     // 2. Distant Clouds Layer
@@ -1136,7 +1162,7 @@ export class RunnerScene extends Phaser.Scene {
       const badgeText = this.add.text(
         width / 2,
         64,
-        `🏝️ 第 ${this.stationId} 關 - 衝刺獎勵`,
+        `📍 ${this.getStationDisplayName()} · 衝刺獎勵`,
         {
           fontSize: '18px',
           fontFamily: "'Noto Sans TC', sans-serif",
@@ -1226,6 +1252,18 @@ export class RunnerScene extends Phaser.Scene {
     if (this.isCelebrating || this.isTransitioning) {
       this.finishRunner();
       return;
+    }
+
+    // Interactive button press haptic visual bounce (scale: 0.92)
+    if (this.jumpBtn && this.tweens?.add) {
+      this.tweens.add({
+        targets: this.jumpBtn,
+        scaleX: 0.92,
+        scaleY: 0.92,
+        duration: 65,
+        yoyo: true,
+        ease: 'Quad.easeOut',
+      });
     }
 
     this.jumpBufferTimer = 140;
@@ -1506,16 +1544,19 @@ export class RunnerScene extends Phaser.Scene {
           this.playerSprite.setTexture(this.skinConfig.walk1Key);
         }
 
-        // Landing squash compression
-        if (wasAirborne && this.playerSprite && this.tweens?.add) {
-          this.tweens.add({
-            targets: this.playerSprite,
-            scaleX: 1.12,
-            scaleY: 0.88,
-            duration: 80,
-            yoyo: true,
-            ease: 'Quad.easeOut',
-          });
+        // Landing squash compression and impact dust
+        if (wasAirborne) {
+          this.spawnLandingDust(this.playerScreenX, this.playerY + 36);
+          if (this.playerSprite && this.tweens?.add) {
+            this.tweens.add({
+              targets: this.playerSprite,
+              scaleX: 1.12,
+              scaleY: 0.88,
+              duration: 80,
+              yoyo: true,
+              ease: 'Quad.easeOut',
+            });
+          }
         }
       }
     } else {
@@ -1523,6 +1564,15 @@ export class RunnerScene extends Phaser.Scene {
       this.playerVelocityY = 0;
       this.isGrounded = true;
       this.hasDoubleJumped = false;
+    }
+
+    // Continuous running dust puffs
+    if (this.isGrounded && this.currentSpeed > 0 && !this.isCelebrating) {
+      this.dustTimer = (this.dustTimer || 0) + delta;
+      if (this.dustTimer > 120) {
+        this.dustTimer = 0;
+        this.spawnRunningDust(this.playerScreenX - 16, this.playerY + 36);
+      }
     }
 
     if (this.playerSprite && typeof this.playerSprite.setY === 'function') {
@@ -2311,6 +2361,75 @@ export class RunnerScene extends Phaser.Scene {
     if (this.joystickThumbGraphics) {
       this.redrawJoystickThumb(this.joystickThumbGraphics, this.joystickBaseX, this.joystickBaseY);
     }
+  }
+
+  /**
+   * Spawns subtle running dust puff at player feet
+   */
+  public spawnRunningDust(x: number, y: number): void {
+    if (!this.add?.text || !this.tweens?.add) return;
+    const dust = this.add.text(x, y, '💨', { fontSize: '15px' });
+    if (dust.setOrigin) dust.setOrigin(0.5);
+    if (dust.setDepth) dust.setDepth(14);
+    if (dust.setAlpha) dust.setAlpha(0.6);
+    this.tweens.add({
+      targets: dust,
+      x: x - 24,
+      y: y - 6,
+      alpha: 0,
+      scale: 1.3,
+      duration: 320,
+      ease: 'Cubic.easeOut',
+      onComplete: () => {
+        if (dust && typeof dust.destroy === 'function') dust.destroy();
+      },
+    });
+  }
+
+  /**
+   * Spawns landing impact dust bursts
+   */
+  public spawnLandingDust(x: number, y: number): void {
+    if (!this.add?.text || !this.tweens?.add) return;
+    const offsets = [-20, 20];
+    for (const off of offsets) {
+      const dust = this.add.text(x + off * 0.4, y, '💨', { fontSize: '16px' });
+      if (dust.setOrigin) dust.setOrigin(0.5);
+      if (dust.setDepth) dust.setDepth(14);
+      if (dust.setAlpha) dust.setAlpha(0.75);
+      this.tweens.add({
+        targets: dust,
+        x: x + off * 1.5,
+        y: y - 6,
+        alpha: 0,
+        scale: 1.4,
+        duration: 360,
+        ease: 'Cubic.easeOut',
+        onComplete: () => {
+          if (dust && typeof dust.destroy === 'function') dust.destroy();
+        },
+      });
+    }
+  }
+
+  /**
+   * Resolves localized station name to prevent raw developer IDs
+   */
+  public getStationDisplayName(): string {
+    const stationMap: Record<string, string> = {
+      st_central: '中環冒險島',
+      st_green: '綠野小徑',
+      st_cherry: '櫻花樹林',
+      st_firefly: '螢火森林',
+      st_ocean: '星光海岸',
+      '1': '中環冒險島',
+      '2': '綠野小徑',
+      '3': '櫻花樹林',
+      '4': '螢火森林',
+      '5': '星光海岸',
+    };
+    const key = String(this.stationId || 'st_central');
+    return stationMap[key] || (this.stationName && this.stationName !== '冒險關卡' ? this.stationName : '中環冒險島');
   }
 
   public shutdown(): void {
