@@ -5,6 +5,7 @@ import { SoundManager } from '../services/SoundManager';
 import { CanvasButton } from '../ui/CanvasButton';
 import { CanvasModal } from '../ui/CanvasModal';
 import { StarRating } from '../ui/StarRating';
+import { PlayerAvatarBadge } from '../ui/PlayerAvatarBadge';
 
 export interface StationData {
   id: number;
@@ -752,40 +753,56 @@ export class MapScene extends Phaser.Scene {
     if (!this.add) return;
 
     const pinContainer = this.add.container
-      ? this.add.container(0, -82)
-      : new Phaser.GameObjects.Container(this, 0, -82);
+      ? this.add.container(0, -96)
+      : new Phaser.GameObjects.Container(this, 0, -96);
 
-    // Pill background
+    // 1. Mini Pointer Graphic pointing down to station
     if (this.add.graphics) {
       const g = this.add.graphics();
-      g.fillStyle(0xef4444, 0.95);
-      g.fillRoundedRect(-48, -16, 96, 32, 16);
-      g.lineStyle(2, 0xffffff, 1.0);
-      g.strokeRoundedRect(-48, -16, 96, 32, 16);
-
-      // Downward pointer arrow
-      g.fillStyle(0xef4444, 0.95);
-      this.fillTriangle(g, 0, 20, -8, 12, 8, 12);
+      g.fillStyle(0xf59e0b, 1.0);
+      g.beginPath();
+      g.moveTo(-10, 24);
+      g.lineTo(10, 24);
+      g.lineTo(0, 36);
+      g.closePath();
+      g.fillPath();
       pinContainer.add(g);
     }
 
-    // Avatar text or icon
-    if (this.add.text) {
-      const pinLabel = this.add.text(0, 0, '🏃 當前進度', {
-        fontSize: '16px',
+    // 2. Real Player Avatar Badge (Size: 48px, showing equipped skin/wardrobe and pet)
+    const avatarBadge = new PlayerAvatarBadge(this, {
+      x: 0,
+      y: 0,
+      size: 48,
+      showPet: true,
+      showBorder: true,
+    });
+    pinContainer.add(avatarBadge.container);
+
+    // 3. Name Pill Tag Below Avatar
+    if (this.add.graphics && this.add.text) {
+      const tagBg = this.add.graphics();
+      tagBg.fillStyle(0x0f172a, 0.85);
+      tagBg.fillRoundedRect(-36, 18, 72, 20, 8);
+      tagBg.lineStyle(1.5, 0xf59e0b, 0.9);
+      tagBg.strokeRoundedRect(-36, 18, 72, 20, 8);
+      pinContainer.add(tagBg);
+
+      const tagText = this.add.text(0, 28, '我喺呢度', {
+        fontSize: '12px',
         fontFamily: "'Noto Sans TC', 'Microsoft JhengHei', sans-serif",
-        color: '#ffffff',
+        color: '#fef08a',
         fontStyle: 'bold',
       });
-      if (typeof pinLabel.setOrigin === 'function') pinLabel.setOrigin(0.5);
-      pinContainer.add(pinLabel);
+      if (typeof tagText.setOrigin === 'function') tagText.setOrigin(0.5);
+      pinContainer.add(tagText);
     }
 
     // Gentle floating bounce tween
     if (this.tweens?.add) {
       this.tweens.add({
         targets: pinContainer,
-        y: -92,
+        y: -106,
         duration: 900,
         yoyo: true,
         repeat: -1,

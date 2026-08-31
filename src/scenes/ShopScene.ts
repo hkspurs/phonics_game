@@ -1911,6 +1911,10 @@ export class ShopScene extends Phaser.Scene {
       if (isOwned) {
         dm.equipSkin(skin.id);
         SoundManager.play('click');
+        this.showGlobalSyncToast(`✨ 已換上「${skin.name}」，已套用至全遊戲！`);
+        try {
+          SpeechService.speak('換好裝啦！出發去探險咯！', 'zh-HK');
+        } catch {}
         this.refreshSceneState();
       } else {
         let success = false;
@@ -1924,6 +1928,10 @@ export class ShopScene extends Phaser.Scene {
           dm.equipSkin(skin.id);
           dm.checkTrophies();
           SoundManager.play('victory');
+          this.showGlobalSyncToast(`✨ 成功解鎖「${skin.name}」！`);
+          try {
+            SpeechService.speak('換好裝啦！出發去探險咯！', 'zh-HK');
+          } catch {}
           this.refreshSceneState();
         } else {
           SoundManager.play('wrong');
@@ -1944,6 +1952,7 @@ export class ShopScene extends Phaser.Scene {
         if (slot) dm.unequipWardrobeItem(slot);
         this.previewWardrobeState = dm.getEquippedWardrobe();
         SoundManager.playClothSnap();
+        this.showGlobalSyncToast(`✨ 已脫下「${item.name}」`);
         this.refreshSceneState();
       } else if (isOwned) {
         // Equip
@@ -1954,6 +1963,7 @@ export class ShopScene extends Phaser.Scene {
         dm.checkTrophies();
         SoundManager.playMagicTransform();
         this.speakCantonesePraise();
+        this.showGlobalSyncToast(`✨ 已換上「${item.name}」，已套用至全遊戲！`);
         this.refreshSceneState();
       } else {
         // Buy
@@ -2396,6 +2406,60 @@ export class ShopScene extends Phaser.Scene {
       }
     } catch {
       // Ignore
+    }
+  }
+
+  public showGlobalSyncToast(message: string = '✨ 已套用至全遊戲（地圖、跑酷與答題）'): void {
+    if (!this.add) return;
+    const width = this.sys?.game?.config ? Number(this.sys.game.config.width) : GAME_WIDTH;
+    const toastContainer = this.add.container
+      ? this.add.container(width / 2, 75)
+      : new Phaser.GameObjects.Container(this, width / 2, 75);
+    if (toastContainer.setDepth) toastContainer.setDepth(300);
+
+    if (this.add.graphics) {
+      const g = this.add.graphics();
+      g.fillStyle(0x0f172a, 0.94);
+      g.fillRoundedRect(-240, -22, 480, 44, 22);
+      g.lineStyle(2, 0xf59e0b, 1.0);
+      g.strokeRoundedRect(-240, -22, 480, 44, 22);
+      toastContainer.add(g);
+    }
+
+    if (this.add.text) {
+      const txt = this.add.text(0, 0, message, {
+        fontSize: '17px',
+        color: '#fef08a',
+        fontStyle: 'bold',
+        fontFamily: "'Noto Sans TC', sans-serif",
+      });
+      if (typeof txt.setOrigin === 'function') txt.setOrigin(0.5);
+      toastContainer.add(txt);
+    }
+
+    if (this.tweens?.add) {
+      this.tweens.add({
+        targets: toastContainer,
+        alpha: { from: 0, to: 1 },
+        y: 88,
+        duration: 250,
+        ease: 'Quad.easeOut',
+        onComplete: () => {
+          if (this.time?.delayedCall) {
+            this.time.delayedCall(1600, () => {
+              if (this.tweens?.add && toastContainer) {
+                this.tweens.add({
+                  targets: toastContainer,
+                  alpha: 0,
+                  y: 65,
+                  duration: 350,
+                  onComplete: () => toastContainer.destroy(),
+                });
+              }
+            });
+          }
+        },
+      });
     }
   }
 

@@ -4,6 +4,7 @@ import { DataManager } from '../services/DataManager';
 import { SoundManager } from '../services/SoundManager';
 import { CanvasButton } from '../ui/CanvasButton';
 import { CanvasModal } from '../ui/CanvasModal';
+import { PlayerAvatarService } from '../services/PlayerAvatarService';
 
 declare const __APP_VERSION__: string;
 
@@ -341,18 +342,90 @@ export class TitleScene extends Phaser.Scene {
     const mascotX = 220;
     const mascotY = 430;
 
-    let mascot: any = null;
-    if (this.textures?.exists && (this.textures.exists('player_stand') || this.textures.exists('player_cheer1'))) {
-      const tex = this.textures.exists('player_cheer1') ? 'player_cheer1' : 'player_stand';
-      mascot = this.add.image(mascotX, mascotY, tex);
-      if (typeof mascot.setScale === 'function') mascot.setScale(1.2);
+    const avatarContainer = this.add.container
+      ? this.add.container(mascotX, mascotY)
+      : new Phaser.GameObjects.Container(this, mascotX, mascotY);
+
+    // 1. Stage Shadow
+    if (this.add.graphics) {
+      const shadowG = this.add.graphics();
+      shadowG.fillStyle(0x0a0c16, 0.35);
+      shadowG.fillEllipse(0, 52, 110, 24);
+      avatarContainer.add(shadowG);
     }
 
-    if (mascot && this.tweens?.add) {
+    // 2. Player Avatar Sprite (Level 1 Dedicated Full Sprite or Skin Base)
+    if (this.add.image) {
+      const textureInfo = PlayerAvatarService.getInstance().getTextureKey('cheer', this);
+      const mascot = this.add.image(0, 0, textureInfo.textureKey);
+
+      if (mascot.setOrigin) mascot.setOrigin(0.5, 0.5);
+
+      if (textureInfo.isFullSprite) {
+        mascot.setScale(0.55);
+      } else {
+        mascot.setScale(1.2);
+        if (textureInfo.tint !== undefined && typeof mascot.setTint === 'function') {
+          mascot.setTint(textureInfo.tint);
+        }
+      }
+      avatarContainer.add(mascot);
+    }
+
+    // 3. Companion Pet (if equipped)
+    const appearance = PlayerAvatarService.getInstance().getAppearance();
+    if (appearance.petId && this.add.text) {
+      const petDef = DataManager.getInstance().getPets().find((p) => p.id === appearance.petId);
+      const petIcon = this.add.text(58, -25, petDef ? petDef.icon : '🐾', {
+        fontSize: '32px',
+      });
+      if (petIcon.setOrigin) petIcon.setOrigin(0.5);
+      avatarContainer.add(petIcon);
+
+      if (this.tweens?.add) {
+        this.tweens.add({
+          targets: petIcon,
+          y: -35,
+          duration: 900,
+          yoyo: true,
+          repeat: -1,
+          ease: 'Sine.easeInOut',
+        });
+      }
+    }
+
+    // 4. Speech Bubble: "準備好探險未？"
+    if (this.add.graphics && this.add.text) {
+      const bubbleG = this.add.graphics();
+      bubbleG.fillStyle(0xffffff, 0.95);
+      bubbleG.fillRoundedRect(-60, -78, 120, 32, 10);
+      bubbleG.lineStyle(2, 0x3b82f6, 1.0);
+      bubbleG.strokeRoundedRect(-60, -78, 120, 32, 10);
+      // pointer
+      bubbleG.fillStyle(0xffffff, 0.95);
+      bubbleG.beginPath();
+      bubbleG.moveTo(-10, -46);
+      bubbleG.lineTo(10, -46);
+      bubbleG.lineTo(-4, -36);
+      bubbleG.closePath();
+      bubbleG.fillPath();
+      avatarContainer.add(bubbleG);
+
+      const bubbleText = this.add.text(0, -62, '準備好探險未？', {
+        fontSize: '14px',
+        color: '#1e3a8a',
+        fontStyle: 'bold',
+        fontFamily: "'Noto Sans TC', sans-serif",
+      });
+      if (bubbleText.setOrigin) bubbleText.setOrigin(0.5);
+      avatarContainer.add(bubbleText);
+    }
+
+    if (this.tweens?.add) {
       this.tweens.add({
-        targets: mascot,
-        y: mascotY - 14,
-        duration: 1200,
+        targets: avatarContainer,
+        y: mascotY - 12,
+        duration: 1400,
         yoyo: true,
         repeat: -1,
         ease: 'Sine.easeInOut',

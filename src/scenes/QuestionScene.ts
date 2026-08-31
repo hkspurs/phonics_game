@@ -9,6 +9,7 @@ import { SpeechService } from '../services/SpeechService';
 import { CanvasButton } from '../ui/CanvasButton';
 import { CanvasCard } from '../ui/CanvasCard';
 import { SlotBox } from '../ui/SlotBox';
+import { PlayerAvatarBadge } from '../ui/PlayerAvatarBadge';
 import { STATIONS } from './MapScene';
 
 export interface QuestionSessionStats {
@@ -61,6 +62,7 @@ export class QuestionScene extends Phaser.Scene {
   public headerTitleText: Phaser.GameObjects.Text | null = null;
   public progressCounterText: Phaser.GameObjects.Text | null = null;
   public promptText: Phaser.GameObjects.Text | null = null;
+  public avatarBadge: PlayerAvatarBadge | null = null;
 
   // Mode A: Sentence Scramble
   public slotBoxes: SlotBox[] = [];
@@ -354,6 +356,17 @@ export class QuestionScene extends Phaser.Scene {
       this.progressCounterText = counterLabel;
       header.add(counterLabel);
     }
+
+    // 4. Player Companion Avatar Badge (Top Right HUD)
+    const avatarX = Math.min(width - 55, 1220);
+    this.avatarBadge = new PlayerAvatarBadge(this, {
+      x: avatarX,
+      y: 42,
+      size: 54,
+      showPet: true,
+      showBorder: true,
+    });
+    header.add(this.avatarBadge.container);
 
     this.headerContainer = header;
     if (this.add && typeof this.add.existing === 'function') {
@@ -819,6 +832,7 @@ export class QuestionScene extends Phaser.Scene {
     } else {
       SoundManager.playSoftWrong();
       this.sessionStats.mistakes++;
+      this.avatarBadge?.think();
 
       for (const slot of this.slotBoxes) {
         if (!slot.isCorrect()) {
@@ -860,6 +874,7 @@ export class QuestionScene extends Phaser.Scene {
     } else {
       SoundManager.playSoftWrong();
       this.sessionStats.mistakes++;
+      this.avatarBadge?.think();
       card.wobble();
       card.setDisabled(true);
       return false;
@@ -994,6 +1009,7 @@ export class QuestionScene extends Phaser.Scene {
 
     // 3. Play Celebration Visuals
     this.playCelebrationEffect();
+    this.avatarBadge?.cheer();
 
     // 4. Delayed Transition to RunnerScene with Tap-to-Fast-Forward
     const isComplete = this.questionIndex >= this.questions.length - 1;

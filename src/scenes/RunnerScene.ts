@@ -6,6 +6,7 @@ import { SoundManager } from '../services/SoundManager';
 import { CanvasButton } from '../ui/CanvasButton';
 import { CompanionPet } from '../ui/CompanionPet';
 import { CharacterOutfitCompositor } from '../ui/CharacterOutfitCompositor';
+import { PlayerAvatarService } from '../services/PlayerAvatarService';
 
 export interface RunnerSessionStats {
   hintsUsed: number;
@@ -923,22 +924,27 @@ export class RunnerScene extends Phaser.Scene {
 
     // 2. Player Sprite
     if (this.add.image) {
+      const textureInfo = PlayerAvatarService.getInstance().getTextureKey('run', this);
       this.playerSprite = this.add.image(
         this.playerScreenX,
         this.playerBaselineY,
-        this.skinConfig.walk1Key
+        textureInfo.textureKey
       );
 
       if (this.playerSprite.setDepth) {
         this.playerSprite.setDepth(15);
       }
       if (this.playerSprite.setScale) {
-        this.playerSprite.setScale(0.9);
+        if (textureInfo.isFullSprite) {
+          this.playerSprite.setScale(0.48);
+        } else {
+          this.playerSprite.setScale(0.9);
+        }
       }
 
       // Apply skin tint perk (e.g. Knight, Ninja)
-      if (this.skinConfig.tint !== undefined && typeof this.playerSprite.setTint === 'function') {
-        this.playerSprite.setTint(this.skinConfig.tint);
+      if (textureInfo.tint !== undefined && typeof this.playerSprite.setTint === 'function') {
+        this.playerSprite.setTint(textureInfo.tint);
       }
     }
 
