@@ -180,14 +180,14 @@
 - Reduced-motion purchase success keeps its text/action but omits sparkle
   particles; the outfit-sync toast stays static and still cleans up after its
   normal hold.
-- The latest local bundle `assets/index-DhIFOIYo.js` passes all 43 unit suites
+- Historical checkpoint: bundle `assets/index-DhIFOIYo.js` passed all 43 unit suites
   (1,305/1,305), the Wardrobe visual checkpoint (5/5), and the fresh combined
   local browser pass (8/8), and
   the focused Wardrobe + cross-scene browser smoke (7/7), and
   the latest targeted deep interactive/full-playthrough browser flow (4/4)
   with zero page errors, plus the full deep interactive E2E (3/3) and the
-  latest complete Playwright matrix (81/81 in 7.7 minutes).
-  It remains local-only and has not been deployed.
+  latest complete Playwright matrix (81/81 in 7.7 minutes); it was later
+  superseded by the deployed `TASK-20260831-014` checkpoint below.
 - The Wardrobe browser audit also covers the real `prefers-reduced-motion:
   reduce` media preference: try-on and cheer keep the full-sprite preview
   visible, suppress optional loops, and remain inside the mobile-landscape
@@ -206,9 +206,8 @@
 - The live Runner flow now re-enters `onReachChest()` immediately to verify the
   chest summary is idempotent: session/profile values increase by exactly +5
   coins and +1 gem, with one readable reward card and one `下一題` handoff.
-- The previous local bundle `assets/index-sM5N5zs0.js` passed the targeted
-  Wardrobe visual and deep shop-to-Runner Playwright smoke (`2/2`); it remains
-  local-only and has not been deployed.
+- Historical checkpoint: bundle `assets/index-sM5N5zs0.js` passed the targeted
+  Wardrobe visual and deep shop-to-Runner Playwright smoke (`2/2`).
 - Wardrobe now rebuilds its scene-owned responsive catalog at the compact breakpoint while carrying tab/filter/selection/pose and active try-on state across Scale.FIT resizes; dense catalog cards remain readable on desktop and mobile landscape.
 - Runner, Question, and Result normalize legacy string station IDs before
   selecting themes or labels, so Map station names/icons remain consistent
@@ -236,11 +235,12 @@
 ## Deployment State
 - The public GitHub Pages site currently consumes the tracked `main/docs` artifact through the managed `pages build and deployment` workflow.
 - The custom deploy workflow also publishes `dist` to `gh-pages`; future source changes must update `main` or the repository Pages source should be switched to `gh-pages`.
-- `origin/main` currently points to `7f8d4001` (shared-state/deployment documentation alignment); local TASK-20260831-014 source and regression changes remain uncommitted.
-- The live bundle is `assets/index-DqhY_5sP.js` with build timestamp `202608311450`.
-- The latest verified local build emits `assets/index-UtBMJzhy.js` with build
-  timestamp `202609011528`; it has not been deployed.
-- TASK-20260831-014 is verified at the current checkpoint but has not been deployed; the public Pages bundle remains the timestamp above until the next approved deployment.
+- `origin/main` and `origin/master` point to deployed commit `f84a2f5b`.
+- The live bundle is `assets/index-UtBMJzhy.js` with build timestamp
+  `202609011528`, verified at `https://hkspurs.github.io/phonics_game/`.
+- TASK-20260831-014 is deployed and remains `IN_PROGRESS` only for formal
+  artwork, high-resolution/per-skin art, distinct motion art, and real-device
+  evidence.
 
 ## Completed Major Features
 - Complete Grade 1 Chinese, English, and Math interactive question mechanics.
@@ -259,7 +259,7 @@
   poses use a small controller tween instead of replacing the authored idle art.
 - The base Kenney character preview source is 80x110 and can look pixelated at the enlarged Dressing Room scale: Adventurer uses `public/assets/kenney/platformer-characters/PNG/Player/Poses/{player_stand,player_walk1,player_cheer1}.png` and Heroine uses the corresponding `Female/Poses/female_*` files. A new registered high-resolution base set is still required for final visual polish.
 - Existing dedicated outfit art is not a universal skin replacement: the current Scholar, Princess, Dino, Magic, and School Uniform wearing sets are authored for Adventurer; per-skin full-body variants are still required before those assets can represent Heroine, Soldier, Knight, or Ninja.
-- `PlayerAvatarBadge`, `CompanionPet`, Title, Map, Question, and Shop now receive explicit reduced-motion state where scene-level control is available; the deployed Pages bundle remains older than local TASK-20260831-014 source changes until the next approved commit/deployment.
+- `PlayerAvatarBadge`, `CompanionPet`, Title, Map, Question, and Shop now receive explicit reduced-motion state where scene-level control is available; the deployed Pages bundle now includes the current TASK-20260831-014 checkpoint.
 
 ## Important Decisions
 - **Master Character Spec**: Standard 512x512 canvas, ground baseline Y=460, X=256 center, Chibi 1:2.5 ratio.

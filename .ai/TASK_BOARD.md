@@ -57,6 +57,9 @@ Latest checkpoint:
   purchase, or artwork content changed; task remains `IN_PROGRESS` for formal
   artwork, high-resolution/per-skin art, distinct motion art, and real-device
   evidence.
+- Deployment checkpoint: commit `f84a2f5b` was pushed to both `main` and
+  `master`; the public Pages bundle was verified as
+  `assets/index-UtBMJzhy.js` with timestamp `202609011528`.
 - Split catalogue-thumbnail readiness from wearing-art readiness in outfit
   metadata and preload. A future delivered Star Hoodie thumbnail can load for
   the shop while `artworkStatus: 'placeholder'` still prevents wearing/run/

@@ -1,5 +1,17 @@
 # AI Coordination Changelog
 
+## 2026-09-01 — Codex — TASK-20260831-014 commit and deployment
+
+Deployment:
+- Committed verified Wardrobe fallback/polish work as `f84a2f5b`.
+- Pushed `main` and `master` to `origin` to trigger the managed Pages
+  deployment path.
+- Verified the live site serves `assets/index-UtBMJzhy.js` with build timestamp
+  `202609011528` at `https://hkspurs.github.io/phonics_game/`.
+
+The task remains `IN_PROGRESS` for formal artwork, high-resolution/per-skin art,
+distinct motion art, and real-device evidence.
+
 ## 2026-09-01 — Codex — TASK-20260831-014 pre-deployment verification
 
 Verification:
