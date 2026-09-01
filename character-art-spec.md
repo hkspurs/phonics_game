@@ -41,29 +41,29 @@
 ## 4. Outfit Asset Directory Architecture
 
 ```
-assets/characters/main/outfits/
-├── school_uniform/          # 經典名校校服 (Milestone 1)
-│   ├── thumbnail.png        # 商城 128x128 圓角預覽圖
-│   ├── idle/
-│   │   └── idle_01.png      # 正面站立待機
-│   ├── run/
-│   │   ├── run_01.png       # 跑步循環幀 1-6
-│   │   ├── run_02.png
-│   │   ├── run_03.png
-│   │   ├── run_04.png
-│   │   ├── run_05.png
-│   │   └── run_06.png
-│   └── cheer/
-│       ├── cheer_01.png     # 慶祝跳躍幀 1-4
-│       ├── cheer_02.png
-│       ├── cheer_03.png
-│       └── cheer_04.png
-├── scholar_gown/            # 升小一榮譽學士袍
-├── princess_dress/          # 夢幻粉紅公主裙
-├── dino_onesie/             # 萌萌小恐龍連身衣
-├── magic_robe/              # 星光魔法學徒袍
-└── star_hoodie/             # 閃爍星光連帽衛衣
+public/assets/
+├── character/outfits/       # 角色真正穿著的透明 full-body artwork
+│   ├── school_uniform/      # idle.png / run.png / cheer.png
+│   ├── scholar_gown/        # idle.png / run.png / cheer.png
+│   ├── princess_dress/      # idle.png / run.png / cheer.png
+│   ├── dino_onesie/         # idle.png / run.png / cheer.png
+│   ├── magic_robe/          # idle.png / run.png / cheer.png
+│   └── star_hoodie/         # 待交付 wearing / run / cheer artwork
+└── outfits/                 # 商城 thumbnail（不可直接貼到角色上）
+    ├── school_uniform/thumbnail.png
+    ├── scholar_gown/thumbnail.png
+    ├── princess_dress/thumbnail.png
+    ├── dino_onesie/thumbnail.png
+    ├── magic_robe/thumbnail.png
+    └── star_hoodie/star_hoodie_thumbnail.png
 ```
+
+以上是目前 `src/config/outfits.ts` 使用的 canonical runtime paths；動畫
+採用每個 pose 一張完整透明 PNG，不是把商城 thumbnail 當作穿戴圖。
+每套 dedicated wearing art 亦可在 metadata 指定 `supportedCharacterIds`；目前已交付
+的五套 full-body art 只代表 `adventurer`。其他角色皮膚必須保留自己的 base
+identity，直到對應的 per-skin wearing artwork 交付，期間由 layered/compositor fallback
+安全顯示。
 
 ---
 
@@ -72,13 +72,13 @@ assets/characters/main/outfits/
 飾品與配件採用獨立圖層化（Modular Layered）渲染，分層深度順序如下：
 
 ```
-[Layer 01] BACK_ACCESSORY  (潔白天使羽翼 angel_wings 位於軀幹背後)
+[Layer 01] BACK_ACCESSORY  (潔白天使羽翼 angel_wings、星星背囊 star_backpack 位於軀幹背後)
     │
 [Layer 02] FULL_OUTFIT_SPRITE (主服裝全角色繪製: 校服 / 學士袍 / 公主裙 / 恐龍裝)
     │
-[Layer 03] FRONT_ACCESSORY (星光背包 star_backpack 斜挎於胸前/單肩)
+[Layer 03] FRONT_ACCESSORY (預留給未來胸前配件；目前沒有配件在此重複繪製)
     │
-[Layer 04] FACE_ACCESSORY  (星星眼鏡 star_glasses 貼合雙眼水平線)
+[Layer 04] FACE_ACCESSORY  (星星眼鏡 star_glasses 貼合雙眼水平線，於角色前方只繪製一次)
     │
 [Layer 05] HAT / HEADWEAR  (貓耳 cat_ears / 學士帽 scholar_cap / 電車帽 tram_hat 貼合頭頂)
     │
@@ -91,13 +91,13 @@ assets/characters/main/outfits/
 
 - [x] **AC01 穿著真實性**：服裝必須為自然包裹角色軀幹與四肢的完整插畫，嚴禁矩形貼圖貼在胸口。
 - [x] **AC02 身份一致性**：髮型、髮色、膚色、五官在所有服裝間 100% 保持同一角色。
-- [x] **AC03 解析度充足**：Master 資產均為 512x512 以上高畫質，不得放大低像素圖。
-- [x] **AC04 飾品層級正確**：天使羽翼必定在背後（BACK_ACCESSORY），不得遮擋胸膛與面部。
+- [ ] **AC03 解析度充足**：正式 full-body outfit master 資產為 512x512；目前 base preview 仍為 80x110，Star Hoodie artwork 尚未交付，兩者不可標示為已完成。
+- [x] **AC04 飾品層級正確**：天使羽翼與星星背囊必定在背後（BACK_ACCESSORY），眼鏡與帽子只在角色前方各繪製一次，不遮擋錯誤圖層。
 - [x] **AC05 零文字與假校徽**：嚴禁生成隨機亂碼文字、假學校 Logo 或怪異符號。
 - [x] **AC06 背景純透明**：所有幀均為透明 PNG，邊緣平滑抗鋸齒，無白邊或黑邊瑕疵。
 - [x] **AC07 基準線對齊**：所有動畫幀的腳底水平線必須穩定在 Y = 460 px，切換無跳躍抖動。
 - [x] **AC08 肢體完整無畸變**：雙手手指、雙腳結構自然清晰，無多餘手指或肢體融合。
-- [x] **AC09 動畫流暢性**：Run 幀形成完整循環，Cheer 幀展現舉手跳躍歡呼。
+- [ ] **AC09 動畫流暢性**：交付後 Run 幀須形成完整循環，Cheer 幀須展現舉手跳躍歡呼；目前 Scholar、Princess、Dino、Magic 的 run/cheer 使用明確 idle fallback，並非正式 motion set。
 - [x] **AC10 色彩風格統一**：符合小學一年級歡樂溫馨童話繪本風格。
 - [x] **AC11 健全容錯降級**：若某動作幀缺失，Phaser 自動平滑降級至 Idle 幀或骨骼補間，絕不報錯黑屏。
 - [x] **AC12 經濟邏輯零破壞**：換裝系統與 DataManager 存檔、金幣購買邏輯 100% 兼容。
