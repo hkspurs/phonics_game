@@ -1,10 +1,11 @@
-# Scholar Gown asset placeholder
+# Scholar Gown asset handoff notes
 
-Production art still required. Add these files with the shared registration point and canvas size:
+The registered 512×512 transparent wearing set is present and is the live
+preview source:
 
 - `public/assets/outfits/scholar_gown/thumbnail.png` — shop product illustration only
-- `public/assets/character/outfits/scholar_gown/idle.png` — full-body character wearing the gown
-- `public/assets/character/outfits/scholar_gown/run.png` — full-body run pose
-- `public/assets/character/outfits/scholar_gown/cheer.png` — full-body cheer pose
+- `public/assets/character/outfits/scholar_gown/{idle,run,cheer}.png` — full-body wearing art
 
-Until then, the registry intentionally falls back to the fitted compositor.
+The current `run.png` and `cheer.png` are byte-identical to `idle.png`, so the
+registry intentionally marks those poses as `idleFallback` until distinct
+motion artwork is delivered. Never overlay the thumbnail on the character.
