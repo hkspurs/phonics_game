@@ -409,227 +409,424 @@ export class PreloadScene extends Phaser.Scene {
       ctx.fill();
     });
 
-    // 5. Procedural Coin
-    createSafeCanvasTexture('coin_procedural', 36, 36, (ctx) => {
-      ctx.fillStyle = '#f5a623';
+    // 5. Procedural Coin (3D Metallic Star Gold Coin)
+    createSafeCanvasTexture('coin_procedural', 44, 44, (ctx) => {
+      // Outer drop shadow
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.25)';
       ctx.beginPath();
-      ctx.arc(18, 18, 16, 0, Math.PI * 2);
+      ctx.arc(22, 24, 19, 0, Math.PI * 2);
       ctx.fill();
 
-      ctx.fillStyle = '#ffd700';
+      // Outer golden rim
+      const rimGrad = ctx.createLinearGradient(4, 4, 40, 40);
+      rimGrad.addColorStop(0, '#fff494');
+      rimGrad.addColorStop(0.3, '#f59e0b');
+      rimGrad.addColorStop(0.7, '#d97706');
+      rimGrad.addColorStop(1, '#78350f');
+      ctx.fillStyle = rimGrad;
       ctx.beginPath();
-      ctx.arc(18, 18, 12, 0, Math.PI * 2);
+      ctx.arc(22, 22, 19, 0, Math.PI * 2);
       ctx.fill();
 
-      ctx.fillStyle = '#b5730a';
-      ctx.font = 'bold 16px sans-serif';
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillText('$', 18, 19);
-    });
-
-    // 6. Procedural Gem
-    createSafeCanvasTexture('gem_procedural', 36, 36, (ctx) => {
-      ctx.fillStyle = '#00c6ff';
+      // Inner coin bevel face
+      const faceGrad = ctx.createRadialGradient(16, 16, 2, 22, 22, 16);
+      faceGrad.addColorStop(0, '#fffbeb');
+      faceGrad.addColorStop(0.4, '#fcd34d');
+      faceGrad.addColorStop(0.85, '#f59e0b');
+      faceGrad.addColorStop(1, '#b45309');
+      ctx.fillStyle = faceGrad;
       ctx.beginPath();
-      ctx.moveTo(18, 4);
-      ctx.lineTo(32, 14);
-      ctx.lineTo(18, 32);
-      ctx.lineTo(4, 14);
-      ctx.closePath();
+      ctx.arc(22, 22, 15, 0, Math.PI * 2);
       ctx.fill();
 
-      ctx.fillStyle = '#ffffff';
-      ctx.beginPath();
-      ctx.moveTo(18, 7);
-      ctx.lineTo(26, 14);
-      ctx.lineTo(18, 26);
-      ctx.closePath();
-      ctx.fill();
-    });
-
-    // 7. Procedural Sparkle Particle
-    createSafeCanvasTexture('particle_sparkle', 20, 20, (ctx) => {
-      ctx.fillStyle = '#ffffff';
-      ctx.beginPath();
-      ctx.arc(10, 10, 5, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.strokeStyle = '#ffd700';
+      // Coin rim groove notches
+      ctx.strokeStyle = 'rgba(120, 53, 15, 0.6)';
       ctx.lineWidth = 1.5;
       ctx.beginPath();
-      ctx.moveTo(10, 0);
-      ctx.lineTo(10, 20);
-      ctx.moveTo(0, 10);
-      ctx.lineTo(20, 10);
+      ctx.arc(22, 22, 14.5, 0, Math.PI * 2);
       ctx.stroke();
-    });
 
-    // 8. Procedural Closed Treasure Chest
-    createSafeCanvasTexture('chest_closed', 64, 52, (ctx) => {
-      // Wood base
-      ctx.fillStyle = '#8b5a2b';
-      ctx.fillRect(6, 16, 52, 32);
-      // Wood lid
-      ctx.fillStyle = '#a06a35';
+      // Embossed Star Motif ★
+      ctx.fillStyle = '#fffbeb';
+      ctx.shadowColor = 'rgba(120, 53, 15, 0.5)';
+      ctx.shadowOffsetY = 1.5;
       ctx.beginPath();
-      ctx.arc(32, 18, 26, Math.PI, 0);
-      ctx.fill();
-      // Gold rims / hinges
-      ctx.fillStyle = '#ffd700';
-      ctx.fillRect(6, 14, 52, 6);
-      ctx.fillRect(16, 8, 8, 40);
-      ctx.fillRect(40, 8, 8, 40);
-      // Gold keyhole lock
-      ctx.fillStyle = '#ffe066';
-      ctx.fillRect(28, 22, 8, 12);
-      ctx.fillStyle = '#3e2723';
-      ctx.fillRect(30, 26, 4, 6);
-      // Border outline
-      ctx.strokeStyle = '#3e2723';
-      ctx.lineWidth = 2;
-      ctx.strokeRect(6, 16, 52, 32);
-    });
-
-    // 9. Procedural Open Treasure Chest
-    createSafeCanvasTexture('chest_open', 64, 58, (ctx) => {
-      // Open lid flipped back
-      ctx.fillStyle = '#6d431d';
-      ctx.beginPath();
-      ctx.ellipse(32, 12, 24, 10, 0, 0, Math.PI * 2);
-      ctx.fill();
-      // Treasure glow burst
-      const glow = ctx.createRadialGradient(32, 22, 4, 32, 22, 26);
-      glow.addColorStop(0, '#ffffa0');
-      glow.addColorStop(0.7, '#ffd700');
-      glow.addColorStop(1, 'rgba(255, 215, 0, 0)');
-      ctx.fillStyle = glow;
-      ctx.fillRect(8, 0, 48, 30);
-      // Gold coins and gems overflowing
-      ctx.fillStyle = '#ffd700';
-      ctx.beginPath();
-      ctx.arc(24, 20, 7, 0, Math.PI * 2);
-      ctx.arc(38, 18, 8, 0, Math.PI * 2);
-      ctx.arc(32, 22, 9, 0, Math.PI * 2);
-      ctx.fill();
-      // Cyan jewel inside
-      ctx.fillStyle = '#00e5ff';
-      ctx.beginPath();
-      ctx.moveTo(32, 12);
-      ctx.lineTo(37, 18);
-      ctx.lineTo(32, 24);
-      ctx.lineTo(27, 18);
+      const cx = 22, cy = 22, spikes = 5, outerRadius = 8, innerRadius = 3.8;
+      let rot = (Math.PI / 2) * 3;
+      let x = cx, y = cy;
+      const step = Math.PI / spikes;
+      ctx.moveTo(cx, cy - outerRadius);
+      for (let i = 0; i < spikes; i++) {
+        x = cx + Math.cos(rot) * outerRadius;
+        y = cy + Math.sin(rot) * outerRadius;
+        ctx.lineTo(x, y);
+        rot += step;
+        x = cx + Math.cos(rot) * innerRadius;
+        y = cy + Math.sin(rot) * innerRadius;
+        ctx.lineTo(x, y);
+        rot += step;
+      }
+      ctx.lineTo(cx, cy - outerRadius);
       ctx.closePath();
       ctx.fill();
-      // Wood base
-      ctx.fillStyle = '#8b5a2b';
-      ctx.fillRect(6, 24, 52, 28);
-      // Gold bands
-      ctx.fillStyle = '#ffd700';
-      ctx.fillRect(16, 24, 8, 28);
-      ctx.fillRect(40, 24, 8, 28);
-      ctx.fillRect(6, 22, 52, 4);
-      // Outline
-      ctx.strokeStyle = '#3e2723';
-      ctx.lineWidth = 2;
-      ctx.strokeRect(6, 24, 52, 28);
+      ctx.shadowColor = 'transparent';
+
+      // Specular highlight crescent
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.65)';
+      ctx.beginPath();
+      ctx.ellipse(17, 12, 8, 3, -Math.PI / 4, 0, Math.PI * 2);
+      ctx.fill();
     });
 
-    // 10. Procedural Springboard Up
-    createSafeCanvasTexture('springboard_up', 48, 36, (ctx) => {
-      // Base wood
-      ctx.fillStyle = '#5c4033';
-      ctx.fillRect(4, 30, 40, 6);
-      // Red spring coil
-      ctx.strokeStyle = '#e74c3c';
-      ctx.lineWidth = 3;
+    // 6. Procedural Gem (Faceted Cyan Diamond Gem)
+    createSafeCanvasTexture('gem_procedural', 44, 44, (ctx) => {
+      // Soft radiant cyan glow
+      const glow = ctx.createRadialGradient(22, 22, 6, 22, 22, 21);
+      glow.addColorStop(0, 'rgba(56, 189, 248, 0.4)');
+      glow.addColorStop(0.7, 'rgba(2, 132, 199, 0.15)');
+      glow.addColorStop(1, 'rgba(2, 132, 199, 0)');
+      ctx.fillStyle = glow;
+      ctx.fillRect(0, 0, 44, 44);
+
+      // Diamond Drop Shadow
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.25)';
       ctx.beginPath();
-      ctx.moveTo(16, 30);
-      ctx.lineTo(32, 24);
-      ctx.lineTo(16, 18);
-      ctx.lineTo(32, 12);
-      ctx.lineTo(24, 6);
-      ctx.stroke();
-      // Top bouncy pad
-      ctx.fillStyle = '#f39c12';
-      ctx.fillRect(6, 2, 36, 6);
+      ctx.moveTo(22, 41);
+      ctx.lineTo(39, 18);
+      ctx.lineTo(5, 18);
+      ctx.closePath();
+      ctx.fill();
+
+      // Lower Pavilion facet
+      const pavGrad = ctx.createLinearGradient(22, 16, 22, 38);
+      pavGrad.addColorStop(0, '#0284c7');
+      pavGrad.addColorStop(0.5, '#0369a1');
+      pavGrad.addColorStop(1, '#0c4a6e');
+      ctx.fillStyle = pavGrad;
+      ctx.beginPath();
+      ctx.moveTo(7, 16);
+      ctx.lineTo(37, 16);
+      ctx.lineTo(22, 38);
+      ctx.closePath();
+      ctx.fill();
+
+      // Left lower facet
+      ctx.fillStyle = '#0284c7';
+      ctx.beginPath();
+      ctx.moveTo(7, 16);
+      ctx.lineTo(22, 16);
+      ctx.lineTo(22, 38);
+      ctx.closePath();
+      ctx.fill();
+
+      // Right lower facet
+      ctx.fillStyle = '#075985';
+      ctx.beginPath();
+      ctx.moveTo(22, 16);
+      ctx.lineTo(37, 16);
+      ctx.lineTo(22, 38);
+      ctx.closePath();
+      ctx.fill();
+
+      // Upper Crown
+      const crownGrad = ctx.createLinearGradient(12, 6, 32, 16);
+      crownGrad.addColorStop(0, '#bae6fd');
+      crownGrad.addColorStop(0.5, '#38bdf8');
+      crownGrad.addColorStop(1, '#0284c7');
+      ctx.fillStyle = crownGrad;
+      ctx.beginPath();
+      ctx.moveTo(13, 6);
+      ctx.lineTo(31, 6);
+      ctx.lineTo(37, 16);
+      ctx.lineTo(7, 16);
+      ctx.closePath();
+      ctx.fill();
+
+      // Center Table Facet
+      ctx.fillStyle = '#e0f2fe';
+      ctx.beginPath();
+      ctx.moveTo(16, 6);
+      ctx.lineTo(28, 6);
+      ctx.lineTo(24, 16);
+      ctx.lineTo(20, 16);
+      ctx.closePath();
+      ctx.fill();
+
+      // Specular Star Flare Gleam
       ctx.fillStyle = '#ffffff';
-      ctx.fillRect(18, 4, 12, 2);
+      ctx.beginPath();
+      ctx.arc(16, 7, 2.5, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Crisp Facet Edges
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.75)';
+      ctx.lineWidth = 1.2;
+      ctx.beginPath();
+      ctx.moveTo(13, 6);
+      ctx.lineTo(31, 6);
+      ctx.lineTo(37, 16);
+      ctx.lineTo(22, 38);
+      ctx.lineTo(7, 16);
+      ctx.closePath();
+      ctx.stroke();
+    });
+
+    // 7. Procedural Sparkle Particle (Radiant 4-Point Lens Flare)
+    createSafeCanvasTexture('particle_sparkle', 24, 24, (ctx) => {
+      const grad = ctx.createRadialGradient(12, 12, 1, 12, 12, 12);
+      grad.addColorStop(0, '#ffffff');
+      grad.addColorStop(0.3, '#fef08a');
+      grad.addColorStop(0.7, '#f59e0b');
+      grad.addColorStop(1, 'rgba(245, 158, 11, 0)');
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      ctx.arc(12, 12, 12, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = '#ffffff';
+      ctx.beginPath();
+      ctx.moveTo(12, 1);
+      ctx.quadraticCurveTo(12, 12, 23, 12);
+      ctx.quadraticCurveTo(12, 12, 12, 23);
+      ctx.quadraticCurveTo(12, 12, 1, 12);
+      ctx.quadraticCurveTo(12, 12, 12, 1);
+      ctx.closePath();
+      ctx.fill();
+    });
+
+    // 8. Procedural Closed Treasure Chest (Studded Oak & Gold)
+    createSafeCanvasTexture('chest_closed', 68, 56, (ctx) => {
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
+      ctx.beginPath();
+      ctx.ellipse(34, 51, 28, 5, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      const woodGrad = ctx.createLinearGradient(6, 20, 62, 50);
+      woodGrad.addColorStop(0, '#92400e');
+      woodGrad.addColorStop(0.5, '#78350f');
+      woodGrad.addColorStop(1, '#451a03');
+      ctx.fillStyle = woodGrad;
+      ctx.beginPath();
+      ctx.roundRect ? ctx.roundRect(6, 20, 56, 30, [0, 0, 8, 8]) : ctx.fillRect(6, 20, 56, 30);
+      ctx.fill();
+
+      const lidGrad = ctx.createLinearGradient(6, 6, 62, 22);
+      lidGrad.addColorStop(0, '#b45309');
+      lidGrad.addColorStop(0.5, '#92400e');
+      lidGrad.addColorStop(1, '#78350f');
+      ctx.fillStyle = lidGrad;
+      ctx.beginPath();
+      ctx.arc(34, 22, 28, Math.PI, 0);
+      ctx.closePath();
+      ctx.fill();
+
+      const goldGrad = ctx.createLinearGradient(0, 0, 0, 56);
+      goldGrad.addColorStop(0, '#fef08a');
+      goldGrad.addColorStop(0.5, '#f59e0b');
+      goldGrad.addColorStop(1, '#b45309');
+      ctx.fillStyle = goldGrad;
+
+      ctx.fillRect(6, 18, 56, 5);
+      ctx.fillRect(16, 7, 8, 43);
+      ctx.fillRect(44, 7, 8, 43);
+
+      ctx.fillStyle = '#fffbeb';
+      for (const rx of [20, 48]) {
+        for (const ry of [11, 28, 42]) {
+          ctx.beginPath();
+          ctx.arc(rx, ry, 1.8, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+
+      ctx.fillStyle = '#fcd34d';
+      ctx.beginPath();
+      ctx.roundRect ? ctx.roundRect(28, 22, 12, 14, 3) : ctx.fillRect(28, 22, 12, 14);
+      ctx.fill();
+      ctx.fillStyle = '#1e1b4b';
+      ctx.beginPath();
+      ctx.arc(34, 27, 2, 0, Math.PI * 2);
+      ctx.fillRect(33, 27, 2, 4);
+      ctx.fill();
+
+      ctx.strokeStyle = '#291403';
+      ctx.lineWidth = 2;
+      ctx.strokeRect(6, 20, 56, 30);
+    });
+
+    // 9. Procedural Open Treasure Chest (Glorious Radiant Light Burst)
+    createSafeCanvasTexture('chest_open', 68, 64, (ctx) => {
+      ctx.fillStyle = '#5c2c06';
+      ctx.beginPath();
+      ctx.ellipse(34, 14, 26, 11, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      const glow = ctx.createRadialGradient(34, 24, 4, 34, 24, 32);
+      glow.addColorStop(0, '#ffffff');
+      glow.addColorStop(0.3, '#fef08a');
+      glow.addColorStop(0.7, '#f59e0b');
+      glow.addColorStop(1, 'rgba(245, 158, 11, 0)');
+      ctx.fillStyle = glow;
+      ctx.fillRect(4, 0, 60, 36);
+
+      ctx.fillStyle = '#ffd700';
+      ctx.beginPath();
+      ctx.arc(24, 20, 8, 0, Math.PI * 2);
+      ctx.arc(44, 18, 9, 0, Math.PI * 2);
+      ctx.arc(34, 22, 10, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = '#38bdf8';
+      ctx.beginPath();
+      ctx.moveTo(34, 12);
+      ctx.lineTo(40, 19);
+      ctx.lineTo(34, 26);
+      ctx.lineTo(28, 19);
+      ctx.closePath();
+      ctx.fill();
+
+      const woodGrad = ctx.createLinearGradient(6, 26, 62, 58);
+      woodGrad.addColorStop(0, '#92400e');
+      woodGrad.addColorStop(1, '#451a03');
+      ctx.fillStyle = woodGrad;
+      ctx.fillRect(6, 26, 56, 32);
+
+      ctx.fillStyle = '#f59e0b';
+      ctx.fillRect(16, 26, 8, 32);
+      ctx.fillRect(44, 26, 8, 32);
+      ctx.fillRect(6, 24, 56, 4);
+
+      ctx.strokeStyle = '#291403';
+      ctx.lineWidth = 2;
+      ctx.strokeRect(6, 26, 56, 32);
+    });
+
+    // 10. Procedural Springboard Up (3D Coiled Spring & Brass Pad)
+    createSafeCanvasTexture('springboard_up', 52, 40, (ctx) => {
+      // Wood base plate
+      ctx.fillStyle = '#451a03';
+      ctx.fillRect(4, 32, 44, 8);
+      ctx.fillStyle = '#78350f';
+      ctx.fillRect(6, 33, 40, 6);
+
+      // Coiled spring
+      ctx.strokeStyle = '#f59e0b';
+      ctx.lineWidth = 3.5;
+      ctx.lineCap = 'round';
+      ctx.beginPath();
+      ctx.moveTo(18, 32);
+      ctx.lineTo(34, 25);
+      ctx.lineTo(18, 18);
+      ctx.lineTo(34, 11);
+      ctx.lineTo(26, 6);
+      ctx.stroke();
+
+      // Top bouncy pad with hazard chevrons
+      const padGrad = ctx.createLinearGradient(6, 2, 46, 8);
+      padGrad.addColorStop(0, '#fef08a');
+      padGrad.addColorStop(0.5, '#f59e0b');
+      padGrad.addColorStop(1, '#d97706');
+      ctx.fillStyle = padGrad;
+      ctx.beginPath();
+      ctx.roundRect ? ctx.roundRect(6, 2, 40, 7, 3) : ctx.fillRect(6, 2, 40, 7);
+      ctx.fill();
+      ctx.strokeStyle = '#78350f';
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
     });
 
     // 11. Procedural Springboard Down (compressed)
-    createSafeCanvasTexture('springboard_down', 48, 24, (ctx) => {
-      ctx.fillStyle = '#5c4033';
-      ctx.fillRect(4, 18, 40, 6);
-      // Compressed spring
-      ctx.strokeStyle = '#e74c3c';
-      ctx.lineWidth = 4;
+    createSafeCanvasTexture('springboard_down', 52, 26, (ctx) => {
+      ctx.fillStyle = '#451a03';
+      ctx.fillRect(4, 18, 44, 8);
+      ctx.fillStyle = '#78350f';
+      ctx.fillRect(6, 19, 40, 6);
+
+      ctx.strokeStyle = '#f59e0b';
+      ctx.lineWidth = 4.5;
+      ctx.lineCap = 'round';
       ctx.beginPath();
-      ctx.moveTo(14, 18);
-      ctx.lineTo(34, 14);
-      ctx.lineTo(14, 10);
+      ctx.moveTo(16, 18);
+      ctx.lineTo(36, 14);
+      ctx.lineTo(16, 10);
       ctx.stroke();
-      // Top pad
-      ctx.fillStyle = '#f39c12';
-      ctx.fillRect(6, 4, 36, 6);
+
+      ctx.fillStyle = '#f59e0b';
+      ctx.beginPath();
+      ctx.roundRect ? ctx.roundRect(6, 4, 40, 7, 3) : ctx.fillRect(6, 4, 40, 7);
+      ctx.fill();
     });
 
-    // 12. Procedural Obstacle Rock (Stylized Rounded Mossy Boulder with Jump Warning Halo)
-    createSafeCanvasTexture('obstacle_rock', 48, 40, (ctx) => {
-      // Base shadow
-      ctx.fillStyle = 'rgba(0,0,0,0.25)';
+    // 12. Procedural Obstacle Rock (Stylized Rounded Mossy Boulder)
+    createSafeCanvasTexture('obstacle_rock', 52, 44, (ctx) => {
+      ctx.fillStyle = 'rgba(0,0,0,0.28)';
       ctx.beginPath();
-      ctx.ellipse(24, 37, 20, 3, 0, 0, Math.PI * 2);
+      ctx.ellipse(26, 40, 22, 4, 0, 0, Math.PI * 2);
       ctx.fill();
 
       // Rounded Boulder Body
-      ctx.fillStyle = '#64748b';
+      const stoneGrad = ctx.createLinearGradient(8, 8, 46, 40);
+      stoneGrad.addColorStop(0, '#94a3b8');
+      stoneGrad.addColorStop(0.5, '#64748b');
+      stoneGrad.addColorStop(1, '#334155');
+      ctx.fillStyle = stoneGrad;
       ctx.beginPath();
-      ctx.moveTo(8, 36);
-      ctx.quadraticCurveTo(4, 18, 18, 10);
-      ctx.quadraticCurveTo(24, 6, 34, 12);
-      ctx.quadraticCurveTo(44, 18, 42, 36);
+      ctx.moveTo(8, 38);
+      ctx.quadraticCurveTo(4, 18, 20, 10);
+      ctx.quadraticCurveTo(26, 5, 36, 11);
+      ctx.quadraticCurveTo(48, 18, 46, 38);
       ctx.closePath();
       ctx.fill();
 
-      // Stone highlights & cracks
-      ctx.fillStyle = '#94a3b8';
+      // Natural stone cracks & highlights
+      ctx.fillStyle = '#cbd5e1';
       ctx.beginPath();
-      ctx.moveTo(16, 12);
-      ctx.quadraticCurveTo(24, 8, 30, 14);
-      ctx.lineTo(26, 22);
+      ctx.moveTo(18, 13);
+      ctx.quadraticCurveTo(26, 9, 32, 15);
+      ctx.lineTo(28, 23);
       ctx.closePath();
       ctx.fill();
 
       // Lush Cartoon Moss Patch on Top
       ctx.fillStyle = '#22c55e';
       ctx.beginPath();
-      ctx.ellipse(24, 11, 12, 5, 0, 0, Math.PI * 2);
+      ctx.ellipse(26, 11, 14, 6, 0, 0, Math.PI * 2);
       ctx.fill();
-      ctx.fillStyle = '#4ade80';
+      ctx.fillStyle = '#86efac';
       ctx.beginPath();
-      ctx.ellipse(21, 10, 6, 3, 0, 0, Math.PI * 2);
+      ctx.ellipse(23, 10, 7, 3, 0, 0, Math.PI * 2);
       ctx.fill();
 
       // Subtle golden warning indicator
-      ctx.strokeStyle = '#f59e0b';
-      ctx.lineWidth = 1.5;
+      ctx.strokeStyle = '#fbbf24';
+      ctx.lineWidth = 1.8;
       ctx.beginPath();
-      ctx.arc(24, 22, 18, Math.PI * 0.8, Math.PI * 1.2);
+      ctx.arc(26, 24, 20, Math.PI * 0.8, Math.PI * 1.2);
       ctx.stroke();
     });
 
     // 13. Procedural Platform Block
-    createSafeCanvasTexture('runner_platform', 140, 36, (ctx) => {
+    createSafeCanvasTexture('runner_platform', 150, 40, (ctx) => {
       // Dirt body
-      ctx.fillStyle = '#795548';
+      const dirtGrad = ctx.createLinearGradient(0, 10, 0, 40);
+      dirtGrad.addColorStop(0, '#78350f');
+      dirtGrad.addColorStop(1, '#451a03');
+      ctx.fillStyle = dirtGrad;
       ctx.beginPath();
-      ctx.roundRect ? ctx.roundRect(0, 8, 140, 28, [0, 0, 8, 8]) : ctx.fillRect(0, 8, 140, 28);
+      ctx.roundRect ? ctx.roundRect(0, 10, 150, 30, [0, 0, 10, 10]) : ctx.fillRect(0, 10, 150, 30);
       ctx.fill();
-      // Top green grass
-      ctx.fillStyle = '#4caf50';
-      ctx.fillRect(0, 0, 140, 10);
-      ctx.fillStyle = '#81c784';
-      ctx.fillRect(0, 0, 140, 3);
+
+      // Top lush grass
+      ctx.fillStyle = '#22c55e';
+      ctx.fillRect(0, 0, 150, 12);
+      ctx.fillStyle = '#4ade80';
+      ctx.fillRect(0, 0, 150, 4);
+
+      // Grass tufts
+      ctx.fillStyle = '#86efac';
+      for (let i = 8; i < 145; i += 18) {
+        ctx.fillRect(i, 8, 4, 4);
+      }
     });
   }
 

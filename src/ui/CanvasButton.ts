@@ -35,13 +35,14 @@ interface ColorPalette {
 }
 
 const COLOR_MAP: Record<string, ColorPalette> = {
-  blue: { base: 0x2b82c9, dark: 0x19578c, light: 0x51a4e8, border: 0x14436c, textColor: '#ffffff' },
-  green: { base: 0x48b64e, dark: 0x2e8233, light: 0x6dd173, border: 0x1f5c24, textColor: '#ffffff' },
-  red: { base: 0xe04343, dark: 0x9e2424, light: 0xf26b6b, border: 0x751616, textColor: '#ffffff' },
-  yellow: { base: 0xf5a623, dark: 0xb5730a, light: 0xfbc45f, border: 0x8a5300, textColor: '#4a2f00' },
-  grey: { base: 0x757d8a, dark: 0x4a515c, light: 0x9aa2af, border: 0x333942, textColor: '#ffffff' },
-  gray: { base: 0x757d8a, dark: 0x4a515c, light: 0x9aa2af, border: 0x333942, textColor: '#ffffff' },
-  purple: { base: 0x8e44ad, dark: 0x602677, light: 0xaa5fd1, border: 0x431754, textColor: '#ffffff' },
+  blue: { base: 0x0284c7, dark: 0x0369a1, light: 0x7dd3fc, border: 0x075985, textColor: '#ffffff' },
+  green: { base: 0x16a34a, dark: 0x15803d, light: 0x86efac, border: 0x14532d, textColor: '#ffffff' },
+  red: { base: 0xe11d48, dark: 0xbe123c, light: 0xfda4af, border: 0x881337, textColor: '#ffffff' },
+  yellow: { base: 0xf59e0b, dark: 0xd97706, light: 0xfef08a, border: 0xb45309, textColor: '#451a03' },
+  grey: { base: 0x475569, dark: 0x334155, light: 0x94a3b8, border: 0x1e293b, textColor: '#ffffff' },
+  gray: { base: 0x475569, dark: 0x334155, light: 0x94a3b8, border: 0x1e293b, textColor: '#ffffff' },
+  purple: { base: 0x9333ea, dark: 0x7e22ce, light: 0xd8b4fe, border: 0x581c87, textColor: '#ffffff' },
+  teal: { base: 0x0d9488, dark: 0x0f766e, light: 0x5eead4, border: 0x115e59, textColor: '#ffffff' },
 };
 
 export class CanvasButton extends Phaser.GameObjects.Container {
@@ -111,27 +112,35 @@ export class CanvasButton extends Phaser.GameObjects.Container {
     const palette = this.getColorPalette();
     const w = this.btnWidth;
     const h = this.btnHeight;
-    const radius = this.config.cornerRadius ?? (this.config.variant === 'round' ? Math.min(w, h) / 2 : 12);
+    const radius = this.config.cornerRadius ?? (this.config.variant === 'round' ? Math.min(w, h) / 2 : 14);
     const depth = 4;
 
     const g = this.scene.add.graphics();
     const halfW = w / 2;
     const halfH = h / 2;
 
-    // 1. Drop shadow / bottom 3D bevel
-    g.fillStyle(palette.dark, 0.9);
-    g.fillRoundedRect(-halfW, -halfH + depth, w, h, radius);
+    // 1. Soft Drop Shadow
+    g.fillStyle(0x000000, 0.28);
+    g.fillRoundedRect(-halfW, -halfH + depth + 2, w, h, radius);
 
-    // 2. Main face
+    // 2. Bottom 3D Bevel Lip
+    g.fillStyle(palette.dark, 1.0);
+    g.fillRoundedRect(-halfW, -halfH + depth, w, h - depth, radius);
+
+    // 3. Main Face
     g.fillStyle(palette.base, 1.0);
     g.fillRoundedRect(-halfW, -halfH, w, h - depth, radius);
 
-    // 3. Top specular gloss highlight
-    g.fillStyle(palette.light, 0.4);
-    g.fillRoundedRect(-halfW + 2, -halfH + 2, w - 4, (h - depth) / 2 - 2, Math.max(2, radius - 2));
+    // 4. Top Specular Gloss Cap
+    g.fillStyle(palette.light, 0.45);
+    g.fillRoundedRect(-halfW + 3, -halfH + 2, w - 6, Math.max(4, (h - depth) * 0.46), Math.max(2, radius - 3));
 
-    // 4. Outer border stroke
-    g.lineStyle(2, palette.border, 0.8);
+    // 5. Inner subtle highlight sheen
+    g.lineStyle(1.5, 0xffffff, 0.35);
+    g.strokeRoundedRect(-halfW + 1.5, -halfH + 1.5, w - 3, h - depth - 3, Math.max(2, radius - 2));
+
+    // 6. Outer border stroke
+    g.lineStyle(2, palette.border, 0.95);
     g.strokeRoundedRect(-halfW, -halfH, w, h, radius);
 
     this.bgGraphics = g;

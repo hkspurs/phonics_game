@@ -1,6 +1,26 @@
 # AI Coordination Changelog
 
-## 2026-09-01 — Codex — TASK-20260831-014 commit and deployment
+## 2026-09-01 — Antigravity — TASK-20260901-001 Visual & Graphics Overhaul
+
+Summary:
+- Comprehensive graphics & UI overhaul across TitleScene, ShopScene, RunnerScene, and CanvasButton:
+  - **Procedural Core Textures (`PreloadScene.ts` & `RunnerScene.ts`)**: Upgraded `coin_procedural` (3D Metallic Star Gold Coin with radial gradient & embossed star), `gem_procedural` (Brilliant multi-faceted Cyan Diamond), `chest_closed` & `chest_open` (Studded oak and radiant light ray explosion), `springboard_up` & `springboard_down` (3D coiled spring with brass launchpad), and `runner_platform` / `obstacle_rock` (Rounded mossy boulder with warning halo).
+  - **Shop Showcase Stage (`ShopScene.ts`)**: Upgraded character stage with 3D stepped royal velvet & brass podium, cyan/amber under-glow halo, volumetric conical spotlight beam, floating stardust motes, and gold double-line currency status pill.
+  - **Runner Scenery & VFX (`RunnerScene.ts`)**: Layered atmospheric sky gradient, distant mountain ridges with haze fade, layered earthen runway with cobblestones & lime grass blades, 8-star radiant particle bursts, bouncy `+1 🪙` / `+1 💎` score popups, rotating 12-ray starlight sunburst behind chest upon goal, parabolic coin/gem explosion fountain, and luxurious victory card modal.
+  - **CanvasButton Styling (`CanvasButton.ts`)**: Upgraded to 3D glossy button treatment with soft drop shadow, bottom bevel lip, specular gloss cap, and double-stroke highlight.
+
+Files Modified:
+- `src/scenes/PreloadScene.ts`
+- `src/scenes/RunnerScene.ts`
+- `src/scenes/ShopScene.ts`
+- `src/scenes/TitleScene.ts`
+- `src/ui/CanvasButton.ts`
+
+Verification:
+- `npm run test:unit` passed: 43 test suites, 1,321/1,321 unit tests passed.
+- `npm run build` passed: Clean bundle emitted.
+- Visual screenshots captured and verified across TitleScene, ShopScene (Character & Wardrobe), Runner Track, and Victory Chest Celebration.
+
 
 Deployment:
 - Committed verified Wardrobe fallback/polish work as `f84a2f5b`.

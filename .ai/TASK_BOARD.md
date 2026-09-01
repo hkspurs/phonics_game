@@ -39,6 +39,25 @@ Files/modules:
 - `.ai/ARCHITECTURE.md`
 - `docs/character-art-spec.md`
 - `docs/outfit-art-prompts.md`
+
+## COMPLETED
+
+### TASK-20260901-001
+
+Agent: Antigravity
+Status: DONE
+Started: 2026-09-01 17:45
+Completed: 2026-09-01 18:00
+
+Description:
+Comprehensive visual and graphics overhaul across TitleScene, ShopScene (3D pedestal stage, volumetric spotlight beam, stardust particles, double-gold header pill), RunnerScene (3D Star gold coins, cyan faceted diamonds, 12-ray sunburst chest opening, parabolic fountain explosion, layered grass/stone track), and CanvasButton (3D glossy bevel, specular gloss cap, double stroke).
+
+Files/modules:
+- `src/scenes/ShopScene.ts`
+- `src/scenes/RunnerScene.ts`
+- `src/scenes/PreloadScene.ts`
+- `src/scenes/TitleScene.ts`
+- `src/ui/CanvasButton.ts`
 - `public/assets/generated/outfits/{scholar_gown,princess_dress,dino_onesie,magic_robe}/README.md`
 - `.ai/TASK_BOARD.md`, `.ai/OWNERSHIP.md`, `.ai/CHANGELOG.md`
 - `docs/superpowers/plans/2026-08-31-dream-wardrobe-p0-p1.md` (stale task

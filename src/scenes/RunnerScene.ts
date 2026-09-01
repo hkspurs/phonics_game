@@ -564,205 +564,399 @@ export class RunnerScene extends Phaser.Scene {
       ctx.fill();
     });
 
-    // Coin
-    createSafeCanvasTexture('coin_procedural', 36, 36, (ctx) => {
-      ctx.fillStyle = '#f5a623';
+    // Coin (3D Metallic Star Gold Coin)
+    createSafeCanvasTexture('coin_procedural', 44, 44, (ctx) => {
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.25)';
       ctx.beginPath();
-      ctx.arc(18, 18, 16, 0, Math.PI * 2);
+      ctx.arc(22, 24, 19, 0, Math.PI * 2);
       ctx.fill();
-      ctx.fillStyle = '#ffd700';
+
+      const rimGrad = ctx.createLinearGradient(4, 4, 40, 40);
+      rimGrad.addColorStop(0, '#fff494');
+      rimGrad.addColorStop(0.3, '#f59e0b');
+      rimGrad.addColorStop(0.7, '#d97706');
+      rimGrad.addColorStop(1, '#78350f');
+      ctx.fillStyle = rimGrad;
       ctx.beginPath();
-      ctx.arc(18, 18, 12, 0, Math.PI * 2);
+      ctx.arc(22, 22, 19, 0, Math.PI * 2);
       ctx.fill();
-      ctx.fillStyle = '#b5730a';
-      ctx.font = 'bold 16px sans-serif';
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillText('$', 18, 19);
+
+      const faceGrad = ctx.createRadialGradient(16, 16, 2, 22, 22, 16);
+      faceGrad.addColorStop(0, '#fffbeb');
+      faceGrad.addColorStop(0.4, '#fcd34d');
+      faceGrad.addColorStop(0.85, '#f59e0b');
+      faceGrad.addColorStop(1, '#b45309');
+      ctx.fillStyle = faceGrad;
+      ctx.beginPath();
+      ctx.arc(22, 22, 15, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.strokeStyle = 'rgba(120, 53, 15, 0.6)';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.arc(22, 22, 14.5, 0, Math.PI * 2);
+      ctx.stroke();
+
+      ctx.fillStyle = '#fffbeb';
+      ctx.shadowColor = 'rgba(120, 53, 15, 0.5)';
+      ctx.shadowOffsetY = 1.5;
+      ctx.beginPath();
+      const cx = 22, cy = 22, spikes = 5, outerRadius = 8, innerRadius = 3.8;
+      let rot = (Math.PI / 2) * 3;
+      let x = cx, y = cy;
+      const step = Math.PI / spikes;
+      ctx.moveTo(cx, cy - outerRadius);
+      for (let i = 0; i < spikes; i++) {
+        x = cx + Math.cos(rot) * outerRadius;
+        y = cy + Math.sin(rot) * outerRadius;
+        ctx.lineTo(x, y);
+        rot += step;
+        x = cx + Math.cos(rot) * innerRadius;
+        y = cy + Math.sin(rot) * innerRadius;
+        ctx.lineTo(x, y);
+        rot += step;
+      }
+      ctx.lineTo(cx, cy - outerRadius);
+      ctx.closePath();
+      ctx.fill();
+      ctx.shadowColor = 'transparent';
+
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.65)';
+      ctx.beginPath();
+      ctx.ellipse(17, 12, 8, 3, -Math.PI / 4, 0, Math.PI * 2);
+      ctx.fill();
     });
 
-    // Gem
-    createSafeCanvasTexture('gem_procedural', 36, 36, (ctx) => {
-      ctx.fillStyle = '#00c6ff';
+    // Gem (Faceted Cyan Diamond Gem)
+    createSafeCanvasTexture('gem_procedural', 44, 44, (ctx) => {
+      const glow = ctx.createRadialGradient(22, 22, 6, 22, 22, 21);
+      glow.addColorStop(0, 'rgba(56, 189, 248, 0.4)');
+      glow.addColorStop(0.7, 'rgba(2, 132, 199, 0.15)');
+      glow.addColorStop(1, 'rgba(2, 132, 199, 0)');
+      ctx.fillStyle = glow;
+      ctx.fillRect(0, 0, 44, 44);
+
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.25)';
       ctx.beginPath();
-      ctx.moveTo(18, 4);
-      ctx.lineTo(32, 14);
-      ctx.lineTo(18, 32);
-      ctx.lineTo(4, 14);
+      ctx.moveTo(22, 41);
+      ctx.lineTo(39, 18);
+      ctx.lineTo(5, 18);
       ctx.closePath();
       ctx.fill();
+
+      const pavGrad = ctx.createLinearGradient(22, 16, 22, 38);
+      pavGrad.addColorStop(0, '#0284c7');
+      pavGrad.addColorStop(0.5, '#0369a1');
+      pavGrad.addColorStop(1, '#0c4a6e');
+      ctx.fillStyle = pavGrad;
+      ctx.beginPath();
+      ctx.moveTo(7, 16);
+      ctx.lineTo(37, 16);
+      ctx.lineTo(22, 38);
+      ctx.closePath();
+      ctx.fill();
+
+      ctx.fillStyle = '#0284c7';
+      ctx.beginPath();
+      ctx.moveTo(7, 16);
+      ctx.lineTo(22, 16);
+      ctx.lineTo(22, 38);
+      ctx.closePath();
+      ctx.fill();
+
+      ctx.fillStyle = '#075985';
+      ctx.beginPath();
+      ctx.moveTo(22, 16);
+      ctx.lineTo(37, 16);
+      ctx.lineTo(22, 38);
+      ctx.closePath();
+      ctx.fill();
+
+      const crownGrad = ctx.createLinearGradient(12, 6, 32, 16);
+      crownGrad.addColorStop(0, '#bae6fd');
+      crownGrad.addColorStop(0.5, '#38bdf8');
+      crownGrad.addColorStop(1, '#0284c7');
+      ctx.fillStyle = crownGrad;
+      ctx.beginPath();
+      ctx.moveTo(13, 6);
+      ctx.lineTo(31, 6);
+      ctx.lineTo(37, 16);
+      ctx.lineTo(7, 16);
+      ctx.closePath();
+      ctx.fill();
+
+      ctx.fillStyle = '#e0f2fe';
+      ctx.beginPath();
+      ctx.moveTo(16, 6);
+      ctx.lineTo(28, 6);
+      ctx.lineTo(24, 16);
+      ctx.lineTo(20, 16);
+      ctx.closePath();
+      ctx.fill();
+
       ctx.fillStyle = '#ffffff';
       ctx.beginPath();
-      ctx.moveTo(18, 7);
-      ctx.lineTo(26, 14);
-      ctx.lineTo(18, 26);
-      ctx.closePath();
+      ctx.arc(16, 7, 2.5, 0, Math.PI * 2);
       ctx.fill();
+
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.75)';
+      ctx.lineWidth = 1.2;
+      ctx.beginPath();
+      ctx.moveTo(13, 6);
+      ctx.lineTo(31, 6);
+      ctx.lineTo(37, 16);
+      ctx.lineTo(22, 38);
+      ctx.lineTo(7, 16);
+      ctx.closePath();
+      ctx.stroke();
     });
 
     // Sparkle
-    createSafeCanvasTexture('particle_sparkle', 20, 20, (ctx) => {
+    createSafeCanvasTexture('particle_sparkle', 24, 24, (ctx) => {
+      const grad = ctx.createRadialGradient(12, 12, 1, 12, 12, 12);
+      grad.addColorStop(0, '#ffffff');
+      grad.addColorStop(0.3, '#fef08a');
+      grad.addColorStop(0.7, '#f59e0b');
+      grad.addColorStop(1, 'rgba(245, 158, 11, 0)');
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      ctx.arc(12, 12, 12, 0, Math.PI * 2);
+      ctx.fill();
+
       ctx.fillStyle = '#ffffff';
       ctx.beginPath();
-      ctx.arc(10, 10, 5, 0, Math.PI * 2);
+      ctx.moveTo(12, 1);
+      ctx.quadraticCurveTo(12, 12, 23, 12);
+      ctx.quadraticCurveTo(12, 12, 12, 23);
+      ctx.quadraticCurveTo(12, 12, 1, 12);
+      ctx.quadraticCurveTo(12, 12, 12, 1);
+      ctx.closePath();
       ctx.fill();
-      ctx.strokeStyle = '#ffd700';
-      ctx.lineWidth = 1.5;
-      ctx.beginPath();
-      ctx.moveTo(10, 0);
-      ctx.lineTo(10, 20);
-      ctx.moveTo(0, 10);
-      ctx.lineTo(20, 10);
-      ctx.stroke();
     });
 
     // Closed Chest
-    createSafeCanvasTexture('chest_closed', 64, 52, (ctx) => {
-      ctx.fillStyle = '#8b5a2b';
-      ctx.fillRect(6, 16, 52, 32);
-      ctx.fillStyle = '#a06a35';
+    createSafeCanvasTexture('chest_closed', 68, 56, (ctx) => {
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
       ctx.beginPath();
-      ctx.arc(32, 18, 26, Math.PI, 0);
+      ctx.ellipse(34, 51, 28, 5, 0, 0, Math.PI * 2);
       ctx.fill();
-      ctx.fillStyle = '#ffd700';
-      ctx.fillRect(6, 14, 52, 6);
-      ctx.fillRect(16, 8, 8, 40);
-      ctx.fillRect(40, 8, 8, 40);
-      ctx.fillStyle = '#ffe066';
-      ctx.fillRect(28, 22, 8, 12);
-      ctx.fillStyle = '#3e2723';
-      ctx.fillRect(30, 26, 4, 6);
-      ctx.strokeStyle = '#3e2723';
+
+      const woodGrad = ctx.createLinearGradient(6, 20, 62, 50);
+      woodGrad.addColorStop(0, '#92400e');
+      woodGrad.addColorStop(0.5, '#78350f');
+      woodGrad.addColorStop(1, '#451a03');
+      ctx.fillStyle = woodGrad;
+      ctx.beginPath();
+      ctx.roundRect ? ctx.roundRect(6, 20, 56, 30, [0, 0, 8, 8]) : ctx.fillRect(6, 20, 56, 30);
+      ctx.fill();
+
+      const lidGrad = ctx.createLinearGradient(6, 6, 62, 22);
+      lidGrad.addColorStop(0, '#b45309');
+      lidGrad.addColorStop(0.5, '#92400e');
+      lidGrad.addColorStop(1, '#78350f');
+      ctx.fillStyle = lidGrad;
+      ctx.beginPath();
+      ctx.arc(34, 22, 28, Math.PI, 0);
+      ctx.closePath();
+      ctx.fill();
+
+      const goldGrad = ctx.createLinearGradient(0, 0, 0, 56);
+      goldGrad.addColorStop(0, '#fef08a');
+      goldGrad.addColorStop(0.5, '#f59e0b');
+      goldGrad.addColorStop(1, '#b45309');
+      ctx.fillStyle = goldGrad;
+
+      ctx.fillRect(6, 18, 56, 5);
+      ctx.fillRect(16, 7, 8, 43);
+      ctx.fillRect(44, 7, 8, 43);
+
+      ctx.fillStyle = '#fffbeb';
+      for (const rx of [20, 48]) {
+        for (const ry of [11, 28, 42]) {
+          ctx.beginPath();
+          ctx.arc(rx, ry, 1.8, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+
+      ctx.fillStyle = '#fcd34d';
+      ctx.beginPath();
+      ctx.roundRect ? ctx.roundRect(28, 22, 12, 14, 3) : ctx.fillRect(28, 22, 12, 14);
+      ctx.fill();
+      ctx.fillStyle = '#1e1b4b';
+      ctx.beginPath();
+      ctx.arc(34, 27, 2, 0, Math.PI * 2);
+      ctx.fillRect(33, 27, 2, 4);
+      ctx.fill();
+
+      ctx.strokeStyle = '#291403';
       ctx.lineWidth = 2;
-      ctx.strokeRect(6, 16, 52, 32);
+      ctx.strokeRect(6, 20, 56, 30);
     });
 
     // Open Chest
-    createSafeCanvasTexture('chest_open', 64, 58, (ctx) => {
-      ctx.fillStyle = '#6d431d';
+    createSafeCanvasTexture('chest_open', 68, 64, (ctx) => {
+      ctx.fillStyle = '#5c2c06';
       ctx.beginPath();
-      ctx.ellipse(32, 12, 24, 10, 0, 0, Math.PI * 2);
+      ctx.ellipse(34, 14, 26, 11, 0, 0, Math.PI * 2);
       ctx.fill();
-      const glow = ctx.createRadialGradient(32, 22, 4, 32, 22, 26);
-      glow.addColorStop(0, '#ffffa0');
-      glow.addColorStop(0.7, '#ffd700');
-      glow.addColorStop(1, 'rgba(255, 215, 0, 0)');
+
+      const glow = ctx.createRadialGradient(34, 24, 4, 34, 24, 32);
+      glow.addColorStop(0, '#ffffff');
+      glow.addColorStop(0.3, '#fef08a');
+      glow.addColorStop(0.7, '#f59e0b');
+      glow.addColorStop(1, 'rgba(245, 158, 11, 0)');
       ctx.fillStyle = glow;
-      ctx.fillRect(8, 0, 48, 30);
+      ctx.fillRect(4, 0, 60, 36);
+
       ctx.fillStyle = '#ffd700';
       ctx.beginPath();
-      ctx.arc(24, 20, 7, 0, Math.PI * 2);
-      ctx.arc(38, 18, 8, 0, Math.PI * 2);
-      ctx.arc(32, 22, 9, 0, Math.PI * 2);
+      ctx.arc(24, 20, 8, 0, Math.PI * 2);
+      ctx.arc(44, 18, 9, 0, Math.PI * 2);
+      ctx.arc(34, 22, 10, 0, Math.PI * 2);
       ctx.fill();
-      ctx.fillStyle = '#00e5ff';
+
+      ctx.fillStyle = '#38bdf8';
       ctx.beginPath();
-      ctx.moveTo(32, 12);
-      ctx.lineTo(37, 18);
-      ctx.lineTo(32, 24);
-      ctx.lineTo(27, 18);
+      ctx.moveTo(34, 12);
+      ctx.lineTo(40, 19);
+      ctx.lineTo(34, 26);
+      ctx.lineTo(28, 19);
       ctx.closePath();
       ctx.fill();
-      ctx.fillStyle = '#8b5a2b';
-      ctx.fillRect(6, 24, 52, 28);
-      ctx.fillStyle = '#ffd700';
-      ctx.fillRect(16, 24, 8, 28);
-      ctx.fillRect(40, 24, 8, 28);
-      ctx.fillRect(6, 22, 52, 4);
-      ctx.strokeStyle = '#3e2723';
+
+      const woodGrad = ctx.createLinearGradient(6, 26, 62, 58);
+      woodGrad.addColorStop(0, '#92400e');
+      woodGrad.addColorStop(1, '#451a03');
+      ctx.fillStyle = woodGrad;
+      ctx.fillRect(6, 26, 56, 32);
+
+      ctx.fillStyle = '#f59e0b';
+      ctx.fillRect(16, 26, 8, 32);
+      ctx.fillRect(44, 26, 8, 32);
+      ctx.fillRect(6, 24, 56, 4);
+
+      ctx.strokeStyle = '#291403';
       ctx.lineWidth = 2;
-      ctx.strokeRect(6, 24, 52, 28);
+      ctx.strokeRect(6, 26, 56, 32);
     });
 
     // Springboard Up
-    createSafeCanvasTexture('springboard_up', 48, 36, (ctx) => {
-      ctx.fillStyle = '#5c4033';
-      ctx.fillRect(4, 30, 40, 6);
-      ctx.strokeStyle = '#e74c3c';
-      ctx.lineWidth = 3;
+    createSafeCanvasTexture('springboard_up', 52, 40, (ctx) => {
+      ctx.fillStyle = '#451a03';
+      ctx.fillRect(4, 32, 44, 8);
+      ctx.fillStyle = '#78350f';
+      ctx.fillRect(6, 33, 40, 6);
+
+      ctx.strokeStyle = '#f59e0b';
+      ctx.lineWidth = 3.5;
+      ctx.lineCap = 'round';
       ctx.beginPath();
-      ctx.moveTo(16, 30);
-      ctx.lineTo(32, 24);
-      ctx.lineTo(16, 18);
-      ctx.lineTo(32, 12);
-      ctx.lineTo(24, 6);
+      ctx.moveTo(18, 32);
+      ctx.lineTo(34, 25);
+      ctx.lineTo(18, 18);
+      ctx.lineTo(34, 11);
+      ctx.lineTo(26, 6);
       ctx.stroke();
-      ctx.fillStyle = '#f39c12';
-      ctx.fillRect(6, 2, 36, 6);
-      ctx.fillStyle = '#ffffff';
-      ctx.fillRect(18, 4, 12, 2);
+
+      const padGrad = ctx.createLinearGradient(6, 2, 46, 8);
+      padGrad.addColorStop(0, '#fef08a');
+      padGrad.addColorStop(0.5, '#f59e0b');
+      padGrad.addColorStop(1, '#d97706');
+      ctx.fillStyle = padGrad;
+      ctx.beginPath();
+      ctx.roundRect ? ctx.roundRect(6, 2, 40, 7, 3) : ctx.fillRect(6, 2, 40, 7);
+      ctx.fill();
+      ctx.strokeStyle = '#78350f';
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
     });
 
     // Springboard Down
-    createSafeCanvasTexture('springboard_down', 48, 24, (ctx) => {
-      ctx.fillStyle = '#5c4033';
-      ctx.fillRect(4, 18, 40, 6);
-      ctx.strokeStyle = '#e74c3c';
-      ctx.lineWidth = 4;
+    createSafeCanvasTexture('springboard_down', 52, 26, (ctx) => {
+      ctx.fillStyle = '#451a03';
+      ctx.fillRect(4, 18, 44, 8);
+      ctx.fillStyle = '#78350f';
+      ctx.fillRect(6, 19, 40, 6);
+
+      ctx.strokeStyle = '#f59e0b';
+      ctx.lineWidth = 4.5;
+      ctx.lineCap = 'round';
       ctx.beginPath();
-      ctx.moveTo(14, 18);
-      ctx.lineTo(34, 14);
-      ctx.lineTo(14, 10);
+      ctx.moveTo(16, 18);
+      ctx.lineTo(36, 14);
+      ctx.lineTo(16, 10);
       ctx.stroke();
-      ctx.fillStyle = '#f39c12';
-      ctx.fillRect(6, 4, 36, 6);
+
+      ctx.fillStyle = '#f59e0b';
+      ctx.beginPath();
+      ctx.roundRect ? ctx.roundRect(6, 4, 40, 7, 3) : ctx.fillRect(6, 4, 40, 7);
+      ctx.fill();
     });
 
-    // Obstacle Rock (Stylized Rounded Mossy Boulder with Jump Warning Halo)
-    createSafeCanvasTexture('obstacle_rock', 48, 40, (ctx) => {
-      // Base shadow
-      ctx.fillStyle = 'rgba(0,0,0,0.25)';
+    // Obstacle Rock (Stylized Rounded Mossy Boulder)
+    createSafeCanvasTexture('obstacle_rock', 52, 44, (ctx) => {
+      ctx.fillStyle = 'rgba(0,0,0,0.28)';
       ctx.beginPath();
-      ctx.ellipse(24, 37, 20, 3, 0, 0, Math.PI * 2);
+      ctx.ellipse(26, 40, 22, 4, 0, 0, Math.PI * 2);
       ctx.fill();
 
-      // Rounded Boulder Body
-      ctx.fillStyle = '#64748b';
+      const stoneGrad = ctx.createLinearGradient(8, 8, 46, 40);
+      stoneGrad.addColorStop(0, '#94a3b8');
+      stoneGrad.addColorStop(0.5, '#64748b');
+      stoneGrad.addColorStop(1, '#334155');
+      ctx.fillStyle = stoneGrad;
       ctx.beginPath();
-      ctx.moveTo(8, 36);
-      ctx.quadraticCurveTo(4, 18, 18, 10);
-      ctx.quadraticCurveTo(24, 6, 34, 12);
-      ctx.quadraticCurveTo(44, 18, 42, 36);
+      ctx.moveTo(8, 38);
+      ctx.quadraticCurveTo(4, 18, 20, 10);
+      ctx.quadraticCurveTo(26, 5, 36, 11);
+      ctx.quadraticCurveTo(48, 18, 46, 38);
       ctx.closePath();
       ctx.fill();
 
-      // Stone highlights & cracks
-      ctx.fillStyle = '#94a3b8';
+      ctx.fillStyle = '#cbd5e1';
       ctx.beginPath();
-      ctx.moveTo(16, 12);
-      ctx.quadraticCurveTo(24, 8, 30, 14);
-      ctx.lineTo(26, 22);
+      ctx.moveTo(18, 13);
+      ctx.quadraticCurveTo(26, 9, 32, 15);
+      ctx.lineTo(28, 23);
       ctx.closePath();
       ctx.fill();
 
-      // Lush Cartoon Moss Patch on Top
       ctx.fillStyle = '#22c55e';
       ctx.beginPath();
-      ctx.ellipse(24, 11, 12, 5, 0, 0, Math.PI * 2);
+      ctx.ellipse(26, 11, 14, 6, 0, 0, Math.PI * 2);
       ctx.fill();
-      ctx.fillStyle = '#4ade80';
+      ctx.fillStyle = '#86efac';
       ctx.beginPath();
-      ctx.ellipse(21, 10, 6, 3, 0, 0, Math.PI * 2);
+      ctx.ellipse(23, 10, 7, 3, 0, 0, Math.PI * 2);
       ctx.fill();
 
-      // Subtle golden warning indicator
-      ctx.strokeStyle = '#f59e0b';
-      ctx.lineWidth = 1.5;
+      ctx.strokeStyle = '#fbbf24';
+      ctx.lineWidth = 1.8;
       ctx.beginPath();
-      ctx.arc(24, 22, 18, Math.PI * 0.8, Math.PI * 1.2);
+      ctx.arc(26, 24, 20, Math.PI * 0.8, Math.PI * 1.2);
       ctx.stroke();
     });
 
     // Platform
-    createSafeCanvasTexture('runner_platform', 140, 36, (ctx) => {
-      ctx.fillStyle = '#795548';
+    createSafeCanvasTexture('runner_platform', 150, 40, (ctx) => {
+      const dirtGrad = ctx.createLinearGradient(0, 10, 0, 40);
+      dirtGrad.addColorStop(0, '#78350f');
+      dirtGrad.addColorStop(1, '#451a03');
+      ctx.fillStyle = dirtGrad;
       ctx.beginPath();
-      ctx.roundRect ? ctx.roundRect(0, 8, 140, 28, [0, 0, 8, 8]) : ctx.fillRect(0, 8, 140, 28);
+      ctx.roundRect ? ctx.roundRect(0, 10, 150, 30, [0, 0, 10, 10]) : ctx.fillRect(0, 10, 150, 30);
       ctx.fill();
-      ctx.fillStyle = '#4caf50';
-      ctx.fillRect(0, 0, 140, 10);
-      ctx.fillStyle = '#81c784';
-      ctx.fillRect(0, 0, 140, 3);
+
+      ctx.fillStyle = '#22c55e';
+      ctx.fillRect(0, 0, 150, 12);
+      ctx.fillStyle = '#4ade80';
+      ctx.fillRect(0, 0, 150, 4);
+
+      ctx.fillStyle = '#86efac';
+      for (let i = 8; i < 145; i += 18) {
+        ctx.fillRect(i, 8, 4, 4);
+      }
     });
   }
 
@@ -774,21 +968,30 @@ export class RunnerScene extends Phaser.Scene {
 
     // 1. Sky Theme based on stationId
     let skyTop = 0x3a7bd5;
+    let skyBottom = 0x67e8f9;
     const stationNumber = this.getStationNumericId();
 
     if (stationNumber <= 3) {
       // Daybreak Island
       skyTop = 0x2193b0;
+      skyBottom = 0x7dd3fc;
     } else if (stationNumber <= 6) {
       // Sunset Valley
       skyTop = 0xcc2b5e;
+      skyBottom = 0xfde047;
     } else {
       // Cosmic Night
       skyTop = 0x0f2027;
+      skyBottom = 0x4338ca;
     }
 
     if (this.add.rectangle) {
       this.skyBackground = this.add.rectangle(width / 2, height / 2, width, height, skyTop);
+    }
+    if (this.add.graphics) {
+      const g = this.add.graphics();
+      g.fillGradientStyle(skyTop, skyTop, skyBottom, skyBottom, 1);
+      g.fillRect(0, 0, width, height);
     }
 
     // 1.5 Twinkling Stars in Sky
@@ -817,15 +1020,15 @@ export class RunnerScene extends Phaser.Scene {
     }
 
     // 2. Distant Clouds Layer
-    const cloudYPositions = [100, 150, 190, 120, 170];
+    const cloudYPositions = [90, 140, 180, 110, 160];
     const cloudXPositions = [120, 380, 680, 980, 1220];
 
     for (let i = 0; i < cloudXPositions.length; i++) {
       let cloud: any = null;
       if (this.add.image) {
         cloud = this.add.image(cloudXPositions[i], cloudYPositions[i], 'cloud_procedural');
-        if (cloud.setAlpha) cloud.setAlpha(0.65);
-        if (cloud.setScale) cloud.setScale(0.8 + (i % 3) * 0.2);
+        if (cloud.setAlpha) cloud.setAlpha(0.75);
+        if (cloud.setScale) cloud.setScale(0.85 + (i % 3) * 0.2);
         this.clouds.push(cloud);
       }
     }
@@ -851,7 +1054,9 @@ export class RunnerScene extends Phaser.Scene {
     this.hillsGraphics.clear();
 
     const baseY = height - 200;
-    this.hillsGraphics.fillStyle(0x2d5a3d, 0.45);
+
+    // Distant Far Ridge (Atmospheric Haze)
+    this.hillsGraphics.fillStyle(0x1e3a5f, 0.45);
     this.hillsGraphics.beginPath();
     this.hillsGraphics.moveTo(0, height);
 
@@ -859,7 +1064,7 @@ export class RunnerScene extends Phaser.Scene {
     const hillPoints = Math.ceil(width / step) + 3;
     for (let i = 0; i <= hillPoints; i++) {
       const x = i * step - (offsetX % step);
-      const hillHeight = Math.sin((i + Math.floor(offsetX / step)) * 1.3) * 55 + 60;
+      const hillHeight = Math.sin((i + Math.floor(offsetX / step)) * 1.3) * 55 + 65;
       this.hillsGraphics.lineTo(x, baseY - hillHeight);
     }
 
@@ -867,8 +1072,8 @@ export class RunnerScene extends Phaser.Scene {
     this.hillsGraphics.closePath();
     this.hillsGraphics.fillPath();
 
-    // Midground Hills
-    this.hillsGraphics.fillStyle(0x1e4620, 0.7);
+    // Midground Forest Hills
+    this.hillsGraphics.fillStyle(0x15803d, 0.75);
     this.hillsGraphics.beginPath();
     this.hillsGraphics.moveTo(0, height);
 
@@ -876,7 +1081,7 @@ export class RunnerScene extends Phaser.Scene {
     const midPoints = Math.ceil(width / midStep) + 3;
     for (let i = 0; i <= midPoints; i++) {
       const x = i * midStep - ((offsetX * 1.5) % midStep);
-      const hillHeight = Math.cos((i + Math.floor((offsetX * 1.5) / midStep)) * 1.1) * 40 + 40;
+      const hillHeight = Math.cos((i + Math.floor((offsetX * 1.5) / midStep)) * 1.1) * 45 + 45;
       this.hillsGraphics.lineTo(x, baseY + 40 - hillHeight);
     }
 
@@ -886,7 +1091,7 @@ export class RunnerScene extends Phaser.Scene {
   }
 
   /**
-   * Draws foreground ground track
+   * Draws foreground ground track with layered soil, stones, and lush grass
    */
   public redrawGroundLayer(offsetX: number, width: number, height: number): void {
     if (!this.groundGraphics) return;
@@ -895,32 +1100,40 @@ export class RunnerScene extends Phaser.Scene {
     const groundY = this.playerBaselineY + 36;
     const groundDepth = height - groundY;
 
-    // Dirt Layer
-    this.groundGraphics.fillStyle(0x5c3d2e, 1.0);
+    // 1. Rich Deep Earthen Soil
+    this.groundGraphics.fillStyle(0x3e2312, 1.0);
     this.groundGraphics.fillRect(0, groundY, width, groundDepth);
 
-    // Deep Dirt Texture Stripes
-    this.groundGraphics.fillStyle(0x442a1e, 0.4);
+    // 2. Sub-Soil Strata Texturing
+    this.groundGraphics.fillStyle(0x2d170b, 0.45);
     const tileW = 60;
     const count = Math.ceil(width / tileW) + 2;
     for (let i = 0; i < count; i++) {
       const x = i * tileW - (offsetX % tileW);
-      this.groundGraphics.fillRect(x, groundY + 16, tileW - 10, groundDepth);
+      this.groundGraphics.fillRect(x, groundY + 18, tileW - 12, groundDepth);
     }
 
-    // Lush Top Grass
-    this.groundGraphics.fillStyle(0x43a047, 1.0);
-    this.groundGraphics.fillRect(0, groundY, width, 14);
+    // 3. Embedded Pathway Pebbles
+    this.groundGraphics.fillStyle(0x78350f, 0.7);
+    for (let i = 0; i < count * 2; i++) {
+      const px = i * (tileW / 2) + 12 - (offsetX % (tileW / 2));
+      this.groundGraphics.fillCircle(px, groundY + 30 + (i % 3) * 12, 4);
+    }
 
-    // Bright Grass Highlight
-    this.groundGraphics.fillStyle(0x66bb6a, 1.0);
-    this.groundGraphics.fillRect(0, groundY, width, 4);
+    // 4. Lush Top Emerald Grass Layer
+    this.groundGraphics.fillStyle(0x16a34a, 1.0);
+    this.groundGraphics.fillRect(0, groundY, width, 16);
 
-    // Grass Tuft Blades
-    this.groundGraphics.fillStyle(0x81c784, 1.0);
+    // 5. Lime Grass Top Bevel Sheen
+    this.groundGraphics.fillStyle(0x4ade80, 1.0);
+    this.groundGraphics.fillRect(0, groundY, width, 5);
+
+    // 6. Cute Triangular Grass Tufts
+    this.groundGraphics.fillStyle(0x86efac, 1.0);
     for (let i = 0; i < count * 2; i++) {
       const tuftX = i * (tileW / 2) - (offsetX % (tileW / 2));
-      this.groundGraphics.fillRect(tuftX, groundY - 4, 4, 4);
+      this.groundGraphics.fillRect(tuftX, groundY - 5, 5, 5);
+      this.groundGraphics.fillRect(tuftX + 2, groundY - 8, 3, 4);
     }
   }
 
@@ -2068,10 +2281,13 @@ export class RunnerScene extends Phaser.Scene {
     if (!this.add?.text) return;
 
     const popup = this.add.text(x, y, text, {
-      fontSize: '22px',
+      fontSize: '24px',
       fontFamily: "'Kenney Future', 'Noto Sans TC', sans-serif",
       color: color,
       fontStyle: 'bold',
+      stroke: '#090d16',
+      strokeThickness: 4,
+      shadow: { offsetX: 0, offsetY: 2, color: 'rgba(0,0,0,0.6)', blur: 4, fill: true },
     });
 
     if (popup.setOrigin) popup.setOrigin(0.5);
@@ -2085,14 +2301,15 @@ export class RunnerScene extends Phaser.Scene {
     }
 
     if (this.tweens?.add) {
+      popup.setScale(0.6);
       this.tweens.add({
         targets: popup,
-        y: y - 45,
-        alpha: 0,
-        scaleX: 1.2,
-        scaleY: 1.2,
-        duration: 650,
-        ease: 'Quad.easeOut',
+        y: y - 55,
+        scaleX: 1.25,
+        scaleY: 1.25,
+        alpha: { from: 1, to: 0 },
+        duration: 750,
+        ease: 'Back.easeOut',
         onComplete: () => {
           if (typeof popup.destroy === 'function') {
             popup.destroy();
@@ -2105,7 +2322,7 @@ export class RunnerScene extends Phaser.Scene {
   /**
    * Spawns radiant sparkle particles at location
    */
-  public spawnSparkleParticles(x: number, y: number, tintColor: number, count: number = 6): void {
+  public spawnSparkleParticles(x: number, y: number, tintColor: number, count: number = 8): void {
     if (this.prefersReducedMotion || (!this.add?.image && !this.add?.graphics)) return;
 
     for (let i = 0; i < count; i++) {
@@ -2113,21 +2330,22 @@ export class RunnerScene extends Phaser.Scene {
       if (this.add.image) {
         p = this.add.image(x, y, 'particle_sparkle');
         if (p.setDepth) p.setDepth(70);
-        if (p.setScale) p.setScale(0.6 + Math.random() * 0.5);
+        if (p.setScale) p.setScale(0.7 + Math.random() * 0.5);
         if (p.setTint) p.setTint(tintColor);
       }
 
       if (p && this.tweens?.add) {
         const angle = (Math.PI * 2 * i) / count + (Math.random() * 0.4 - 0.2);
-        const dist = 35 + Math.random() * 35;
+        const dist = 40 + Math.random() * 45;
         this.tweens.add({
           targets: p,
           x: x + Math.cos(angle) * dist,
           y: y + Math.sin(angle) * dist,
+          angle: Math.random() * 360,
           alpha: 0,
           scaleX: 0.1,
           scaleY: 0.1,
-          duration: 450 + Math.random() * 200,
+          duration: 500 + Math.random() * 250,
           ease: 'Quad.easeOut',
           onComplete: () => {
             if (typeof p.destroy === 'function') {
@@ -2269,9 +2487,38 @@ export class RunnerScene extends Phaser.Scene {
       });
     }
 
-    // 2. Open Treasure Chest
+    // 2. Open Treasure Chest & Spawn Sunburst Rays Behind It
+    const chestX = this.chestObject?.x ?? (this.playerScreenX + 110);
+    const chestY = this.chestObject?.y ?? this.playerBaselineY;
+
     if (this.chestObject && typeof this.chestObject.setTexture === 'function') {
       this.chestObject.setTexture('chest_open');
+    }
+
+    // Sunburst Light Rays behind chest
+    if (!this.prefersReducedMotion && this.add?.graphics && this.tweens?.add) {
+      const sunburst = this.add.graphics({ x: chestX, y: chestY - 15 });
+      sunburst.setDepth(50);
+      const numRays = 12;
+      const rayLen = 130;
+      sunburst.fillStyle(0xfef08a, 0.18);
+      for (let r = 0; r < numRays; r++) {
+        const a1 = (Math.PI * 2 * r) / numRays;
+        const a2 = a1 + (Math.PI * 2) / (numRays * 2);
+        sunburst.beginPath();
+        sunburst.moveTo(0, 0);
+        sunburst.lineTo(Math.cos(a1) * rayLen, Math.sin(a1) * rayLen);
+        sunburst.lineTo(Math.cos(a2) * rayLen, Math.sin(a2) * rayLen);
+        sunburst.closePath();
+        sunburst.fillPath();
+      }
+      this.tweens.add({
+        targets: sunburst,
+        angle: 360,
+        duration: 8000,
+        repeat: -1,
+        ease: 'Linear',
+      });
     }
 
     // 3. Audio Effects
@@ -2293,18 +2540,15 @@ export class RunnerScene extends Phaser.Scene {
     this.refreshHUD();
 
     // 5. Fountain Burst of Gems & Sparkles from Chest
-    const chestX = this.chestObject?.x ?? (this.playerScreenX + 110);
-    const chestY = this.chestObject?.y ?? this.playerBaselineY;
-
     this.spawnFountainLoot(chestX, chestY);
 
     // 6. Chest reward card and explicit next-question handoff
     const width = this.sys?.game?.config ? Number(this.sys.game.config.width) : GAME_WIDTH;
     const height = this.sys?.game?.config ? Number(this.sys.game.config.height) : GAME_HEIGHT;
-    const cardWidth = Math.min(500, Math.max(260, width - 32));
-    const cardHeight = 156;
+    const cardWidth = Math.min(520, Math.max(280, width - 32));
+    const cardHeight = 166;
     const cardX = Math.max(cardWidth / 2 + 16, Math.min(width - cardWidth / 2 - 16, chestX));
-    const cardY = Math.max(cardHeight / 2 + 24, Math.min(height - cardHeight / 2 - 24, chestY - 160));
+    const cardY = Math.max(cardHeight / 2 + 24, Math.min(height - cardHeight / 2 - 24, chestY - 165));
     const bannerContainer = this.add?.container ? this.add.container(cardX, cardY) : null;
     this.celebrationBanner = bannerContainer;
     if (bannerContainer?.setDepth) bannerContainer.setDepth(119);
@@ -2314,27 +2558,38 @@ export class RunnerScene extends Phaser.Scene {
       const cardLeft = bannerContainer ? -cardWidth / 2 : cardX - cardWidth / 2;
       const cardTop = bannerContainer ? -cardHeight / 2 : cardY - cardHeight / 2;
       bannerCard.setDepth(119);
-      bannerCard.fillStyle(0x0e1726, 0.96);
-      bannerCard.fillRoundedRect(cardLeft, cardTop, cardWidth, cardHeight, 20);
-      bannerCard.lineStyle(3, 0xf5bd42, 1.0);
-      bannerCard.strokeRoundedRect(cardLeft, cardTop, cardWidth, cardHeight, 20);
+
+      // Drop shadow
+      bannerCard.fillStyle(0x000000, 0.45);
+      bannerCard.fillRoundedRect(cardLeft + 4, cardTop + 6, cardWidth, cardHeight, 22);
+
+      // Dark Indigo Body
+      bannerCard.fillStyle(0x0f172a, 0.98);
+      bannerCard.fillRoundedRect(cardLeft, cardTop, cardWidth, cardHeight, 22);
+
+      // Outer Gold Foil Border
+      bannerCard.lineStyle(3, 0xf59e0b, 1.0);
+      bannerCard.strokeRoundedRect(cardLeft, cardTop, cardWidth, cardHeight, 22);
+
+      // Inner Light Highlight Rim
       bannerCard.lineStyle(1.5, 0xffffff, 0.35);
-      bannerCard.strokeRoundedRect(cardLeft + 6, cardTop + 6, cardWidth - 12, cardHeight - 12, 14);
+      bannerCard.strokeRoundedRect(cardLeft + 6, cardTop + 6, cardWidth - 12, cardHeight - 12, 16);
       bannerContainer?.add(bannerCard);
     }
 
     if (this.add?.text) {
       const rewardText = this.add.text(
         bannerContainer ? 0 : cardX,
-        bannerContainer ? -22 : cardY - 22,
-        '🎉 寶箱獎勵\n+5 🪙 金幣   +1 💎 寶石',
+        bannerContainer ? -24 : cardY - 24,
+        '🎉 關卡通關獎勵\n🪙 +5 金幣    💎 +1 寶石',
         {
-          fontSize: width < 1000 ? '21px' : '25px',
+          fontSize: width < 1000 ? '22px' : '26px',
           fontFamily: "'Kenney Future', 'Noto Sans TC', sans-serif",
-          color: '#ffd700',
+          color: '#fde047',
           fontStyle: 'bold',
           align: 'center',
-          lineSpacing: 8,
+          lineSpacing: 10,
+          shadow: { offsetX: 0, offsetY: 2, color: 'rgba(0,0,0,0.6)', blur: 4, fill: true },
         }
       );
       if (rewardText.setOrigin) rewardText.setOrigin(0.5);
@@ -2346,14 +2601,14 @@ export class RunnerScene extends Phaser.Scene {
     if (this.add) {
       const continueButton = new CanvasButton(this, {
         x: bannerContainer ? 0 : cardX,
-        y: bannerContainer ? cardHeight / 2 - 27 : cardY + cardHeight / 2 - 27,
-        width: Math.min(180, cardWidth - 48),
-        height: 44,
+        y: bannerContainer ? cardHeight / 2 - 30 : cardY + cardHeight / 2 - 30,
+        width: Math.min(200, cardWidth - 48),
+        height: 48,
         text: '下一題',
         color: 'yellow',
-        fontSize: width < 1000 ? '18px' : '20px',
-        scaleOnHover: 1.02,
-        scaleOnDown: 0.97,
+        fontSize: width < 1000 ? '19px' : '22px',
+        scaleOnHover: 1.04,
+        scaleOnDown: 0.96,
         onClick: () => this.continueCelebration(),
       });
       continueButton.setDepth(121);
@@ -2362,14 +2617,14 @@ export class RunnerScene extends Phaser.Scene {
     }
 
     if (!this.prefersReducedMotion && this.tweens?.add && (bannerContainer || this.celebrationRewardText)) {
-      bannerContainer?.setScale?.(0.96);
+      bannerContainer?.setScale?.(0.9);
       bannerContainer?.setAlpha?.(0);
       this.tweens.add({
         targets: bannerContainer ?? this.celebrationRewardText,
         scaleX: 1,
         scaleY: 1,
         alpha: 1,
-        duration: 180,
+        duration: 220,
         ease: 'Back.easeOut',
       });
     }
@@ -2397,23 +2652,24 @@ export class RunnerScene extends Phaser.Scene {
   public spawnFountainLoot(x: number, y: number): void {
     if (this.prefersReducedMotion || !this.add) return;
 
-    for (let i = 0; i < 14; i++) {
+    for (let i = 0; i < 16; i++) {
       const texture = i % 2 === 0 ? 'coin_procedural' : 'gem_procedural';
       let loot: any = null;
       if (this.add.image) {
         loot = this.add.image(x, y - 10, texture);
         if (loot.setDepth) loot.setDepth(60);
-        if (loot.setScale) loot.setScale(0.8);
+        if (loot.setScale) loot.setScale(0.85);
       }
 
       if (loot && this.tweens?.add) {
-        const spreadX = (Math.random() - 0.5) * 260;
-        const targetY = y - 140 - Math.random() * 90;
+        const spreadX = (Math.random() - 0.5) * 280;
+        const targetY = y - 150 - Math.random() * 90;
 
         this.tweens.add({
           targets: loot,
           x: x + spreadX,
           y: targetY,
+          angle: (Math.random() - 0.5) * 360,
           duration: 400 + Math.random() * 200,
           ease: 'Cubic.easeOut',
           onComplete: () => {

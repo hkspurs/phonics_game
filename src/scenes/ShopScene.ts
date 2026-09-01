@@ -377,18 +377,26 @@ export class ShopScene extends Phaser.Scene {
     const currX = width - 195;
     if (this.add.graphics) {
       const g = this.add.graphics();
-      g.fillStyle(0x0f121d, 0.9);
-      g.fillRoundedRect(currX - 170, barY - 22, 340, 44, 22);
-      g.lineStyle(2, 0x4a90e2, 0.9);
-      g.strokeRoundedRect(currX - 170, barY - 22, 340, 44, 22);
+      // Drop Shadow
+      g.fillStyle(0x000000, 0.35);
+      g.fillRoundedRect(currX - 175, barY - 21, 350, 46, 23);
+      // Dark Blue Glass Body
+      g.fillStyle(0x0f172a, 0.94);
+      g.fillRoundedRect(currX - 175, barY - 23, 350, 46, 23);
+      // Golden Rim Border
+      g.lineStyle(2.5, 0xf59e0b, 0.9);
+      g.strokeRoundedRect(currX - 175, barY - 23, 350, 46, 23);
+      // Inner Light Sheen
+      g.lineStyle(1.2, 0xffffff, 0.35);
+      g.strokeRoundedRect(currX - 173, barY - 21, 346, 42, 21);
       if (typeof g.setDepth === 'function') g.setDepth(55);
     }
 
     if (this.add.text) {
-      this.coinText = this.add.text(currX - 105, barY, `🪙 ${profile.coins}`, {
+      this.coinText = this.add.text(currX - 110, barY, `🪙 ${profile.coins}`, {
         fontSize: '22px',
         fontFamily: "'Kenney Future', 'Noto Sans TC', sans-serif",
-        color: '#ffd700',
+        color: '#fde047',
         fontStyle: 'bold',
       });
       if (typeof this.coinText.setOrigin === 'function') this.coinText.setOrigin(0.5);
@@ -397,16 +405,16 @@ export class ShopScene extends Phaser.Scene {
       this.gemText = this.add.text(currX, barY, `💎 ${profile.gems}`, {
         fontSize: '22px',
         fontFamily: "'Kenney Future', 'Noto Sans TC', sans-serif",
-        color: '#00e5ff',
+        color: '#38bdf8',
         fontStyle: 'bold',
       });
       if (typeof this.gemText.setOrigin === 'function') this.gemText.setOrigin(0.5);
       if (typeof this.gemText.setDepth === 'function') this.gemText.setDepth(56);
 
-      this.starText = this.add.text(currX + 105, barY, `⭐ ${totalStars}`, {
+      this.starText = this.add.text(currX + 110, barY, `⭐ ${totalStars}`, {
         fontSize: '22px',
         fontFamily: "'Kenney Future', 'Noto Sans TC', sans-serif",
-        color: '#ffdd59',
+        color: '#fbbf24',
         fontStyle: 'bold',
       });
       if (typeof this.starText.setOrigin === 'function') this.starText.setOrigin(0.5);
@@ -1277,54 +1285,70 @@ export class ShopScene extends Phaser.Scene {
 
     if (this.add.graphics) {
       const g = this.add.graphics();
-      g.fillStyle(0x080612, 0.35);
+      g.fillStyle(0x080612, 0.45);
       g.fillRoundedRect(-panelW / 2 + 5, -panelH / 2 + 8, panelW, panelH, 22);
-      g.fillStyle(0x17112d, 0.98);
+      g.fillStyle(0x131127, 0.98);
       g.fillRoundedRect(-panelW / 2, -panelH / 2, panelW, panelH, 22);
       g.lineStyle(3, 0xf5bd42, 0.95);
       g.strokeRoundedRect(-panelW / 2, -panelH / 2, panelW, panelH, 22);
 
       const stageX = layout.stage.x - panelX;
       const stageY = layout.stage.y - panelY;
-      g.fillStyle(0x1d2c64, 0.92);
+      g.fillStyle(0x151b3b, 0.95);
       g.fillRoundedRect(stageX, stageY, layout.stage.width, layout.stage.height, 18);
 
-      // Soft magical ambient gradient & spotlight (Item 9)
-      g.fillStyle(0x5b5ee8, 0.18);
-      g.fillEllipse(stageX + layout.stage.width / 2, stageY + layout.stage.height * 0.4, layout.stage.width * 0.85, layout.stage.height * 0.85);
+      // Soft magical ambient gradient & spotlight
+      g.fillStyle(0x4338ca, 0.28);
+      g.fillEllipse(stageX + layout.stage.width / 2, stageY + layout.stage.height * 0.42, layout.stage.width * 0.9, layout.stage.height * 0.85);
 
-      // Conical Radial Spotlight Beam
-      g.fillStyle(0xfff3a0, 0.09);
+      // Conical Radial Volumetric Spotlight Beam
+      g.fillStyle(0xfef08a, 0.12);
       g.beginPath();
-      g.moveTo(stageX + layout.stage.width / 2 - 45, stageY);
-      g.lineTo(stageX + layout.stage.width / 2 + 45, stageY);
-      g.lineTo(stageX + layout.stage.width / 2 + layout.stage.width * 0.38, stageY + layout.stage.height - 18);
-      g.lineTo(stageX + layout.stage.width / 2 - layout.stage.width * 0.38, stageY + layout.stage.height - 18);
+      g.moveTo(stageX + layout.stage.width / 2 - 55, stageY);
+      g.lineTo(stageX + layout.stage.width / 2 + 55, stageY);
+      g.lineTo(stageX + layout.stage.width / 2 + layout.stage.width * 0.42, stageY + layout.stage.height - 18);
+      g.lineTo(stageX + layout.stage.width / 2 - layout.stage.width * 0.42, stageY + layout.stage.height - 18);
       g.closePath();
       g.fillPath();
 
-      // Subtle border
-      g.lineStyle(2, 0x6f83e8, 0.45);
+      // Golden inner border
+      g.lineStyle(2, 0x818cf8, 0.5);
       g.strokeRoundedRect(stageX + 7, stageY + 7, Math.max(1, layout.stage.width - 14), Math.max(1, layout.stage.height - 14), 14);
 
-      // Stage pedestal ground shadow
-      g.fillStyle(0x0a1028, 0.75);
-      g.fillEllipse(stageX + layout.stage.width / 2, stageY + layout.stage.height - 15, layout.stage.width * 0.62, compact ? 26 : 36);
+      // Cyan / Gold Ambient Under-Glow
+      g.fillStyle(0x38bdf8, 0.18);
+      g.fillEllipse(stageX + layout.stage.width / 2, stageY + layout.stage.height - 18, layout.stage.width * 0.74, compact ? 32 : 44);
+
+      // 3D Stepped Pedestal Base Shadow
+      g.fillStyle(0x020617, 0.85);
+      g.fillEllipse(stageX + layout.stage.width / 2, stageY + layout.stage.height - 12, layout.stage.width * 0.68, compact ? 26 : 36);
+
+      // Stepped Brass Rim Step
+      g.fillStyle(0xb45309, 0.95);
+      g.fillEllipse(stageX + layout.stage.width / 2, stageY + layout.stage.height - 16, layout.stage.width * 0.64, compact ? 24 : 33);
+      g.fillStyle(0xf59e0b, 0.95);
+      g.fillEllipse(stageX + layout.stage.width / 2, stageY + layout.stage.height - 18, layout.stage.width * 0.63, compact ? 23 : 31);
+
+      // Top Royal Velvet Platform Disc
+      g.fillStyle(0x1e1b4b, 0.98);
+      g.fillEllipse(stageX + layout.stage.width / 2, stageY + layout.stage.height - 20, layout.stage.width * 0.60, compact ? 21 : 29);
 
       // Pedestal golden glowing ring
-      g.lineStyle(2.5, 0xf5bd42, 0.75);
+      g.lineStyle(2.5, 0xfde047, 0.85);
       if (typeof (g as any).strokeEllipse === 'function') {
-        (g as any).strokeEllipse(stageX + layout.stage.width / 2, stageY + layout.stage.height - 15, layout.stage.width * 0.62, compact ? 26 : 36);
+        (g as any).strokeEllipse(stageX + layout.stage.width / 2, stageY + layout.stage.height - 20, layout.stage.width * 0.58, compact ? 20 : 28);
       } else {
-        g.strokeRoundedRect(stageX + layout.stage.width / 2 - (layout.stage.width * 0.31), stageY + layout.stage.height - (compact ? 28 : 33), layout.stage.width * 0.62, compact ? 26 : 36, 14);
+        g.strokeRoundedRect(stageX + layout.stage.width / 2 - (layout.stage.width * 0.29), stageY + layout.stage.height - (compact ? 30 : 34), layout.stage.width * 0.58, compact ? 20 : 28, 12);
       }
 
       // Soft twinkle star particles
-      g.fillStyle(0xf7c85b, 0.9);
+      g.fillStyle(0xfef08a, 0.95);
       g.fillCircle(stageX + layout.stage.width * 0.16, stageY + 22, 2.5);
-      g.fillCircle(stageX + layout.stage.width * 0.84, stageY + 36, 2);
-      g.fillCircle(stageX + layout.stage.width * 0.78, stageY + layout.stage.height * 0.28, 2.5);
-      g.fillCircle(stageX + layout.stage.width * 0.22, stageY + layout.stage.height * 0.24, 2);
+      g.fillCircle(stageX + layout.stage.width * 0.84, stageY + 36, 2.5);
+      g.fillCircle(stageX + layout.stage.width * 0.78, stageY + layout.stage.height * 0.28, 3);
+      g.fillCircle(stageX + layout.stage.width * 0.22, stageY + layout.stage.height * 0.24, 2.5);
+      g.fillCircle(stageX + layout.stage.width * 0.12, stageY + layout.stage.height * 0.65, 2);
+      g.fillCircle(stageX + layout.stage.width * 0.88, stageY + layout.stage.height * 0.62, 2.5);
       showcase.add(g);
     }
 

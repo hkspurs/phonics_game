@@ -293,32 +293,49 @@ export class TitleScene extends Phaser.Scene {
     // Title banner backing graphic
     if (this.add.graphics && titleContainer) {
       const banner = this.add.graphics();
-      banner.fillStyle(0x1a2639, 0.85);
-      banner.fillRoundedRect(-360, -50, 720, 100, 20);
-      banner.lineStyle(3, 0xf5a623, 1.0);
-      banner.strokeRoundedRect(-360, -50, 720, 100, 20);
+      // Drop Shadow
+      banner.fillStyle(0x000000, 0.4);
+      banner.fillRoundedRect(-370, -52, 740, 108, 24);
+      // Dark Blue Glass Body
+      banner.fillStyle(0x0f172a, 0.94);
+      banner.fillRoundedRect(-370, -54, 740, 108, 24);
+      // Outer Gold Foil Border
+      banner.lineStyle(3.5, 0xf59e0b, 1.0);
+      banner.strokeRoundedRect(-370, -54, 740, 108, 24);
+      // Inner Light Highlight Rim
+      banner.lineStyle(1.5, 0xffffff, 0.35);
+      banner.strokeRoundedRect(-365, -49, 730, 98, 18);
       titleContainer.add(banner);
     }
 
     if (this.add.text && titleContainer) {
+      // Left/Right decorative sparkles
+      const leftSparkle = this.add.text(-320, -14, '✨', { fontSize: '28px' });
+      leftSparkle.setOrigin(0.5);
+      const rightSparkle = this.add.text(320, -14, '✨', { fontSize: '28px' });
+      rightSparkle.setOrigin(0.5);
+      titleContainer.add([leftSparkle, rightSparkle]);
+
       // Main Chinese Game Title
       const mainTitle = this.add.text(0, -14, '升夢大冒險', {
-        fontSize: '44px',
+        fontSize: '46px',
         fontFamily: "'Kenney Future', 'Noto Sans TC', sans-serif",
         color: '#ffffff',
         fontStyle: 'bold',
+        stroke: '#0f172a',
+        strokeThickness: 5,
       });
       if (typeof mainTitle.setOrigin === 'function') mainTitle.setOrigin(0.5);
       if (typeof mainTitle.setShadow === 'function') {
-        mainTitle.setShadow(2, 4, 'rgba(0,0,0,0.6)', 4, true, true);
+        mainTitle.setShadow(2, 4, 'rgba(0,0,0,0.7)', 6, true, true);
       }
       titleContainer.add(mainTitle);
 
       // Subtitle with Subject tags
-      const subtitle = this.add.text(0, 26, '香港小一學科闖關 —— 廣東話・數學・英語', {
+      const subtitle = this.add.text(0, 28, '⭐ 香港小一學科闖關 ── 廣東話・數學・英語 ⭐', {
         fontSize: '20px',
         fontFamily: "'Noto Sans TC', 'Microsoft JhengHei', sans-serif",
-        color: '#ffd700',
+        color: '#fde047',
         fontStyle: 'bold',
       });
       if (typeof subtitle.setOrigin === 'function') subtitle.setOrigin(0.5);
@@ -329,9 +346,9 @@ export class TitleScene extends Phaser.Scene {
     if (titleContainer && !this.prefersReducedMotion && this.tweens?.add) {
       this.tweens.add({
         targets: titleContainer,
-        scaleX: 1.03,
-        scaleY: 1.03,
-        duration: 1800,
+        scaleX: 1.025,
+        scaleY: 1.025,
+        duration: 2000,
         yoyo: true,
         repeat: -1,
         ease: 'Sine.easeInOut',
