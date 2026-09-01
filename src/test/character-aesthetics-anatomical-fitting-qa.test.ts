@@ -284,17 +284,11 @@ describe('Game Agent 1: 角色造型與人體工學審計 (Character Aesthetics 
       expect(badgeCall?.args).toEqual([0, -4, 5]);
     });
 
-    it('hoodie_star: roomier hoodie body (-17 to +17) with star chest badge and kangaroo pocket', () => {
+    it('hoodie_star: placeholder does not draw a fake garment before wearing art exists', () => {
       const g = createMockGraphics();
       CharacterOutfitCompositor.renderOutfit(g as any, { top: 'hoodie_star' }, { scale: 1.0, offsetX: 0, offsetY: 0 });
 
-      // Roomier body: (-17, -14, 34, 24)
-      const bodyCall = g.calls.find((c) => c.method === 'fillRoundedRect');
-      expect(bodyCall?.args).toEqual([-17, -14, 34, 24, 6]);
-
-      // Kangaroo pocket: (-10, topY + 4 = 0, 20, 7, 3)
-      const pocketCall = g.calls.filter((c) => c.method === 'fillRoundedRect')[1];
-      expect(pocketCall?.args).toEqual([-10, 0, 20, 7, 3]);
+      expect(g.calls.some((c) => ['fillRoundedRect', 'strokeRoundedRect', 'fillCircle'].includes(c.method))).toBe(false);
     });
   });
 
@@ -538,6 +532,31 @@ describe('Game Agent 1: 角色造型與人體工學審計 (Character Aesthetics 
       CharacterOutfitCompositor.renderOutfit(gFlipped as any, equipped, { scale: 1.0, flipX: true });
       const packFlipped = gFlipped.calls.find((c) => c.method === 'fillCircle' && c.args[2] === 11);
       expect(packFlipped?.args[0]).toBe(-18); // -18 on left
+    });
+
+    it.each(['scholar_cap', 'tram_hat'])('keeps full-sprite %s rectangular hat bounds centered after mirroring', (hatId) => {
+      const normal = createMockGraphics();
+      const flipped = createMockGraphics();
+
+      CharacterOutfitCompositor.renderPreviewFrontAccessories(
+        normal as any,
+        { hat: hatId },
+        { scale: 1, coordinateSpace: 'fullSprite' }
+      );
+      CharacterOutfitCompositor.renderPreviewFrontAccessories(
+        flipped as any,
+        { hat: hatId },
+        { scale: 1, coordinateSpace: 'fullSprite', flipX: true }
+      );
+
+      const rectangleMethods = ['fillRect', 'fillRoundedRect'];
+      const normalRects = normal.calls.filter(call => rectangleMethods.includes(call.method));
+      const flippedRects = flipped.calls.filter(call => rectangleMethods.includes(call.method));
+      expect(flippedRects).toHaveLength(normalRects.length);
+      normalRects.forEach((rect, index) => {
+        expect(flippedRects[index]?.args[0]).toBeCloseTo(rect.args[0]);
+        expect(flippedRects[index]?.args[2]).toBeCloseTo(rect.args[2]);
+      });
     });
 
     it('scales all vector paths and coordinates proportionally without coordinate drift', () => {

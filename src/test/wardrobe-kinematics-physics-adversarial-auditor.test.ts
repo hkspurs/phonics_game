@@ -371,6 +371,25 @@ describe('Game Agent 2: Wardrobe Kinematics, Animation & Physics Adversarial Aud
       expect(scene.ootdCloseButton).toBeNull();
     });
 
+    it('uses the modular OOTD fallback when a full-body top is paired with a bottom', () => {
+      const dm = DataManager.getInstance();
+      dm.addCoins(1000);
+      dm.buyWardrobeItem('hk_school_shirt', 'coins');
+      dm.buyWardrobeItem('denim_shorts', 'coins');
+      dm.equipWardrobeItem('top', 'hk_school_shirt');
+      dm.equipWardrobeItem('bottom', 'denim_shorts');
+
+      scene.create();
+      (scene.add.image as any).mockClear();
+      scene.showOOTDPhotoModal();
+
+      const renderedKeys = (scene.add.image as any).mock.calls.map((call: any[]) => call[2]);
+      expect(renderedKeys).toContain('adventurer_stand');
+      expect(renderedKeys).not.toContain('assets/character/outfits/school_uniform/idle.png');
+
+      scene.closeOOTDPhotoModal();
+    });
+
     it('audits CharacterOutfitCompositor vector rendering across all 18 wardrobe items and mirror transformations', () => {
       const mockGraphics = {
         clear: vi.fn(),

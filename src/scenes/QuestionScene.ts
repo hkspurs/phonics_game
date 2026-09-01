@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { GAME_WIDTH, GAME_HEIGHT } from '../config';
+import { GAME_WIDTH, GAME_HEIGHT, normalizeStationId, StationId } from '../config';
 import { QuizQuestion, VoiceLanguage } from '../types';
 import { QuestionEngine } from '../engine/QuestionEngine';
 import { SentenceEngine } from '../engine/SentenceEngine';
@@ -20,7 +20,7 @@ export interface QuestionSessionStats {
 }
 
 export interface QuestionSceneInitData {
-  stationId?: number;
+  stationId?: StationId;
   stationName?: string;
   questionIndex?: number;
   questions?: QuizQuestion[];
@@ -77,6 +77,8 @@ export class QuestionScene extends Phaser.Scene {
   public contentContainer: Phaser.GameObjects.Container | null = null;
   public controlsContainer: Phaser.GameObjects.Container | null = null;
   public celebrationContainer: Phaser.GameObjects.Container | null = null;
+  private celebrationParticles: Phaser.GameObjects.Text[] = [];
+  public prefersReducedMotion: boolean = false;
 
   constructor() {
     super({ key: 'QuestionScene' });
@@ -86,7 +88,7 @@ export class QuestionScene extends Phaser.Scene {
    * Scene initialization hook with payload from MapScene or RunnerScene
    */
   public init(data?: QuestionSceneInitData): void {
-    this.stationId = data?.stationId ?? 1;
+    this.stationId = normalizeStationId(data?.stationId);
     this.stationName =
       data?.stationName ??
       STATIONS.find((s) => s.id === this.stationId)?.name ??
@@ -131,6 +133,7 @@ export class QuestionScene extends Phaser.Scene {
   public create(): void {
     const width = this.sys?.game?.config ? Number(this.sys.game.config.width) : GAME_WIDTH;
     const height = this.sys?.game?.config ? Number(this.sys.game.config.height) : GAME_HEIGHT;
+    this.prefersReducedMotion = this.prefersReducedMotion || this.detectReducedMotionPreference();
 
     // 1. Draw Themed Background
     this.createBackground(width, height);
@@ -161,6 +164,10 @@ export class QuestionScene extends Phaser.Scene {
           this.speakCurrentQuestion();
         }
       });
+    }
+
+    if (this.events && typeof this.events.once === 'function') {
+      this.events.once(Phaser.Scenes.Events.SHUTDOWN, this.shutdown, this);
     }
   }
 
@@ -193,7 +200,7 @@ export class QuestionScene extends Phaser.Scene {
   }
 
   private createAmbientStars(): void {
-    if (!this.add?.text || !this.tweens?.add) return;
+    if (this.prefersReducedMotion || !this.add?.text || !this.tweens?.add) return;
 
     const starCoords = [
       { x: 120, y: 140, size: '18px', delay: 0 },
@@ -300,7 +307,8 @@ export class QuestionScene extends Phaser.Scene {
     const levelNumber = `${stationNumber}-${this.questionIndex + 1}`;
     const stationTitle = this.getStationDisplayName();
     const subjectName = this.getCurrentSubjectName();
-    const titleString = `第 ${levelNumber} 關  ${stationTitle}・${subjectName}`;
+    const stationIcon = STATIONS.find((station) => station.id === this.stationId)?.icon || '📍';
+    const titleString = `第 ${levelNumber} 關  ${stationIcon} ${stationTitle}・${subjectName}`;
 
     if (this.add.text) {
       const title = this.add.text(width / 2, 28, titleString, {
@@ -360,13 +368,20 @@ export class QuestionScene extends Phaser.Scene {
     }
 
     // 4. Player Companion Avatar Badge (Top Right HUD)
-    const avatarX = Math.min(width - 55, 1220);
+    // Keep the equipped wearing art identifiable after Scale.FIT on landscape phones.
+    // The badge remains inside the header's 18px right clearance.
+    const avatarSize = Math.min(88, Math.max(72, Math.round(width * 0.07)));
+    const avatarX = Math.min(width - avatarSize / 2 - 18, 1220);
+    // PlayerAvatarBadge's idle float travels 4px upward; keep 4px clearance
+    // after that motion rather than only at the initial frame.
+    const avatarY = Math.max(42, avatarSize / 2 + 8);
     this.avatarBadge = new PlayerAvatarBadge(this, {
       x: avatarX,
-      y: 42,
-      size: 54,
+      y: avatarY,
+      size: avatarSize,
       showPet: true,
       showBorder: true,
+      reducedMotion: this.prefersReducedMotion,
     });
     header.add(this.avatarBadge.container);
 
@@ -1079,6 +1094,7 @@ export class QuestionScene extends Phaser.Scene {
    * Spawns celebration confetti and feedback banner
    */
   public playCelebrationEffect(): void {
+    this.clearCelebrationEffect();
     if (!this.add) return;
 
     const width = this.sys?.game?.config ? Number(this.sys.game.config.width) : GAME_WIDTH;
@@ -1119,7 +1135,7 @@ export class QuestionScene extends Phaser.Scene {
     }
 
     // Multi-color Confetti & Sparkles burst (Item 7)
-    if (this.add.text && this.tweens?.add) {
+    if (!this.prefersReducedMotion && this.add.text && this.tweens?.add) {
       const emojis = ['⭐', '✨', '🌟', '🎊', '🎉', '💫', '🎈', '🥇'];
       for (let i = 0; i < 16; i++) {
         const angle = (i / 16) * Math.PI * 2 + (Math.random() * 0.2 - 0.1);
@@ -1132,6 +1148,7 @@ export class QuestionScene extends Phaser.Scene {
         });
         if (typeof particle.setOrigin === 'function') particle.setOrigin(0.5);
         celebration.add(particle);
+        this.celebrationParticles.push(particle);
 
         this.tweens.add({
           targets: particle,
@@ -1150,6 +1167,27 @@ export class QuestionScene extends Phaser.Scene {
     if (this.add && typeof this.add.existing === 'function') {
       this.add.existing(celebration);
     }
+  }
+
+  private clearCelebrationEffect(): void {
+    for (const particle of this.celebrationParticles) {
+      this.tweens?.killTweensOf?.(particle);
+    }
+    this.celebrationParticles = [];
+
+    if (this.celebrationContainer) {
+      this.tweens?.killTweensOf?.(this.celebrationContainer);
+      this.celebrationContainer.destroy();
+      this.celebrationContainer = null;
+    }
+  }
+
+  public shutdown(): void {
+    this.transitionTimer?.remove?.();
+    this.transitionTimer = null;
+    this.autoReadTimer?.remove?.();
+    this.autoReadTimer = null;
+    this.clearCelebrationEffect();
   }
 
   /**
@@ -1235,6 +1273,8 @@ export class QuestionScene extends Phaser.Scene {
     if (this.stationName && this.stationName !== '冒險關卡') {
       return this.stationName;
     }
+    const station = STATIONS.find((candidate) => candidate.id === this.stationId);
+    if (station) return station.name;
     const stationMap: Record<string, string> = {
       st_central: '中環冒險島',
       st_green: '綠野小徑',
@@ -1249,5 +1289,15 @@ export class QuestionScene extends Phaser.Scene {
     };
     const key = String(this.stationId || 'st_central');
     return stationMap[key] || '中環冒險島';
+  }
+
+  private detectReducedMotionPreference(): boolean {
+    try {
+      return typeof window !== 'undefined' && typeof window.matchMedia === 'function'
+        ? window.matchMedia('(prefers-reduced-motion: reduce)').matches
+        : false;
+    } catch {
+      return false;
+    }
   }
 }

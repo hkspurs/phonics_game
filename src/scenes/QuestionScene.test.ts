@@ -12,10 +12,10 @@ function attachEventEmitter(obj: any): any {
     (listeners[ev] = listeners[ev] || []).push(fn);
     return obj;
   });
-  obj.once = vi.fn(function (ev: string, fn: Function) {
+  obj.once = vi.fn(function (ev: string, fn: Function, context?: any) {
     const wrapper = (...args: any[]) => {
       obj.off(ev, wrapper);
-      fn(...args);
+      fn.apply(context ?? obj, args);
     };
     (listeners[ev] = listeners[ev] || []).push(wrapper);
     return obj;
@@ -58,6 +58,7 @@ export function createMockQuestionScene(): any {
       pause: vi.fn(),
       resume: vi.fn(),
     },
+    events: attachEventEmitter({}),
     cameras: {
       main: {
         scrollX: 0,
@@ -293,6 +294,19 @@ describe('QuestionScene — Interactive Quiz Scene Suite', () => {
       expect(scene.sessionStats.correctCount).toBe(1);
     });
 
+    it('normalizes legacy string station IDs so the question header keeps the map identity', () => {
+      scene.init({
+        stationId: 'st_central',
+        questions: [mockChineseSentenceQuestion],
+      });
+
+      expect(scene.stationId).toBe(1);
+      expect(scene.stationName).toBe('小木屋');
+      scene.create();
+
+      expect(scene.headerTitleText?.text).toContain('🏡 小木屋');
+    });
+
     it('clamps questionIndex within valid bounds', () => {
       scene.init({
         stationId: 1,
@@ -322,6 +336,23 @@ describe('QuestionScene — Interactive Quiz Scene Suite', () => {
       expect(scene.backButton?.getText()).toBe('◀ 返回地圖');
       expect(scene.headerTitleText?.text).toContain('第 3-1 關');
       expect(scene.headerTitleText?.text).toContain('櫻花樹・中文');
+    });
+
+    it('keeps the equipped avatar badge large enough to identify the wearing outfit', () => {
+      expect(scene.avatarBadge?.size).toBe(88);
+      const badge = scene.avatarBadge?.container as any;
+      expect(badge.y - (scene.avatarBadge?.size ?? 0) / 2).toBeGreaterThanOrEqual(4);
+      expect(badge.x + (scene.avatarBadge?.size ?? 0) / 2).toBeLessThanOrEqual(1264);
+    });
+
+    it('keeps the question UI but suppresses ambient loops for reduced motion', () => {
+      (scene as any).prefersReducedMotion = true;
+      mockScene.tweens.add.mockClear();
+      (scene as any).createAmbientStars();
+
+      const configs = mockScene.tweens.add.mock.calls.map(([config]: any[]) => config);
+      expect(scene.currentQuestion).toBeDefined();
+      expect(configs.some((config: any) => config.repeat === -1)).toBe(false);
     });
 
     it('renders question progress indicator', () => {
@@ -603,6 +634,44 @@ describe('QuestionScene — Interactive Quiz Scene Suite', () => {
 
       scene.onCorrectAnswer();
       expect(scene.celebrationContainer).toBeDefined();
+    });
+
+    it('keeps the celebration banner without optional particles for reduced motion', () => {
+      scene.init({
+        questions: [mockChineseSentenceQuestion],
+      });
+      (scene as any).prefersReducedMotion = true;
+      scene.create();
+      mockScene.tweens.add.mockClear();
+
+      scene.playCelebrationEffect();
+
+      expect(scene.celebrationContainer).toBeDefined();
+      expect(mockScene.tweens.add).not.toHaveBeenCalled();
+    });
+
+    it('cleans celebration objects and tweens when the scene shuts down', () => {
+      scene.init({
+        questions: [mockChineseSentenceQuestion],
+      });
+      scene.create();
+      scene.playCelebrationEffect();
+
+      const firstCelebration = scene.celebrationContainer;
+      expect(firstCelebration).not.toBeNull();
+      const firstDestroy = vi.spyOn(firstCelebration!, 'destroy');
+      scene.playCelebrationEffect();
+      expect(firstDestroy).toHaveBeenCalled();
+
+      const celebration = scene.celebrationContainer;
+      expect(celebration).not.toBeNull();
+      const destroy = vi.spyOn(celebration!, 'destroy');
+
+      scene.events.emit(Phaser.Scenes.Events.SHUTDOWN);
+
+      expect(mockScene.tweens.killTweensOf).toHaveBeenCalled();
+      expect(destroy).toHaveBeenCalled();
+      expect(scene.celebrationContainer).toBeNull();
     });
 
     it('transitions to RunnerScene with station completion flag false for non-final question', () => {

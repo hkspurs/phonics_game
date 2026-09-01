@@ -2,6 +2,7 @@ import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 import Phaser from 'phaser';
 import { BootScene } from './BootScene';
 import { PreloadScene, LEARNING_TIPS } from './PreloadScene';
+import { getWardrobePreloadPaths, OUTFIT_DEFINITIONS } from '../config/outfits';
 import { TitleScene } from './TitleScene';
 import { MapScene } from './MapScene';
 import { QuestionScene } from './QuestionScene';
@@ -380,7 +381,7 @@ describe('Scene Lifecycle & Navigation Flow', () => {
       expect(loadedImageKeys).toContain('assets/character/outfits/scholar_gown/cheer.png');
     });
 
-    it('does not enqueue missing Star Hoodie placeholder art', () => {
+    it('does not enqueue unavailable Star Hoodie placeholder art', () => {
       const preloadScene = new PreloadScene();
       const mock = createMockSceneForTest('PreloadScene');
       Object.assign(preloadScene, mock);
@@ -390,6 +391,29 @@ describe('Scene Lifecycle & Navigation Flow', () => {
       const loadedImageKeys = mock.load.image.mock.calls.map((call: any[]) => call[0]);
       expect(loadedImageKeys).not.toContain('assets/character/outfits/star_hoodie/star_hoodie_wearing.png');
       expect(loadedImageKeys).not.toContain('assets/outfits/star_hoodie/star_hoodie_thumbnail.png');
+    });
+
+    it('can preload a delivered placeholder thumbnail without requesting wearing art', () => {
+      const hoodie = OUTFIT_DEFINITIONS.find(definition => definition.id === 'star_hoodie')!;
+      const paths = getWardrobePreloadPaths([{
+        ...hoodie,
+        thumbnailStatus: 'ready',
+      }]);
+
+      expect(paths).toContain('assets/outfits/star_hoodie/star_hoodie_thumbnail.png');
+      expect(paths).not.toContain('assets/character/outfits/star_hoodie/star_hoodie_wearing.png');
+      expect(paths).not.toContain('assets/character/outfits/star_hoodie/star_hoodie_run.png');
+      expect(paths).not.toContain('assets/character/outfits/star_hoodie/star_hoodie_cheer.png');
+    });
+
+    it('does not request an unconfirmed thumbnail for a placeholder outfit', () => {
+      const hoodie = OUTFIT_DEFINITIONS.find(definition => definition.id === 'star_hoodie')!;
+      const paths = getWardrobePreloadPaths([{
+        ...hoodie,
+        thumbnailStatus: undefined,
+      }]);
+
+      expect(paths).not.toContain('assets/outfits/star_hoodie/star_hoodie_thumbnail.png');
     });
 
     it('does not enqueue synthetic future layer paths for full-sprite outfits', () => {

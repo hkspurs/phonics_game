@@ -199,14 +199,40 @@ test.describe('Gamer Tester 3: Full End-to-End Playthrough & Live Browser Inspec
       // Trigger buy / equip
       (shop as any).handleActionClick();
 
-      const raw = localStorage.getItem('p1_adventure_save_v1');
-      const profile = raw ? JSON.parse(raw) : {};
-      const equippedWardrobe = profile.equippedWardrobe || {};
+      const modal = (shop as any).purchaseModal;
+      const confirmButton = modal?.getContentContainer?.().list?.find(
+        (child: any) => child?.getText?.() === '✅ 確認購買'
+      );
+      if (!confirmButton) throw new Error('Wardrobe purchase confirmation CTA is not available');
+      confirmButton.emit('pointerup');
 
       return {
         currentTab,
         subCategoryCount,
         currentCat,
+      };
+    });
+
+    const readEquippedDress = () => page.evaluate(() => {
+      const raw = localStorage.getItem('p1_adventure_save_v1');
+      const profile = raw ? JSON.parse(raw) : {};
+      return profile.equippedWardrobe?.dress ?? null;
+    });
+    await expect.poll(readEquippedDress, { timeout: 5000 }).toBeTruthy();
+
+    const wardrobePurchaseState = await page.evaluate(() => {
+      const game = (window as any).__PHASER_GAME__;
+      const shop = game.scene.getScene('ShopScene');
+      const raw = localStorage.getItem('p1_adventure_save_v1');
+      const profile = raw ? JSON.parse(raw) : {};
+      const equippedWardrobe = profile.equippedWardrobe || {};
+      const successModal = (shop as any).purchaseModal;
+      const continueButton = successModal?.getContentContainer?.().list?.find(
+        (child: any) => child?.getText?.() === '✅ 繼續探索'
+      );
+      continueButton?.emit('pointerup');
+
+      return {
         equippedDress: equippedWardrobe?.dress,
         overlayText: (shop as any).previewWardrobeOverlay?.text,
       };
@@ -215,7 +241,7 @@ test.describe('Gamer Tester 3: Full End-to-End Playthrough & Live Browser Inspec
     console.log('[Playthrough Inspector] Wardrobe Audit:', wardrobeAudit);
     expect(wardrobeAudit.currentTab).toBe('wardrobe');
     expect(wardrobeAudit.subCategoryCount).toBe(4);
-    expect(wardrobeAudit.equippedDress).toBeDefined();
+    expect(wardrobePurchaseState.equippedDress).toBeDefined();
 
     await page.screenshot({ path: path.join(runDir, '04b_Shop_Wardrobe_Equipped.png') });
 
@@ -230,11 +256,13 @@ test.describe('Gamer Tester 3: Full End-to-End Playthrough & Live Browser Inspec
       return {
         hasModal: !!(shop as any).ootdModal,
         modalDepth: (shop as any).ootdModal?.depth,
+        closeButtonMounted: (shop as any).ootdModal?.list?.includes((shop as any).ootdCloseButton),
       };
     });
 
     expect(ootdOpen.hasModal).toBe(true);
     expect(ootdOpen.modalDepth).toBe(200);
+    expect(ootdOpen.closeButtonMounted).toBe(true);
 
     await page.waitForTimeout(500);
     await page.screenshot({ path: path.join(runDir, '04c_Shop_OOTD_Modal.png') });
@@ -243,7 +271,9 @@ test.describe('Gamer Tester 3: Full End-to-End Playthrough & Live Browser Inspec
     const ootdClose = await page.evaluate(() => {
       const game = (window as any).__PHASER_GAME__;
       const shop = game.scene.getScene('ShopScene');
-      (shop as any).closeOOTDPhotoModal();
+      const closeButton = (shop as any).ootdCloseButton;
+      if (!closeButton) throw new Error('OOTD close button is not available');
+      closeButton.emit('pointerup');
       return {
         hasModal: !!(shop as any).ootdModal,
       };
@@ -568,7 +598,10 @@ test.describe('Gamer Tester 3: Full End-to-End Playthrough & Live Browser Inspec
     console.log('[Playthrough Inspector] Release Check:', releaseCheck);
     expect(releaseCheck.axisAfterRelease).toBe(0);
     expect(releaseCheck.isHalted).toBe(true);
-    expect(releaseCheck.textureKey).toBe(releaseCheck.standKey);
+    expect(
+      releaseCheck.textureKey === releaseCheck.standKey
+        || releaseCheck.textureKey?.includes('/character/outfits/princess_dress/idle.png')
+    ).toBe(true);
 
     // Test 4.4: Multi-Touch - Left thumb dragging joystick while right thumb presses jump button
     console.log('[Playthrough Inspector] Step 4.4: Auditing Multi-touch Joystick + Jump...');

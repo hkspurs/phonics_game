@@ -1,14 +1,19 @@
 import Phaser from 'phaser';
-import { GAME_WIDTH, GAME_HEIGHT } from '../config';
+import { GAME_WIDTH, GAME_HEIGHT, normalizeStationId, StationId } from '../config';
 import { QuizQuestion } from '../types';
 import type { EquippedWardrobe } from '../types';
 import { DataManager } from '../services/DataManager';
 import { SoundManager } from '../services/SoundManager';
 import { CanvasButton } from '../ui/CanvasButton';
 import { CompanionPet } from '../ui/CompanionPet';
-import { CharacterOutfitCompositor } from '../ui/CharacterOutfitCompositor';
+import {
+  CharacterOutfitCompositor,
+  FULL_SPRITE_CANVAS_CENTER,
+  FULL_SPRITE_GROUND_BASELINE,
+} from '../ui/CharacterOutfitCompositor';
 import { wardrobeRegistry } from '../ui/OutfitRegistry';
 import { PlayerAvatarService } from '../services/PlayerAvatarService';
+import { STATIONS, StationData } from './MapScene';
 
 export interface RunnerSessionStats {
   hintsUsed: number;
@@ -20,7 +25,7 @@ export interface RunnerSessionStats {
 }
 
 export interface RunnerSceneInitData {
-  stationId?: number;
+  stationId?: StationId;
   stationName?: string;
   questionIndex?: number;
   isStationComplete?: boolean;
@@ -218,6 +223,7 @@ export class RunnerScene extends Phaser.Scene {
 
   // Game Objects & Layers
   public playerSprite: Phaser.GameObjects.Image | any = null;
+  public runnerWardrobeBackGraphics: Phaser.GameObjects.Graphics | any = null;
   public runnerWardrobeGraphics: Phaser.GameObjects.Graphics | any = null;
   public runnerWardrobeWings: Phaser.GameObjects.Text | any = null;
   public runnerWardrobeDress: Phaser.GameObjects.Text | any = null;
@@ -241,11 +247,16 @@ export class RunnerScene extends Phaser.Scene {
   public hudContainer: Phaser.GameObjects.Container | any = null;
   public coinCounterText: Phaser.GameObjects.Text | any = null;
   public gemCounterText: Phaser.GameObjects.Text | any = null;
+  public starCounterText: Phaser.GameObjects.Text | any = null;
   public progressBarFill: Phaser.GameObjects.Graphics | any = null;
   public miniRunnerIcon: Phaser.GameObjects.Image | Phaser.GameObjects.Text | any = null;
   public skipButton: CanvasButton | null = null;
   public celebrationBanner: Phaser.GameObjects.Container | any = null;
+  public celebrationRewardText: Phaser.GameObjects.Text | any = null;
+  public celebrationContinueButton: CanvasButton | null = null;
   public isRainbowRush: boolean = false;
+  public prefersReducedMotion: boolean = false;
+  private celebrationTimer: Phaser.Time.TimerEvent | any = null;
 
   constructor() {
     super({ key: 'RunnerScene' });
@@ -255,7 +266,7 @@ export class RunnerScene extends Phaser.Scene {
    * Scene initialization hook with payload from QuestionScene
    */
   public init(data?: RunnerSceneInitData): void {
-    this.stationId = data?.stationId ?? 1;
+    this.stationId = normalizeStationId(data?.stationId);
     this.stationName = data?.stationName ?? '冒險關卡';
     this.questionIndex = data?.questionIndex ?? 0;
     this.isStationComplete = data?.isStationComplete ?? false;
@@ -283,6 +294,12 @@ export class RunnerScene extends Phaser.Scene {
     // Reset runtime states
     this.isTransitioning = false;
     this.isCelebrating = false;
+    this.prefersReducedMotion = this.detectReducedMotionPreference();
+    this.celebrationTimer?.remove?.();
+    this.celebrationTimer = null;
+    this.celebrationBanner = null;
+    this.celebrationRewardText = null;
+    this.celebrationContinueButton = null;
     this.isJumping = false;
     this.isSuperJumping = false;
     this.hasDoubleJumped = false;
@@ -305,6 +322,8 @@ export class RunnerScene extends Phaser.Scene {
     this.currentWalkFrame = 1;
     this.runnerUsesDedicatedOutfitSprite = false;
     this.runnerBaseScale = 0;
+    this.runnerWardrobeBackGraphics = null;
+    this.runnerWardrobeGraphics = null;
 
     // Resolve skin perks
     this.resolveEquippedSkin();
@@ -344,7 +363,7 @@ export class RunnerScene extends Phaser.Scene {
             : this.skinConfig.cheerKey;
 
     this.runnerUsesDedicatedOutfitSprite = textureInfo.isFullSprite;
-    const baseScale = textureInfo.isFullSprite ? 0.62 : 1.22;
+    const baseScale = textureInfo.isFullSprite ? this.getRunnerFullSpriteScale() : 1.22;
     if (this.runnerBaseScale !== baseScale && typeof this.playerSprite.setScale === 'function') {
       this.playerSprite.setScale(baseScale);
       this.runnerBaseScale = baseScale;
@@ -356,13 +375,19 @@ export class RunnerScene extends Phaser.Scene {
       this.playerSprite.clearTint();
     }
     this.playerSprite.setTexture(textureKey);
+    if (typeof this.playerSprite.setY === 'function') {
+      this.playerSprite.setY(this.getPlayerRenderY(this.playerY));
+    }
   }
 
   private getRunnerCompositorWardrobe(): EquippedWardrobe {
     const equipped = { ...DataManager.getInstance().getEquippedWardrobe() };
     const outfitId = equipped.dress || equipped.top || equipped.bottom;
     const outfit = outfitId ? wardrobeRegistry.get(outfitId) : undefined;
-    if (outfitId && outfit && !wardrobeRegistry.isWearingArtworkReady(outfitId)) {
+    const textureExists = typeof this.textures?.exists === 'function'
+      ? (key: string) => this.textures.exists(key)
+      : undefined;
+    if (outfitId && outfit && !wardrobeRegistry.isWearingTextureReady(outfitId, textureExists)) {
       delete equipped[outfit.slot as keyof EquippedWardrobe];
     }
     if (this.runnerUsesDedicatedOutfitSprite) {
@@ -375,6 +400,33 @@ export class RunnerScene extends Phaser.Scene {
 
   private getRunnerSquashScale(value: number): number {
     return this.runnerBaseScale * (value / 1.22);
+  }
+
+  public getRunnerFullSpriteScale(viewportWidth?: number, viewportHeight?: number): number {
+    const configWidth = this.sys?.game?.config ? Number(this.sys.game.config.width) : GAME_WIDTH;
+    const configHeight = this.sys?.game?.config ? Number(this.sys.game.config.height) : GAME_HEIGHT;
+    const displaySize = (this.scale as any)?.displaySize;
+    const width = viewportWidth ?? (Number(displaySize?.width) > 0 ? Number(displaySize.width) : configWidth);
+    const height = viewportHeight ?? (Number(displaySize?.height) > 0 ? Number(displaySize.height) : configHeight);
+    const compact = width < 1000 || height < 620;
+    const fitScale = Math.min(width / GAME_WIDTH, height / GAME_HEIGHT);
+    const largeViewportBoost = Number.isFinite(fitScale) && fitScale > 1
+      ? Math.min(0.04, (fitScale - 1) * 0.08)
+      : 0;
+    return Math.min(0.68, (compact ? 0.60 : 0.64) + largeViewportBoost);
+  }
+
+  /**
+   * Maps the physics baseline to the visual center of a 512px wearing sprite.
+   * Full-sprite art owns a Y=460 foot baseline; the legacy runner ground line
+   * sits 36px below its physics baseline. Physics coordinates stay unchanged.
+   */
+  private getPlayerRenderY(worldY: number): number {
+    if (!this.runnerUsesDedicatedOutfitSprite || this.runnerBaseScale <= 0) return worldY;
+
+    const groundOffset = 36;
+    return worldY + groundOffset
+      - (FULL_SPRITE_GROUND_BASELINE - FULL_SPRITE_CANVAS_CENTER) * this.runnerBaseScale;
   }
 
   /**
@@ -722,11 +774,12 @@ export class RunnerScene extends Phaser.Scene {
 
     // 1. Sky Theme based on stationId
     let skyTop = 0x3a7bd5;
+    const stationNumber = this.getStationNumericId();
 
-    if (this.stationId <= 3) {
+    if (stationNumber <= 3) {
       // Daybreak Island
       skyTop = 0x2193b0;
-    } else if (this.stationId <= 6) {
+    } else if (stationNumber <= 6) {
       // Sunset Valley
       skyTop = 0xcc2b5e;
     } else {
@@ -739,7 +792,7 @@ export class RunnerScene extends Phaser.Scene {
     }
 
     // 1.5 Twinkling Stars in Sky
-    if (this.add.text && this.tweens?.add) {
+    if (!this.prefersReducedMotion && this.add.text && this.tweens?.add) {
       const starPositions = [
         { x: 180, y: 70, size: '14px', delay: 0 },
         { x: 490, y: 110, size: '12px', delay: 400 },
@@ -917,7 +970,7 @@ export class RunnerScene extends Phaser.Scene {
       img = this.add.image(worldX, worldY, 'coin_procedural');
       if (img.setScale) img.setScale(0.9);
       if (img.setDepth) img.setDepth(10);
-      if (this.tweens?.add) {
+      if (!this.prefersReducedMotion && this.tweens?.add) {
         this.tweens.add({
           targets: img,
           y: worldY - 5,
@@ -946,7 +999,7 @@ export class RunnerScene extends Phaser.Scene {
       img = this.add.image(worldX, worldY, 'gem_procedural');
       if (img.setScale) img.setScale(1.1);
       if (img.setDepth) img.setDepth(10);
-      if (this.tweens?.add) {
+      if (!this.prefersReducedMotion && this.tweens?.add) {
         this.tweens.add({
           targets: img,
           y: worldY - 6,
@@ -1147,13 +1200,37 @@ export class RunnerScene extends Phaser.Scene {
       }
 
       if (this.add.graphics) {
+        const outfitScale = this.runnerUsesDedicatedOutfitSprite
+          ? (this.runnerBaseScale || this.getRunnerFullSpriteScale())
+          : 1.22;
+        this.runnerWardrobeBackGraphics = this.add.graphics();
+        if (typeof this.runnerWardrobeBackGraphics.setDepth === 'function') {
+          this.runnerWardrobeBackGraphics.setDepth(14);
+        }
+        CharacterOutfitCompositor.renderPreviewBackAccessories(this.runnerWardrobeBackGraphics, eq, {
+          scale: outfitScale,
+          offsetX: this.playerScreenX,
+          offsetY: this.getPlayerRenderY(this.playerBaselineY),
+          coordinateSpace: this.runnerUsesDedicatedOutfitSprite ? 'fullSprite' : undefined,
+        });
+
         this.runnerWardrobeGraphics = this.add.graphics();
         if (typeof this.runnerWardrobeGraphics.setDepth === 'function') this.runnerWardrobeGraphics.setDepth(16);
-        CharacterOutfitCompositor.renderOutfit(this.runnerWardrobeGraphics, eq, {
-          scale: this.runnerUsesDedicatedOutfitSprite ? 0.62 : 1.22,
-          offsetX: this.playerScreenX,
-          offsetY: this.playerBaselineY,
-        });
+        if (this.runnerUsesDedicatedOutfitSprite) {
+          CharacterOutfitCompositor.renderPreviewFrontAccessories(this.runnerWardrobeGraphics, eq, {
+            scale: outfitScale,
+            offsetX: this.playerScreenX,
+            offsetY: this.getPlayerRenderY(this.playerBaselineY),
+            coordinateSpace: 'fullSprite',
+          });
+        } else {
+          CharacterOutfitCompositor.renderOutfit(this.runnerWardrobeGraphics, eq, {
+            scale: outfitScale,
+            offsetX: this.playerScreenX,
+            offsetY: this.getPlayerRenderY(this.playerBaselineY),
+            includeBackAccessories: false,
+          });
+        }
       }
     } catch {}
 
@@ -1166,6 +1243,7 @@ export class RunnerScene extends Phaser.Scene {
           petId: equippedPet,
           x: this.playerScreenX - 45,
           y: this.playerBaselineY - 35,
+          reducedMotion: this.prefersReducedMotion,
         });
       } else {
         const petData = dm.getPetCompanion();
@@ -1203,14 +1281,16 @@ export class RunnerScene extends Phaser.Scene {
     if (this.add.graphics) {
       const badgeG = this.add.graphics();
       badgeG.fillStyle(0x0a1128, 0.75);
-      badgeG.fillRoundedRect(24, 20, 310, 54, 16);
+      badgeG.fillRoundedRect(24, 20, 430, 54, 16);
       badgeG.lineStyle(2, 0x4a90e2, 0.9);
-      badgeG.strokeRoundedRect(24, 20, 310, 54, 16);
+      badgeG.strokeRoundedRect(24, 20, 430, 54, 16);
       this.hudContainer.add(badgeG);
     }
 
-    const currentCoins = DataManager.getInstance().getProfile().coins;
-    const currentGems = DataManager.getInstance().getProfile().gems;
+    const profile = DataManager.getInstance().getProfile();
+    const currentCoins = profile.coins;
+    const currentGems = profile.gems;
+    const currentStars = DataManager.getInstance().getTotalStars();
 
     if (this.add.text) {
       this.coinCounterText = this.add.text(42, 34, `🪙 ${currentCoins}`, {
@@ -1228,6 +1308,14 @@ export class RunnerScene extends Phaser.Scene {
         fontStyle: 'bold',
       });
       this.hudContainer.add(this.gemCounterText);
+
+      this.starCounterText = this.add.text(310, 34, `⭐ ${currentStars}/30`, {
+        fontSize: '22px',
+        fontFamily: "'Kenney Future', 'Noto Sans TC', sans-serif",
+        color: '#ffdd59',
+        fontStyle: 'bold',
+      });
+      this.hudContainer.add(this.starCounterText);
     }
 
     // 2. Top Center Distance Progress Bar
@@ -1258,7 +1346,7 @@ export class RunnerScene extends Phaser.Scene {
       const badgeText = this.add.text(
         width / 2,
         64,
-        `📍 ${this.getStationDisplayName()} · 衝刺獎勵`,
+        `${this.getStationDefinition()?.icon || '📍'} ${this.getStationDisplayName()} · ${this.getStationDefinition()?.biome || '衝刺獎勵'} · 衝刺獎勵`,
         {
           fontSize: '18px',
           fontFamily: "'Noto Sans TC', sans-serif",
@@ -1309,7 +1397,7 @@ export class RunnerScene extends Phaser.Scene {
 
       this.hudContainer.add(hintContainer);
 
-      if (this.tweens?.add) {
+      if (!this.prefersReducedMotion && this.tweens?.add) {
         this.tweens.add({
           targets: hintContainer,
           y: _height - 62,
@@ -1346,12 +1434,11 @@ export class RunnerScene extends Phaser.Scene {
    */
   public handleJumpInput(): void {
     if (this.isCelebrating || this.isTransitioning) {
-      this.finishRunner();
       return;
     }
 
     // Interactive button press haptic visual bounce (scale: 0.92)
-    if (this.jumpBtn && this.tweens?.add) {
+    if (!this.prefersReducedMotion && this.jumpBtn && this.tweens?.add) {
       this.tweens.add({
         targets: this.jumpBtn,
         scaleX: 0.92,
@@ -1380,7 +1467,7 @@ export class RunnerScene extends Phaser.Scene {
 
         this.applyRunnerPose('jump');
 
-        if (this.playerSprite && this.tweens?.add) {
+        if (!this.prefersReducedMotion && this.playerSprite && this.tweens?.add) {
           this.tweens.add({
             targets: this.playerSprite,
             scaleX: this.getRunnerSquashScale(1.18),
@@ -1410,7 +1497,7 @@ export class RunnerScene extends Phaser.Scene {
 
     this.applyRunnerPose('jump');
 
-    if (this.playerSprite && this.tweens?.add) {
+    if (!this.prefersReducedMotion && this.playerSprite && this.tweens?.add) {
       this.tweens.add({
         targets: this.playerSprite,
         scaleX: this.getRunnerSquashScale(1.2),
@@ -1452,7 +1539,7 @@ export class RunnerScene extends Phaser.Scene {
       if (typeof (this.playerSprite as any).setTint === 'function') {
         (this.playerSprite as any).setTint(0xff6b6b);
       }
-      if (this.tweens?.add) {
+      if (!this.prefersReducedMotion && this.tweens?.add) {
         this.tweens.add({
           targets: this.playerSprite,
           scaleY: this.getRunnerSquashScale(0.85),
@@ -1490,7 +1577,7 @@ export class RunnerScene extends Phaser.Scene {
 
     if (item.gameObject && typeof item.gameObject.setTexture === 'function') {
       item.gameObject.setTexture('springboard_down');
-      if (this.tweens?.add) {
+      if (!this.prefersReducedMotion && this.tweens?.add) {
         this.tweens.add({
           targets: item.gameObject,
           scaleY: 0.55,
@@ -1504,12 +1591,15 @@ export class RunnerScene extends Phaser.Scene {
             }
           },
         });
-      } else if (this.time?.delayedCall) {
+      } else if (!this.prefersReducedMotion && this.time?.delayedCall) {
         this.time.delayedCall(220, () => {
           if (item.gameObject && typeof item.gameObject.setTexture === 'function') {
             item.gameObject.setTexture('springboard_up');
           }
         });
+      } else if (this.prefersReducedMotion && item.gameObject.setTexture) {
+        item.gameObject.setTexture('springboard_up');
+        item.gameObject.setScale?.(1.0);
       }
     }
 
@@ -1520,7 +1610,7 @@ export class RunnerScene extends Phaser.Scene {
 
     this.applyRunnerPose('jump');
 
-    if (this.playerSprite && this.tweens?.add) {
+    if (!this.prefersReducedMotion && this.playerSprite && this.tweens?.add) {
       this.tweens.add({
         targets: this.playerSprite,
         scaleX: this.getRunnerSquashScale(1.2),
@@ -1655,7 +1745,7 @@ export class RunnerScene extends Phaser.Scene {
         // Landing squash compression and impact dust
         if (wasAirborne) {
           this.spawnLandingDust(this.playerScreenX, this.playerY + 36);
-          if (this.playerSprite && this.tweens?.add) {
+          if (!this.prefersReducedMotion && this.playerSprite && this.tweens?.add) {
             this.tweens.add({
               targets: this.playerSprite,
               scaleX: this.getRunnerSquashScale(1.12),
@@ -1690,7 +1780,7 @@ export class RunnerScene extends Phaser.Scene {
     }
 
     // Continuous running dust puffs
-    if (this.isGrounded && this.currentSpeed > 0 && !this.isCelebrating) {
+    if (!this.prefersReducedMotion && this.isGrounded && this.currentSpeed > 0 && !this.isCelebrating) {
       this.dustTimer = (this.dustTimer || 0) + delta;
       if (this.dustTimer > 120) {
         this.dustTimer = 0;
@@ -1699,7 +1789,8 @@ export class RunnerScene extends Phaser.Scene {
     }
 
     if (this.playerSprite && typeof this.playerSprite.setY === 'function') {
-      this.playerSprite.setY(this.playerY);
+      const playerRenderY = this.getPlayerRenderY(this.playerY);
+      this.playerSprite.setY(playerRenderY);
 
       // Kinematic Running / Jumping Micro-Tilt
       if (typeof this.playerSprite.setAngle === 'function') {
@@ -1713,7 +1804,7 @@ export class RunnerScene extends Phaser.Scene {
       }
     }
     // Update Anatomical Wardrobe Layers position (compatibility text handles)
-    this.syncWardrobeLayersToPlayer(this.playerScreenX, this.playerY);
+    this.syncWardrobeLayersToPlayer(this.playerScreenX, this.getPlayerRenderY(this.playerY));
 
     // Update Companion Pet follow kinematics
     if (this.companionPet && typeof this.companionPet.updatePet === 'function') {
@@ -1867,7 +1958,7 @@ export class RunnerScene extends Phaser.Scene {
 
     // Pop item and destroy
     if (item.gameObject) {
-      if (this.tweens?.add) {
+      if (!this.prefersReducedMotion && this.tweens?.add) {
         this.tweens.add({
           targets: item.gameObject,
           scaleX: 1.4,
@@ -1922,7 +2013,7 @@ export class RunnerScene extends Phaser.Scene {
 
     // Pop item and destroy
     if (item.gameObject) {
-      if (this.tweens?.add) {
+      if (!this.prefersReducedMotion && this.tweens?.add) {
         this.tweens.add({
           targets: item.gameObject,
           scaleX: 1.5,
@@ -1962,6 +2053,9 @@ export class RunnerScene extends Phaser.Scene {
       if (this.gemCounterText && typeof this.gemCounterText.setText === 'function') {
         this.gemCounterText.setText(`💎 ${profile.gems}`);
       }
+      if (this.starCounterText && typeof this.starCounterText.setText === 'function') {
+        this.starCounterText.setText(`⭐ ${DataManager.getInstance().getTotalStars()}/30`);
+      }
     } catch {
       // Safe ignore
     }
@@ -1982,6 +2076,13 @@ export class RunnerScene extends Phaser.Scene {
 
     if (popup.setOrigin) popup.setOrigin(0.5);
     if (popup.setDepth) popup.setDepth(80);
+
+    if (this.prefersReducedMotion) {
+      if (this.time?.delayedCall) {
+        this.time.delayedCall(650, () => popup.destroy?.());
+      }
+      return;
+    }
 
     if (this.tweens?.add) {
       this.tweens.add({
@@ -2005,7 +2106,7 @@ export class RunnerScene extends Phaser.Scene {
    * Spawns radiant sparkle particles at location
    */
   public spawnSparkleParticles(x: number, y: number, tintColor: number, count: number = 6): void {
-    if (!this.add?.image && !this.add?.graphics) return;
+    if (this.prefersReducedMotion || (!this.add?.image && !this.add?.graphics)) return;
 
     for (let i = 0; i < count; i++) {
       let p: any = null;
@@ -2070,12 +2171,36 @@ export class RunnerScene extends Phaser.Scene {
     if (this.runnerWardrobeGraphics) {
       try {
         const eq = this.getRunnerCompositorWardrobe();
-        CharacterOutfitCompositor.renderOutfit(this.runnerWardrobeGraphics, eq, {
-          scale: this.runnerUsesDedicatedOutfitSprite ? 0.62 : 1.22,
-          offsetX: x,
-          offsetY: y,
-          flipX: isFlip,
-        });
+        const outfitScale = this.runnerUsesDedicatedOutfitSprite
+          ? (this.runnerBaseScale || this.getRunnerFullSpriteScale())
+          : 1.22;
+        if (this.runnerUsesDedicatedOutfitSprite) {
+          if (this.runnerWardrobeBackGraphics) {
+            CharacterOutfitCompositor.renderPreviewBackAccessories(this.runnerWardrobeBackGraphics, eq, {
+              scale: outfitScale,
+              offsetX: x,
+              offsetY: y,
+              flipX: isFlip,
+              coordinateSpace: 'fullSprite',
+            });
+          }
+          CharacterOutfitCompositor.renderPreviewFrontAccessories(this.runnerWardrobeGraphics, eq, {
+            scale: outfitScale,
+            offsetX: x,
+            offsetY: y,
+            flipX: isFlip,
+            coordinateSpace: 'fullSprite',
+          });
+        } else {
+          this.runnerWardrobeBackGraphics?.clear?.();
+          CharacterOutfitCompositor.renderOutfit(this.runnerWardrobeGraphics, eq, {
+            scale: outfitScale,
+            offsetX: x,
+            offsetY: y,
+            flipX: isFlip,
+            includeBackAccessories: false,
+          });
+        }
       } catch {}
     }
 
@@ -2095,9 +2220,15 @@ export class RunnerScene extends Phaser.Scene {
     // Force player and all accessories down to ground baseline immediately (Item 01 fix)
     this.playerY = this.playerBaselineY;
     if (this.playerSprite && typeof this.playerSprite.setPosition === 'function') {
-      this.playerSprite.setPosition(this.playerScreenX, this.playerBaselineY);
+      this.playerSprite.setPosition(
+        this.playerScreenX,
+        this.getPlayerRenderY(this.playerBaselineY)
+      );
     }
-    this.syncWardrobeLayersToPlayer(this.playerScreenX, this.playerBaselineY);
+    this.syncWardrobeLayersToPlayer(
+      this.playerScreenX,
+      this.getPlayerRenderY(this.playerBaselineY)
+    );
     if (this.companionPet && typeof this.companionPet.updatePet === 'function') {
       this.companionPet.updatePet(0.016, this.playerScreenX, this.playerBaselineY, false);
     }
@@ -2105,27 +2236,32 @@ export class RunnerScene extends Phaser.Scene {
     // 1. Switch Player Pose to Cheer Celebration
     this.applyRunnerPose('cheer');
 
-    if (this.companionPet && typeof this.companionPet.playVictoryDance === 'function') {
+    if (!this.prefersReducedMotion && this.companionPet && typeof this.companionPet.playVictoryDance === 'function') {
       this.companionPet.playVictoryDance();
     }
 
-    if (this.playerSprite && this.tweens?.add) {
+    if (!this.prefersReducedMotion && this.playerSprite && this.tweens?.add) {
       this.tweens.add({
         targets: this.playerSprite,
-        y: this.playerBaselineY - 30,
+        y: this.getPlayerRenderY(this.playerBaselineY) - 30,
         duration: 250,
         yoyo: true,
         repeat: 3,
         ease: 'Sine.easeInOut',
         onUpdate: () => {
-          const curY = this.playerSprite?.y ?? this.playerBaselineY;
-          this.syncWardrobeLayersToPlayer(this.playerScreenX, curY);
+          const curRenderY = this.playerSprite?.y ?? this.getPlayerRenderY(this.playerBaselineY);
+          this.syncWardrobeLayersToPlayer(this.playerScreenX, curRenderY);
+          const visualOffset = this.getPlayerRenderY(this.playerBaselineY) - this.playerBaselineY;
+          const curPhysicsY = curRenderY - visualOffset;
           if (this.companionPet && typeof this.companionPet.updatePet === 'function') {
-            this.companionPet.updatePet(0.016, this.playerScreenX, curY, false);
+            this.companionPet.updatePet(0.016, this.playerScreenX, curPhysicsY, false);
           }
         },
         onComplete: () => {
-          this.syncWardrobeLayersToPlayer(this.playerScreenX, this.playerBaselineY);
+          this.syncWardrobeLayersToPlayer(
+            this.playerScreenX,
+            this.getPlayerRenderY(this.playerBaselineY)
+          );
           if (this.companionPet && typeof this.companionPet.updatePet === 'function') {
             this.companionPet.updatePet(0.016, this.playerScreenX, this.playerBaselineY, false);
           }
@@ -2162,74 +2298,104 @@ export class RunnerScene extends Phaser.Scene {
 
     this.spawnFountainLoot(chestX, chestY);
 
-    // 6. Celebration Banner Card & Text (Item 02)
+    // 6. Chest reward card and explicit next-question handoff
     const width = this.sys?.game?.config ? Number(this.sys.game.config.width) : GAME_WIDTH;
+    const height = this.sys?.game?.config ? Number(this.sys.game.config.height) : GAME_HEIGHT;
+    const cardWidth = Math.min(500, Math.max(260, width - 32));
+    const cardHeight = 156;
+    const cardX = Math.max(cardWidth / 2 + 16, Math.min(width - cardWidth / 2 - 16, chestX));
+    const cardY = Math.max(cardHeight / 2 + 24, Math.min(height - cardHeight / 2 - 24, chestY - 160));
+    const bannerContainer = this.add?.container ? this.add.container(cardX, cardY) : null;
+    this.celebrationBanner = bannerContainer;
+    if (bannerContainer?.setDepth) bannerContainer.setDepth(119);
+
     if (this.add?.graphics) {
       const bannerCard = this.add.graphics();
+      const cardLeft = bannerContainer ? -cardWidth / 2 : cardX - cardWidth / 2;
+      const cardTop = bannerContainer ? -cardHeight / 2 : cardY - cardHeight / 2;
       bannerCard.setDepth(119);
-      bannerCard.fillStyle(0x0e1726, 0.94);
-      bannerCard.fillRoundedRect(width / 2 - 310, 140, 620, 80, 20);
+      bannerCard.fillStyle(0x0e1726, 0.96);
+      bannerCard.fillRoundedRect(cardLeft, cardTop, cardWidth, cardHeight, 20);
       bannerCard.lineStyle(3, 0xf5bd42, 1.0);
-      bannerCard.strokeRoundedRect(width / 2 - 310, 140, 620, 80, 20);
+      bannerCard.strokeRoundedRect(cardLeft, cardTop, cardWidth, cardHeight, 20);
       bannerCard.lineStyle(1.5, 0xffffff, 0.35);
-      bannerCard.strokeRoundedRect(width / 2 - 304, 146, 608, 68, 14);
-
-      if (this.tweens?.add) {
-        bannerCard.setAlpha(0);
-        this.tweens.add({
-          targets: bannerCard,
-          alpha: 1,
-          duration: 300,
-          ease: 'Back.easeOut',
-        });
-      }
+      bannerCard.strokeRoundedRect(cardLeft + 6, cardTop + 6, cardWidth - 12, cardHeight - 12, 14);
+      bannerContainer?.add(bannerCard);
     }
 
     if (this.add?.text) {
-      const banner = this.add.text(
-        width / 2,
-        180,
-        '🎉 衝刺大成功！獲得寶箱獎勵！ (+5 🪙 +1 💎)',
+      const rewardText = this.add.text(
+        bannerContainer ? 0 : cardX,
+        bannerContainer ? -22 : cardY - 22,
+        '🎉 寶箱獎勵\n+5 🪙 金幣   +1 💎 寶石',
         {
-          fontSize: '26px',
+          fontSize: width < 1000 ? '21px' : '25px',
           fontFamily: "'Kenney Future', 'Noto Sans TC', sans-serif",
           color: '#ffd700',
           fontStyle: 'bold',
           align: 'center',
+          lineSpacing: 8,
         }
       );
-      if (banner.setOrigin) banner.setOrigin(0.5);
-      if (banner.setDepth) banner.setDepth(120);
+      if (rewardText.setOrigin) rewardText.setOrigin(0.5);
+      if (rewardText.setDepth) rewardText.setDepth(120);
+      this.celebrationRewardText = rewardText;
+      bannerContainer?.add(rewardText);
+    }
 
-      if (this.tweens?.add) {
-        banner.setScale ? banner.setScale(0.6) : null;
-        this.tweens.add({
-          targets: banner,
-          scaleX: 1.05,
-          scaleY: 1.05,
-          duration: 350,
-          yoyo: true,
-          repeat: 1,
-          ease: 'Back.easeOut',
-        });
-      }
+    if (this.add) {
+      const continueButton = new CanvasButton(this, {
+        x: bannerContainer ? 0 : cardX,
+        y: bannerContainer ? cardHeight / 2 - 27 : cardY + cardHeight / 2 - 27,
+        width: Math.min(180, cardWidth - 48),
+        height: 44,
+        text: '下一題',
+        color: 'yellow',
+        fontSize: width < 1000 ? '18px' : '20px',
+        scaleOnHover: 1.02,
+        scaleOnDown: 0.97,
+        onClick: () => this.continueCelebration(),
+      });
+      continueButton.setDepth(121);
+      this.celebrationContinueButton = continueButton;
+      bannerContainer?.add(continueButton);
+    }
+
+    if (!this.prefersReducedMotion && this.tweens?.add && (bannerContainer || this.celebrationRewardText)) {
+      bannerContainer?.setScale?.(0.96);
+      bannerContainer?.setAlpha?.(0);
+      this.tweens.add({
+        targets: bannerContainer ?? this.celebrationRewardText,
+        scaleX: 1,
+        scaleY: 1,
+        alpha: 1,
+        duration: 180,
+        ease: 'Back.easeOut',
+      });
     }
 
     // 7. Transition after celebration
     if (this.time?.delayedCall) {
-      this.time.delayedCall(1600, () => {
-        this.finishRunner();
+      this.celebrationTimer = this.time.delayedCall(1600, () => {
+        this.celebrationTimer = null;
+        this.continueCelebration();
       });
     } else {
-      this.finishRunner();
+      this.continueCelebration();
     }
+  }
+
+  public continueCelebration(): void {
+    this.celebrationTimer?.remove?.();
+    this.celebrationTimer = null;
+    this.finishRunner();
   }
 
   /**
    * Spawns an explosion fountain of coins, gems, and stars shooting out from the chest
    */
   public spawnFountainLoot(x: number, y: number): void {
-    if (!this.add) return;
+    if (this.prefersReducedMotion || !this.add) return;
 
     for (let i = 0; i < 14; i++) {
       const texture = i % 2 === 0 ? 'coin_procedural' : 'gem_procedural';
@@ -2450,7 +2616,7 @@ export class RunnerScene extends Phaser.Scene {
       fontSize: '22px',
     });
     this.jumpBtn.on('pointerdown', () => {
-      if (this.tweens?.add && this.jumpBtn) {
+      if (!this.prefersReducedMotion && this.tweens?.add && this.jumpBtn) {
         this.tweens.add({
           targets: this.jumpBtn,
           scaleX: 0.92,
@@ -2510,7 +2676,7 @@ export class RunnerScene extends Phaser.Scene {
     }
 
     // Auto-fade joystick title hint upon user interaction
-    if (this.joystickTitleText && this.joystickTitleText.alpha > 0 && this.tweens?.add) {
+    if (!this.prefersReducedMotion && this.joystickTitleText && this.joystickTitleText.alpha > 0 && this.tweens?.add) {
       this.tweens.add({
         targets: this.joystickTitleText,
         alpha: 0,
@@ -2544,7 +2710,7 @@ export class RunnerScene extends Phaser.Scene {
    * Spawns subtle running dust puff at player feet
    */
   public spawnRunningDust(x: number, y: number): void {
-    if (!this.add?.text || !this.tweens?.add) return;
+    if (this.prefersReducedMotion || !this.add?.text || !this.tweens?.add) return;
     const dust = this.add.text(x, y, '💨', { fontSize: '15px' });
     if (dust.setOrigin) dust.setOrigin(0.5);
     if (dust.setDepth) dust.setDepth(14);
@@ -2567,7 +2733,7 @@ export class RunnerScene extends Phaser.Scene {
    * Spawns landing impact dust bursts
    */
   public spawnLandingDust(x: number, y: number): void {
-    if (!this.add?.text || !this.tweens?.add) return;
+    if (this.prefersReducedMotion || !this.add?.text || !this.tweens?.add) return;
     const offsets = [-20, 20];
     for (const off of offsets) {
       const dust = this.add.text(x + off * 0.4, y, '💨', { fontSize: '16px' });
@@ -2589,10 +2755,38 @@ export class RunnerScene extends Phaser.Scene {
     }
   }
 
+  private detectReducedMotionPreference(): boolean {
+    try {
+      return typeof window !== 'undefined' && typeof window.matchMedia === 'function'
+        ? window.matchMedia('(prefers-reduced-motion: reduce)').matches
+        : false;
+    } catch {
+      return false;
+    }
+  }
+
+  /**
+   * Normalizes numeric and legacy string station IDs before using them for
+   * visual theme selection. Runtime payloads can contain either form.
+   */
+  public getStationNumericId(): number {
+    return normalizeStationId(this.stationId);
+  }
+
+  private getStationDefinition(): StationData | undefined {
+    return STATIONS.find((station) => station.id === this.getStationNumericId());
+  }
+
   /**
    * Resolves localized station name to prevent raw developer IDs
    */
   public getStationDisplayName(): string {
+    const station = this.getStationDefinition();
+    if (this.stationName && this.stationName !== '冒險關卡') {
+      return this.stationName;
+    }
+    if (station) return station.name;
+
     const stationMap: Record<string, string> = {
       st_central: '中環冒險島',
       st_green: '綠野小徑',
@@ -2611,6 +2805,8 @@ export class RunnerScene extends Phaser.Scene {
 
   public shutdown(): void {
     this.resetJoystick();
+    this.celebrationTimer?.remove?.();
+    this.celebrationTimer = null;
     this.isLeftDown = false;
     this.isRightDown = false;
     if (this.tweens) {

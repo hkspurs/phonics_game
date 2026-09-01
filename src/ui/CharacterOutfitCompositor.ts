@@ -1,6 +1,13 @@
 import Phaser from 'phaser';
 import { EquippedWardrobe } from '../types';
 
+export type PreviewCoordinateSpace = 'base' | 'fullSprite';
+
+/** The authored wearing sprites use the shared 512px canvas contract. */
+export const FULL_SPRITE_LOCAL_SCALE = 0.23;
+export const FULL_SPRITE_CANVAS_CENTER = 256;
+export const FULL_SPRITE_GROUND_BASELINE = 460;
+
 /**
  * CharacterOutfitCompositor
  *
@@ -22,6 +29,7 @@ export class CharacterOutfitCompositor {
       offsetY?: number;
       flipX?: boolean;
       isAirborne?: boolean;
+      includeBackAccessories?: boolean;
     } = {}
   ): void {
     if (!graphics || typeof graphics.clear !== 'function') return;
@@ -31,9 +39,10 @@ export class CharacterOutfitCompositor {
     const ox = options.offsetX ?? 0;
     const oy = options.offsetY ?? 0;
     const flip = options.flipX ? -1 : 1;
+    const includeBackAccessories = options.includeBackAccessories ?? true;
 
     // 1. Wings Layer (Rendered behind body)
-    if (equipped.wings || (equipped as any).accessory === 'angel_wings') {
+    if (includeBackAccessories && (equipped.wings || (equipped as any).accessory === 'angel_wings')) {
       this.drawAngelWings(graphics, ox, oy, scale, flip);
     }
 
@@ -43,7 +52,7 @@ export class CharacterOutfitCompositor {
     } else {
       // 3. Top / Shirt
       if (equipped.top) {
-        this.drawTop(graphics, equipped.top, ox, oy, scale, flip, true);
+        this.drawTop(graphics, equipped.top, ox, oy, scale, flip);
       }
       // 4. Bottom / Skirt / Shorts
       if (equipped.bottom) {
@@ -52,7 +61,7 @@ export class CharacterOutfitCompositor {
     }
 
     // 5. Backpack (Over shoulder)
-    if ((equipped as any).backpack === 'star_backpack' || (equipped as any).accessory === 'star_backpack') {
+    if (includeBackAccessories && ((equipped as any).backpack === 'star_backpack' || (equipped as any).accessory === 'star_backpack')) {
       this.drawStarBackpack(graphics, ox, oy, scale, flip);
     }
 
@@ -80,6 +89,7 @@ export class CharacterOutfitCompositor {
       offsetX?: number;
       offsetY?: number;
       flipX?: boolean;
+      includeBackAccessories?: boolean;
     } = {}
   ): void {
     if (!graphics || typeof graphics.clear !== 'function') return;
@@ -89,15 +99,16 @@ export class CharacterOutfitCompositor {
     const ox = options.offsetX ?? 0;
     const oy = options.offsetY ?? 0;
     const flip = options.flipX ? -1 : 1;
+    const includeBackAccessories = options.includeBackAccessories ?? true;
     // The Kenney base's neck starts around local y=-2 (the image is 110px high).
     // Moving garments down to this anchor keeps collars below the face and leaves hands visible.
     const fittedY = oy + 17 * scale;
 
     // Preserve the intended depth order: back pieces, garment, then face/head pieces.
-    if (equipped.wings || equipped.accessory === 'angel_wings') {
+    if (includeBackAccessories && (equipped.wings || equipped.accessory === 'angel_wings')) {
       this.drawAngelWings(graphics, ox, fittedY, scale, flip);
     }
-    if (equipped.accessory === 'star_backpack') {
+    if (includeBackAccessories && ((equipped as any).backpack === 'star_backpack' || equipped.accessory === 'star_backpack')) {
       this.drawStarBackpack(graphics, ox, fittedY, scale, flip);
     }
 
@@ -108,7 +119,7 @@ export class CharacterOutfitCompositor {
       if (equipped.bottom) this.drawBottom(graphics, equipped.bottom, ox, fittedY, scale, flip);
     }
 
-    this.drawPreviewAccessories(graphics, equipped, scale, ox, oy, flip);
+    this.drawPreviewFrontAccessories(graphics, equipped, scale, ox, oy, flip);
   }
 
   /** Draws only optional accessories over a dedicated full-body outfit sprite. */
@@ -120,6 +131,7 @@ export class CharacterOutfitCompositor {
       offsetX?: number;
       offsetY?: number;
       flipX?: boolean;
+      coordinateSpace?: PreviewCoordinateSpace;
     } = {}
   ): void {
     if (!graphics || typeof graphics.clear !== 'function') return;
@@ -129,6 +141,12 @@ export class CharacterOutfitCompositor {
     const ox = options.offsetX ?? 0;
     const oy = options.offsetY ?? 0;
     const flip = options.flipX ? -1 : 1;
+    const coordinateSpace = options.coordinateSpace ?? 'base';
+    if (coordinateSpace === 'fullSprite') {
+      this.drawFullSpriteBackAccessories(graphics, equipped, scale, ox, oy, flip);
+      this.drawFullSpriteFrontAccessories(graphics, equipped, scale, ox, oy, flip);
+      return;
+    }
     this.drawPreviewAccessories(graphics, equipped, scale, ox, oy, flip);
   }
 
@@ -143,6 +161,7 @@ export class CharacterOutfitCompositor {
       offsetX?: number;
       offsetY?: number;
       flipX?: boolean;
+      coordinateSpace?: PreviewCoordinateSpace;
     } = {}
   ): void {
     if (!graphics || typeof graphics.clear !== 'function') return;
@@ -153,10 +172,15 @@ export class CharacterOutfitCompositor {
     const oy = options.offsetY ?? 0;
     const flip = options.flipX ? -1 : 1;
 
+    if (options.coordinateSpace === 'fullSprite') {
+      this.drawFullSpriteBackAccessories(graphics, equipped, scale, ox, oy, flip);
+      return;
+    }
+
     if (equipped.wings || equipped.accessory === 'angel_wings') {
       this.drawAngelWings(graphics, ox, oy + 5 * scale, scale, flip);
     }
-    if (equipped.accessory === 'star_backpack') {
+    if ((equipped as any).backpack === 'star_backpack' || equipped.accessory === 'star_backpack') {
       this.drawStarBackpack(graphics, ox, oy + 5 * scale, scale, flip);
     }
   }
@@ -172,6 +196,7 @@ export class CharacterOutfitCompositor {
       offsetX?: number;
       offsetY?: number;
       flipX?: boolean;
+      coordinateSpace?: PreviewCoordinateSpace;
     } = {}
   ): void {
     if (!graphics || typeof graphics.clear !== 'function') return;
@@ -182,11 +207,181 @@ export class CharacterOutfitCompositor {
     const oy = options.offsetY ?? 0;
     const flip = options.flipX ? -1 : 1;
 
-    if (equipped.accessory === 'star_glasses') {
-      this.drawSmartGlasses(graphics, ox, oy, scale, flip);
+    if (options.coordinateSpace === 'fullSprite') {
+      this.drawFullSpriteFrontAccessories(graphics, equipped, scale, ox, oy, flip);
+      return;
     }
+
+    this.drawPreviewFrontAccessories(graphics, equipped, scale, ox, oy, flip);
+  }
+
+  private static drawFullSpriteBackAccessories(
+    g: Phaser.GameObjects.Graphics,
+    equipped: EquippedWardrobe,
+    scale: number,
+    ox: number,
+    oy: number,
+    flip: number
+  ): void {
+    const s = FULL_SPRITE_LOCAL_SCALE * scale;
+    const pointX = (sourceX: number) => ox + (sourceX - FULL_SPRITE_CANVAS_CENTER) * s * flip;
+    const pointY = (sourceY: number) => oy + (sourceY - FULL_SPRITE_CANVAS_CENTER) * s;
+
+    if (equipped.wings || equipped.accessory === 'angel_wings') {
+      g.fillStyle(0xffffff, 0.95);
+      g.lineStyle(3 * s, 0x93c5fd, 0.9);
+      g.beginPath();
+      g.moveTo(pointX(220), pointY(286));
+      g.lineTo(pointX(143), pointY(220));
+      g.lineTo(pointX(112), pointY(245));
+      g.lineTo(pointX(126), pointY(296));
+      g.lineTo(pointX(164), pointY(330));
+      g.lineTo(pointX(208), pointY(316));
+      g.closePath();
+      g.fillPath();
+      g.strokePath();
+
+      g.beginPath();
+      g.moveTo(pointX(292), pointY(286));
+      g.lineTo(pointX(369), pointY(220));
+      g.lineTo(pointX(400), pointY(245));
+      g.lineTo(pointX(386), pointY(296));
+      g.lineTo(pointX(348), pointY(330));
+      g.lineTo(pointX(304), pointY(316));
+      g.closePath();
+      g.fillPath();
+      g.strokePath();
+
+      g.fillStyle(0xe0f2fe, 0.85);
+      g.fillCircle(pointX(165), pointY(268), 12 * s);
+      g.fillCircle(pointX(347), pointY(268), 12 * s);
+    }
+
+    if ((equipped as any).backpack === 'star_backpack' || equipped.accessory === 'star_backpack') {
+      const bpX = pointX(356);
+      const bpY = pointY(278);
+      g.fillStyle(0xeab308, 1.0);
+      g.lineStyle(3 * s, 0xca8a04, 1.0);
+      g.fillCircle(bpX, bpY, 24 * s);
+      if (typeof (g as any).strokeCircle === 'function') {
+        (g as any).strokeCircle(bpX, bpY, 24 * s);
+      } else if (typeof g.strokeCircleShape === 'function') {
+        g.strokeCircleShape(new Phaser.Geom.Circle(bpX, bpY, 24 * s));
+      }
+      g.fillStyle(0xffffff, 1.0);
+      g.fillCircle(pointX(356), pointY(274), 9 * s);
+      g.fillStyle(0xeab308, 1.0);
+      g.fillCircle(pointX(356), pointY(274), 4 * s);
+      g.lineStyle(3 * s, 0x854d0e, 0.9);
+      this.drawLine(g, pointX(332), pointY(255), pointX(349), pointY(296));
+    }
+  }
+
+  private static drawFullSpriteFrontAccessories(
+    g: Phaser.GameObjects.Graphics,
+    equipped: EquippedWardrobe,
+    scale: number,
+    ox: number,
+    oy: number,
+    flip: number
+  ): void {
+    const s = FULL_SPRITE_LOCAL_SCALE * scale;
+    const pointX = (sourceX: number) => ox + (sourceX - FULL_SPRITE_CANVAS_CENTER) * s * flip;
+    const pointY = (sourceY: number) => oy + (sourceY - FULL_SPRITE_CANVAS_CENTER) * s;
+
+    if ((equipped as any).glasses === 'star_glasses' || equipped.accessory === 'star_glasses') {
+      const glassY = pointY(185);
+      g.lineStyle(2.5 * s, 0xf59e0b, 1.0);
+      g.fillStyle(0x0f172a, 0.35);
+      g.fillCircle(pointX(221), glassY, 18 * s);
+      if (typeof (g as any).strokeCircle === 'function') {
+        (g as any).strokeCircle(pointX(221), glassY, 18 * s);
+      } else if (typeof g.strokeCircleShape === 'function') {
+        g.strokeCircleShape(new Phaser.Geom.Circle(pointX(221), glassY, 18 * s));
+      }
+      g.fillCircle(pointX(291), glassY, 18 * s);
+      if (typeof (g as any).strokeCircle === 'function') {
+        (g as any).strokeCircle(pointX(291), glassY, 18 * s);
+      } else if (typeof g.strokeCircleShape === 'function') {
+        g.strokeCircleShape(new Phaser.Geom.Circle(pointX(291), glassY, 18 * s));
+      }
+      this.drawLine(g, pointX(241), glassY, pointX(271), glassY);
+      g.fillStyle(0xffffff, 0.7);
+      g.fillCircle(pointX(228), pointY(179), 4 * s);
+      g.fillCircle(pointX(298), pointY(179), 4 * s);
+    }
+
     const hatId = equipped.hat || (['cat_ears', 'scholar_cap', 'tram_hat'].includes(equipped.accessory || '') ? equipped.accessory : undefined);
-    if (hatId) this.drawHat(graphics, hatId, ox, oy, scale, flip);
+    if (!hatId) return;
+
+    switch (hatId) {
+      case 'scholar_cap': {
+        g.fillStyle(0x0f172a, 1.0);
+        g.lineStyle(3 * s, 0x334155, 1.0);
+        g.beginPath();
+        g.moveTo(pointX(256), pointY(84));
+        g.lineTo(pointX(337), pointY(108));
+        g.lineTo(pointX(256), pointY(132));
+        g.lineTo(pointX(175), pointY(108));
+        g.closePath();
+        g.fillPath();
+        g.strokePath();
+        const capBase = this.mirroredRectBounds(pointX, 218, 294);
+        g.fillRect(capBase.x, pointY(119), capBase.width, 16 * s);
+        g.fillStyle(0xf59e0b, 1.0);
+        g.fillCircle(pointX(256), pointY(106), 6 * s);
+        g.lineStyle(3 * s, 0xf59e0b, 1.0);
+        this.drawLine(g, pointX(256), pointY(106), pointX(314), pointY(145));
+        g.fillCircle(pointX(314), pointY(145), 5 * s);
+        break;
+      }
+      case 'cat_ears': {
+        g.fillStyle(0xec4899, 1.0);
+        g.lineStyle(3 * s, 0xbe185d, 1.0);
+        g.beginPath();
+        g.moveTo(pointX(183), pointY(124));
+        g.lineTo(pointX(204), pointY(54));
+        g.lineTo(pointX(246), pointY(116));
+        g.closePath();
+        g.fillPath();
+        g.strokePath();
+        g.beginPath();
+        g.moveTo(pointX(266), pointY(116));
+        g.lineTo(pointX(308), pointY(54));
+        g.lineTo(pointX(329), pointY(124));
+        g.closePath();
+        g.fillPath();
+        g.strokePath();
+        g.fillStyle(0xfbcfe8, 1.0);
+        g.beginPath();
+        g.moveTo(pointX(194), pointY(113));
+        g.lineTo(pointX(205), pointY(70));
+        g.lineTo(pointX(232), pointY(113));
+        g.closePath();
+        g.fillPath();
+        g.beginPath();
+        g.moveTo(pointX(277), pointY(113));
+        g.lineTo(pointX(307), pointY(70));
+        g.lineTo(pointX(318), pointY(113));
+        g.closePath();
+        g.fillPath();
+        break;
+      }
+      case 'tram_hat': {
+        g.fillStyle(0x065f46, 1.0);
+        g.lineStyle(3 * s, 0x042f2e, 1.0);
+        const hatBody = this.mirroredRectBounds(pointX, 192, 320);
+        g.fillRoundedRect(hatBody.x, pointY(101), hatBody.width, 48 * s, 8 * s);
+        g.strokeRoundedRect(hatBody.x, pointY(101), hatBody.width, 48 * s, 8 * s);
+        g.fillStyle(0xf59e0b, 1.0);
+        const hatBand = this.mirroredRectBounds(pointX, 200, 312);
+        g.fillRect(hatBand.x, pointY(128), hatBand.width, 9 * s);
+        g.fillStyle(0x0f172a, 1.0);
+        const hatBrim = this.mirroredRectBounds(pointX, 180, 332);
+        g.fillRoundedRect(hatBrim.x, pointY(137), hatBrim.width, 17 * s, 5 * s);
+        break;
+      }
+    }
   }
 
   private static drawPreviewAccessories(
@@ -200,10 +395,21 @@ export class CharacterOutfitCompositor {
     if (equipped.wings || equipped.accessory === 'angel_wings') {
       this.drawAngelWings(graphics, ox, oy + 5 * scale, scale, flip);
     }
-    if (equipped.accessory === 'star_backpack') {
+    if ((equipped as any).backpack === 'star_backpack' || equipped.accessory === 'star_backpack') {
       this.drawStarBackpack(graphics, ox, oy + 5 * scale, scale, flip);
     }
-    if (equipped.accessory === 'star_glasses') {
+    this.drawPreviewFrontAccessories(graphics, equipped, scale, ox, oy, flip);
+  }
+
+  private static drawPreviewFrontAccessories(
+    graphics: Phaser.GameObjects.Graphics,
+    equipped: EquippedWardrobe,
+    scale: number,
+    ox: number,
+    oy: number,
+    flip: number
+  ): void {
+    if ((equipped as any).glasses === 'star_glasses' || equipped.accessory === 'star_glasses') {
       this.drawSmartGlasses(graphics, ox, oy, scale, flip);
     }
     const hatId = equipped.hat || (['cat_ears', 'scholar_cap', 'tram_hat'].includes(equipped.accessory || '') ? equipped.accessory : undefined);
@@ -377,8 +583,7 @@ export class CharacterOutfitCompositor {
     ox: number,
     oy: number,
     s: number,
-    flip: number,
-    allowLegacyHoodieFallback = false
+    flip: number
   ): void {
     const topY = oy - 4 * s;
 
@@ -443,21 +648,6 @@ export class CharacterOutfitCompositor {
         g.fillCircle(ox, topY, 5 * s);
         g.fillStyle(0x0e7490, 1.0);
         g.fillRect(ox - 1 * s, topY - 3 * s, 2 * s, 6 * s);
-        break;
-      }
-      case 'hoodie_star':
-      case 'star_hoodie': {
-        if (!allowLegacyHoodieFallback) break;
-        g.fillStyle(0xf59e0b, 0.98);
-        g.lineStyle(2 * s, 0xb45309, 1.0);
-        g.fillRoundedRect(ox - 17 * s, topY - 10 * s, 34 * s, 24 * s, 6 * s);
-        g.strokeRoundedRect(ox - 17 * s, topY - 10 * s, 34 * s, 24 * s, 6 * s);
-        g.fillStyle(0xffffff, 1.0);
-        g.fillCircle(ox, topY - 2 * s, 5 * s);
-        g.fillStyle(0xf59e0b, 1.0);
-        g.fillCircle(ox, topY - 2 * s, 3 * s);
-        g.fillStyle(0xd97706, 0.9);
-        g.fillRoundedRect(ox - 10 * s, topY + 4 * s, 20 * s, 7 * s, 3 * s);
         break;
       }
     }
@@ -552,6 +742,16 @@ export class CharacterOutfitCompositor {
       g.lineTo(x2, y2);
       g.strokePath();
     }
+  }
+
+  private static mirroredRectBounds(
+    pointX: (sourceX: number) => number,
+    left: number,
+    right: number
+  ): { x: number; width: number } {
+    const x1 = pointX(left);
+    const x2 = pointX(right);
+    return { x: Math.min(x1, x2), width: Math.abs(x2 - x1) };
   }
 
   // --- 🎒 Backpack (Star Backpack) ---

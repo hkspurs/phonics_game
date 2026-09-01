@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { PlayerAvatarService, PlayerAppearance } from '../services/PlayerAvatarService';
 import { DataManager } from '../services/DataManager';
+import { OutfitRenderer } from './OutfitRenderer';
 
 export interface AvatarBadgeOptions {
   x: number;
@@ -10,6 +11,7 @@ export interface AvatarBadgeOptions {
   showBorder?: boolean;
   interactive?: boolean;
   onClick?: () => void;
+  reducedMotion?: boolean;
 }
 
 export class PlayerAvatarBadge {
@@ -17,15 +19,20 @@ export class PlayerAvatarBadge {
   public container: Phaser.GameObjects.Container;
   public bgGraphics?: Phaser.GameObjects.Graphics;
   public avatarSprite?: Phaser.GameObjects.Image;
+  public backOutfitGraphics?: Phaser.GameObjects.Graphics;
+  public outfitGraphics?: Phaser.GameObjects.Graphics;
   public petIcon?: Phaser.GameObjects.Text;
   public size: number;
 
   private bounceTween?: Phaser.Tweens.Tween;
   private appearance: PlayerAppearance;
+  private readonly reducedMotion: boolean;
+  private readonly outfitRenderer = new OutfitRenderer();
 
   constructor(scene: Phaser.Scene, options: AvatarBadgeOptions) {
     this.scene = scene;
     this.size = options.size || 56;
+    this.reducedMotion = options.reducedMotion ?? this.detectReducedMotionPreference();
     this.appearance = PlayerAvatarService.getInstance().getAppearance();
 
     this.container = scene.add.container
@@ -37,6 +44,7 @@ export class PlayerAvatarBadge {
 
   private buildBadge(options: AvatarBadgeOptions): void {
     const r = this.size / 2;
+    const avatarOffsetY = r * 0.1;
 
     // 1. Circular Backdrop & Glow
     if (options.showBorder !== false && this.scene.add?.graphics) {
@@ -50,6 +58,7 @@ export class PlayerAvatarBadge {
       // Inner Highlight Ring
       if (typeof this.bgGraphics.lineStyle === 'function') this.bgGraphics.lineStyle(1.5, 0xfef08a, 0.6);
       if (typeof this.bgGraphics.strokeCircle === 'function') this.bgGraphics.strokeCircle(0, 0, r - 3);
+      if (typeof this.bgGraphics.setDepth === 'function') this.bgGraphics.setDepth(-2);
 
       this.container.add(this.bgGraphics);
     }
@@ -57,22 +66,61 @@ export class PlayerAvatarBadge {
     // 2. Avatar Sprite (Level 1 Dedicated Full Sprite or Skin Base)
     if (this.scene.add?.image) {
       const textureInfo = PlayerAvatarService.getInstance().getTextureKey('idle', this.scene);
-      this.avatarSprite = this.scene.add.image(0, r * 0.1, textureInfo.textureKey);
+      this.avatarSprite = this.scene.add.image(0, avatarOffsetY, textureInfo.textureKey);
 
       if (this.avatarSprite.setOrigin) this.avatarSprite.setOrigin(0.5, 0.5);
 
       // Scale appropriately to fit inside circle
       const targetDiameter = this.size * 0.85;
+      let fullSpriteWidth = 256;
       if (textureInfo.isFullSprite) {
-        this.avatarSprite.setScale(targetDiameter / 256);
-      } else {
-        this.avatarSprite.setScale(targetDiameter / 110);
-        if (textureInfo.tint !== undefined && typeof this.avatarSprite.setTint === 'function') {
-          this.avatarSprite.setTint(textureInfo.tint);
+        try {
+          const texture = (this.scene.textures as any)?.get?.(textureInfo.textureKey);
+          const sourceImage = texture?.getSourceImage?.() ?? texture?.source?.[0]?.image;
+          const sourceWidth = Number(sourceImage?.naturalWidth || sourceImage?.width);
+          if (Number.isFinite(sourceWidth) && sourceWidth > 0) fullSpriteWidth = sourceWidth;
+        } catch {
+          // Keep the legacy 256px assumption for headless or incomplete textures.
         }
+      }
+      const renderScale = textureInfo.isFullSprite
+        ? (targetDiameter / fullSpriteWidth) / 0.23
+        : targetDiameter / 110;
+
+      if (typeof this.avatarSprite.setDepth === 'function') this.avatarSprite.setDepth(1);
+      if (textureInfo.tint !== undefined && typeof this.avatarSprite.setTint === 'function') {
+        this.avatarSprite.setTint(textureInfo.tint);
       }
 
       this.container.add(this.avatarSprite);
+
+      if (this.scene.add?.graphics) {
+        this.backOutfitGraphics = this.scene.add.graphics();
+        this.outfitGraphics = this.scene.add.graphics();
+        this.backOutfitGraphics.setPosition?.(0, avatarOffsetY);
+        this.outfitGraphics.setPosition?.(0, avatarOffsetY);
+        if (typeof this.backOutfitGraphics.setDepth === 'function') this.backOutfitGraphics.setDepth(0);
+        if (typeof this.outfitGraphics.setDepth === 'function') this.outfitGraphics.setDepth(2);
+        this.container.add([this.backOutfitGraphics, this.outfitGraphics]);
+
+        this.outfitRenderer.render(
+          {
+            sprite: this.avatarSprite,
+            backGraphics: this.backOutfitGraphics,
+            graphics: this.outfitGraphics,
+          },
+          {
+            characterId: this.appearance.skinId,
+            baseTextureKey: textureInfo.textureKey,
+            pose: 'idle',
+            wardrobe: this.appearance.wardrobe,
+            textureExists: key => !this.scene.textures?.exists || this.scene.textures.exists(key),
+            scale: renderScale,
+          }
+        );
+      } else if (typeof this.avatarSprite.setScale === 'function') {
+        this.avatarSprite.setScale(textureInfo.isFullSprite ? targetDiameter / 256 : renderScale);
+      }
     }
 
     // 3. Companion Pet Badge (if equipped and requested)
@@ -83,6 +131,7 @@ export class PlayerAvatarBadge {
         fontSize: `${Math.max(14, Math.round(this.size * 0.35))}px`,
       });
       if (this.petIcon.setOrigin) this.petIcon.setOrigin(0.5);
+      if (typeof this.petIcon.setDepth === 'function') this.petIcon.setDepth(3);
       this.container.add(this.petIcon);
     }
 
@@ -98,7 +147,7 @@ export class PlayerAvatarBadge {
   }
 
   public startIdleFloat(): void {
-    if (!this.scene.tweens?.add) return;
+    if (this.reducedMotion || !this.scene.tweens?.add) return;
     this.bounceTween = this.scene.tweens.add({
       targets: this.container,
       y: this.container.y - 4,
@@ -113,7 +162,7 @@ export class PlayerAvatarBadge {
    * Positive Cheer Reaction (e.g. answered correctly)
    */
   public cheer(): void {
-    if (!this.scene.tweens?.add) return;
+    if (this.reducedMotion || !this.scene.tweens?.add) return;
 
     this.scene.tweens.add({
       targets: this.container,
@@ -156,7 +205,7 @@ export class PlayerAvatarBadge {
    * Thinking Reaction (e.g. answered wrongly or waiting)
    */
   public think(): void {
-    if (!this.scene.tweens?.add) return;
+    if (this.reducedMotion || !this.scene.tweens?.add) return;
 
     this.scene.tweens.add({
       targets: this.container,
@@ -192,6 +241,17 @@ export class PlayerAvatarBadge {
 
   public destroy(): void {
     if (this.bounceTween) this.bounceTween.stop();
+    this.outfitRenderer.clearCache();
     this.container.destroy();
+  }
+
+  private detectReducedMotionPreference(): boolean {
+    try {
+      return typeof window !== 'undefined' && typeof window.matchMedia === 'function'
+        ? window.matchMedia('(prefers-reduced-motion: reduce)').matches
+        : false;
+    } catch {
+      return false;
+    }
   }
 }

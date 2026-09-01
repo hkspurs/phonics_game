@@ -6,6 +6,7 @@ export interface CompanionPetConfig {
   petId: string;
   x?: number;
   y?: number;
+  reducedMotion?: boolean;
 }
 
 export class CompanionPet extends Phaser.GameObjects.Container {
@@ -13,12 +14,14 @@ export class CompanionPet extends Phaser.GameObjects.Container {
   private iconText: Phaser.GameObjects.Text;
   private auraGraphics: Phaser.GameObjects.Graphics;
   private bobOffset: number = 0;
+  private readonly reducedMotion: boolean;
 
   constructor(scene: Phaser.Scene, config: CompanionPetConfig) {
     super(scene, config.x ?? 0, config.y ?? 0);
 
     const found = PET_DEFINITIONS.find((p) => p.id === config.petId);
     this.petDefinition = found || PET_DEFINITIONS[0];
+    this.reducedMotion = config.reducedMotion ?? this.detectReducedMotionPreference();
 
     // Soft Ethereal Aura Glow (Outer halo + Inner sparkle, no harsh solid stroke)
     this.auraGraphics = scene.add.graphics();
@@ -41,16 +44,18 @@ export class CompanionPet extends Phaser.GameObjects.Container {
     scene.add.existing(this);
 
     // Subtle breathing pulse
-    scene.tweens.add({
-      targets: this.auraGraphics,
-      scaleX: 1.15,
-      scaleY: 1.15,
-      alpha: 0.2,
-      duration: 700,
-      yoyo: true,
-      repeat: -1,
-      ease: 'Sine.easeInOut',
-    });
+    if (!this.reducedMotion && scene.tweens?.add) {
+      scene.tweens.add({
+        targets: this.auraGraphics,
+        scaleX: 1.15,
+        scaleY: 1.15,
+        alpha: 0.2,
+        duration: 700,
+        yoyo: true,
+        repeat: -1,
+        ease: 'Sine.easeInOut',
+      });
+    }
   }
 
   public updatePet(
@@ -60,7 +65,7 @@ export class CompanionPet extends Phaser.GameObjects.Container {
     flipX: boolean = false
   ): void {
     this.bobOffset += dtSeconds * 4;
-    const floatY = Math.sin(this.bobOffset) * 6;
+    const floatY = this.reducedMotion ? 0 : Math.sin(this.bobOffset) * 6;
 
     const followOffsetX = flipX ? 45 : -45;
     const targetX = targetPlayerX + followOffsetX;
@@ -76,7 +81,7 @@ export class CompanionPet extends Phaser.GameObjects.Container {
   }
 
   public playVictoryDance(): void {
-    if (this.scene?.tweens) {
+    if (!this.reducedMotion && this.scene?.tweens?.add) {
       this.scene.tweens.add({
         targets: this,
         angle: 360,
@@ -86,6 +91,16 @@ export class CompanionPet extends Phaser.GameObjects.Container {
         ease: 'Back.easeOut',
         yoyo: true,
       });
+    }
+  }
+
+  private detectReducedMotionPreference(): boolean {
+    try {
+      return typeof window !== 'undefined' && typeof window.matchMedia === 'function'
+        ? window.matchMedia('(prefers-reduced-motion: reduce)').matches
+        : false;
+    } catch {
+      return false;
     }
   }
 

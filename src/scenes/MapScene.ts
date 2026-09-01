@@ -152,6 +152,7 @@ export class MapScene extends Phaser.Scene {
   public gemText: Phaser.GameObjects.Text | null = null;
   public starText: Phaser.GameObjects.Text | null = null;
   public progressText: Phaser.GameObjects.Text | null = null;
+  public prefersReducedMotion: boolean = false;
 
   constructor() {
     super({ key: 'MapScene' });
@@ -160,6 +161,7 @@ export class MapScene extends Phaser.Scene {
   create(): void {
     const width = this.sys?.game?.config ? Number(this.sys.game.config.width) : GAME_WIDTH;
     const height = this.sys?.game?.config ? Number(this.sys.game.config.height) : GAME_HEIGHT;
+    this.prefersReducedMotion = this.prefersReducedMotion || this.detectReducedMotionPreference();
 
     // Reset list of station containers
     this.stationNodes = [];
@@ -518,7 +520,7 @@ export class MapScene extends Phaser.Scene {
   }
 
   private createFloatingSparkles(): void {
-    if (!this.add?.text || !this.tweens?.add) return;
+    if (this.prefersReducedMotion || !this.add?.text || !this.tweens?.add) return;
 
     const sparkleCoords = [
       { x: 420, y: 1520 },
@@ -599,7 +601,7 @@ export class MapScene extends Phaser.Scene {
       container.add(glowG);
 
       // Subtle breathing tween for current active station
-      if (isCurrentActive && this.tweens?.add) {
+      if (isCurrentActive && !this.prefersReducedMotion && this.tweens?.add) {
         this.tweens.add({
           targets: glowG,
           scaleX: 1.12,
@@ -776,6 +778,7 @@ export class MapScene extends Phaser.Scene {
       size: 48,
       showPet: true,
       showBorder: true,
+      reducedMotion: this.prefersReducedMotion,
     });
     pinContainer.add(avatarBadge.container);
 
@@ -799,7 +802,7 @@ export class MapScene extends Phaser.Scene {
     }
 
     // Gentle floating bounce tween
-    if (this.tweens?.add) {
+    if (!this.prefersReducedMotion && this.tweens?.add) {
       this.tweens.add({
         targets: pinContainer,
         y: -128,
@@ -815,7 +818,7 @@ export class MapScene extends Phaser.Scene {
   }
 
   private showLockedFeedback(station: StationData, container: Phaser.GameObjects.Container): void {
-    if (this.tweens?.add) {
+    if (!this.prefersReducedMotion && this.tweens?.add) {
       const origX = container.x;
       this.tweens.add({
         targets: container,
@@ -846,7 +849,7 @@ export class MapScene extends Phaser.Scene {
       if (typeof toast.setOrigin === 'function') toast.setOrigin(0.5);
       toast.setDepth(600);
 
-      if (this.tweens?.add) {
+      if (!this.prefersReducedMotion && this.tweens?.add) {
         this.tweens.add({
           targets: toast,
           y: station.y - 120,
@@ -856,6 +859,10 @@ export class MapScene extends Phaser.Scene {
           onComplete: () => {
             if (typeof toast.destroy === 'function') toast.destroy();
           },
+        });
+      } else if (this.prefersReducedMotion && this.time?.delayedCall) {
+        this.time.delayedCall(1600, () => {
+          if (typeof toast.destroy === 'function') toast.destroy();
         });
       }
     }
@@ -1319,20 +1326,8 @@ export class MapScene extends Phaser.Scene {
       this.progressText = progLabel;
       header.add(progLabel);
 
-      // Stars
-      const starLabel = this.add.text(barX - 85, barY, `⭐ 星星: ${totalStars}/30`, {
-        fontSize: '18px',
-        fontFamily: "'Kenney Future', 'Noto Sans TC', sans-serif",
-        color: '#fde047',
-        fontStyle: 'bold',
-        resolution: typeof window !== 'undefined' ? Math.max(2, window.devicePixelRatio || 2) : 2,
-      });
-      if (typeof starLabel.setOrigin === 'function') starLabel.setOrigin(0.5);
-      this.starText = starLabel;
-      header.add(starLabel);
-
-      // Coins
-      const coinLabel = this.add.text(barX + 60, barY, `🪙 金幣: ${profile.coins}`, {
+      // Resources use the same coin → gem → star order as Title, Shop, and Runner.
+      const coinLabel = this.add.text(barX - 85, barY, `🪙 金幣: ${profile.coins}`, {
         fontSize: '18px',
         fontFamily: "'Kenney Future', 'Noto Sans TC', sans-serif",
         color: '#fbbf24',
@@ -1343,8 +1338,7 @@ export class MapScene extends Phaser.Scene {
       this.coinText = coinLabel;
       header.add(coinLabel);
 
-      // Gems
-      const gemLabel = this.add.text(barX + 200, barY, `💎 寶石: ${profile.gems}`, {
+      const gemLabel = this.add.text(barX + 60, barY, `💎 寶石: ${profile.gems}`, {
         fontSize: '18px',
         fontFamily: "'Kenney Future', 'Noto Sans TC', sans-serif",
         color: '#38bdf8',
@@ -1354,6 +1348,17 @@ export class MapScene extends Phaser.Scene {
       if (typeof gemLabel.setOrigin === 'function') gemLabel.setOrigin(0.5);
       this.gemText = gemLabel;
       header.add(gemLabel);
+
+      const starLabel = this.add.text(barX + 200, barY, `⭐ 星星: ${totalStars}/30`, {
+        fontSize: '18px',
+        fontFamily: "'Kenney Future', 'Noto Sans TC', sans-serif",
+        color: '#fde047',
+        fontStyle: 'bold',
+        resolution: typeof window !== 'undefined' ? Math.max(2, window.devicePixelRatio || 2) : 2,
+      });
+      if (typeof starLabel.setOrigin === 'function') starLabel.setOrigin(0.5);
+      this.starText = starLabel;
+      header.add(starLabel);
     }
 
     if (this.add && typeof this.add.existing === 'function') {
@@ -1469,6 +1474,16 @@ export class MapScene extends Phaser.Scene {
       return DataManager.getInstance().getTotalStars();
     } catch {
       return 0;
+    }
+  }
+
+  private detectReducedMotionPreference(): boolean {
+    try {
+      return typeof window !== 'undefined' && typeof window.matchMedia === 'function'
+        ? window.matchMedia('(prefers-reduced-motion: reduce)').matches
+        : false;
+    } catch {
+      return false;
     }
   }
 }

@@ -5,6 +5,7 @@ import { SoundManager } from '../services/SoundManager';
 import { CanvasButton } from '../ui/CanvasButton';
 import { CanvasModal } from '../ui/CanvasModal';
 import { PlayerAvatarService } from '../services/PlayerAvatarService';
+import { OutfitRenderer } from '../ui/OutfitRenderer';
 
 declare const __APP_VERSION__: string;
 
@@ -25,6 +26,7 @@ export class TitleScene extends Phaser.Scene {
   private starText: Phaser.GameObjects.Text | null = null;
   public clouds: Phaser.GameObjects.GameObject[] = [];
   public airship: Phaser.GameObjects.GameObject | null = null;
+  public prefersReducedMotion: boolean = false;
 
   constructor() {
     super({ key: 'TitleScene' });
@@ -33,6 +35,7 @@ export class TitleScene extends Phaser.Scene {
   create(): void {
     const width = this.sys?.game?.config ? Number(this.sys.game.config.width) : GAME_WIDTH;
     const height = this.sys?.game?.config ? Number(this.sys.game.config.height) : GAME_HEIGHT;
+    this.prefersReducedMotion = this.prefersReducedMotion || this.detectReducedMotionPreference();
 
     // 1. Sky & Cloudscape Background
     this.createSkyBackground(width, height);
@@ -113,7 +116,7 @@ export class TitleScene extends Phaser.Scene {
         this.clouds.push(cloudObj);
 
         // Smooth continuous looping drift
-        if (this.tweens?.add) {
+        if (!this.prefersReducedMotion && this.tweens?.add) {
           const remainingDistance = width + 150 - conf.x;
           const totalDistance = width + 300;
           const initialDuration = (remainingDistance / totalDistance) * conf.speed;
@@ -174,7 +177,7 @@ export class TitleScene extends Phaser.Scene {
       this.airship = airshipObj;
 
       // Gentle floating bobbing tween
-      if (this.tweens?.add) {
+      if (!this.prefersReducedMotion && this.tweens?.add) {
         this.tweens.add({
           targets: airshipObj,
           y: startY - 18,
@@ -323,7 +326,7 @@ export class TitleScene extends Phaser.Scene {
     }
 
     // Title container breathing animation
-    if (titleContainer && this.tweens?.add) {
+    if (titleContainer && !this.prefersReducedMotion && this.tweens?.add) {
       this.tweens.add({
         targets: titleContainer,
         scaleX: 1.03,
@@ -345,6 +348,7 @@ export class TitleScene extends Phaser.Scene {
     const avatarContainer = this.add.container
       ? this.add.container(mascotX, mascotY)
       : new Phaser.GameObjects.Container(this, mascotX, mascotY);
+    const appearance = PlayerAvatarService.getInstance().getAppearance();
 
     // 1. Stage Shadow
     if (this.add.graphics) {
@@ -361,28 +365,50 @@ export class TitleScene extends Phaser.Scene {
 
       if (mascot.setOrigin) mascot.setOrigin(0.5, 0.5);
 
-      if (textureInfo.isFullSprite) {
-        mascot.setScale(0.55);
-      } else {
-        mascot.setScale(1.2);
-        if (textureInfo.tint !== undefined && typeof mascot.setTint === 'function') {
-          mascot.setTint(textureInfo.tint);
-        }
+      const renderScale = textureInfo.isFullSprite ? 0.55 / 0.23 : 1.2;
+      if (textureInfo.tint !== undefined && typeof mascot.setTint === 'function') {
+        mascot.setTint(textureInfo.tint);
       }
+      if (typeof mascot.setDepth === 'function') mascot.setDepth(1);
       avatarContainer.add(mascot);
+
+      if (this.add.graphics) {
+        const backGraphics = this.add.graphics();
+        const outfitGraphics = this.add.graphics();
+        if (typeof backGraphics.setDepth === 'function') backGraphics.setDepth(0);
+        if (typeof outfitGraphics.setDepth === 'function') outfitGraphics.setDepth(2);
+        avatarContainer.add([backGraphics, outfitGraphics]);
+
+        new OutfitRenderer().render(
+          { sprite: mascot, backGraphics, graphics: outfitGraphics },
+          {
+            characterId: appearance.skinId,
+            baseTextureKey: textureInfo.textureKey,
+            pose: 'cheer',
+            wardrobe: appearance.wardrobe,
+            textureExists: key => !this.textures?.exists || this.textures.exists(key),
+            scale: renderScale,
+          }
+        );
+      } else {
+        mascot.setScale(textureInfo.isFullSprite ? 0.55 : renderScale);
+      }
+      if (!textureInfo.isFullSprite && textureInfo.tint !== undefined && typeof mascot.setTint === 'function') {
+        mascot.setTint(textureInfo.tint);
+      }
     }
 
     // 3. Companion Pet (if equipped)
-    const appearance = PlayerAvatarService.getInstance().getAppearance();
     if (appearance.petId && this.add.text) {
       const petDef = DataManager.getInstance().getPets().find((p) => p.id === appearance.petId);
       const petIcon = this.add.text(58, -25, petDef ? petDef.icon : '🐾', {
         fontSize: '32px',
       });
       if (petIcon.setOrigin) petIcon.setOrigin(0.5);
+      if (typeof petIcon.setDepth === 'function') petIcon.setDepth(3);
       avatarContainer.add(petIcon);
 
-      if (this.tweens?.add) {
+      if (!this.prefersReducedMotion && this.tweens?.add) {
         this.tweens.add({
           targets: petIcon,
           y: -35,
@@ -421,7 +447,7 @@ export class TitleScene extends Phaser.Scene {
       avatarContainer.add(bubbleText);
     }
 
-    if (this.tweens?.add) {
+    if (!this.prefersReducedMotion && this.tweens?.add) {
       this.tweens.add({
         targets: avatarContainer,
         y: mascotY - 12,
@@ -806,6 +832,16 @@ export class TitleScene extends Phaser.Scene {
         verText.setOrigin(0.5, 0.5);
       }
       container.add(verText);
+    }
+  }
+
+  private detectReducedMotionPreference(): boolean {
+    try {
+      return typeof window !== 'undefined' && typeof window.matchMedia === 'function'
+        ? window.matchMedia('(prefers-reduced-motion: reduce)').matches
+        : false;
+    } catch {
+      return false;
     }
   }
 }

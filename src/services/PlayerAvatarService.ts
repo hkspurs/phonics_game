@@ -1,13 +1,15 @@
 import Phaser from 'phaser';
 import { DataManager } from './DataManager';
 import type { EquippedWardrobe } from '../types';
-import { OUTFIT_DEFINITIONS, OutfitDefinition } from '../config/outfits';
+import { OutfitDefinition, OutfitPose } from '../config/outfits';
+import { wardrobeRegistry } from '../ui/OutfitRegistry';
 
 export interface AvatarSkinConfig {
   id: string;
   name: string;
   idleKey: string;
   runKey: string;
+  jumpKey: string;
   cheerKey: string;
   tint?: number;
   speedMultiplier: number;
@@ -19,9 +21,10 @@ export const AVATAR_SKIN_CONFIGS: Record<string, AvatarSkinConfig> = {
   adventurer: {
     id: 'adventurer',
     name: '冒險家 (Adventurer)',
-    idleKey: 'player_stand',
-    runKey: 'player_walk1',
-    cheerKey: 'player_cheer1',
+    idleKey: 'adventurer_stand',
+    runKey: 'adventurer_walk1',
+    jumpKey: 'adventurer_jump',
+    cheerKey: 'adventurer_cheer1',
     speedMultiplier: 1.0,
     jumpMultiplier: 1.0,
     magnetRadius: 100,
@@ -31,6 +34,7 @@ export const AVATAR_SKIN_CONFIGS: Record<string, AvatarSkinConfig> = {
     name: '女英雄 (Heroine)',
     idleKey: 'female_stand',
     runKey: 'female_walk1',
+    jumpKey: 'female_jump',
     cheerKey: 'female_cheer1',
     speedMultiplier: 1.10,
     jumpMultiplier: 1.10,
@@ -41,6 +45,7 @@ export const AVATAR_SKIN_CONFIGS: Record<string, AvatarSkinConfig> = {
     name: '女英雄 (Heroine)',
     idleKey: 'female_stand',
     runKey: 'female_walk1',
+    jumpKey: 'female_jump',
     cheerKey: 'female_cheer1',
     speedMultiplier: 1.10,
     jumpMultiplier: 1.10,
@@ -51,6 +56,7 @@ export const AVATAR_SKIN_CONFIGS: Record<string, AvatarSkinConfig> = {
     name: '小戰士 (Soldier)',
     idleKey: 'soldier_stand',
     runKey: 'soldier_walk1',
+    jumpKey: 'soldier_jump',
     cheerKey: 'soldier_cheer1',
     speedMultiplier: 1.05,
     jumpMultiplier: 1.20,
@@ -61,6 +67,7 @@ export const AVATAR_SKIN_CONFIGS: Record<string, AvatarSkinConfig> = {
     name: '皇家騎士 (Knight)',
     idleKey: 'player_stand',
     runKey: 'player_walk1',
+    jumpKey: 'player_jump',
     cheerKey: 'player_cheer1',
     tint: 0x4a90e2, // Royal Blue Armor Glow
     speedMultiplier: 1.15,
@@ -72,6 +79,7 @@ export const AVATAR_SKIN_CONFIGS: Record<string, AvatarSkinConfig> = {
     name: '暗影忍者 (Ninja)',
     idleKey: 'player_stand',
     runKey: 'player_walk1',
+    jumpKey: 'player_jump',
     cheerKey: 'player_cheer1',
     tint: 0x222222, // Shadow Dark Cloak
     speedMultiplier: 1.25,
@@ -116,12 +124,8 @@ export class PlayerAvatarService {
     const petId = profile?.equippedPet || undefined;
 
     // Find active Level-1 dedicated outfit definition if equipped
-    const outfitId = wardrobe.dress || wardrobe.top || wardrobe.bottom;
-    const outfitDefinition = outfitId
-      ? OUTFIT_DEFINITIONS.find(
-          (d) => d.id === outfitId || (d.aliases && d.aliases.includes(outfitId))
-        )
-      : undefined;
+    const outfitId = wardrobeRegistry.getSingleBodyOutfitId(wardrobe);
+    const outfitDefinition = outfitId ? wardrobeRegistry.get(outfitId) : undefined;
 
     return {
       skinId,
@@ -143,33 +147,49 @@ export class PlayerAvatarService {
     textureKey: string;
     isFullSprite: boolean;
     tint?: number;
+    poseFallback?: boolean;
   } {
     const appearance = this.getAppearance();
 
     // 1. Check for Level-1 Dedicated AI Outfit Sprite
     if (
       appearance.outfitDefinition &&
-      appearance.outfitDefinition.artworkStatus !== 'placeholder'
+      appearance.outfitDefinition.artworkStatus !== 'placeholder' &&
+      wardrobeRegistry.isCharacterArtworkCompatible(
+        appearance.outfitDefinition.id,
+        appearance.skinId
+      )
     ) {
       const assets = appearance.outfitDefinition.assets;
-      const requestedAsset =
-        pose === 'idle' ? assets.idle :
-        pose === 'run' ? assets.run :
-        pose === 'cheer' ? assets.cheer :
-        undefined;
-      const candidates = pose === 'jump'
-        ? [assets.run, assets.idle]
-        : [requestedAsset, assets.idle];
+      const isAuthored = (candidatePose: OutfitPose): boolean =>
+        appearance.outfitDefinition?.poseArtwork?.[candidatePose] !== 'idleFallback';
+      const candidates: Array<{ path?: string; fallback: boolean }> = pose === 'jump'
+        ? [
+            { path: isAuthored('jump') ? assets.jump : undefined, fallback: false },
+            { path: isAuthored('run') ? assets.run : undefined, fallback: true },
+            { path: assets.idle, fallback: true },
+          ]
+        : [
+            {
+              path: isAuthored(pose) ? assets[pose] : undefined,
+              fallback: false,
+            },
+            { path: assets.idle, fallback: true },
+          ];
+      const seen = new Set<string>();
 
-      for (const assetPath of candidates.filter(
-        (path, index, all): path is string => Boolean(path) && all.indexOf(path) === index
-      )) {
+      for (const candidate of candidates) {
+        const assetPath = candidate.path;
+        // Catalog thumbnails are never valid character-wearing candidates.
+        if (!assetPath || assetPath === assets.thumbnail || seen.has(assetPath)) continue;
+        seen.add(assetPath);
         // If scene textures are available, verify existence; otherwise default to path
         if (!scene || !scene.textures || scene.textures.exists(assetPath)) {
           return {
             textureKey: assetPath,
             isFullSprite: true,
             tint: undefined,
+            poseFallback: pose !== 'idle' && candidate.fallback,
           };
         }
       }
@@ -179,6 +199,8 @@ export class PlayerAvatarService {
     let baseKey = appearance.skinConfig.idleKey;
     if (pose === 'run') {
       baseKey = appearance.skinConfig.runKey || appearance.skinConfig.idleKey;
+    } else if (pose === 'jump') {
+      baseKey = appearance.skinConfig.jumpKey || appearance.skinConfig.idleKey;
     } else if (pose === 'cheer') {
       baseKey = appearance.skinConfig.cheerKey || appearance.skinConfig.idleKey;
     }

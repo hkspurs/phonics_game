@@ -138,6 +138,7 @@ export class ShopScene extends Phaser.Scene {
   public selectedPetIndex: number = 0;
   public selectedGadgetIndex: number = 0;
   public currentPose: 'stand' | 'walk' | 'cheer' = 'stand';
+  public prefersReducedMotion: boolean = false;
 
   // UI Buttons
   public backButton: CanvasButton | null = null;
@@ -183,6 +184,7 @@ export class ShopScene extends Phaser.Scene {
     name: Phaser.GameObjects.Text;
     perk: Phaser.GameObjects.Text;
     status: Phaser.GameObjects.Text;
+    marker?: Phaser.GameObjects.Text;
   }[] = [];
 
   // Item List Containers
@@ -190,8 +192,10 @@ export class ShopScene extends Phaser.Scene {
   private tabGameObjects: Phaser.GameObjects.GameObject[] = [];
   private ootdModal: Phaser.GameObjects.Container | null = null;
   private purchaseModal: CanvasModal | null = null;
+  private wardrobePurchasePending = false;
   private previewController: CharacterPreviewController | null = null;
   private previewWardrobeState: EquippedWardrobe | null = null;
+  private previewIsCompact = false;
   private wardrobePage = 0;
   private wardrobePageStart = 0;
 
@@ -202,9 +206,31 @@ export class ShopScene extends Phaser.Scene {
     super({ key: 'ShopScene' });
   }
 
-  create(): void {
+  create(data?: {
+    currentTab?: ShopTab;
+    currentWardrobeCategory?: WardrobeCategory;
+    currentWardrobeFilter?: WardrobeFilter;
+    selectedWardrobeIndex?: number;
+    selectedSkinIndex?: number;
+    selectedPetIndex?: number;
+    selectedGadgetIndex?: number;
+    currentPose?: 'stand' | 'walk' | 'cheer';
+    wardrobePage?: number;
+    previewWardrobe?: EquippedWardrobe;
+  }): void {
+    if (data) {
+      this.currentTab = data.currentTab ?? this.currentTab;
+      this.currentWardrobeCategory = data.currentWardrobeCategory ?? this.currentWardrobeCategory;
+      this.currentWardrobeFilter = data.currentWardrobeFilter ?? this.currentWardrobeFilter;
+      this.selectedWardrobeIndex = data.selectedWardrobeIndex ?? this.selectedWardrobeIndex;
+      this.selectedSkinIndex = data.selectedSkinIndex ?? this.selectedSkinIndex;
+      this.selectedPetIndex = data.selectedPetIndex ?? this.selectedPetIndex;
+      this.selectedGadgetIndex = data.selectedGadgetIndex ?? this.selectedGadgetIndex;
+      this.currentPose = data.currentPose ?? this.currentPose;
+    }
     const width = this.sys?.game?.config ? Number(this.sys.game.config.width) : GAME_WIDTH;
     const height = this.sys?.game?.config ? Number(this.sys.game.config.height) : GAME_HEIGHT;
+    this.prefersReducedMotion = this.prefersReducedMotion || this.detectReducedMotionPreference();
 
     // Reset collections
     this.skinCardButtons = [];
@@ -214,14 +240,25 @@ export class ShopScene extends Phaser.Scene {
     this.wardrobeItemButtons = [];
     this.poseButtons = [];
     this.skinCardTextObjects = [];
-    this.wardrobePage = 0;
+    this.wardrobePage = Number.isInteger(data?.wardrobePage) && (data?.wardrobePage ?? 0) >= 0
+      ? data!.wardrobePage as number
+      : 0;
     this.wardrobePageStart = 0;
 
     // Find initially equipped skin
     const equipped = DataManager.getInstance().getProfile().equippedSkin || 'adventurer';
     const foundIdx = this.skins.findIndex((s) => s.id === equipped);
-    this.selectedSkinIndex = foundIdx !== -1 ? foundIdx : 0;
-    this.previewWardrobeState = DataManager.getInstance().getEquippedWardrobe();
+    const restoredSkinIndex = data?.selectedSkinIndex;
+    const hasRestoredSkin = typeof restoredSkinIndex === 'number'
+      && Number.isInteger(restoredSkinIndex)
+      && restoredSkinIndex >= 0
+      && restoredSkinIndex < this.skins.length;
+    this.selectedSkinIndex = hasRestoredSkin
+      ? restoredSkinIndex as number
+      : foundIdx !== -1 ? foundIdx : 0;
+    this.previewWardrobeState = data?.previewWardrobe
+      ? { ...data.previewWardrobe }
+      : DataManager.getInstance().getEquippedWardrobe();
 
     // 1. Background
     this.createBackground(width, height);
@@ -230,7 +267,7 @@ export class ShopScene extends Phaser.Scene {
     this.createHeaderHUD(width);
 
     // 3. Tab Bar (Skins, Wardrobe, Pets, Gadgets)
-    this.createTabBar(width);
+    this.createTabBar(width, height);
 
     // 4. Right Live Character Preview Showcase (Fitting Room)
     this.createLivePreviewShowcase(width, height);
@@ -244,6 +281,9 @@ export class ShopScene extends Phaser.Scene {
     // 7. Bind shutdown cleanup
     if (this.events && typeof this.events.once === 'function') {
       this.events.once(Phaser.Scenes.Events.SHUTDOWN, this.cleanup, this);
+    }
+    if (this.scale && typeof (this.scale as any).on === 'function') {
+      (this.scale as any).on(Phaser.Scale.Events.RESIZE, this.handleScaleResize, this);
     }
   }
 
@@ -283,6 +323,7 @@ export class ShopScene extends Phaser.Scene {
       color: 'blue',
       fontSize: '18px',
       onClick: () => {
+        if (this.wardrobePurchasePending) return;
         SoundManager.play('click');
         if (this.scene) {
           this.scene.start('TitleScene');
@@ -301,6 +342,7 @@ export class ShopScene extends Phaser.Scene {
       color: 'green',
       fontSize: '18px',
       onClick: () => {
+        if (this.wardrobePurchasePending) return;
         SoundManager.play('click');
         if (this.scene) {
           this.scene.start('MapScene');
@@ -372,7 +414,7 @@ export class ShopScene extends Phaser.Scene {
     }
   }
 
-  private createTabBar(width: number): void {
+  private createTabBar(width: number, height: number): void {
     if (!this.add) return;
 
     const tabs: { key: ShopTab; label: string }[] = [
@@ -382,8 +424,8 @@ export class ShopScene extends Phaser.Scene {
       { key: 'gadgets', label: '🎒 冒險道具' },
     ];
 
-    const compact = width < 1000;
-    const legacyDesktop = width >= 1200;
+    const compact = this.getResponsiveWardrobeLayout(width, height).compact;
+    const legacyDesktop = width >= 1200 && !compact;
     const leftPanelWidth = width * 0.4;
     const tabW = legacyDesktop ? 145 : compact ? Math.max(70, leftPanelWidth * 0.21) : Math.min(145, leftPanelWidth * 0.2);
     const spacing = legacyDesktop ? 152 : tabW + (compact ? 5 : 8);
@@ -399,7 +441,7 @@ export class ShopScene extends Phaser.Scene {
         height: 44,
         text: t.label,
         color: this.currentTab === t.key ? 'yellow' : 'grey',
-        fontSize: legacyDesktop ? '19px' : compact ? '14px' : '17px',
+        fontSize: legacyDesktop ? '19px' : compact ? '16px' : '17px',
         scaleOnHover: 1.02,
         scaleOnDown: 0.97,
         onClick: () => {
@@ -412,6 +454,7 @@ export class ShopScene extends Phaser.Scene {
   }
 
   public switchTab(tab: ShopTab): void {
+    if (this.wardrobePurchasePending) return;
     if (this.currentTab === tab) return;
     this.currentTab = tab;
     SoundManager.play('click');
@@ -549,8 +592,30 @@ export class ShopScene extends Phaser.Scene {
       if (typeof statusTxt.setOrigin === 'function') statusTxt.setOrigin(1, 0.5);
       this.tabGameObjects.push(statusTxt);
 
-      this.skinCardTextObjects.push({ name: nameTxt, perk: perkTxt, status: statusTxt });
+      const marker = this.addSelectedPreviewMarker(cx + 195, cy - 28, isSelected && !isEquipped);
+      this.skinCardTextObjects.push({ name: nameTxt, perk: perkTxt, status: statusTxt, marker });
     }
+  }
+
+  private addSelectedPreviewMarker(
+    x: number,
+    y: number,
+    visible: boolean
+  ): Phaser.GameObjects.Text | undefined {
+    if (!this.add.text) return undefined;
+
+    const marker = this.add.text(x, y, '👀 預覽中', {
+      fontSize: '16px',
+      fontFamily: "'Noto Sans TC', 'Microsoft JhengHei', sans-serif",
+      color: '#7a4f01',
+      fontStyle: 'bold',
+    });
+    if (typeof marker.setOrigin === 'function') marker.setOrigin(1, 0.5);
+    if (typeof marker.setDepth === 'function') marker.setDepth(61);
+    if (typeof marker.setVisible === 'function') marker.setVisible(visible);
+    else (marker as any).visible = visible;
+    this.tabGameObjects.push(marker);
+    return marker;
   }
 
   // --- 👗 Wardrobe Selection List ---
@@ -577,10 +642,10 @@ export class ShopScene extends Phaser.Scene {
         x: layout.items.x + buttonWidth * (idx + 0.5),
         y: categoryY,
         width: Math.max(1, buttonWidth - 4),
-        height: layout.compact ? 38 : 40,
+        height: 44,
         text: filter.label,
         color: this.currentWardrobeFilter === filter.key ? 'yellow' : 'grey',
-        fontSize: layout.compact ? '14px' : '17px',
+        fontSize: layout.compact ? '16px' : '17px',
         scaleOnHover: 1.02,
         scaleOnDown: 0.97,
         onClick: () => this.switchWardrobeFilter(filter.key),
@@ -596,10 +661,10 @@ export class ShopScene extends Phaser.Scene {
         x: layout.items.x + buttonWidth * (idx + filters.length + 0.5),
         y: categoryY,
         width: Math.max(1, buttonWidth - 4),
-        height: layout.compact ? 38 : 40,
+        height: 44,
         text: category.label,
         color: this.currentWardrobeFilter === category.key ? 'yellow' : 'grey',
-        fontSize: layout.compact ? '14px' : '17px',
+        fontSize: layout.compact ? '16px' : '17px',
         scaleOnHover: 1.02,
         scaleOnDown: 0.97,
         onClick: () => this.switchWardrobeCategory(category.key),
@@ -615,12 +680,15 @@ export class ShopScene extends Phaser.Scene {
     const cardGap = layout.compact ? 7 : 9;
     const cardWidth = (layout.items.width - cardGap * (columns - 1)) / columns;
     const allItems = this.getVisibleWardrobeItems();
-    const pageSize = layout.compact && denseCatalog ? columns * 2 : Math.max(1, allItems.length);
+    const pageSize = layout.compact
+      ? columns * (denseCatalog ? 2 : 3)
+      : Math.max(1, allItems.length);
     const pageCount = Math.max(1, Math.ceil(allItems.length / pageSize));
     this.wardrobePage = Math.min(this.wardrobePage, pageCount - 1);
     this.wardrobePageStart = this.wardrobePage * pageSize;
     const items = allItems.slice(this.wardrobePageStart, this.wardrobePageStart + pageSize);
-    const pagerPadding = layout.compact && denseCatalog && pageCount > 1 ? 38 : 0;
+    const showPager = layout.compact && pageCount > 1;
+    const pagerPadding = showPager ? 54 : 0;
     const rows = Math.max(1, Math.ceil(items.length / columns));
     const cardHeight = Math.max(58, Math.min(denseCatalog ? (layout.compact ? 108 : 78) : (layout.compact ? 106 : 92), (layout.items.height - (listTop - layout.items.y) - pagerPadding - cardGap * (rows - 1)) / rows));
 
@@ -658,18 +726,19 @@ export class ShopScene extends Phaser.Scene {
       this.populateWardrobeCard(item, x, y, globalIdx, cardWidth, cardHeight, layout.compact, denseCatalog);
     });
 
-    if (layout.compact && denseCatalog && pageCount > 1) {
-      const pagerY = layout.items.y + layout.items.height - 18;
+    if (showPager) {
+      const pagerY = layout.items.y + layout.items.height - 26;
       const prevButton = new CanvasButton(this, {
         x: layout.items.x + 28,
         y: pagerY,
         width: 48,
-        height: 30,
+        height: 44,
         text: '‹',
         color: 'blue',
         fontSize: '20px',
         disabled: this.wardrobePage === 0,
         onClick: () => {
+          if (this.wardrobePurchasePending) return;
           this.wardrobePage = Math.max(0, this.wardrobePage - 1);
           this.renderCurrentTabList(width, height);
         },
@@ -678,12 +747,13 @@ export class ShopScene extends Phaser.Scene {
         x: layout.items.x + layout.items.width - 28,
         y: pagerY,
         width: 48,
-        height: 30,
+        height: 44,
         text: '›',
         color: 'blue',
         fontSize: '20px',
         disabled: this.wardrobePage >= pageCount - 1,
         onClick: () => {
+          if (this.wardrobePurchasePending) return;
           this.wardrobePage = Math.min(pageCount - 1, this.wardrobePage + 1);
           this.renderCurrentTabList(width, height);
         },
@@ -693,7 +763,7 @@ export class ShopScene extends Phaser.Scene {
       this.tabGameObjects.push(prevButton, nextButton);
       if (this.add.text) {
         const pageLabel = this.add.text(layout.items.x + layout.items.width / 2, pagerY, `第 ${this.wardrobePage + 1} / ${pageCount} 頁`, {
-          fontSize: '13px',
+          fontSize: '14px',
           fontFamily: "'Noto Sans TC', 'Microsoft JhengHei', sans-serif",
           color: '#c8d5ff',
           fontStyle: 'bold',
@@ -725,23 +795,25 @@ export class ShopScene extends Phaser.Scene {
     const isSelected = idx === this.selectedWardrobeIndex;
 
     if (denseCatalog) {
-      const iconY = cy - cardHeight * 0.3;
+      const iconY = cy - cardHeight * (compact ? 0.23 : 0.22);
       const thumbnail = wardrobeRegistry.get(item.id)?.assets.thumbnail;
+      const thumbnailSize = Math.min(compact ? 54 : 42, cardHeight * 0.56);
       if (thumbnail && this.textures?.exists && this.textures.exists(thumbnail) && this.add.image) {
         const thumb = this.add.image(cx, iconY, thumbnail);
         if (typeof thumb.setOrigin === 'function') thumb.setOrigin(0.5);
-        if (typeof thumb.setScale === 'function') thumb.setScale(compact ? 0.42 : 0.42);
+        if (typeof thumb.setDisplaySize === 'function') thumb.setDisplaySize(thumbnailSize, thumbnailSize);
+        else if (typeof thumb.setScale === 'function') thumb.setScale(compact ? 0.42 : 0.42);
         if (typeof thumb.setDepth === 'function') thumb.setDepth(61);
         this.tabGameObjects.push(thumb);
       } else if (this.add.text) {
-        const iconTxt = this.add.text(cx, iconY, item.icon, { fontSize: compact ? '42px' : '34px' });
+        const iconTxt = this.add.text(cx, iconY, item.icon, { fontSize: compact ? '38px' : '30px' });
         if (typeof iconTxt.setOrigin === 'function') iconTxt.setOrigin(0.5);
         if (typeof iconTxt.setDepth === 'function') iconTxt.setDepth(61);
         this.tabGameObjects.push(iconTxt);
       }
 
-      const nameTxt = this.add.text(cx, cy - 2, item.name, {
-        fontSize: compact ? '24px' : '15px',
+      const nameTxt = this.add.text(cx, cy + (compact ? 15 : 8), item.name, {
+        fontSize: compact ? '22px' : '15px',
         fontFamily: "'Kenney Future', 'Noto Sans TC', sans-serif",
         color: isSelected ? '#1f1505' : '#ffffff',
         fontStyle: 'bold',
@@ -752,7 +824,9 @@ export class ShopScene extends Phaser.Scene {
       if (typeof nameTxt.setDepth === 'function') nameTxt.setDepth(61);
       this.tabGameObjects.push(nameTxt);
 
-      const zhTxt = this.add.text(cx, cy + 23, item.nameEn, {
+      // Dense catalogue cards keep the Chinese item name and one status line;
+      // secondary English is intentionally omitted to prevent table-like overlap.
+      const zhTxt = this.add.text(cx, cy + (compact ? 37 : 27), '', {
         fontSize: compact ? '15px' : '10px',
         fontFamily: "'Noto Sans TC', 'Microsoft JhengHei', sans-serif",
         color: isSelected ? '#3d2503' : '#d9e2ff',
@@ -765,11 +839,11 @@ export class ShopScene extends Phaser.Scene {
 
       const statusLabel = !isArtworkReady
         ? '🎨 美術準備中'
-        : isEquipped ? '✅ 已穿戴' : isOwned ? '📦 已擁有' : `🪙 ${item.costCoins}`;
+        : isEquipped ? '✅ 已穿戴' : isSelected ? '👀 試穿中' : isOwned ? '📦 已擁有' : `🪙 ${item.costCoins}`;
       const statusTxt = this.add.text(cx, cy + cardHeight * 0.34, statusLabel, {
         fontSize: compact ? '18px' : '12px',
         fontFamily: "'Noto Sans TC', 'Microsoft JhengHei', sans-serif",
-        color: !isArtworkReady ? '#c8d5ff' : isEquipped ? '#065f24' : isOwned ? '#1e3a8a' : isSelected ? '#7a4f01' : '#ffd700',
+        color: !isArtworkReady ? '#c8d5ff' : isEquipped ? '#065f24' : isSelected ? '#7a4f01' : isOwned ? '#1e3a8a' : '#ffd700',
         fontStyle: 'bold',
         align: 'center',
       });
@@ -779,7 +853,7 @@ export class ShopScene extends Phaser.Scene {
 
       this.skinCardTextObjects.push({ name: nameTxt, perk: zhTxt, status: statusTxt });
       if (isSelected) {
-        const check = this.add.text(cx + cardWidth / 2 - 10, cy - cardHeight / 2 + 11, '✓', {
+        const check = this.add.text(cx + cardWidth / 2 - 10, cy - cardHeight / 2 + 11, isArtworkReady && isEquipped ? '✓' : '✦', {
           fontSize: compact ? '14px' : '17px',
           color: '#fff3c4',
           fontStyle: 'bold',
@@ -797,7 +871,8 @@ export class ShopScene extends Phaser.Scene {
       if (thumbnail && this.textures?.exists && this.textures.exists(thumbnail) && this.add.image) {
         const thumb = this.add.image(iconX, cy, thumbnail);
         if (typeof thumb.setOrigin === 'function') thumb.setOrigin(0.5);
-        if (typeof thumb.setScale === 'function') thumb.setScale(compact ? 0.52 : 0.66);
+        if (typeof thumb.setDisplaySize === 'function') thumb.setDisplaySize(compact ? 68 : 72, compact ? 68 : 72);
+        else if (typeof thumb.setScale === 'function') thumb.setScale(compact ? 0.52 : 0.66);
         if (typeof thumb.setDepth === 'function') thumb.setDepth(61);
         this.tabGameObjects.push(thumb);
       } else {
@@ -839,6 +914,9 @@ export class ShopScene extends Phaser.Scene {
       if (isArtworkReady && isEquipped) {
         statusLabel = '✅ 已穿戴';
         statusColor = isSelected ? '#065f24' : '#76d67c';
+      } else if (isArtworkReady && isSelected) {
+        statusLabel = '👀 試穿中';
+        statusColor = '#7a4f01';
       } else if (isArtworkReady && isOwned) {
         statusLabel = '📦 已擁有';
         statusColor = isSelected ? '#1e3a8a' : '#a0c4ff';
@@ -855,7 +933,7 @@ export class ShopScene extends Phaser.Scene {
       this.tabGameObjects.push(statusTxt);
 
       if (isSelected) {
-        const check = this.add.text(cx + cardWidth / 2 - (compact ? 22 : 28), cy - cardHeight * 0.28, '✓', {
+        const check = this.add.text(cx + cardWidth / 2 - (compact ? 22 : 28), cy - cardHeight * 0.28, isArtworkReady && isEquipped ? '✓' : '✦', {
           fontSize: compact ? '15px' : '22px',
           color: '#fff3c4',
           fontStyle: 'bold',
@@ -870,6 +948,7 @@ export class ShopScene extends Phaser.Scene {
   }
 
   public switchWardrobeCategory(cat: WardrobeCategory): void {
+    if (this.wardrobePurchasePending) return;
     if (this.currentWardrobeCategory === cat && this.currentWardrobeFilter === cat) return;
     this.currentWardrobeCategory = cat;
     this.currentWardrobeFilter = cat;
@@ -886,6 +965,7 @@ export class ShopScene extends Phaser.Scene {
   }
 
   public switchWardrobeFilter(filter: 'all' | 'owned'): void {
+    if (this.wardrobePurchasePending) return;
     if (this.currentWardrobeFilter === filter) return;
     this.currentWardrobeFilter = filter;
     this.selectedWardrobeIndex = 0;
@@ -900,13 +980,15 @@ export class ShopScene extends Phaser.Scene {
   }
 
   public selectWardrobeItem(idx: number): void {
+    if (this.wardrobePurchasePending) return;
     this.selectedWardrobeIndex = idx;
     SoundManager.playClothSnap();
 
     const items = this.getVisibleWardrobeItems();
     const item = items[idx];
     if (item) {
-      this.previewWardrobeState = previewWardrobe(this.getPersistedWardrobe(), item);
+      const baseWardrobe = this.previewWardrobeState ?? this.getPersistedWardrobe();
+      this.previewWardrobeState = previewWardrobe(baseWardrobe, item);
       this.speakItemBilingual(item);
     }
 
@@ -923,6 +1005,7 @@ export class ShopScene extends Phaser.Scene {
     if (!button) return;
 
     button.setColor('yellow');
+    if (this.prefersReducedMotion) return;
     if (!this.tweens || typeof this.tweens.add !== 'function') return;
     if (typeof this.tweens.killTweensOf === 'function') this.tweens.killTweensOf(button);
     button.setScale(0.995);
@@ -956,7 +1039,10 @@ export class ShopScene extends Phaser.Scene {
   }
 
   private isWardrobePreviewReady(item: WardrobeItem): boolean {
-    return wardrobeRegistry.isWearingArtworkReady(item.id);
+    const textureExists = this.isLiveScene() && this.textures?.exists
+      ? (key: string) => this.textures.exists(key)
+      : undefined;
+    return wardrobeRegistry.isWearingArtworkReady(item.id, textureExists);
   }
 
   private getResponsiveWardrobeLayout(width: number, height: number) {
@@ -966,11 +1052,36 @@ export class ShopScene extends Phaser.Scene {
     return getWardrobeLayout(width, height, compactOverride);
   }
 
+  private handleScaleResize = (): void => {
+    if (this.currentTab !== 'wardrobe' || this.wardrobePurchasePending || !this.scene?.restart) return;
+
+    const width = this.sys?.game?.config ? Number(this.sys.game.config.width) : GAME_WIDTH;
+    const height = this.sys?.game?.config ? Number(this.sys.game.config.height) : GAME_HEIGHT;
+    const nextCompact = this.getResponsiveWardrobeLayout(width, height).compact;
+    if (nextCompact === this.previewIsCompact) return;
+
+    // Scale.FIT changes the canvas, but it does not rebuild scene-owned layout
+    // objects. Restart only at the compact breakpoint and carry UI state over.
+    this.scene.restart({
+      currentTab: this.currentTab,
+      currentWardrobeCategory: this.currentWardrobeCategory,
+      currentWardrobeFilter: this.currentWardrobeFilter,
+      selectedWardrobeIndex: this.selectedWardrobeIndex,
+      selectedSkinIndex: this.selectedSkinIndex,
+      selectedPetIndex: this.selectedPetIndex,
+      selectedGadgetIndex: this.selectedGadgetIndex,
+      currentPose: this.currentPose,
+      wardrobePage: this.wardrobePage,
+      previewWardrobe: this.getPreviewWardrobe(),
+    });
+  };
+
   private previewSelectedWardrobeItem(): void {
     const item = this.getVisibleWardrobeItems()[this.selectedWardrobeIndex];
+    const baseWardrobe = this.previewWardrobeState ?? this.getPersistedWardrobe();
     this.previewWardrobeState = item
-      ? previewWardrobe(this.getPersistedWardrobe(), item)
-      : this.getPersistedWardrobe();
+      ? previewWardrobe(baseWardrobe, item)
+      : baseWardrobe;
   }
 
   private getPreviewCharacter(skin: SkinDefinition): PreviewCharacterDefinition {
@@ -1055,6 +1166,9 @@ export class ShopScene extends Phaser.Scene {
         this.tabGameObjects.push(statusTxt);
 
         this.skinCardTextObjects.push({ name: nameTxt, perk: perkTxt, status: statusTxt });
+        if (isSelected && !isEquipped) {
+          this.addSelectedPreviewMarker(listX + 195, y - 3, true);
+        }
       }
     });
   }
@@ -1129,6 +1243,9 @@ export class ShopScene extends Phaser.Scene {
         this.tabGameObjects.push(statusTxt);
 
         this.skinCardTextObjects.push({ name: nameTxt, perk: perkTxt, status: statusTxt });
+        if (isSelected) {
+          this.addSelectedPreviewMarker(listX + 195, y - 3, true);
+        }
       }
     });
   }
@@ -1152,6 +1269,7 @@ export class ShopScene extends Phaser.Scene {
     const panelW = layout.preview.width;
     const panelH = layout.preview.height;
     const compact = layout.compact;
+    this.previewIsCompact = compact;
     const showcase = this.add.container
       ? this.add.container(panelX, panelY)
       : new Phaser.GameObjects.Container(this, panelX, panelY);
@@ -1219,6 +1337,7 @@ export class ShopScene extends Phaser.Scene {
       character: this.getPreviewCharacter(initSkin),
       wardrobe: this.getPreviewWardrobe(),
       scale: layout.character.scale,
+      reducedMotion: this.prefersReducedMotion,
     });
     const characterX = layout.character.x + layout.character.width / 2 - panelX;
     const characterY = layout.character.y + layout.character.height / 2 - panelY;
@@ -1238,7 +1357,7 @@ export class ShopScene extends Phaser.Scene {
     this.previewWardrobeOverlay = this.wardrobeHatLayer;
 
     // Legacy sync contract retained for old integrations; the controller owns the live 2px idle motion.
-    if (this.tweens?.add) {
+    if (!this.prefersReducedMotion && this.tweens?.add) {
       this.tweens.add({
         targets: [
           this.previewSprite,
@@ -1260,12 +1379,15 @@ export class ShopScene extends Phaser.Scene {
       });
     }
 
-    if (this.time?.addEvent) {
+    if (!this.prefersReducedMotion && this.time?.addEvent) {
       this.walkAnimTimer = this.time.addEvent({
         delay: 350,
         loop: true,
         callback: () => this.cyclePreviewAnimation(),
       });
+    } else if (this.prefersReducedMotion && this.walkAnimTimer) {
+      this.walkAnimTimer.remove();
+      this.walkAnimTimer = null;
     }
 
     const poseY = layout.stage.y + Math.min(24, layout.stage.height * 0.1);
@@ -1276,10 +1398,10 @@ export class ShopScene extends Phaser.Scene {
       x: poseStartX,
       y: poseY,
       width: poseWidth,
-      height: compact ? 34 : 38,
+      height: 44,
       text: '🧍 站立',
       color: this.currentPose === 'stand' ? 'yellow' : 'grey',
-      fontSize: compact ? '13px' : '16px',
+      fontSize: compact ? '16px' : '16px',
       scaleOnHover: 1.02,
       scaleOnDown: 0.97,
       onClick: () => this.switchPose('stand'),
@@ -1289,10 +1411,10 @@ export class ShopScene extends Phaser.Scene {
       x: poseStartX + poseWidth + poseGap,
       y: poseY,
       width: poseWidth,
-      height: compact ? 34 : 38,
+      height: 44,
       text: '🏃 奔跑',
       color: this.currentPose === 'walk' ? 'yellow' : 'grey',
-      fontSize: compact ? '13px' : '16px',
+      fontSize: compact ? '16px' : '16px',
       scaleOnHover: 1.02,
       scaleOnDown: 0.97,
       onClick: () => this.switchPose('walk'),
@@ -1302,10 +1424,10 @@ export class ShopScene extends Phaser.Scene {
       x: poseStartX + (poseWidth + poseGap) * 2,
       y: poseY,
       width: poseWidth,
-      height: compact ? 34 : 38,
+      height: 44,
       text: '🎉 歡呼',
       color: this.currentPose === 'cheer' ? 'yellow' : 'grey',
-      fontSize: compact ? '13px' : '16px',
+      fontSize: compact ? '16px' : '16px',
       scaleOnHover: 1.02,
       scaleOnDown: 0.97,
       onClick: () => this.switchPose('cheer'),
@@ -1315,10 +1437,10 @@ export class ShopScene extends Phaser.Scene {
       x: layout.preview.x + layout.preview.width - 66,
       y: poseY,
       width: 112,
-      height: compact ? 34 : 38,
+      height: 44,
       text: '📸 今日穿搭',
       color: 'blue',
-      fontSize: compact ? '13px' : '17px',
+      fontSize: compact ? '16px' : '17px',
       scaleOnHover: 1.02,
       scaleOnDown: 0.97,
       onClick: () => this.showOOTDPhotoModal(),
@@ -1328,11 +1450,11 @@ export class ShopScene extends Phaser.Scene {
 
     const detailX = layout.details.x + layout.details.width / 2 - panelX;
     const detailY = layout.details.y - panelY;
-    const detailFont = compact ? '13px' : '18px';
-    const detailTextScale = compact ? 0.9 : 0.72;
+    const detailFont = compact ? '14px' : '18px';
+    const detailTextScale = compact ? 1 : 0.72;
     if (this.add.text) {
-      this.previewNameText = this.add.text(detailX, detailY + (compact ? 9 : 10), `${initSkin.name} (${initSkin.englishName})`, {
-        fontSize: compact ? '18px' : '26px',
+      this.previewNameText = this.add.text(detailX, detailY + (compact ? 9 : 10), compact ? initSkin.name : `${initSkin.name} (${initSkin.englishName})`, {
+        fontSize: compact ? '20px' : '26px',
         fontFamily: "'Kenney Future', 'Noto Sans TC', sans-serif",
         color: '#ffd45b',
         fontStyle: 'bold',
@@ -1443,7 +1565,12 @@ export class ShopScene extends Phaser.Scene {
     if (this.currentPose !== 'walk') return;
     // A dedicated Outfit run texture is already authoritative; do not let the
     // legacy base-character frame timer paint it away.
-    if (this.previewController?.lastRenderResult?.mode === 'fullSprite') return;
+    if (this.previewController?.lastRenderResult?.mode === 'fullSprite') {
+      if (this.previewController.lastRenderResult.poseFallback) {
+        this.previewController.playRunFallbackStep();
+      }
+      return;
+    }
 
     const currentSkin = this.skins[this.selectedSkinIndex];
     if (!currentSkin || !currentSkin.walkSprites || currentSkin.walkSprites.length === 0) return;
@@ -1492,6 +1619,14 @@ export class ShopScene extends Phaser.Scene {
         if (typeof textObj.status.setColor === 'function') {
           textObj.status.setColor(statusColor);
         }
+        if (textObj.marker) {
+          const shouldShowPreview = isSelected && !isEquipped;
+          if (typeof textObj.marker.setVisible === 'function') {
+            textObj.marker.setVisible(shouldShowPreview);
+          } else {
+            (textObj.marker as any).visible = shouldShowPreview;
+          }
+        }
       }
     });
 
@@ -1525,7 +1660,7 @@ export class ShopScene extends Phaser.Scene {
     // Sprite texture based on pose. The controller keeps the outfit and body on the same rig.
     if (this.previewController) {
       this.previewController.setCharacter(this.getPreviewCharacter(skin));
-      this.previewController.setWardrobe(this.getPersistedWardrobe());
+      this.previewController.setWardrobe(this.getPreviewWardrobe());
       this.previewController.setPose(this.getPreviewPose());
     } else if (this.previewSprite) {
       let texKey = skin.standSprite;
@@ -1609,7 +1744,7 @@ export class ShopScene extends Phaser.Scene {
       if (this.previewController) {
         const skin = this.skins[this.selectedSkinIndex];
         if (skin) this.previewController.setCharacter(this.getPreviewCharacter(skin));
-        this.previewController.setWardrobe(dm.getEquippedWardrobe());
+        this.previewController.setWardrobe(this.getPreviewWardrobe());
         this.previewController.setPose(this.getPreviewPose());
       }
       this.updateWardrobeOverlay();
@@ -1642,7 +1777,9 @@ export class ShopScene extends Phaser.Scene {
     this.updateWardrobeOverlay();
 
     if (this.previewNameText && typeof this.previewNameText.setText === 'function') {
-      this.previewNameText.setText(`${item.icon} ${item.name} (${item.nameEn})`);
+      this.previewNameText.setText(this.previewIsCompact
+        ? `${item.icon} ${item.name}`
+        : `${item.icon} ${item.name} (${item.nameEn})`);
     }
 
     if (this.previewDescText && typeof this.previewDescText.setText === 'function') {
@@ -1650,11 +1787,13 @@ export class ShopScene extends Phaser.Scene {
     }
 
     if (this.previewSpeedText && typeof this.previewSpeedText.setText === 'function') {
-      this.previewSpeedText.setText(`✨ 部位: ${item.category.toUpperCase()}`);
+      this.previewSpeedText.setText(this.previewIsCompact
+        ? `✨ ${item.category.toUpperCase()} · 🪙 ${item.costCoins} / 💎 ${item.costGems}`
+        : `✨ 部位: ${item.category.toUpperCase()}`);
     }
 
     if (this.previewJumpText && typeof this.previewJumpText.setText === 'function') {
-      this.previewJumpText.setText(`🪙 ${item.costCoins} / 💎 ${item.costGems}`);
+      this.previewJumpText.setText(this.previewIsCompact ? '' : `🪙 ${item.costCoins} / 💎 ${item.costGems}`);
     }
 
     if (this.previewSpecialText && typeof this.previewSpecialText.setText === 'function') {
@@ -1663,14 +1802,14 @@ export class ShopScene extends Phaser.Scene {
 
     if (this.actionButton) {
       if (typeof this.actionButton.setDepth === 'function') this.actionButton.setDepth(60);
-      if (isEquipped) {
-        this.actionButton.setText('❌ 脫下衣物');
-        this.actionButton.setColor('red');
-        this.actionButton.setEnabled(true);
-      } else if (!isArtworkReady) {
+      if (!isArtworkReady) {
         this.actionButton.setText('🎨 美術準備中');
         this.actionButton.setColor('grey');
         this.actionButton.setEnabled(false);
+      } else if (isEquipped) {
+        this.actionButton.setText('❌ 脫下衣物');
+        this.actionButton.setColor('red');
+        this.actionButton.setEnabled(true);
       } else if (isOwned) {
         this.actionButton.setText('👗 立即換上');
         this.actionButton.setColor('green');
@@ -1977,8 +2116,7 @@ export class ShopScene extends Phaser.Scene {
       const isOwned = dm.isWardrobeOwned(item.id);
       const equipped = dm.getEquippedWardrobe();
       const isEquipped = Object.values(equipped).includes(item.id);
-
-      if (!this.isWardrobePreviewReady(item) && !isEquipped) return;
+      if (!this.isWardrobePreviewReady(item)) return;
 
       if (isEquipped) {
         // Unequip
@@ -2051,6 +2189,7 @@ export class ShopScene extends Phaser.Scene {
     const ok = dm.buyWardrobeItem(item.id, currency);
     if (!ok) {
       SoundManager.play('wrong');
+      this.updatePreviewDisplay();
       return;
     }
 
@@ -2064,7 +2203,7 @@ export class ShopScene extends Phaser.Scene {
   }
 
   private showWardrobePurchaseConfirm(item: WardrobeItem): void {
-    if (this.purchaseModal || !this.add) return;
+    if (this.purchaseModal || this.wardrobePurchasePending || !this.add) return;
     const dm = DataManager.getInstance();
     const profile = dm.getProfile();
     const canAfford = profile.coins >= item.costCoins || profile.gems >= item.costGems;
@@ -2108,9 +2247,18 @@ export class ShopScene extends Phaser.Scene {
       scaleOnHover: 1.02,
       scaleOnDown: 0.97,
       onClick: () => {
+        if (this.wardrobePurchasePending) return;
+        this.wardrobePurchasePending = true;
+        this.actionButton?.setText?.('⏳ 購買中…');
+        this.actionButton?.setColor?.('grey');
+        this.actionButton?.setEnabled?.(false);
         modal.close();
-        if (this.time?.delayedCall) this.time.delayedCall(180, () => this.purchaseWardrobeItem(item));
-        else this.purchaseWardrobeItem(item);
+        const completePurchase = () => {
+          this.wardrobePurchasePending = false;
+          this.purchaseWardrobeItem(item);
+        };
+        if (this.time?.delayedCall) this.time.delayedCall(180, completePurchase);
+        else completePurchase();
       },
     });
     confirmButton.setDepth(60);
@@ -2137,7 +2285,7 @@ export class ShopScene extends Phaser.Scene {
         this.purchaseModal = null;
       },
     });
-    const content = this.add.text(0, -45, `${item.name}\n${item.nameEn}\n\n已加入你的夢幻衣櫥。`, {
+    const content = this.add.text(0, -45, `✅ 已購買並穿上！\n${item.name}\n${item.nameEn}\n\n已加入你的夢幻衣櫥。`, {
       fontSize: width < 1000 ? '16px' : '21px',
       fontFamily: "'Noto Sans TC', 'Microsoft JhengHei', sans-serif",
       color: '#fff7df',
@@ -2150,7 +2298,7 @@ export class ShopScene extends Phaser.Scene {
       y: modalHeight / 2 - 55,
       width: Math.min(260, modalWidth - 64),
       height: 48,
-      text: '👗 立即穿上',
+      text: '✅ 繼續探索',
       color: 'yellow',
       fontSize: width < 1000 ? '17px' : '20px',
       scaleOnHover: 1.02,
@@ -2167,6 +2315,8 @@ export class ShopScene extends Phaser.Scene {
     const burst = this.add.container
       ? this.add.container(0, -82)
       : new Phaser.GameObjects.Container(this, 0, -82);
+    if (this.prefersReducedMotion) return burst;
+
     const particles = ['✦', '✧', '•', '◇', '✨', '🪙'];
     particles.forEach((symbol, index) => {
       const direction = index % 2 === 0 ? -1 : 1;
@@ -2196,7 +2346,7 @@ export class ShopScene extends Phaser.Scene {
 
   // --- 📸 OOTD Photo Booth Modal (Item 10) ---
   public showOOTDPhotoModal(): void {
-    if (this.ootdModal) return;
+    if (this.ootdModal || this.wardrobePurchasePending) return;
 
     SoundManager.playCameraSnap();
     const width = this.sys?.game?.config ? Number(this.sys.game.config.width) : GAME_WIDTH;
@@ -2252,24 +2402,16 @@ export class ShopScene extends Phaser.Scene {
       modal.add(card);
     }
 
-    // Anatomical Wardrobe Overlay for Polaroid Photo
+    // Render the saved outfit through the same wearing-art fallback contract as the live preview.
     const eq = DataManager.getInstance().getEquippedWardrobe();
-
-    // Wings (behind sprite)
-    if (this.add.text) {
-      let wingsIcon = '';
-      if (eq.wings) {
-        const item = WARDROBE_ITEMS.find((w) => w.id === eq.wings);
-        if (item) wingsIcon = item.icon;
-      } else if (eq.accessory === 'angel_wings') {
-        const item = WARDROBE_ITEMS.find((w) => w.id === 'angel_wings');
-        if (item) wingsIcon = item.icon;
-      }
-      if (wingsIcon) {
-        const wTxt = this.add.text(0, -95, wingsIcon, { fontSize: '46px', align: 'center' });
-        if (typeof wTxt.setOrigin === 'function') wTxt.setOrigin(0.5);
-        modal.add(wTxt);
-      }
+    const renderEq = { ...eq };
+    const textureExists = typeof this.textures?.exists === 'function'
+      ? (key: string) => this.textures.exists(key)
+      : undefined;
+    const savedOutfitId = renderEq.dress || renderEq.top || renderEq.bottom;
+    const savedOutfit = savedOutfitId ? wardrobeRegistry.get(savedOutfitId) : undefined;
+    if (savedOutfitId && savedOutfit && !wardrobeRegistry.isWearingTextureReady(savedOutfitId, textureExists)) {
+      delete renderEq[savedOutfit.slot as keyof EquippedWardrobe];
     }
 
     // Polaroid Character Display
@@ -2277,10 +2419,15 @@ export class ShopScene extends Phaser.Scene {
     let texKey = currentSkin?.standSprite || 'player_stand';
     let isFullOutfit = false;
 
-    const outfitId = eq.dress || eq.top || eq.bottom;
+    const outfitId = wardrobeRegistry.getSingleBodyOutfitId(renderEq);
     if (outfitId) {
       const def = wardrobeRegistry.get(outfitId);
-      if (def?.assets?.idle && this.textures?.exists(def.assets.idle)) {
+      if (
+        def?.assets?.idle &&
+        wardrobeRegistry.isCharacterArtworkCompatible(outfitId, currentSkin?.id) &&
+        wardrobeRegistry.isWearingTextureReady(outfitId, textureExists) &&
+        this.textures?.exists(def.assets.idle)
+      ) {
         texKey = def.assets.idle;
         isFullOutfit = true;
       }
@@ -2288,6 +2435,7 @@ export class ShopScene extends Phaser.Scene {
 
     if (this.textures?.exists && this.textures.exists(texKey)) {
       const spr = this.add.image(0, isFullOutfit ? -70 : -90, texKey);
+      if (typeof spr.setDepth === 'function') spr.setDepth(15);
       if (typeof spr.setScale === 'function') {
         spr.setScale(isFullOutfit ? 0.42 : 1.5);
       }
@@ -2297,92 +2445,52 @@ export class ShopScene extends Phaser.Scene {
       modal.add(spr);
     }
 
-    // Front anatomical wardrobe items (dress, top, bottom, backpack, glasses, hat)
-    if (this.add.text && !isFullOutfit) {
-      // Dress
-      if (eq.dress) {
-        const item = WARDROBE_ITEMS.find((w) => w.id === eq.dress);
-        if (item) {
-          const dTxt = this.add.text(0, -68, item.icon, { fontSize: '42px', align: 'center' });
-          if (typeof dTxt.setOrigin === 'function') dTxt.setOrigin(0.5);
-          modal.add(dTxt);
-        }
-      }
-
-      // Top
-      if (eq.top) {
-        const item = WARDROBE_ITEMS.find((w) => w.id === eq.top);
-        if (item) {
-          const tTxt = this.add.text(0, -80, item.icon, { fontSize: '38px', align: 'center' });
-          if (typeof tTxt.setOrigin === 'function') tTxt.setOrigin(0.5);
-          modal.add(tTxt);
-        }
-      }
-
-      // Bottom
-      if (eq.bottom) {
-        const item = WARDROBE_ITEMS.find((w) => w.id === eq.bottom);
-        if (item) {
-          const bTxt = this.add.text(0, -50, item.icon, { fontSize: '36px', align: 'center' });
-          if (typeof bTxt.setOrigin === 'function') bTxt.setOrigin(0.5);
-          modal.add(bTxt);
-        }
-      }
-
-      // Backpack
-      if (eq.accessory === 'star_backpack') {
-        const item = WARDROBE_ITEMS.find((w) => w.id === 'star_backpack');
-        if (item) {
-          const bpTxt = this.add.text(34, -78, item.icon, { fontSize: '32px', align: 'center' });
-          if (typeof bpTxt.setOrigin === 'function') bpTxt.setOrigin(0.5);
-          modal.add(bpTxt);
-        }
-      }
-
-      // Glasses
-      if (eq.accessory === 'star_glasses') {
-        const item = WARDROBE_ITEMS.find((w) => w.id === 'star_glasses');
-        if (item) {
-          const gTxt = this.add.text(0, -110, item.icon, { fontSize: '30px', align: 'center' });
-          if (typeof gTxt.setOrigin === 'function') gTxt.setOrigin(0.5);
-          modal.add(gTxt);
-        }
-      }
-
-      // Hat / Headwear
-      let hatIcon = '';
-      if (eq.hat) {
-        const item = WARDROBE_ITEMS.find((w) => w.id === eq.hat);
-        if (item) hatIcon = item.icon;
-      } else if (eq.accessory && ['cat_ears', 'scholar_cap', 'tram_hat'].includes(eq.accessory)) {
-        const item = WARDROBE_ITEMS.find((w) => w.id === eq.accessory);
-        if (item) hatIcon = item.icon;
-      }
-      if (hatIcon) {
-        const hTxt = this.add.text(0, -145, hatIcon, { fontSize: '42px', align: 'center' });
-        if (typeof hTxt.setOrigin === 'function') hTxt.setOrigin(0.5);
-        modal.add(hTxt);
-      }
-    }
-
-    // Dynamic Tailored Vector Graphics for Polaroid
+    // Dynamic tailored graphics: keep back accessories behind the wearing sprite
+    // and front/garment graphics in front for every rendering mode.
     if (this.add.graphics) {
-      const ootdGraphics = this.add.graphics();
-      if (typeof ootdGraphics.setDepth === 'function') ootdGraphics.setDepth(15);
       if (isFullOutfit) {
-        CharacterOutfitCompositor.renderPreviewAccessories(ootdGraphics, eq, {
-          scale: 1.5,
+        // OutfitRenderer maps the 512px wearing art to 0.23 * request.scale;
+        // use the same equivalent scale here instead of the base-sprite scale.
+        const fullOutfitAccessoryScale = 0.42 / 0.23;
+        const backGraphics = this.add.graphics();
+        if (typeof backGraphics.setDepth === 'function') backGraphics.setDepth(14);
+        CharacterOutfitCompositor.renderPreviewBackAccessories(backGraphics, renderEq, {
+          scale: fullOutfitAccessoryScale,
+          coordinateSpace: 'fullSprite',
           offsetX: 0,
           offsetY: -70,
         });
+        modal.add(backGraphics);
+
+        const frontGraphics = this.add.graphics();
+        if (typeof frontGraphics.setDepth === 'function') frontGraphics.setDepth(16);
+        CharacterOutfitCompositor.renderPreviewFrontAccessories(frontGraphics, renderEq, {
+          scale: fullOutfitAccessoryScale,
+          coordinateSpace: 'fullSprite',
+          offsetX: 0,
+          offsetY: -70,
+        });
+        modal.add(frontGraphics);
       } else {
-        CharacterOutfitCompositor.renderOutfit(ootdGraphics, eq, {
+        const backGraphics = this.add.graphics();
+        if (typeof backGraphics.setDepth === 'function') backGraphics.setDepth(14);
+        CharacterOutfitCompositor.renderPreviewBackAccessories(backGraphics, renderEq, {
           scale: 1.5,
           offsetX: 0,
           offsetY: -90,
         });
+        modal.add(backGraphics);
+
+        const ootdGraphics = this.add.graphics();
+        if (typeof ootdGraphics.setDepth === 'function') ootdGraphics.setDepth(16);
+        CharacterOutfitCompositor.renderOutfit(ootdGraphics, renderEq, {
+          scale: 1.5,
+          offsetX: 0,
+          offsetY: -90,
+          includeBackAccessories: false,
+        });
+        modal.add(ootdGraphics);
       }
-      modal.add(ootdGraphics);
     }
 
     if (this.add.text) {
@@ -2437,8 +2545,8 @@ export class ShopScene extends Phaser.Scene {
 
     // Close Button
     const closeBtn = new CanvasButton(this, {
-      x: width / 2,
-      y: height / 2 + 205,
+      x: 0,
+      y: 205,
       width: 240,
       height: 52,
       text: '❌ 關閉相片',
@@ -2449,6 +2557,7 @@ export class ShopScene extends Phaser.Scene {
       },
     });
     if (typeof closeBtn.setDepth === 'function') closeBtn.setDepth(210);
+    modal.add(closeBtn);
 
     this.ootdCloseButton = closeBtn;
     this.ootdModal = modal;
@@ -2508,9 +2617,12 @@ export class ShopScene extends Phaser.Scene {
   public showGlobalSyncToast(message: string = '✨ 已套用至全遊戲（地圖、跑酷與答題）'): void {
     if (!this.add) return;
     const width = this.sys?.game?.config ? Number(this.sys.game.config.width) : GAME_WIDTH;
+    const compact = typeof window !== 'undefined'
+      && (window.innerWidth < 1100 || window.innerHeight < 620);
+    const toastY = compact ? 130 : 88;
     const toastContainer = this.add.container
-      ? this.add.container(width / 2, 75)
-      : new Phaser.GameObjects.Container(this, width / 2, 75);
+      ? this.add.container(width / 2, toastY - 13)
+      : new Phaser.GameObjects.Container(this, width / 2, toastY - 13);
     if (toastContainer.setDepth) toastContainer.setDepth(300);
 
     if (this.add.graphics) {
@@ -2533,11 +2645,19 @@ export class ShopScene extends Phaser.Scene {
       toastContainer.add(txt);
     }
 
+    if (this.prefersReducedMotion) {
+      if (typeof toastContainer.setAlpha === 'function') toastContainer.setAlpha(1);
+      if (this.time?.delayedCall) {
+        this.time.delayedCall(1600, () => toastContainer.destroy());
+      }
+      return;
+    }
+
     if (this.tweens?.add) {
       this.tweens.add({
         targets: toastContainer,
         alpha: { from: 0, to: 1 },
-        y: 88,
+        y: toastY,
         duration: 250,
         ease: 'Quad.easeOut',
         onComplete: () => {
@@ -2547,7 +2667,7 @@ export class ShopScene extends Phaser.Scene {
                 this.tweens.add({
                   targets: toastContainer,
                   alpha: 0,
-                  y: 65,
+                  y: toastY - 23,
                   duration: 350,
                   onComplete: () => toastContainer.destroy(),
                 });
@@ -2560,6 +2680,9 @@ export class ShopScene extends Phaser.Scene {
   }
 
   public cleanup(): void {
+    if (this.scale && typeof (this.scale as any).off === 'function') {
+      (this.scale as any).off(Phaser.Scale.Events.RESIZE, this.handleScaleResize, this);
+    }
     if (this.tabGameObjects) {
       this.tabGameObjects.forEach((obj) => {
         if (obj && typeof (obj as any).destroy === 'function') {
@@ -2580,7 +2703,18 @@ export class ShopScene extends Phaser.Scene {
       this.purchaseModal.destroy();
       this.purchaseModal = null;
     }
+    this.wardrobePurchasePending = false;
     this.previewController?.destroy();
     this.previewController = null;
+  }
+
+  private detectReducedMotionPreference(): boolean {
+    try {
+      return typeof window !== 'undefined' && typeof window.matchMedia === 'function'
+        ? window.matchMedia('(prefers-reduced-motion: reduce)').matches
+        : false;
+    } catch {
+      return false;
+    }
   }
 }

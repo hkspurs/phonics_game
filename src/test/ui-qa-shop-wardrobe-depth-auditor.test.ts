@@ -403,14 +403,16 @@ describe('UI QA Tester 2: Shop & Wardrobe Visual Hierarchy, Depth Stacking & Fit
       expect(scene['ootdModal']).toBeNull();
     });
 
-    it('AUDIT DEFECT: OOTD Photo Modal dismiss leaks closeBtn because closeBtn is not added to ootdModal container', () => {
+    it('mounts the OOTD close button inside the modal at modal-relative coordinates', () => {
       scene.create();
       scene.showOOTDPhotoModal();
 
       const modal = scene['ootdModal'];
       expect(modal).not.toBeNull();
+      expect((modal as any).list).toContain(scene['ootdCloseButton']);
+      expect(scene['ootdCloseButton']?.x).toBe(0);
+      expect(scene['ootdCloseButton']?.y).toBe(205);
 
-      // closeBtn was created as a local variable on scene directly, not added as child to modal
       scene.closeOOTDPhotoModal();
       expect(scene['ootdModal']).toBeNull();
     });

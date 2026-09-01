@@ -70,13 +70,21 @@ if (typeof window !== 'undefined' && document.getElementById(DEFAULT_GAME_SETTIN
   const game = new Phaser.Game(phaserGameConfig);
   (window as any).__PHASER_GAME__ = game;
 
+  let resizeTimer: number | null = null;
   const handleResize = () => {
-    if (game && game.scale) {
-      game.scale.refresh();
-      if (typeof (game.scale as any).updateBounds === 'function') {
-        (game.scale as any).updateBounds();
+    // Browser viewport metrics can settle one task after the resize event,
+    // especially when a desktop session is resized into mobile landscape.
+    // Coalesce that burst so Scale.FIT measures the final parent bounds.
+    if (resizeTimer !== null) window.clearTimeout(resizeTimer);
+    resizeTimer = window.setTimeout(() => {
+      resizeTimer = null;
+      if (game && game.scale) {
+        game.scale.refresh();
+        if (typeof (game.scale as any).updateBounds === 'function') {
+          (game.scale as any).updateBounds();
+        }
       }
-    }
+    }, 0);
   };
 
   window.addEventListener('resize', handleResize);

@@ -2,6 +2,8 @@ import type { EquippedWardrobe } from '../types';
 import type { WardrobeItem } from './wardrobe';
 
 export type PreviewPose = 'idle' | 'run' | 'cheer';
+export type OutfitPose = PreviewPose | 'jump';
+export type OutfitPoseAvailability = 'authored' | 'idleFallback';
 export type PreviewMode = 'fullSprite' | 'layered' | 'composite';
 
 export enum OutfitLayer {
@@ -81,10 +83,17 @@ export interface OutfitDefinition {
   previewMode: PreviewMode;
   /** Explicit art handoff state; placeholder outfits stay safe and unavailable in the shop. */
   artworkStatus?: 'ready' | 'placeholder';
+  /** Catalogue art can be delivered independently of the character-wearing art. */
+  thumbnailStatus?: 'ready' | 'placeholder';
+  /** Dedicated full-body art must not replace a different selected character skin. */
+  supportedCharacterIds?: readonly string[];
+  /** Pose files marked idleFallback are intentionally not treated as authored motion art. */
+  poseArtwork?: Partial<Record<OutfitPose, OutfitPoseAvailability>>;
   aliases?: string[];
   assets: {
     idle?: string;
     run?: string;
+    jump?: string;
     cheer?: string;
     thumbnail?: string;
   };
@@ -107,12 +116,14 @@ export const OUTFIT_DEFINITIONS: readonly OutfitDefinition[] = [
     nameEn: 'Scholar Gown',
     slot: OutfitSlot.DRESS,
     previewMode: 'fullSprite',
+    supportedCharacterIds: ['adventurer'],
     assets: {
       thumbnail: 'assets/outfits/scholar_gown/thumbnail.png',
       idle: 'assets/character/outfits/scholar_gown/idle.png',
       run: 'assets/character/outfits/scholar_gown/run.png',
       cheer: 'assets/character/outfits/scholar_gown/cheer.png',
     },
+    poseArtwork: { run: 'idleFallback', cheer: 'idleFallback' },
     anchors: {
       [CharacterAnchor.HEAD]: { x: 0, y: -1 },
       [CharacterAnchor.NECK]: { x: 0, y: 2 },
@@ -128,12 +139,14 @@ export const OUTFIT_DEFINITIONS: readonly OutfitDefinition[] = [
     nameEn: 'Princess Dress',
     slot: OutfitSlot.DRESS,
     previewMode: 'fullSprite',
+    supportedCharacterIds: ['adventurer'],
     assets: {
       thumbnail: 'assets/outfits/princess_dress/thumbnail.png',
       idle: 'assets/character/outfits/princess_dress/idle.png',
       run: 'assets/character/outfits/princess_dress/run.png',
       cheer: 'assets/character/outfits/princess_dress/cheer.png',
     },
+    poseArtwork: { run: 'idleFallback', cheer: 'idleFallback' },
     anchors: {
       [CharacterAnchor.HEAD]: { x: 0, y: -1 },
       [CharacterAnchor.NECK]: { x: 0, y: 2 },
@@ -148,12 +161,14 @@ export const OUTFIT_DEFINITIONS: readonly OutfitDefinition[] = [
     nameEn: 'Dino Onesie',
     slot: OutfitSlot.DRESS,
     previewMode: 'fullSprite',
+    supportedCharacterIds: ['adventurer'],
     assets: {
       thumbnail: 'assets/outfits/dino_onesie/thumbnail.png',
       idle: 'assets/character/outfits/dino_onesie/idle.png',
       run: 'assets/character/outfits/dino_onesie/run.png',
       cheer: 'assets/character/outfits/dino_onesie/cheer.png',
     },
+    poseArtwork: { run: 'idleFallback', cheer: 'idleFallback' },
     anchors: {
       [CharacterAnchor.HEAD]: { x: 0, y: -1 },
       [CharacterAnchor.NECK]: { x: 0, y: 2 },
@@ -168,12 +183,14 @@ export const OUTFIT_DEFINITIONS: readonly OutfitDefinition[] = [
     nameEn: 'Magic Robe',
     slot: OutfitSlot.DRESS,
     previewMode: 'fullSprite',
+    supportedCharacterIds: ['adventurer'],
     assets: {
       thumbnail: 'assets/outfits/magic_robe/thumbnail.png',
       idle: 'assets/character/outfits/magic_robe/idle.png',
       run: 'assets/character/outfits/magic_robe/run.png',
       cheer: 'assets/character/outfits/magic_robe/cheer.png',
     },
+    poseArtwork: { run: 'idleFallback', cheer: 'idleFallback' },
     anchors: {
       [CharacterAnchor.HEAD]: { x: 0, y: -1 },
       [CharacterAnchor.NECK]: { x: 0, y: 2 },
@@ -190,7 +207,9 @@ export const OUTFIT_DEFINITIONS: readonly OutfitDefinition[] = [
     nameEn: 'Star Hoodie',
     slot: OutfitSlot.TOP,
     previewMode: 'fullSprite',
+    supportedCharacterIds: ['adventurer'],
     artworkStatus: 'placeholder',
+    thumbnailStatus: 'placeholder',
     assets: {
       thumbnail: 'assets/outfits/star_hoodie/star_hoodie_thumbnail.png',
       idle: 'assets/character/outfits/star_hoodie/star_hoodie_wearing.png',
@@ -215,8 +234,9 @@ export const OUTFIT_DEFINITIONS: readonly OutfitDefinition[] = [
     nameEn: 'School Uniform',
     slot: OutfitSlot.TOP,
     previewMode: 'fullSprite',
+    supportedCharacterIds: ['adventurer'],
     assets: {
-      thumbnail: 'assets/character/outfits/school_uniform/thumbnail.png',
+      thumbnail: 'assets/outfits/school_uniform/thumbnail.png',
       idle: 'assets/character/outfits/school_uniform/idle.png',
       run: 'assets/character/outfits/school_uniform/run.png',
       cheer: 'assets/character/outfits/school_uniform/cheer.png',
@@ -231,6 +251,32 @@ export const OUTFIT_DEFINITIONS: readonly OutfitDefinition[] = [
     effect: { type: 'school_uniform_bonus', value: 1 },
   }),
 ];
+
+/**
+ * Returns only assets that are safe to request during the initial preload.
+ * A placeholder may expose its catalogue thumbnail before its wearing art is
+ * delivered, but no missing wearing path should be promoted or requested.
+ */
+export function getWardrobePreloadPaths(
+  definitions: readonly OutfitDefinition[] = OUTFIT_DEFINITIONS
+): readonly string[] {
+  const paths = new Set<string>();
+  definitions.forEach(definition => {
+    const thumbnailIsConfirmed = definition.thumbnailStatus === 'ready'
+      || (definition.thumbnailStatus === undefined && definition.artworkStatus !== 'placeholder');
+    if (definition.assets.thumbnail && thumbnailIsConfirmed) {
+      paths.add(definition.assets.thumbnail);
+    }
+    if (definition.artworkStatus === 'placeholder') return;
+    Object.entries(definition.assets).forEach(([assetName, path]) => {
+      if (assetName !== 'thumbnail' && path) paths.add(path);
+    });
+    Object.values(definition.layers ?? {}).forEach(path => {
+      if (path) paths.add(path);
+    });
+  });
+  return [...paths];
+}
 
 export function getWardrobeSlot(item: WardrobeItem): OutfitSlot {
   if (item.category === 'dress') return OutfitSlot.DRESS;

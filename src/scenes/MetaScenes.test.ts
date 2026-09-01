@@ -321,6 +321,13 @@ describe('Meta & Support Scenes Suite', () => {
       expect(profile.gems).toBeGreaterThanOrEqual(5);
     });
 
+    it('normalizes legacy string station IDs before settling and displaying the station', () => {
+      scene.init({ stationId: 'st_cherry' });
+
+      expect(scene.stationId).toBe(3);
+      expect(scene.stationName).toBe('櫻花樹');
+    });
+
     it('creates settlement UI with fanfare sound, confetti particles, and StarRating', () => {
       scene.init({
         stationId: 1,
@@ -357,6 +364,30 @@ describe('Meta & Support Scenes Suite', () => {
 
       expect(scene.confettiParticles).toHaveLength(0);
       configs.forEach((config: any) => expect(config.targets.destroy).toHaveBeenCalled());
+    });
+
+    it('caps result confetti to a short burst and cleans it on scene shutdown', () => {
+      mock.tweens.add.mockClear();
+
+      (scene as any).spawnConfettiParticles(1280, 720);
+      const configs = mock.tweens.add.mock.calls.map(([config]: any[]) => config);
+
+      expect(configs.length).toBeLessThanOrEqual(22);
+      expect(configs.every((config: any) => (config.delay ?? 0) + config.duration <= 6000)).toBe(true);
+
+      scene.shutdown();
+
+      expect(scene.confettiParticles).toHaveLength(0);
+      expect(configs.every((config: any) => config.targets.destroy.mock.calls.length > 0)).toBe(true);
+    });
+
+    it('skips optional result confetti when reduced motion is enabled', () => {
+      scene.prefersReducedMotion = true;
+
+      (scene as any).spawnConfettiParticles(1280, 720);
+
+      expect(scene.confettiParticles).toHaveLength(0);
+      expect(mock.tweens.add).not.toHaveBeenCalled();
     });
 
     it('navigates to MapScene when clicking map button', () => {
@@ -533,7 +564,18 @@ describe('Meta & Support Scenes Suite', () => {
 
       const content = (scene as any).purchaseModal.getContentContainer().list;
       expect(content.some((child: any) => Array.isArray(child.list) && child.list.length >= 3)).toBe(true);
-      expect(content.some((child: any) => child.getText?.() === '👗 立即穿上')).toBe(true);
+      expect(content.some((child: any) => String(child.text ?? child.getText?.() ?? '').includes('已購買並穿上'))).toBe(true);
+      expect(content.some((child: any) => child.getText?.() === '✅ 繼續探索')).toBe(true);
+    });
+
+    it('labels a selected ready outfit as try-on instead of implying ownership', () => {
+      scene.create();
+      scene.switchTab('wardrobe');
+      scene.selectWardrobeItem(1); // Scholar Gown in the dress catalogue
+
+      expect(scene.skinCardTextObjects[1]?.status.text).toContain('試穿中');
+      expect(scene.skinCardTextObjects[1]?.status.text).not.toContain('已擁有');
+      expect(scene.skinCardTextObjects[1]?.status.text).not.toContain('已穿戴');
     });
 
     it('does not let legacy base-frame cycling overwrite dedicated outfit run art', () => {

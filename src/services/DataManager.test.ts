@@ -3,6 +3,7 @@ import { DataManager, TROPHY_DEFINITIONS } from './DataManager';
 
 describe('DataManager', () => {
   let localStorageMock: Record<string, string>;
+  const localDateString = (date: Date): string => `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
 
   beforeEach(() => {
     localStorageMock = {};
@@ -194,12 +195,12 @@ describe('DataManager', () => {
       // Mock last played date as yesterday
       const yesterday = new Date();
       yesterday.setDate(yesterday.getDate() - 1);
-      profile.stats.lastPlayedDate = yesterday.toISOString().split('T')[0];
+      profile.stats.lastPlayedDate = localDateString(yesterday);
       profile.stats.streakDays = 3;
 
       manager.updateStreak();
       expect(manager.getProfile().stats.streakDays).toBe(4);
-      expect(manager.getProfile().stats.lastPlayedDate).toBe(new Date().toISOString().split('T')[0]);
+      expect(manager.getProfile().stats.lastPlayedDate).toBe(localDateString(new Date()));
     });
 
     it('should reset streak if missed more than 1 day', () => {
@@ -209,12 +210,12 @@ describe('DataManager', () => {
       // Mock last played date as 3 days ago
       const pastDate = new Date();
       pastDate.setDate(pastDate.getDate() - 3);
-      profile.stats.lastPlayedDate = pastDate.toISOString().split('T')[0];
+      profile.stats.lastPlayedDate = localDateString(pastDate);
       profile.stats.streakDays = 10;
 
       manager.updateStreak();
       expect(manager.getProfile().stats.streakDays).toBe(1);
-      expect(manager.getProfile().stats.lastPlayedDate).toBe(new Date().toISOString().split('T')[0]);
+      expect(manager.getProfile().stats.lastPlayedDate).toBe(localDateString(new Date()));
     });
   });
 

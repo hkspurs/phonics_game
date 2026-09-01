@@ -340,6 +340,29 @@ describe('MapScene — 10-Station Roadmap Scene', () => {
       expect(scene.headerContainer).toBeDefined();
     });
 
+    it('keeps resource labels in the canonical coin, gem, star order', () => {
+      scene.create();
+
+      const resourceLabels = mockScene.add.text.mock.calls
+        .map((call: any[]) => call[2])
+        .filter((text: unknown): text is string => typeof text === 'string' && /^(🪙 金幣:|💎 寶石:|⭐ 星星:)/.test(text));
+
+      expect(resourceLabels).toEqual([
+        expect.stringMatching(/^🪙 金幣:/),
+        expect.stringMatching(/^💎 寶石:/),
+        expect.stringMatching(/^⭐ 星星:/),
+      ]);
+    });
+
+    it('suppresses map ambient loops when reduced motion is enabled', () => {
+      (scene as any).prefersReducedMotion = true;
+
+      scene.create();
+
+      const configs = mockScene.tweens.add.mock.calls.map(([config]: any[]) => config);
+      expect(configs.some((config: any) => config.repeat === -1)).toBe(false);
+    });
+
     it('navigates back to TitleScene when back button is clicked', () => {
       const playSpy = vi.spyOn(SoundManager, 'play');
       scene.create();

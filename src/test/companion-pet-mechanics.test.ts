@@ -87,4 +87,17 @@ describe('CompanionPet Component & Kinematics', () => {
     pet.playVictoryDance();
     expect(mockScene.tweens.add).toHaveBeenCalled();
   });
+
+  it('suppresses ambient and victory motion when reduced motion is enabled', () => {
+    const pet = new CompanionPet(mockScene, {
+      petId: 'pixie_dragon',
+      x: 200,
+      y: 500,
+      reducedMotion: true,
+    } as any);
+
+    pet.playVictoryDance();
+
+    expect(mockScene.tweens.add).not.toHaveBeenCalled();
+  });
 });

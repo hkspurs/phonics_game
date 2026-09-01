@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { GAME_WIDTH, GAME_HEIGHT } from '../config';
+import { GAME_WIDTH, GAME_HEIGHT, normalizeStationId, StationId } from '../config';
 import { QuizQuestion } from '../types';
 import { DataManager } from '../services/DataManager';
 import { SoundManager } from '../services/SoundManager';
@@ -10,7 +10,7 @@ import { STATIONS } from './MapScene';
 import { QuestionSessionStats } from './QuestionScene';
 
 export interface ResultSceneInitData {
-  stationId?: number;
+  stationId?: StationId;
   stationName?: string;
   totalQuestions?: number;
   questions?: QuizQuestion[];
@@ -47,13 +47,14 @@ export class ResultScene extends Phaser.Scene {
   // Containers & Display
   public panelContainer: Phaser.GameObjects.Container | null = null;
   public confettiParticles: Phaser.GameObjects.GameObject[] = [];
+  public prefersReducedMotion = false;
 
   constructor() {
     super({ key: 'ResultScene' });
   }
 
   public init(data?: ResultSceneInitData): void {
-    this.stationId = data?.stationId ?? 1;
+    this.stationId = normalizeStationId(data?.stationId);
     this.stationName =
       data?.stationName ??
       STATIONS.find((s) => s.id === this.stationId)?.name ??
@@ -135,6 +136,7 @@ export class ResultScene extends Phaser.Scene {
   public create(): void {
     const width = this.sys?.game?.config ? Number(this.sys.game.config.width) : GAME_WIDTH;
     const height = this.sys?.game?.config ? Number(this.sys.game.config.height) : GAME_HEIGHT;
+    this.prefersReducedMotion = this.prefersReducedMotion || this.detectReducedMotionPreference();
 
     // 1. Festive Background & Confetti
     this.createFestiveBackground(width, height);
@@ -181,7 +183,7 @@ export class ResultScene extends Phaser.Scene {
   }
 
   private spawnConfettiParticles(width: number, height: number): void {
-    if (!this.add?.text || !this.tweens?.add) return;
+    if (this.prefersReducedMotion || !this.add?.text || !this.tweens?.add) return;
 
     this.confettiParticles = [];
     const emojis = ['🎉', '✨', '⭐', '🎊', '💫', '🌟', '🪙', '💎'];
@@ -204,9 +206,9 @@ export class ResultScene extends Phaser.Scene {
         y: height + 60,
         x: startX + Phaser.Math.Between(-80, 80),
         angle: Phaser.Math.Between(-180, 180),
-        duration: Phaser.Math.Between(2600, 5200),
+        duration: Phaser.Math.Between(2200, 4000),
         repeat: 0,
-        delay: Phaser.Math.Between(0, 2000),
+        delay: Phaser.Math.Between(0, 900),
         ease: 'Linear',
         onComplete: () => {
           if (typeof p.destroy === 'function') p.destroy();
@@ -271,7 +273,7 @@ export class ResultScene extends Phaser.Scene {
       const subTitle = this.add.text(
         0,
         -panelH / 2 + 88,
-        `第 ${this.stationId} 關 —— ${this.stationName}`,
+        `${STATIONS.find((station) => station.id === this.stationId)?.icon || '🏁'} 第 ${this.stationId} 關 —— ${this.stationName}`,
         {
           fontSize: '20px',
           fontFamily: "'Noto Sans TC', 'Microsoft JhengHei', sans-serif",
@@ -297,7 +299,7 @@ export class ResultScene extends Phaser.Scene {
     this.starRating.setDepth(60);
 
     // Animate star rating pop
-    if (this.time?.delayedCall) {
+    if (!this.prefersReducedMotion && this.time?.delayedCall) {
       this.time.delayedCall(300, () => {
         this.starRating?.setRating(this.starsEarned, true);
       });
@@ -332,7 +334,7 @@ export class ResultScene extends Phaser.Scene {
     this.createStatsBreakdown(panel, panelW);
 
     // Gentle bounce entrance for panel
-    if (this.tweens?.add) {
+    if (!this.prefersReducedMotion && this.tweens?.add) {
       panel.setScale(0.85);
       panel.setAlpha(0);
       this.tweens.add({
@@ -556,6 +558,26 @@ export class ResultScene extends Phaser.Scene {
         }
       },
     });
+  }
+
+  public shutdown(): void {
+    this.confettiParticles.forEach(particle => {
+      this.tweens?.killTweensOf?.(particle);
+      particle.destroy?.();
+    });
+    this.confettiParticles = [];
+    if (this.panelContainer) this.tweens?.killTweensOf?.(this.panelContainer);
+    this.time?.removeAllEvents?.();
+  }
+
+  private detectReducedMotionPreference(): boolean {
+    try {
+      return typeof window !== 'undefined' && typeof window.matchMedia === 'function'
+        ? window.matchMedia('(prefers-reduced-motion: reduce)').matches
+        : false;
+    } catch {
+      return false;
+    }
   }
 
   public showTrophyUnlockBanner(): void {

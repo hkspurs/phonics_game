@@ -7,7 +7,11 @@ import {
 import { DataManager } from '../services/DataManager';
 import { SoundManager } from '../services/SoundManager';
 import { QuizQuestion } from '../types';
-import { CharacterOutfitCompositor } from '../ui/CharacterOutfitCompositor';
+import {
+  CharacterOutfitCompositor,
+  FULL_SPRITE_CANVAS_CENTER,
+  FULL_SPRITE_GROUND_BASELINE,
+} from '../ui/CharacterOutfitCompositor';
 
 function attachEventEmitter(obj: any): any {
   const listeners: Record<string, Function[]> = {};
@@ -223,6 +227,10 @@ export function createMockRunnerScene(): any {
             img.y = ny;
             return img;
           }),
+          setY: vi.fn(function (ny: number) {
+            img.y = ny;
+            return img;
+          }),
           setVisible: vi.fn().mockReturnThis(),
           destroy: vi.fn(),
         };
@@ -425,6 +433,19 @@ describe('RunnerScene (2D Platformer Runner Reward Scene)', () => {
       expect(scene.groundGraphics).toBeDefined();
     });
 
+    it('normalizes legacy string station IDs before choosing the runner theme and cue', () => {
+      scene.init({ stationId: 'st_central' });
+      scene.create();
+
+      expect(scene.getStationNumericId()).toBe(1);
+      expect(mockScene.add.rectangle.mock.calls[0]?.[4]).toBe(0x2193b0);
+
+      const stationBadge = mockScene.add.text.mock.calls.find((call: any[]) =>
+        String(call[2]).includes('森林起點')
+      );
+      expect(stationBadge?.[2]).toContain('🏡 小木屋');
+    });
+
     it('builds track course with coins, gems, obstacles, springboards, and chest', () => {
       scene.init({ stationId: 1 });
       scene.create();
@@ -465,32 +486,79 @@ describe('RunnerScene (2D Platformer Runner Reward Scene)', () => {
         key.includes('assets/character/outfits/scholar_gown/')
       );
 
-      const compositorSpy = vi.spyOn(CharacterOutfitCompositor, 'renderOutfit');
+      const backCompositorSpy = vi.spyOn(CharacterOutfitCompositor, 'renderPreviewBackAccessories');
+      const compositorSpy = vi.spyOn(CharacterOutfitCompositor, 'renderPreviewFrontAccessories');
       try {
         scene.init({ isStationComplete: false });
         scene.create();
 
         expect(scene.playerSprite.texture.key).toBe(
-          'assets/character/outfits/scholar_gown/run.png'
+          'assets/character/outfits/scholar_gown/idle.png'
         );
         const initialWardrobe = compositorSpy.mock.calls.at(-1)?.[1];
         expect(initialWardrobe).not.toHaveProperty('dress');
         expect(initialWardrobe).toHaveProperty('accessory', 'star_glasses');
+        expect(backCompositorSpy.mock.calls.some((call) => call[2]?.coordinateSpace === 'fullSprite')).toBe(true);
+        expect(compositorSpy.mock.calls.some((call) => call[2]?.coordinateSpace === 'fullSprite')).toBe(true);
+
+        const expectedRenderY = scene.playerBaselineY + 36
+          - (FULL_SPRITE_GROUND_BASELINE - FULL_SPRITE_CANVAS_CENTER) * (scene as any).runnerBaseScale;
+        expect(scene.playerSprite.y).toBeCloseTo(expectedRenderY, 3);
+        expect(compositorSpy.mock.calls.at(-1)?.[2]?.offsetY).toBeCloseTo(expectedRenderY, 3);
 
         scene.triggerJump(1.0);
         expect(scene.playerSprite.texture.key).toBe(
-          'assets/character/outfits/scholar_gown/run.png'
+          'assets/character/outfits/scholar_gown/idle.png'
         );
 
         scene.onReachChest();
         expect(scene.playerSprite.texture.key).toBe(
-          'assets/character/outfits/scholar_gown/cheer.png'
+          'assets/character/outfits/scholar_gown/idle.png'
         );
         const cheerWardrobe = compositorSpy.mock.calls.at(-1)?.[1];
         expect(cheerWardrobe).not.toHaveProperty('dress');
         expect(cheerWardrobe).toHaveProperty('accessory', 'star_glasses');
+        expect(backCompositorSpy.mock.calls.at(-1)?.[2]?.coordinateSpace).toBe('fullSprite');
+        expect(compositorSpy.mock.calls.at(-1)?.[2]?.coordinateSpace).toBe('fullSprite');
       } finally {
+        backCompositorSpy.mockRestore();
         compositorSpy.mockRestore();
+      }
+    });
+
+    it('keeps the full-sprite foot baseline continuous while airborne', () => {
+      (scene as any).runnerUsesDedicatedOutfitSprite = true;
+      (scene as any).runnerBaseScale = 0.64;
+
+      const groundY = (scene as any).getPlayerRenderY(scene.playerBaselineY);
+      const airborneWorldY = scene.playerBaselineY - 10;
+      const airborneY = (scene as any).getPlayerRenderY(airborneWorldY);
+      const spriteFootOffset =
+        (FULL_SPRITE_GROUND_BASELINE - FULL_SPRITE_CANVAS_CENTER) * (scene as any).runnerBaseScale;
+
+      expect(groundY - airborneY).toBeCloseTo(10, 3);
+      expect(airborneY + spriteFootOffset).toBeCloseTo(airborneWorldY + 36, 3);
+    });
+
+    it('keeps composite Runner accessories in separate rear and foreground passes', () => {
+      const dm = DataManager.getInstance();
+      dm.getProfile()!.ownedWardrobe!.push('star_backpack');
+      dm.equipWardrobeItem('accessory', 'star_backpack');
+      const back = vi.spyOn(CharacterOutfitCompositor, 'renderPreviewBackAccessories').mockImplementation(() => {});
+      const outfit = vi.spyOn(CharacterOutfitCompositor, 'renderOutfit').mockImplementation(() => {});
+
+      try {
+        scene.init();
+        scene.create();
+
+        expect(scene.runnerWardrobeBackGraphics).toBeDefined();
+        expect(back).toHaveBeenCalled();
+        expect(back.mock.calls.at(-1)?.[2]?.coordinateSpace).toBeUndefined();
+        const renderOptions = outfit.mock.calls.at(-1)?.[2];
+        expect(renderOptions).toEqual(expect.objectContaining({ includeBackAccessories: false }));
+      } finally {
+        back.mockRestore();
+        outfit.mockRestore();
       }
     });
 
@@ -511,6 +579,23 @@ describe('RunnerScene (2D Platformer Runner Reward Scene)', () => {
       }
     });
 
+    it('omits a registered outfit from the compositor when its wearing art is missing', () => {
+      const dm = DataManager.getInstance();
+      dm.getProfile()!.ownedWardrobe!.push('scholar_robe');
+      dm.equipWardrobeItem('dress', 'scholar_robe');
+
+      const compositorSpy = vi.spyOn(CharacterOutfitCompositor, 'renderOutfit');
+      try {
+        scene.init();
+        scene.create();
+
+        expect(scene.playerSprite.texture.key).toBe(scene.skinConfig.walk1Key);
+        expect(compositorSpy.mock.calls.at(-1)?.[1]).not.toHaveProperty('dress');
+      } finally {
+        compositorSpy.mockRestore();
+      }
+    });
+
     it('creates HUD with currency counters, progress bar, and skip button', () => {
       scene.init({ stationId: 3 });
       scene.create();
@@ -518,6 +603,8 @@ describe('RunnerScene (2D Platformer Runner Reward Scene)', () => {
       expect(scene.hudContainer).toBeDefined();
       expect(scene.coinCounterText).toBeDefined();
       expect(scene.gemCounterText).toBeDefined();
+      expect(scene.starCounterText).toBeDefined();
+      expect(scene.starCounterText.text).toBe('⭐ 0/30');
       expect(scene.progressBarFill).toBeDefined();
       expect(scene.skipButton).toBeDefined();
     });
@@ -700,6 +787,89 @@ describe('RunnerScene (2D Platformer Runner Reward Scene)', () => {
       expect(lootSpy).toHaveBeenCalled();
       expect(dm.getProfile().coins).toBe(initialCoins + 5);
       expect(dm.getProfile().gems).toBe(initialGems + 1);
+      expect((scene as any).celebrationRewardText?.text).toContain('+5');
+      expect((scene as any).celebrationRewardText?.text).toContain('+1');
+      expect((scene as any).celebrationContinueButton?.getText()).toBe('下一題');
+    });
+
+    it('allows the child to continue explicitly after reading the chest reward', () => {
+      scene.init({ isStationComplete: false });
+      scene.isCelebrating = true;
+      const removeTimer = vi.fn();
+      (scene as any).celebrationTimer = { remove: removeTimer };
+      const finishSpy = vi.spyOn(scene, 'finishRunner').mockImplementation(() => {});
+
+      (scene as any).continueCelebration();
+
+      expect(removeTimer).toHaveBeenCalled();
+      expect(finishSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('does not let jump input bypass the readable chest reward handoff', () => {
+      scene.init({ isStationComplete: false });
+      scene.isCelebrating = true;
+      const finishSpy = vi.spyOn(scene, 'finishRunner').mockImplementation(() => {});
+
+      scene.handleJumpInput();
+
+      expect(finishSpy).not.toHaveBeenCalled();
+      expect(scene.isCelebrating).toBe(true);
+    });
+
+    it('uses a larger dedicated outfit scale while keeping compact viewports clear', () => {
+      scene.init();
+
+      const standard = (scene as any).getRunnerFullSpriteScale(1280, 720);
+      const compact = (scene as any).getRunnerFullSpriteScale(844, 390);
+
+      expect(standard).toBeGreaterThan(0.62);
+      expect(standard).toBeLessThanOrEqual(0.68);
+      expect(compact).toBeLessThan(standard);
+      expect(compact).toBeGreaterThanOrEqual(0.54);
+    });
+
+    it('detects reduced motion and suppresses optional particle loops', () => {
+      const previousMatchMedia = Object.getOwnPropertyDescriptor(window, 'matchMedia');
+      Object.defineProperty(window, 'matchMedia', {
+        configurable: true,
+        value: vi.fn(() => ({
+          matches: true,
+          media: '(prefers-reduced-motion: reduce)',
+          onchange: null,
+          addListener: vi.fn(),
+          removeListener: vi.fn(),
+          addEventListener: vi.fn(),
+          removeEventListener: vi.fn(),
+          dispatchEvent: vi.fn(),
+        })),
+      });
+
+      try {
+        scene.init();
+        expect((scene as any).prefersReducedMotion).toBe(true);
+
+        const textSpy = vi.spyOn(mockScene.add, 'text');
+        scene.spawnRunningDust(100, 100);
+        scene.spawnLandingDust(100, 100);
+
+        expect(textSpy).not.toHaveBeenCalled();
+      } finally {
+        if (previousMatchMedia) {
+          Object.defineProperty(window, 'matchMedia', previousMatchMedia);
+        } else {
+          delete (window as any).matchMedia;
+        }
+      }
+    });
+
+    it('does not create gem loops or celebration tweens when reduced motion is enabled', () => {
+      scene.init();
+      scene.prefersReducedMotion = true;
+      mockScene.tweens.add.mockClear();
+
+      scene.addGem(400, 300);
+
+      expect(mockScene.tweens.add).not.toHaveBeenCalled();
     });
   });
 
