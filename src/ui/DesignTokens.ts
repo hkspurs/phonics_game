@@ -163,3 +163,19 @@ export const ELEVATION = {
     shadowColor: 'rgba(0, 0, 0, 0.55)',
   },
 } as const;
+
+export const TOUCH_TARGET = {
+  min: 48,          // Absolute minimum for touch controls
+  standard: 52,     // Standard button touch target
+  comfortable: 56,  // Young child friendly touch target
+  runner: 64,       // Action platformer controls
+} as const;
+
+export const MOTION = {
+  durationFast: 120,
+  durationNormal: 220,
+  durationSlow: 320,
+  toastDuration: 3500,
+  prefersReducedMotion: false,
+} as const;
+
