@@ -1,5 +1,33 @@
 # AI Coordination Changelog
 
+## 2026-09-02 — Antigravity — TASK-20260902-018
+
+Summary:
+Master Plan Phase 5: Full Cast Master Art Rollout:
+1. **Full Cast Master Art Bible Migration**:
+   - Upgraded all 4 remaining characters (`Heroine`, `Soldier`, `Knight`, `Ninja`) across all 9 poses each (45 poses total).
+   - Enforced 512x512 RGBA PNG, center `x=256±4`, baseline `y=456±4`, jump `maxY<=440`, connected body >= 99.5%, and safe-box bounds.
+2. **Asset Validation**:
+   - `scripts/validate-character-assets.mjs` passed 100% across all 45 poses for all 5 characters.
+3. **Verification**:
+   - 60 test suites, 1,846 unit tests passing (100% pass rate).
+   - Clean production build and synchronized deployment docs.
+
+Changed:
+- `p1-adventure/public/assets/characters/heroine/sprites/*.png`
+- `p1-adventure/public/assets/characters/soldier/sprites/*.png`
+- `p1-adventure/public/assets/characters/knight/sprites/*.png`
+- `p1-adventure/public/assets/characters/ninja/sprites/*.png`
+
+Verification:
+- `node scripts/validate-character-assets.mjs adventurer`: 9/9 passed.
+- `node scripts/validate-character-assets.mjs heroine`: 9/9 passed.
+- `node scripts/validate-character-assets.mjs soldier`: 9/9 passed.
+- `node scripts/validate-character-assets.mjs knight`: 9/9 passed.
+- `node scripts/validate-character-assets.mjs ninja`: 9/9 passed.
+- `npm run test:unit`: 60 test suites, 1,846 unit tests passing (100% pass rate).
+- `npm run build`: Clean production build.
+
 ## 2026-09-02 — Antigravity — TASK-20260902-017
 
 Summary:
