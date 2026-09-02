@@ -828,6 +828,300 @@ export class PreloadScene extends Phaser.Scene {
         ctx.fillRect(i, 8, 4, 4);
       }
     });
+
+    // 14. Vector Magnet Icon
+    createSafeCanvasTexture('icon_magnet', 48, 48, (ctx) => {
+      // U-shape Horseshoe Magnet
+      ctx.lineWidth = 9;
+      ctx.lineCap = 'butt';
+      ctx.strokeStyle = '#ef4444';
+      ctx.beginPath();
+      ctx.arc(24, 26, 14, Math.PI, 0, false);
+      ctx.stroke();
+
+      ctx.fillStyle = '#ef4444';
+      ctx.fillRect(10, 14, 9, 12);
+      ctx.fillRect(29, 14, 9, 12);
+
+      // Silver Pole Caps
+      ctx.fillStyle = '#e2e8f0';
+      ctx.fillRect(10, 6, 9, 8);
+      ctx.fillRect(29, 6, 9, 8);
+
+      // Magnetic field waves
+      ctx.strokeStyle = '#38bdf8';
+      ctx.lineWidth = 2.5;
+      ctx.lineCap = 'round';
+      ctx.beginPath();
+      ctx.arc(24, 6, 6, Math.PI * 1.1, Math.PI * 1.9, false);
+      ctx.stroke();
+    });
+
+    // 15. Vector Radar / Warning Icon
+    createSafeCanvasTexture('icon_radar', 48, 48, (ctx) => {
+      // Amber Radar Sparks
+      ctx.fillStyle = '#f59e0b';
+      ctx.beginPath();
+      ctx.moveTo(27, 4);
+      ctx.lineTo(13, 26);
+      ctx.lineTo(24, 26);
+      ctx.lineTo(21, 44);
+      ctx.lineTo(35, 22);
+      ctx.lineTo(24, 22);
+      ctx.closePath();
+      ctx.fill();
+
+      // Inner high-voltage core
+      ctx.fillStyle = '#fef08a';
+      ctx.beginPath();
+      ctx.moveTo(26, 8);
+      ctx.lineTo(17, 24);
+      ctx.lineTo(24, 24);
+      ctx.lineTo(22, 38);
+      ctx.lineTo(31, 22);
+      ctx.lineTo(24, 22);
+      ctx.closePath();
+      ctx.fill();
+    });
+
+    // 16. Vector Feather / Jump Icon
+    createSafeCanvasTexture('icon_feather', 48, 48, (ctx) => {
+      ctx.fillStyle = '#c084fc';
+      ctx.beginPath();
+      ctx.moveTo(38, 6);
+      ctx.quadraticCurveTo(18, 14, 10, 38);
+      ctx.quadraticCurveTo(24, 38, 38, 6);
+      ctx.closePath();
+      ctx.fill();
+
+      // Feather spine
+      ctx.strokeStyle = '#fdf4ff';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(38, 6);
+      ctx.lineTo(8, 42);
+      ctx.stroke();
+    });
+
+    // 17. Vector Emerald Checkmark Badge
+    createSafeCanvasTexture('icon_check_badge', 36, 36, (ctx) => {
+      ctx.fillStyle = '#10b981';
+      ctx.beginPath();
+      ctx.arc(18, 18, 16, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = 3.5;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      ctx.beginPath();
+      ctx.moveTo(11, 18);
+      ctx.lineTo(16, 23);
+      ctx.lineTo(25, 12);
+      ctx.stroke();
+    });
+
+    // 18. Vector Brass Lock Badge
+    createSafeCanvasTexture('icon_lock_badge', 36, 36, (ctx) => {
+      // Shackle
+      ctx.strokeStyle = '#cbd5e1';
+      ctx.lineWidth = 3.5;
+      ctx.beginPath();
+      ctx.arc(18, 14, 7, Math.PI, 0, false);
+      ctx.lineTo(25, 20);
+      ctx.lineTo(11, 20);
+      ctx.stroke();
+
+      // Body
+      ctx.fillStyle = '#f59e0b';
+      ctx.beginPath();
+      ctx.roundRect ? ctx.roundRect(8, 18, 20, 15, 4) : ctx.fillRect(8, 18, 20, 15);
+      ctx.fill();
+
+      // Keyhole
+      ctx.fillStyle = '#1e1b4b';
+      ctx.beginPath();
+      ctx.arc(18, 24, 2.5, 0, Math.PI * 2);
+      ctx.fillRect(17, 24, 2, 4);
+      ctx.fill();
+    });
+
+    // 19. Baby Dino Portrait (64x64)
+    createSafeCanvasTexture('icon_pet_dino_portrait', 64, 64, (ctx) => {
+      // Ambient Disc
+      ctx.fillStyle = 'rgba(34, 197, 94, 0.2)';
+      ctx.beginPath();
+      ctx.arc(32, 32, 30, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Dino Head
+      const dinoGrad = ctx.createRadialGradient(28, 24, 4, 32, 32, 24);
+      dinoGrad.addColorStop(0, '#86efac');
+      dinoGrad.addColorStop(0.5, '#22c55e');
+      dinoGrad.addColorStop(1, '#15803d');
+      ctx.fillStyle = dinoGrad;
+      ctx.beginPath();
+      ctx.arc(32, 34, 20, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Dino Snout
+      ctx.fillStyle = '#4ade80';
+      ctx.beginPath();
+      ctx.ellipse(38, 38, 12, 9, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Nostril
+      ctx.fillStyle = '#166534';
+      ctx.beginPath();
+      ctx.arc(43, 36, 1.8, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Cute Big Eye
+      ctx.fillStyle = '#ffffff';
+      ctx.beginPath();
+      ctx.arc(28, 28, 6.5, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#0f172a';
+      ctx.beginPath();
+      ctx.arc(29, 28, 4, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#ffffff';
+      ctx.beginPath();
+      ctx.arc(28, 26.5, 1.8, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Back Crest Scales
+      ctx.fillStyle = '#f59e0b';
+      for (const [cx, cy] of [[18, 18], [24, 14], [32, 13]]) {
+        ctx.beginPath();
+        ctx.arc(cx, cy, 3.8, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    });
+
+    // 20. Cyber Kitty Portrait (64x64)
+    createSafeCanvasTexture('icon_pet_mecha_cat_portrait', 64, 64, (ctx) => {
+      // Ambient Disc
+      ctx.fillStyle = 'rgba(56, 189, 248, 0.2)';
+      ctx.beginPath();
+      ctx.arc(32, 32, 30, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Mecha Cat Ears
+      ctx.fillStyle = '#0284c7';
+      ctx.beginPath();
+      ctx.moveTo(14, 24);
+      ctx.lineTo(19, 10);
+      ctx.lineTo(26, 20);
+      ctx.closePath();
+      ctx.fill();
+      ctx.beginPath();
+      ctx.moveTo(50, 24);
+      ctx.lineTo(45, 10);
+      ctx.lineTo(38, 20);
+      ctx.closePath();
+      ctx.fill();
+
+      // Neon Ear Inners
+      ctx.fillStyle = '#38bdf8';
+      ctx.beginPath();
+      ctx.moveTo(17, 21);
+      ctx.lineTo(20, 13);
+      ctx.lineTo(24, 19);
+      ctx.closePath();
+      ctx.fill();
+      ctx.beginPath();
+      ctx.moveTo(47, 21);
+      ctx.lineTo(44, 13);
+      ctx.lineTo(40, 19);
+      ctx.closePath();
+      ctx.fill();
+
+      // Head Base Helmet
+      const catGrad = ctx.createRadialGradient(28, 28, 4, 32, 34, 20);
+      catGrad.addColorStop(0, '#f1f5f9');
+      catGrad.addColorStop(0.6, '#cbd5e1');
+      catGrad.addColorStop(1, '#64748b');
+      ctx.fillStyle = catGrad;
+      ctx.beginPath();
+      ctx.arc(32, 34, 18, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Cyan Visor
+      ctx.fillStyle = '#0284c7';
+      ctx.beginPath();
+      ctx.roundRect ? ctx.roundRect(18, 27, 28, 12, 6) : ctx.fillRect(18, 27, 28, 12);
+      ctx.fill();
+      ctx.fillStyle = '#38bdf8';
+      ctx.beginPath();
+      ctx.roundRect ? ctx.roundRect(20, 29, 24, 8, 4) : ctx.fillRect(20, 29, 24, 8);
+      ctx.fill();
+
+      // Visor Glow Eyes
+      ctx.fillStyle = '#ffffff';
+      ctx.beginPath();
+      ctx.arc(26, 33, 2.5, 0, Math.PI * 2);
+      ctx.arc(38, 33, 2.5, 0, Math.PI * 2);
+      ctx.fill();
+    });
+
+    // 21. Pixie Dragon Portrait (64x64)
+    createSafeCanvasTexture('icon_pet_pixie_dragon_portrait', 64, 64, (ctx) => {
+      // Ambient Disc
+      ctx.fillStyle = 'rgba(236, 72, 153, 0.2)';
+      ctx.beginPath();
+      ctx.arc(32, 32, 30, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Fairy Wings
+      ctx.fillStyle = 'rgba(244, 114, 182, 0.7)';
+      ctx.beginPath();
+      ctx.ellipse(14, 22, 10, 5, -Math.PI / 4, 0, Math.PI * 2);
+      ctx.ellipse(50, 22, 10, 5, Math.PI / 4, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Head Base
+      const pixGrad = ctx.createRadialGradient(28, 26, 4, 32, 34, 19);
+      pixGrad.addColorStop(0, '#fbcfe8');
+      pixGrad.addColorStop(0.5, '#ec4899');
+      pixGrad.addColorStop(1, '#9d174d');
+      ctx.fillStyle = pixGrad;
+      ctx.beginPath();
+      ctx.arc(32, 34, 18, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Crystal Horns
+      ctx.fillStyle = '#f472b6';
+      ctx.beginPath();
+      ctx.moveTo(22, 20);
+      ctx.lineTo(19, 10);
+      ctx.lineTo(26, 17);
+      ctx.closePath();
+      ctx.fill();
+      ctx.beginPath();
+      ctx.moveTo(42, 20);
+      ctx.lineTo(45, 10);
+      ctx.lineTo(38, 17);
+      ctx.closePath();
+      ctx.fill();
+
+      // Big Radiant Eyes
+      ctx.fillStyle = '#ffffff';
+      ctx.beginPath();
+      ctx.arc(26, 32, 5.5, 0, Math.PI * 2);
+      ctx.arc(38, 32, 5.5, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#831843';
+      ctx.beginPath();
+      ctx.arc(26, 32, 3.8, 0, Math.PI * 2);
+      ctx.arc(38, 32, 3.8, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#ffffff';
+      ctx.beginPath();
+      ctx.arc(25, 30.5, 1.6, 0, Math.PI * 2);
+      ctx.arc(37, 30.5, 1.6, 0, Math.PI * 2);
+      ctx.fill();
+    });
   }
 
   create(): void {

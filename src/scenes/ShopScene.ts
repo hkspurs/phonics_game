@@ -178,6 +178,7 @@ export class ShopScene extends Phaser.Scene {
   public previewSpeedText: Phaser.GameObjects.Text | null = null;
   public previewJumpText: Phaser.GameObjects.Text | null = null;
   public previewSpecialText: Phaser.GameObjects.Text | null = null;
+  public petPreviewLayer: Phaser.GameObjects.Container | null = null;
 
   // Card Text Collections
   public skinCardTextObjects: {
@@ -533,7 +534,7 @@ export class ShopScene extends Phaser.Scene {
         y: y + 25,
         width: 520,
         height: 88,
-        color: isSelected ? 'yellow' : 'grey',
+        color: isSelected ? 'card_selected' : 'grey',
         onClick: () => {
           this.selectSkin(idx);
         },
@@ -566,7 +567,7 @@ export class ShopScene extends Phaser.Scene {
       const nameTxt = this.add.text(cx - 155, cy - 16, `${skin.name} (${skin.englishName})`, {
         fontSize: '24px',
         fontFamily: "'Kenney Future', 'Noto Sans TC', sans-serif",
-        color: isSelected ? '#1f1505' : '#ffffff',
+        color: '#ffffff',
         fontStyle: 'bold',
       });
       if (typeof nameTxt.setOrigin === 'function') nameTxt.setOrigin(0, 0.5);
@@ -575,23 +576,23 @@ export class ShopScene extends Phaser.Scene {
       const perkTxt = this.add.text(cx - 155, cy + 16, `✨ ${skin.perkDescription}`, {
         fontSize: '17px',
         fontFamily: "'Noto Sans TC', 'Microsoft JhengHei', sans-serif",
-        color: isSelected ? '#3d2503' : '#ffd166',
+        color: isSelected ? '#fde047' : '#ffd166',
         fontStyle: isSelected ? 'bold' : 'normal',
       });
       if (typeof perkTxt.setOrigin === 'function') perkTxt.setOrigin(0, 0.5);
       this.tabGameObjects.push(perkTxt);
 
       let statusLabel = `💎 ${skin.costGems}`;
-      let statusColor = isSelected ? '#03416e' : '#00e5ff';
+      let statusColor = isSelected ? '#38bdf8' : '#00e5ff';
       if (isEquipped) {
         statusLabel = '✅ 使用中';
-        statusColor = isSelected ? '#065f24' : '#76d67c';
+        statusColor = isSelected ? '#86efac' : '#76d67c';
       } else if (isOwned) {
         statusLabel = '📦 已擁有';
-        statusColor = isSelected ? '#1e3a8a' : '#a0c4ff';
+        statusColor = isSelected ? '#93c5fd' : '#a0c4ff';
       }
 
-      const statusTxt = this.add.text(cx + 195, cy, statusLabel, {
+      const statusTxt = this.add.text(cx + 195, cy + 14, statusLabel, {
         fontSize: '22px',
         fontFamily: "'Kenney Future', 'Noto Sans TC', sans-serif",
         color: statusColor,
@@ -600,7 +601,7 @@ export class ShopScene extends Phaser.Scene {
       if (typeof statusTxt.setOrigin === 'function') statusTxt.setOrigin(1, 0.5);
       this.tabGameObjects.push(statusTxt);
 
-      const marker = this.addSelectedPreviewMarker(cx + 195, cy - 28, isSelected && !isEquipped);
+      const marker = this.addSelectedPreviewMarker(cx + 195, cy - 20, isSelected && !isEquipped);
       this.skinCardTextObjects.push({ name: nameTxt, perk: perkTxt, status: statusTxt, marker });
     }
   }
@@ -1106,9 +1107,10 @@ export class ShopScene extends Phaser.Scene {
   private createPetSelectionList(_width: number, _height: number): void {
     if (!this.add) return;
 
+    this.skinCardTextObjects = [];
     const listX = 300;
     const startY = 150;
-    const spacingY = 110;
+    const spacingY = 114;
 
     PET_DEFINITIONS.forEach((pet, idx) => {
       const y = startY + idx * spacingY;
@@ -1118,8 +1120,8 @@ export class ShopScene extends Phaser.Scene {
         x: listX,
         y: y + 25,
         width: 520,
-        height: 98,
-        color: isSelected ? 'yellow' : 'grey',
+        height: 102,
+        color: isSelected ? 'card_selected' : 'grey',
         onClick: () => {
           this.selectPet(idx);
         },
@@ -1132,39 +1134,64 @@ export class ShopScene extends Phaser.Scene {
       const isOwned = profile.ownedPets?.includes(pet.id);
       const isEquipped = profile.equippedPet === pet.id;
 
-      if (this.add.text) {
-        const iconTxt = this.add.text(listX - 210, y + 25, pet.icon, { fontSize: '42px' });
+      // 1. Dedicated Portrait Frame (60x60)
+      const portraitX = listX - 195;
+      const portraitY = y + 25;
+      if (this.add.graphics) {
+        const frame = this.add.graphics();
+        frame.fillStyle(pet.tint, isSelected ? 0.28 : 0.16);
+        frame.fillRoundedRect(portraitX - 28, portraitY - 28, 56, 56, 12);
+        frame.lineStyle(1.5, isSelected ? 0xf59e0b : pet.tint, 0.85);
+        frame.strokeRoundedRect(portraitX - 28, portraitY - 28, 56, 56, 12);
+        this.tabGameObjects.push(frame);
+      }
+
+      // Portrait Image / Texture
+      const portraitKey = `icon_pet_${pet.id}_portrait`;
+      if (this.textures?.exists && this.textures.exists(portraitKey)) {
+        const portrait = this.add.image(portraitX, portraitY, portraitKey);
+        portrait.setDisplaySize(50, 50);
+        portrait.setOrigin(0.5);
+        this.tabGameObjects.push(portrait);
+      } else if (this.add.text) {
+        const iconTxt = this.add.text(portraitX, portraitY, pet.icon, { fontSize: '38px' });
         if (typeof iconTxt.setOrigin === 'function') iconTxt.setOrigin(0.5);
         this.tabGameObjects.push(iconTxt);
+      }
 
-        const nameTxt = this.add.text(listX - 160, y + 10, `${pet.name} (${pet.nameEn})`, {
+      if (this.add.text) {
+        // 2. Clean Two-Line Typography (Chinese + English)
+        const cnName = pet.name.includes('(') ? pet.name.split('(')[0].trim() : pet.name;
+        const nameTxt = this.add.text(listX - 150, y + 4, `${cnName}  •  ${pet.nameEn}`, {
           fontSize: '24px',
           fontFamily: "'Kenney Future', 'Noto Sans TC', sans-serif",
-          color: isSelected ? '#1f1505' : '#ffffff',
+          color: '#ffffff',
           fontStyle: 'bold',
         });
         if (typeof nameTxt.setOrigin === 'function') nameTxt.setOrigin(0, 0.5);
         this.tabGameObjects.push(nameTxt);
 
-        const perkTxt = this.add.text(listX - 160, y + 42, `🐾 ${pet.perkDescription}`, {
+        // 3. Scan-Friendly Perk Tag
+        const perkTxt = this.add.text(listX - 150, y + 36, `🐾 ${pet.perkDescription}`, {
           fontSize: '17px',
           fontFamily: "'Noto Sans TC', 'Microsoft JhengHei', sans-serif",
-          color: isSelected ? '#3d2503' : '#ffd166',
+          color: isSelected ? '#fde047' : '#ffd166',
         });
         if (typeof perkTxt.setOrigin === 'function') perkTxt.setOrigin(0, 0.5);
         this.tabGameObjects.push(perkTxt);
 
+        // 4. Status / Cost Badge
         let statusLabel = `🪙 ${pet.costCoins}`;
-        let statusColor = isSelected ? '#7a4f01' : '#ffd700';
+        let statusColor = isSelected ? '#fde047' : '#ffd700';
         if (isEquipped) {
           statusLabel = '✅ 出戰中';
-          statusColor = isSelected ? '#065f24' : '#76d67c';
+          statusColor = isSelected ? '#86efac' : '#76d67c';
         } else if (isOwned) {
           statusLabel = '📦 已擁有';
-          statusColor = isSelected ? '#1e3a8a' : '#a0c4ff';
+          statusColor = isSelected ? '#93c5fd' : '#a0c4ff';
         }
 
-        const statusTxt = this.add.text(listX + 195, y + 25, statusLabel, {
+        const statusTxt = this.add.text(listX + 195, y + 14, statusLabel, {
           fontSize: '22px',
           fontFamily: "'Kenney Future', 'Noto Sans TC', sans-serif",
           color: statusColor,
@@ -1173,10 +1200,8 @@ export class ShopScene extends Phaser.Scene {
         if (typeof statusTxt.setOrigin === 'function') statusTxt.setOrigin(1, 0.5);
         this.tabGameObjects.push(statusTxt);
 
-        this.skinCardTextObjects.push({ name: nameTxt, perk: perkTxt, status: statusTxt });
-        if (isSelected && !isEquipped) {
-          this.addSelectedPreviewMarker(listX + 195, y - 3, true);
-        }
+        const marker = this.addSelectedPreviewMarker(listX + 195, y - 20, isSelected && !isEquipped);
+        this.skinCardTextObjects.push({ name: nameTxt, perk: perkTxt, status: statusTxt, marker });
       }
     });
   }
@@ -1298,57 +1323,70 @@ export class ShopScene extends Phaser.Scene {
       g.fillRoundedRect(stageX, stageY, layout.stage.width, layout.stage.height, 18);
 
       // Soft magical ambient gradient & spotlight
-      g.fillStyle(0x4338ca, 0.28);
+      g.fillStyle(0x4338ca, 0.20);
       g.fillEllipse(stageX + layout.stage.width / 2, stageY + layout.stage.height * 0.42, layout.stage.width * 0.9, layout.stage.height * 0.85);
 
-      // Conical Radial Volumetric Spotlight Beam
-      g.fillStyle(0xfef08a, 0.12);
+      // Subtle Soft Conical Spotlight Beam (Feathered, Non-intrusive)
+      g.fillStyle(0xfef08a, 0.045);
       g.beginPath();
-      g.moveTo(stageX + layout.stage.width / 2 - 55, stageY);
-      g.lineTo(stageX + layout.stage.width / 2 + 55, stageY);
-      g.lineTo(stageX + layout.stage.width / 2 + layout.stage.width * 0.42, stageY + layout.stage.height - 18);
-      g.lineTo(stageX + layout.stage.width / 2 - layout.stage.width * 0.42, stageY + layout.stage.height - 18);
+      g.moveTo(stageX + layout.stage.width / 2 - 40, stageY);
+      g.lineTo(stageX + layout.stage.width / 2 + 40, stageY);
+      g.lineTo(stageX + layout.stage.width / 2 + layout.stage.width * 0.38, stageY + layout.stage.height - 18);
+      g.lineTo(stageX + layout.stage.width / 2 - layout.stage.width * 0.38, stageY + layout.stage.height - 18);
       g.closePath();
       g.fillPath();
 
       // Golden inner border
-      g.lineStyle(2, 0x818cf8, 0.5);
+      g.lineStyle(1.5, 0x818cf8, 0.35);
       g.strokeRoundedRect(stageX + 7, stageY + 7, Math.max(1, layout.stage.width - 14), Math.max(1, layout.stage.height - 14), 14);
 
+      // 3D Stepped Pedestal Base & Glowing Disc (Aligned to Hero Stage Baseline)
+      const pedestalCenterY = stageY + layout.stage.height * 0.72;
+
       // Cyan / Gold Ambient Under-Glow
-      g.fillStyle(0x38bdf8, 0.18);
-      g.fillEllipse(stageX + layout.stage.width / 2, stageY + layout.stage.height - 18, layout.stage.width * 0.74, compact ? 32 : 44);
+      g.fillStyle(0x38bdf8, 0.16);
+      g.fillEllipse(stageX + layout.stage.width / 2, pedestalCenterY + 4, layout.stage.width * 0.72, compact ? 28 : 38);
 
       // 3D Stepped Pedestal Base Shadow
       g.fillStyle(0x020617, 0.85);
-      g.fillEllipse(stageX + layout.stage.width / 2, stageY + layout.stage.height - 12, layout.stage.width * 0.68, compact ? 26 : 36);
+      g.fillEllipse(stageX + layout.stage.width / 2, pedestalCenterY + 10, layout.stage.width * 0.66, compact ? 24 : 32);
 
       // Stepped Brass Rim Step
       g.fillStyle(0xb45309, 0.95);
-      g.fillEllipse(stageX + layout.stage.width / 2, stageY + layout.stage.height - 16, layout.stage.width * 0.64, compact ? 24 : 33);
+      g.fillEllipse(stageX + layout.stage.width / 2, pedestalCenterY + 6, layout.stage.width * 0.62, compact ? 22 : 28);
       g.fillStyle(0xf59e0b, 0.95);
-      g.fillEllipse(stageX + layout.stage.width / 2, stageY + layout.stage.height - 18, layout.stage.width * 0.63, compact ? 23 : 31);
+      g.fillEllipse(stageX + layout.stage.width / 2, pedestalCenterY + 3, layout.stage.width * 0.61, compact ? 21 : 26);
 
       // Top Royal Velvet Platform Disc
       g.fillStyle(0x1e1b4b, 0.98);
-      g.fillEllipse(stageX + layout.stage.width / 2, stageY + layout.stage.height - 20, layout.stage.width * 0.60, compact ? 21 : 29);
+      g.fillEllipse(stageX + layout.stage.width / 2, pedestalCenterY, layout.stage.width * 0.58, compact ? 19 : 24);
 
       // Pedestal golden glowing ring
       g.lineStyle(2.5, 0xfde047, 0.85);
       if (typeof (g as any).strokeEllipse === 'function') {
-        (g as any).strokeEllipse(stageX + layout.stage.width / 2, stageY + layout.stage.height - 20, layout.stage.width * 0.58, compact ? 20 : 28);
+        (g as any).strokeEllipse(stageX + layout.stage.width / 2, pedestalCenterY, layout.stage.width * 0.56, compact ? 18 : 23);
       } else {
-        g.strokeRoundedRect(stageX + layout.stage.width / 2 - (layout.stage.width * 0.29), stageY + layout.stage.height - (compact ? 30 : 34), layout.stage.width * 0.58, compact ? 20 : 28, 12);
+        g.strokeRoundedRect(stageX + layout.stage.width / 2 - (layout.stage.width * 0.28), pedestalCenterY - (compact ? 9 : 12), layout.stage.width * 0.56, compact ? 18 : 24, 12);
       }
 
       // Soft twinkle star particles
-      g.fillStyle(0xfef08a, 0.95);
+      g.fillStyle(0xfef08a, 0.85);
       g.fillCircle(stageX + layout.stage.width * 0.16, stageY + 22, 2.5);
       g.fillCircle(stageX + layout.stage.width * 0.84, stageY + 36, 2.5);
       g.fillCircle(stageX + layout.stage.width * 0.78, stageY + layout.stage.height * 0.28, 3);
       g.fillCircle(stageX + layout.stage.width * 0.22, stageY + layout.stage.height * 0.24, 2.5);
-      g.fillCircle(stageX + layout.stage.width * 0.12, stageY + layout.stage.height * 0.65, 2);
-      g.fillCircle(stageX + layout.stage.width * 0.88, stageY + layout.stage.height * 0.62, 2.5);
+      g.fillCircle(stageX + layout.stage.width * 0.12, stageY + layout.stage.height * 0.48, 2);
+      g.fillCircle(stageX + layout.stage.width * 0.88, stageY + layout.stage.height * 0.46, 2.5);
+
+      // Detail & Action Dock Plate
+      const dockX = layout.details.x - panelX;
+      const dockY = layout.details.y - panelY;
+      const dockW = layout.details.width;
+      const dockH = layout.details.height + layout.action.height + (compact ? 12 : 20);
+      g.fillStyle(0x0a0f1d, 0.94);
+      g.fillRoundedRect(dockX - 8, dockY - 6, dockW + 16, dockH, 16);
+      g.lineStyle(1.8, 0x334155, 0.85);
+      g.strokeRoundedRect(dockX - 8, dockY - 6, dockW + 16, dockH, 16);
       showcase.add(g);
     }
 
@@ -1364,11 +1402,19 @@ export class ShopScene extends Phaser.Scene {
       reducedMotion: this.prefersReducedMotion,
     });
     const characterX = layout.character.x + layout.character.width / 2 - panelX;
-    const characterY = layout.character.y + layout.character.height / 2 - panelY;
+    const stageY = layout.stage.y - panelY;
+    const pedestalCenterY = stageY + layout.stage.height * 0.72;
+    const characterY = pedestalCenterY - (layout.character.height * 0.38);
     characterLayer.setPosition(characterX, characterY);
     this.previewController = controller;
     this.previewSprite = controller.sprite;
     this.wardrobeGraphics = controller.wardrobeGraphics;
+
+    // Dedicated Companion Pet Hero Stage Layer
+    const petLayer = this.add.container ? this.add.container(characterX + 115, characterY - 20) : new Phaser.GameObjects.Container(this, characterX + 115, characterY - 20);
+    if (typeof petLayer.setDepth === 'function') petLayer.setDepth(43);
+    showcase.add(petLayer);
+    this.petPreviewLayer = petLayer;
 
     // Kept as invisible compatibility handles for older scene integrations/tests.
     this.wardrobeWingsLayer = this.createLegacyPreviewLayer(showcase, characterX, characterY, 35);
@@ -1475,9 +1521,9 @@ export class ShopScene extends Phaser.Scene {
     const detailX = layout.details.x + layout.details.width / 2 - panelX;
     const detailY = layout.details.y - panelY;
     const detailFont = compact ? '14px' : '18px';
-    const detailTextScale = compact ? 1 : 0.72;
+    const detailTextScale = compact ? 1 : 0.85;
     if (this.add.text) {
-      this.previewNameText = this.add.text(detailX, detailY + (compact ? 9 : 10), compact ? initSkin.name : `${initSkin.name} (${initSkin.englishName})`, {
+      this.previewNameText = this.add.text(detailX, detailY + (compact ? 12 : 14), compact ? initSkin.name : `${initSkin.name} (${initSkin.englishName})`, {
         fontSize: compact ? '20px' : '26px',
         fontFamily: "'Kenney Future', 'Noto Sans TC', sans-serif",
         color: '#ffd45b',
@@ -1488,17 +1534,17 @@ export class ShopScene extends Phaser.Scene {
       if (typeof this.previewNameText.setOrigin === 'function') this.previewNameText.setOrigin(0.5);
       showcase.add(this.previewNameText);
 
-      this.previewDescText = this.add.text(detailX, detailY + (compact ? 25 : 26), initSkin.description, {
+      this.previewDescText = this.add.text(detailX, detailY + (compact ? 32 : 36), initSkin.description, {
         fontSize: detailFont,
         fontFamily: "'Noto Sans TC', 'Microsoft JhengHei', sans-serif",
-        color: '#c8d5ff',
+        color: '#cbd5e1',
         align: 'center',
         wordWrap: { width: layout.details.width - 12 },
       });
       if (typeof this.previewDescText.setOrigin === 'function') this.previewDescText.setOrigin(0.5);
       showcase.add(this.previewDescText);
 
-      this.previewSpeedText = this.add.text(detailX - layout.details.width * 0.44, detailY + layout.details.height - (compact ? 20 : 19), `🏃 跑速加成: +${Math.round(initSkin.speedBonus * 100)}%`, {
+      this.previewSpeedText = this.add.text(detailX - layout.details.width * 0.40, detailY + (compact ? 52 : 58), `🏃 跑速加成: +${Math.round(initSkin.speedBonus * 100)}%`, {
         fontSize: detailFont,
         fontFamily: "'Noto Sans TC', 'Microsoft JhengHei', sans-serif",
         color: '#ffffff',
@@ -1507,7 +1553,7 @@ export class ShopScene extends Phaser.Scene {
       if (typeof this.previewSpeedText.setOrigin === 'function') this.previewSpeedText.setOrigin(0, 0.5);
       showcase.add(this.previewSpeedText);
 
-      this.previewJumpText = this.add.text(detailX + layout.details.width * 0.04, detailY + layout.details.height - (compact ? 20 : 19), `🦘 跳躍加成: +${Math.round(initSkin.jumpBonus * 100)}%`, {
+      this.previewJumpText = this.add.text(detailX + layout.details.width * 0.08, detailY + (compact ? 52 : 58), `🦘 跳躍加成: +${Math.round(initSkin.jumpBonus * 100)}%`, {
         fontSize: detailFont,
         fontFamily: "'Noto Sans TC', 'Microsoft JhengHei', sans-serif",
         color: '#ffffff',
@@ -1516,7 +1562,7 @@ export class ShopScene extends Phaser.Scene {
       if (typeof this.previewJumpText.setOrigin === 'function') this.previewJumpText.setOrigin(0, 0.5);
       showcase.add(this.previewJumpText);
 
-      this.previewSpecialText = this.add.text(detailX, detailY + layout.details.height - (compact ? 7 : 6), initSkin.waterGlide ? '🌊 特殊能力：水面輕功滑行 (不沉水)' : `✨ 專屬特技：${initSkin.perkDescription}`, {
+      this.previewSpecialText = this.add.text(detailX, detailY + (compact ? 72 : 80), initSkin.waterGlide ? '🌊 特殊能力：水面輕功滑行 (不沉水)' : `✨ 專屬特技：${initSkin.perkDescription}`, {
         fontSize: detailFont,
         fontFamily: "'Noto Sans TC', 'Microsoft JhengHei', sans-serif",
         color: '#ffd166',
@@ -1619,7 +1665,7 @@ export class ShopScene extends Phaser.Scene {
 
     this.skinCardButtons.forEach((btn, idx) => {
       const isSelected = idx === index;
-      btn.setColor(isSelected ? 'yellow' : 'grey');
+      btn.setColor(isSelected ? 'card_selected' : 'grey');
 
       const textObj = this.skinCardTextObjects[idx];
       const skin = this.skins[idx];
@@ -1628,17 +1674,17 @@ export class ShopScene extends Phaser.Scene {
         const isEquipped = profile.equippedSkin === skin.id;
 
         if (typeof textObj.name.setColor === 'function') {
-          textObj.name.setColor(isSelected ? '#1f1505' : '#ffffff');
+          textObj.name.setColor('#ffffff');
         }
         if (typeof textObj.perk.setColor === 'function') {
-          textObj.perk.setColor(isSelected ? '#3d2503' : '#ffd166');
+          textObj.perk.setColor(isSelected ? '#fde047' : '#ffd166');
         }
 
-        let statusColor = isSelected ? '#03416e' : '#00e5ff';
+        let statusColor = isSelected ? '#38bdf8' : '#00e5ff';
         if (isEquipped) {
-          statusColor = isSelected ? '#065f24' : '#76d67c';
+          statusColor = isSelected ? '#86efac' : '#76d67c';
         } else if (isOwned) {
-          statusColor = isSelected ? '#1e3a8a' : '#a0c4ff';
+          statusColor = isSelected ? '#93c5fd' : '#a0c4ff';
         }
         if (typeof textObj.status.setColor === 'function') {
           textObj.status.setColor(statusColor);
@@ -1671,7 +1717,68 @@ export class ShopScene extends Phaser.Scene {
       this.updateGadgetPreviewDisplay(dm, profile);
     }
 
+    this.updatePetCompanionStage();
     this.refreshCurrencyHUD();
+  }
+
+  private updatePetCompanionStage(): void {
+    if (!this.petPreviewLayer) return;
+    if (typeof this.petPreviewLayer.removeAll === 'function') {
+      this.petPreviewLayer.removeAll(true);
+    }
+
+    const dm = DataManager.getInstance();
+    const profile = dm.getProfile();
+
+    // In 'pets' tab, show currently selected pet; in other tabs, show player's equipped pet (if any)
+    let targetPetId: string | undefined;
+    if (this.currentTab === 'pets') {
+      targetPetId = PET_DEFINITIONS[this.selectedPetIndex]?.id;
+    } else {
+      targetPetId = profile.equippedPet || undefined;
+    }
+
+    if (!targetPetId) return;
+
+    const pet = PET_DEFINITIONS.find((p) => p.id === targetPetId);
+    if (!pet) return;
+
+    // Ambient Ethereal Glow Disc
+    if (this.add.graphics) {
+      const g = this.add.graphics();
+      g.fillStyle(pet.tint, 0.22);
+      g.fillCircle(0, 0, 34);
+      g.fillStyle(pet.tint, 0.38);
+      g.fillCircle(0, 0, 22);
+      g.fillStyle(0xffffff, 0.45);
+      g.fillCircle(0, 0, 10);
+      this.petPreviewLayer.add(g);
+    }
+
+    // Vector Portrait Sprite
+    const portraitKey = `icon_pet_${pet.id}_portrait`;
+    if (this.textures?.exists && this.textures.exists(portraitKey)) {
+      const img = this.add.image(0, 0, portraitKey);
+      img.setDisplaySize(56, 56);
+      img.setOrigin(0.5, 0.5);
+      this.petPreviewLayer.add(img);
+    } else if (this.add.text) {
+      const txt = this.add.text(0, 0, pet.icon, { fontSize: '40px' });
+      txt.setOrigin(0.5, 0.5);
+      this.petPreviewLayer.add(txt);
+    }
+
+    // Gentle breathing float tween
+    if (!this.prefersReducedMotion && this.tweens?.add) {
+      this.tweens.add({
+        targets: this.petPreviewLayer,
+        y: '-=6',
+        duration: 1100,
+        yoyo: true,
+        repeat: -1,
+        ease: 'Sine.easeInOut',
+      });
+    }
   }
 
   private updateSkinPreviewDisplay(profile: any): void {
@@ -1754,6 +1861,67 @@ export class ShopScene extends Phaser.Scene {
           this.actionButton.setEnabled(true);
         } else {
           this.actionButton.setText(`💎 ${skin.costGems} 寶石不足`);
+          this.actionButton.setColor('grey');
+          this.actionButton.setEnabled(false);
+        }
+      }
+    }
+  }
+
+  private updatePetPreviewDisplay(profile: any): void {
+    const pet = PET_DEFINITIONS[this.selectedPetIndex];
+    if (!pet) return;
+
+    const isOwned = profile.ownedPets?.includes(pet.id);
+    const isEquipped = profile.equippedPet === pet.id;
+
+    const cnName = pet.name.includes('(') ? pet.name.split('(')[0].trim() : pet.name;
+    if (this.previewNameText && typeof this.previewNameText.setText === 'function') {
+      this.previewNameText.setText(`${cnName}  •  ${pet.nameEn}`);
+    }
+
+    if (this.previewDescText && typeof this.previewDescText.setText === 'function') {
+      this.previewDescText.setText(pet.description);
+    }
+
+    if (this.previewSpeedText && typeof this.previewSpeedText.setText === 'function') {
+      this.previewSpeedText.setText(`🧲 磁力加成: +${pet.magnetBonus}px`);
+    }
+
+    if (this.previewJumpText && typeof this.previewJumpText.setText === 'function') {
+      if (pet.jumpBonus) {
+        this.previewJumpText.setText(`🪶 浮空加成: +${Math.round(pet.jumpBonus * 100)}%`);
+      } else if (pet.bonusCoinRate) {
+        this.previewJumpText.setText(`🪙 跳石獎勵: +${pet.bonusCoinRate} 金幣`);
+      } else {
+        this.previewJumpText.setText(`⚡ 障礙偵測: 自動雷達預警`);
+      }
+    }
+
+    if (this.previewSpecialText && typeof this.previewSpecialText.setText === 'function') {
+      this.previewSpecialText.setText(`🐾 專屬特技：${pet.perkDescription}`);
+    }
+
+    if (this.actionButton) {
+      if (typeof this.actionButton.setDepth === 'function') this.actionButton.setDepth(60);
+      if (isEquipped) {
+        this.actionButton.setText('✅ 出戰中');
+        this.actionButton.setColor('grey');
+        this.actionButton.setEnabled(false);
+      } else if (isOwned) {
+        this.actionButton.setText('🐾 派出寵物');
+        this.actionButton.setColor('green');
+        this.actionButton.setEnabled(true);
+      } else {
+        const canAffordCoins = profile.coins >= pet.costCoins;
+        const canAffordGems = profile.gems >= pet.costGems;
+        if (canAffordCoins || canAffordGems) {
+          const costTxt = canAffordCoins ? `🪙 ${pet.costCoins}` : `💎 ${pet.costGems}`;
+          this.actionButton.setText(`${costTxt} 領養寵物`);
+          this.actionButton.setColor('yellow');
+          this.actionButton.setEnabled(true);
+        } else {
+          this.actionButton.setText(`🪙 ${pet.costCoins} 金幣不足`);
           this.actionButton.setColor('grey');
           this.actionButton.setEnabled(false);
         }
@@ -1848,60 +2016,6 @@ export class ShopScene extends Phaser.Scene {
           this.actionButton.setEnabled(true);
         } else {
           this.actionButton.setText(`🪙 ${item.costCoins} 金幣不足`);
-          this.actionButton.setColor('grey');
-          this.actionButton.setEnabled(false);
-        }
-      }
-    }
-  }
-
-  private updatePetPreviewDisplay(profile: any): void {
-    const pet = PET_DEFINITIONS[this.selectedPetIndex];
-    if (!pet) return;
-
-    const isOwned = profile.ownedPets?.includes(pet.id);
-    const isEquipped = profile.equippedPet === pet.id;
-
-    if (this.previewNameText && typeof this.previewNameText.setText === 'function') {
-      this.previewNameText.setText(`${pet.icon} ${pet.name} (${pet.nameEn})`);
-    }
-
-    if (this.previewDescText && typeof this.previewDescText.setText === 'function') {
-      this.previewDescText.setText(pet.description);
-    }
-
-    if (this.previewSpeedText && typeof this.previewSpeedText.setText === 'function') {
-      this.previewSpeedText.setText(`🧲 磁力加成: +${pet.magnetBonus}px`);
-    }
-
-    if (this.previewJumpText && typeof this.previewJumpText.setText === 'function') {
-      this.previewJumpText.setText(`🪙 ${pet.costCoins} / 💎 ${pet.costGems}`);
-    }
-
-    if (this.previewSpecialText && typeof this.previewSpecialText.setText === 'function') {
-      this.previewSpecialText.setText(`🐾 ${pet.perkDescription}`);
-    }
-
-    if (this.actionButton) {
-      if (typeof this.actionButton.setDepth === 'function') this.actionButton.setDepth(60);
-      if (isEquipped) {
-        this.actionButton.setText('✅ 出戰中');
-        this.actionButton.setColor('grey');
-        this.actionButton.setEnabled(false);
-      } else if (isOwned) {
-        this.actionButton.setText('🐾 派出寵物');
-        this.actionButton.setColor('green');
-        this.actionButton.setEnabled(true);
-      } else {
-        const canAffordCoins = profile.coins >= pet.costCoins;
-        const canAffordGems = profile.gems >= pet.costGems;
-        if (canAffordCoins || canAffordGems) {
-          const costTxt = canAffordCoins ? `🪙 ${pet.costCoins}` : `💎 ${pet.costGems}`;
-          this.actionButton.setText(`${costTxt} 領養寵物`);
-          this.actionButton.setColor('yellow');
-          this.actionButton.setEnabled(true);
-        } else {
-          this.actionButton.setText(`🪙 ${pet.costCoins} 金幣不足`);
           this.actionButton.setColor('grey');
           this.actionButton.setEnabled(false);
         }

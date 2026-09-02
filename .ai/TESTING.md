@@ -7,12 +7,8 @@
 npm run test:unit
 ```
 - **Engine**: Vitest
-- **Scope**: 43 test suites / 1,321 tests covering DataManager, QuestionEngine, SentenceEngine, MathGenerator, RunnerScene physics, Wardrobe preview, and reduced-motion scene guards.
-- **Pass Criteria**: 100% tests green (1,321 / 1,321).
-
-If the default parallel Vitest run hits a native worker crash in this workspace,
-repeat the same suite serially with `npm run test:unit -- --maxWorkers=1
---minWorkers=1` before diagnosing an application assertion failure.
+- **Scope**: 43 test suites covering DataManager, QuestionEngine, SentenceEngine, MathGenerator, RunnerScene physics, and Wardrobe preview.
+- **Pass Criteria**: 100% tests green (1,120 / 1,120).
 
 ### B. Build Production Bundle
 ```bash
@@ -42,7 +38,7 @@ npm run test:e2e
 ---
 
 ## 2. Manual Visual Verification Checklist
-- [ ] **Wardrobe Preview**: Outfit sprite uses the responsive `getWardrobeLayout(...).character.scale` on the showcase pedestal with no overflow.
+- [ ] **Wardrobe Preview**: Outfit sprite loads at correct scale (0.23x) on showcase pedestal with no overflow.
 - [ ] **Angel Wings**: Renders strictly behind character torso (Depth 35).
 - [ ] **Runner Jump**: Dynamic contact shadow shrinks smoothly during jump and restores on landing.
 - [ ] **OOTD Photo Booth**: Polaroid modal displays high-contrast card with washi tape corners and correct character outfit.

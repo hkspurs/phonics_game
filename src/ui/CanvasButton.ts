@@ -39,6 +39,7 @@ const COLOR_MAP: Record<string, ColorPalette> = {
   green: { base: 0x16a34a, dark: 0x15803d, light: 0x86efac, border: 0x14532d, textColor: '#ffffff' },
   red: { base: 0xe11d48, dark: 0xbe123c, light: 0xfda4af, border: 0x881337, textColor: '#ffffff' },
   yellow: { base: 0xf59e0b, dark: 0xd97706, light: 0xfef08a, border: 0xb45309, textColor: '#451a03' },
+  card_selected: { base: 0x1e1b4b, dark: 0x0f172a, light: 0x312e81, border: 0xf59e0b, textColor: '#ffffff' },
   grey: { base: 0x475569, dark: 0x334155, light: 0x94a3b8, border: 0x1e293b, textColor: '#ffffff' },
   gray: { base: 0x475569, dark: 0x334155, light: 0x94a3b8, border: 0x1e293b, textColor: '#ffffff' },
   purple: { base: 0x9333ea, dark: 0x7e22ce, light: 0xd8b4fe, border: 0x581c87, textColor: '#ffffff' },

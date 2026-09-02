@@ -33,12 +33,21 @@ export class CompanionPet extends Phaser.GameObjects.Container {
     this.auraGraphics.fillCircle(0, 0, 10);
     this.add(this.auraGraphics);
 
-    // Pet Icon Emoji / Graphic
-    this.iconText = scene.add.text(0, -2, this.petDefinition.icon, {
-      fontSize: '32px',
-    });
-    this.iconText.setOrigin(0.5, 0.5);
-    this.add(this.iconText);
+    // Pet Icon Graphic / Vector Portrait Sprite
+    const portraitKey = `icon_pet_${this.petDefinition.id}_portrait`;
+    if (scene.textures?.exists?.(portraitKey)) {
+      const sprite = scene.add.image(0, -2, portraitKey);
+      sprite.setDisplaySize(44, 44);
+      sprite.setOrigin(0.5, 0.5);
+      this.add(sprite);
+      this.iconText = sprite as any;
+    } else {
+      this.iconText = scene.add.text(0, -2, this.petDefinition.icon, {
+        fontSize: '32px',
+      });
+      this.iconText.setOrigin(0.5, 0.5);
+      this.add(this.iconText);
+    }
 
     this.setDepth(35);
     scene.add.existing(this);

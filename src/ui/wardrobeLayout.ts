@@ -63,7 +63,7 @@ export function getWardrobeLayout(width: number, height: number, compactOverride
     y: stage.y + stage.height - characterHeight,
     width: characterWidth,
     height: characterHeight,
-    scale: characterHeight / 110,
+    scale: (characterHeight / 110) * 1.55,
   };
 
   return {
