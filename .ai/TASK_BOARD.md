@@ -10,6 +10,20 @@ None.
 
 ## COMPLETED
 
+### TASK-20260902-015
+
+Agent: Antigravity  
+Status: DONE  
+Started: 2026-09-02 15:19  
+Completed: 2026-09-02 15:20  
+
+Description:
+Master Plan Phase 3: Questions, Feedback, Sentence Scramble, and Runner:
+1. Question Scene (`QuestionScene.ts`): Stable 4-zone vertical layout, deterministic state progression (default -> wrong -> hints 1/2/3 -> correct -> continue), strategy hints, concept reinforcement, submission lock.
+2. Sentence Scramble (`SentenceEngine.ts`, `SlotBox.ts`, `CanvasCard.ts`): Numbered destination target slots, tap-to-return, smooth insertion/removal < 200ms, capitalization & punctuation highlights, no horizontal scrolling at 667x375.
+3. Runner Scene (`RunnerScene.ts`): Hierarchy cleanup, segment-earned HUD, 64px touch controls with simultaneous move+jump, action-detected coaching tutorial, skip confirmation dialog.
+4. Verification: All 60 test suites (1,846 unit tests, 100% pass rate) and clean production build.
+
 ### TASK-20260902-014
 
 Agent: Antigravity  

@@ -1,5 +1,34 @@
 # AI Coordination Changelog
 
+## 2026-09-02 — Antigravity — TASK-20260902-015
+
+Summary:
+Master Plan Phase 3: Questions, Feedback, Sentence Scramble, and Runner:
+1. **Question Scene Deterministic State Machine (`QuestionScene.ts`)**:
+   - 4-zone stable vertical layout preventing banner overlap.
+   - Deterministic feedback progression (`default` -> `wrong` with strategy hint -> `hints 1-3` -> `correct` with concept reinforcement -> `continue`).
+   - Anti-spam submission locking during transitions.
+   - Learning attempt recording to `DataManager`.
+2. **Sentence Scramble Polish (`SentenceEngine.ts` & `SlotBox.ts`)**:
+   - Numbered destination slot boxes with automatic centering.
+   - Tap-to-place and tap-to-return interactions (< 200ms).
+   - Sentence transformation with highlighted capital letter and ending punctuation.
+3. **Runner Scene Dynamic Controls & Tutorial (`RunnerScene.ts`)**:
+   - Segment-earned coins/gems HUD.
+   - 64x64px touch controls with simultaneous move+jump tracking.
+   - Action-detected progressive spotlight coaching.
+   - Skip confirmation modal and reward exclusion.
+4. **Verification**:
+   - 60 test suites, 1,846 unit tests passing (100% pass rate).
+   - Clean production build.
+
+Changed:
+- `p1-adventure/.ai/implementation/03-learning-runner-report.md` (NEW)
+
+Verification:
+- `npm run test:unit`: 60 test suites, 1,846 unit tests passing (100% pass rate).
+- `npm run build`: Clean production build.
+
 ## 2026-09-02 — Antigravity — TASK-20260902-014
 
 Summary:
