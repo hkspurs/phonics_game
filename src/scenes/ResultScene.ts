@@ -623,55 +623,80 @@ export class ResultScene extends Phaser.Scene {
 
     SoundManager.play('victory');
 
-    const modal = new CanvasModal(this, {
-      title: '🏆 恭喜解鎖全新榮譽獎盃！',
-      width: 580,
-      height: 380,
-      theme: 'gold',
-      onClose: () => {
-        this.trophyModal = null;
-      },
-    });
+    const width = this.sys?.game?.config ? Number(this.sys.game.config.width) : GAME_WIDTH;
+    const toastW = Math.min(width - 40, 560);
+    const toastH = 58;
+    const toastX = width / 2;
+    const toastY = 52;
 
-    const startY = -60;
-    const spacing = 65;
+    const toast = this.add.container
+      ? this.add.container(toastX, toastY)
+      : new Phaser.GameObjects.Container(this, toastX, toastY);
+    toast.setDepth(250);
 
-    unlockedDefs.slice(0, 3).forEach((trophy, idx) => {
-      const y = startY + idx * spacing;
+    if (this.add.graphics) {
+      const bg = this.add.graphics();
+      bg.fillStyle(0x0f172a, 0.95);
+      bg.fillRoundedRect(-toastW / 2, -toastH / 2, toastW, toastH, 16);
+      bg.lineStyle(2, 0xf59e0b, 0.95);
+      bg.strokeRoundedRect(-toastW / 2, -toastH / 2, toastW, toastH, 16);
+      toast.add(bg);
+    }
 
-      if (this.add.text) {
-        const titleTxt = this.add.text(
-          0,
-          y,
-          `🏆 【${trophy.name}】`,
-          {
-            fontSize: '22px',
-            fontFamily: "'Kenney Future', 'Noto Sans TC', sans-serif",
-            color: '#ffd700',
-            fontStyle: 'bold',
-            align: 'center',
+    if (this.add.text) {
+      const topTrophy = unlockedDefs[0];
+      const countStr = unlockedDefs.length > 1 ? ` (+${unlockedDefs.length - 1} 個)` : '';
+      const toastText = this.add.text(
+        0,
+        0,
+        `🏆 榮譽成就：【${topTrophy.name}】${countStr} (+${topTrophy.rewardCoins || 0}🪙 +${topTrophy.rewardGems || 0}💎)`,
+        {
+          fontSize: '18px',
+          fontFamily: "'Kenney Future', 'Noto Sans TC', sans-serif",
+          color: '#ffd700',
+          fontStyle: 'bold',
+          align: 'center',
+        }
+      );
+      if (typeof toastText.setOrigin === 'function') toastText.setOrigin(0.5);
+      toast.add(toastText);
+    }
+
+    if (!this.prefersReducedMotion && this.tweens?.add) {
+      toast.setAlpha(0);
+      toast.setY(toastY - 20);
+      this.tweens.add({
+        targets: toast,
+        alpha: 1,
+        y: toastY,
+        duration: 300,
+        ease: 'Quad.easeOut',
+        onComplete: () => {
+          if (this.time?.delayedCall) {
+            this.time.delayedCall(4000, () => {
+              if (toast && !this.prefersReducedMotion && this.tweens?.add) {
+                this.tweens.add({
+                  targets: toast,
+                  alpha: 0,
+                  y: toastY - 20,
+                  duration: 300,
+                  ease: 'Quad.easeIn',
+                  onComplete: () => {
+                    toast.destroy();
+                  },
+                });
+              } else if (toast) {
+                toast.destroy();
+              }
+            });
           }
-        );
-        if (typeof titleTxt.setOrigin === 'function') titleTxt.setOrigin(0.5);
-        modal.addContent(titleTxt);
+        },
+      });
+    }
 
-        const descTxt = this.add.text(
-          0,
-          y + 24,
-          `${trophy.description}  (獎勵: +${trophy.rewardCoins || 0} 🪙 +${trophy.rewardGems || 0} 💎)`,
-          {
-            fontSize: '16px',
-            fontFamily: "'Noto Sans TC', 'Microsoft JhengHei', sans-serif",
-            color: '#ffffff',
-            align: 'center',
-          }
-        );
-        if (typeof descTxt.setOrigin === 'function') descTxt.setOrigin(0.5);
-        modal.addContent(descTxt);
-      }
-    });
-
-    this.trophyModal = modal;
-    modal.show();
+    if (this.add && typeof this.add.existing === 'function') {
+      this.add.existing(toast);
+    }
   }
+  
 }

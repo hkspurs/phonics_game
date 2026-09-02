@@ -1669,16 +1669,14 @@ export class DataManager {
     return this.profile;
   }
 
-  public addCoins(amount: number): void {
+  public addCoins(amount: number, sourceId: string = 'generic_reward'): void {
     if (amount <= 0) return;
-    this.profile.coins += amount;
-    this.save();
+    this.recordTransaction('learning', sourceId, 'coins', amount);
   }
 
-  public addGems(amount: number): void {
+  public addGems(amount: number, sourceId: string = 'generic_reward'): void {
     if (amount <= 0) return;
-    this.profile.gems += amount;
-    this.save();
+    this.recordTransaction('learning', sourceId, 'gems', amount);
   }
 
   public setStationStars(stationId: number, stars: number): void {
@@ -1800,10 +1798,10 @@ export class DataManager {
         if (!this.profile.trophies[trophy.id] && trophy.condition(this.profile)) {
           this.profile.trophies[trophy.id] = true;
           if (trophy.rewardCoins) {
-            this.recordTransaction('achievement', trophy.id, 'coins', trophy.rewardCoins);
+            this.recordTransaction('achievement', trophy.id, 'coins', trophy.rewardCoins, `tx_trophy_${trophy.id}_coins`);
           }
           if (trophy.rewardGems) {
-            this.recordTransaction('achievement', trophy.id, 'gems', trophy.rewardGems);
+            this.recordTransaction('achievement', trophy.id, 'gems', trophy.rewardGems, `tx_trophy_${trophy.id}_gems`);
           }
           allNewlyUnlocked.push(trophy.id);
           hadNewUnlocks = true;

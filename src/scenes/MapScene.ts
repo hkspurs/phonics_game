@@ -140,6 +140,7 @@ export class MapScene extends Phaser.Scene {
   public stations: readonly StationData[] = STATIONS;
   public stationNodes: Phaser.GameObjects.Container[] = [];
   public backButton: CanvasButton | null = null;
+  public reportButton: CanvasButton | null = null;
   public activeModal: CanvasModal | null = null;
   public diagnosticModal: DiagnosticReportModal | null = null;
   public headerContainer: Phaser.GameObjects.Container | null = null;
@@ -1298,10 +1299,12 @@ export class MapScene extends Phaser.Scene {
         }
       },
     });
-    if (this.backButton && typeof this.backButton.setScrollFactor === 'function') {
-      this.backButton.setScrollFactor(0);
+    if (this.backButton) {
+      this.backButton.setDepth(501);
+      if (typeof this.backButton.setScrollFactor === 'function') {
+        this.backButton.setScrollFactor(0);
+      }
     }
-    header.add(this.backButton);
 
     // 1.1 Report Button (📊 報告)
     const reportBtn = new CanvasButton(this, {
@@ -1318,10 +1321,13 @@ export class MapScene extends Phaser.Scene {
         this.openDiagnosticReport();
       },
     });
-    if (reportBtn && typeof reportBtn.setScrollFactor === 'function') {
-      reportBtn.setScrollFactor(0);
+    if (reportBtn) {
+      reportBtn.setDepth(501);
+      if (typeof reportBtn.setScrollFactor === 'function') {
+        reportBtn.setScrollFactor(0);
+      }
     }
-    header.add(reportBtn);
+    this.reportButton = reportBtn;
 
     // 2. Status & Currency Bar Pill
     const barX = width / 2 + 150;

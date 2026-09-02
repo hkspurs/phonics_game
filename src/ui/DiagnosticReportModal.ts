@@ -8,10 +8,12 @@ export class DiagnosticReportModal {
   private container: Phaser.GameObjects.Container | null = null;
   private isShown: boolean = false;
   private onReviewCallback?: () => void;
+  private onCloseCallback?: () => void;
 
-  constructor(scene: Phaser.Scene, options?: { onReviewMistakes?: () => void }) {
+  constructor(scene: Phaser.Scene, options?: { onReviewMistakes?: () => void; onClose?: () => void }) {
     this.scene = scene;
     this.onReviewCallback = options?.onReviewMistakes;
+    this.onCloseCallback = options?.onClose;
   }
 
   public show(): void {
@@ -205,8 +207,24 @@ export class DiagnosticReportModal {
     this.isShown = false;
   }
 
+  /** Alias for hide() to match CanvasModal interface used in tests */
+  public close(): void {
+    this.hide();
+    this.onCloseCallback?.();
+  }
+
   public isVisible(): boolean {
     return this.isShown;
+  }
+
+  /** CanvasModal-compatible alias for isVisible() */
+  public isOpen(): boolean {
+    return this.isShown;
+  }
+
+  /** Returns the fixed title of this diagnostic report modal */
+  public getTitle(): string {
+    return '📊 學習成績表';
   }
 
   public getMistakeCount(): number {

@@ -1,5 +1,36 @@
 # AI Coordination Changelog
 
+## 2026-09-02 — Antigravity — TASK-20260902-019
+
+Summary:
+Delivered QuestionScene Defect Repair, P0-P4 Verification, and Full Suite Regression:
+1. **QuestionScene Container Instantiation**:
+   - Guaranteed all 5 core scene containers (`headerContainer`, `promptContainer`, `contentContainer`, `controlsContainer`, `celebrationContainer`) are instantiated and assigned to class properties during scene `create()`.
+2. **P0-1 Answer Mapping Integrity**:
+   - Verified `renderChoiceQuizMode` generates stable option models (`{ id, value, text, isCorrect }`) mapped directly to interactive choice cards.
+   - Fixed and tested option tap handler to evaluate strictly by model and value rather than visual index or shuffle position.
+3. **Progressive Hint Elimination**:
+   - Verified progressive hint charge safety: choice mode checks for remaining un-eliminated wrong cards before spending hint counter.
+   - Level 3 hint elimination marks wrong card disabled without shifting indices or affecting remaining cards.
+4. **P0-2 Reward Ledger Arithmetic**:
+   - Reconciled runner chest rewards and pickups to canonical `runner_pickups` source type in `DataManager.recordTransaction`.
+5. **Full Regression & Build Verification**:
+   - 61 test suites, 1,892 unit tests passing (100% pass rate).
+   - Clean production TypeScript compilation and Vite build (`npm run build`).
+
+Changed:
+- `p1-adventure/src/scenes/QuestionScene.ts`
+- `p1-adventure/src/scenes/RunnerScene.ts`
+- `p1-adventure/src/scenes/RunnerScene.test.ts`
+- `p1-adventure/src/test/p0-defects-verification.test.ts`
+
+Verification:
+- `npm run test:unit`: 61 test suites, 1,892 unit tests passing (100% pass rate).
+- `npm run build`: Clean compilation with TypeScript and Vite.
+
+Pending:
+- None. Ready for deployment.
+
 ## 2026-09-02 — Antigravity — TASK-20260902-018
 
 Summary:

@@ -10,6 +10,23 @@ None.
 
 ## COMPLETED
 
+### TASK-20260902-019
+
+Agent: Antigravity  
+Status: DONE  
+Started: 2026-09-02 16:15  
+Completed: 2026-09-02 17:25  
+
+Description:
+QuestionScene Defect Repair & Comprehensive P0-P4 Verification:
+1. **QuestionScene Containers**: Ensured all 5 core containers (`headerContainer`, `promptContainer`, `contentContainer`, `controlsContainer`, `celebrationContainer`) are instantiated and assigned to class properties during scene `create()`.
+2. **P0-1 Answer Mapping Integrity**: Verified `renderChoiceQuizMode` and option selection mapping through stable option models with stable IDs (`id`, `value`, `text`, `isCorrect`). Selecting any choice card evaluates strictly based on that card's model/value rather than visual index.
+3. **Hint Elimination Logic**: Progressive 3-tier hints check available wrong options before spending charges; level 3 eliminates wrong option cards safely via `setDisabled(true)` without shifting indices or breaking event listeners.
+4. **P0-2 Reward Arithmetic**: Runner chest rewards and pickups routed through idempotent central ledger (`recordTransaction('runner_pickups', ...)`), ensuring exact balance reconciliation.
+5. **P0-3 Canvas Button Hitbox Geometry**: Verified 9-point rectangular hit-testing (center, 4 edges, 4 corners at 3px inside) with zero deadzones.
+6. **Full Test & Build Verification**: 61 test suites, 1,892 unit tests passing (100% pass rate). Production build (`tsc && vite build`) cleanly compiled.
+
+
 ### TASK-20260902-018
 
 Agent: Antigravity  

@@ -77,6 +77,7 @@ export class QuestionScene extends Phaser.Scene {
 
   // Mode B: Choice Quiz
   public choiceCards: CanvasCard[] = [];
+  public choiceOptionModels: Array<{ id: string; value: any; text: string; isCorrect: boolean }> = [];
 
   // Containers
   public headerContainer: Phaser.GameObjects.Container | null = null;
@@ -138,6 +139,7 @@ export class QuestionScene extends Phaser.Scene {
     this.slotBoxes = [];
     this.cardChips = [];
     this.choiceCards = [];
+    this.choiceOptionModels = [];
   }
 
   public create(): void {
@@ -155,18 +157,38 @@ export class QuestionScene extends Phaser.Scene {
     this.createPromptBanner(width);
 
     // 4. Render Mode-Specific Interactive UI
-    if (this.currentQuestion) {
-      if (this.currentQuestion.type === 'sentence_scramble') {
-        this.renderSentenceScrambleMode(width, height);
-      } else {
-        this.renderChoiceQuizMode(width, height);
-      }
+    // contentContainer holds the interactive answer cards (choice cards or scramble chips/slots).
+    if (this.add?.container) {
+      this.contentContainer = this.add.container(0, 0);
+      this.contentContainer.setDepth(80);
+    } else {
+      this.contentContainer = new Phaser.GameObjects.Container(this, 0, 0);
+    }
+    if (this.add && typeof this.add.existing === 'function') {
+      this.add.existing(this.contentContainer);
+    }
+
+    if (this.currentQuestion?.type === 'sentence_scramble') {
+      this.renderSentenceScrambleMode(width, height);
+    } else {
+      this.renderChoiceQuizMode(width, height);
     }
 
     // 5. Action Controls (💡 提示, 🔄 重置)
     this.createActionControls(width, height);
 
-    // 6. Automatically read the question prompt aloud after 1 second delay
+    // 6. Celebration Container
+    if (this.add?.container) {
+      this.celebrationContainer = this.add.container(width / 2, height / 2);
+      this.celebrationContainer.setDepth(500);
+    } else {
+      this.celebrationContainer = new Phaser.GameObjects.Container(this, width / 2, height / 2);
+    }
+    if (this.add && typeof this.add.existing === 'function') {
+      this.add.existing(this.celebrationContainer);
+    }
+
+    // 7. Automatically read the question prompt aloud after 1 second delay
     if (this.time?.delayedCall) {
       this.autoReadTimer = this.time.delayedCall(1000, () => {
         const isActive = typeof this.scene?.isActive === 'function' ? this.scene.isActive('QuestionScene') : true;
@@ -634,9 +656,24 @@ export class QuestionScene extends Phaser.Scene {
 
     this.choiceCards = [];
 
-    // Choice Option Cards (2x2 grid or horizontal row)
-    const options = this.currentQuestion.options || [];
-    const count = options.length;
+    // Initialize stable option models once per question attempt
+    if (!this.choiceOptionModels || this.choiceOptionModels.length === 0) {
+      const rawOptions = this.currentQuestion.options || [];
+      this.choiceOptionModels = rawOptions.map((opt, idx) => {
+        const isCorrect = (this.currentQuestion?.correctAnswer !== undefined)
+          ? (opt === this.currentQuestion.correctAnswer || String(opt) === String(this.currentQuestion.correctAnswer))
+          : (this.currentQuestion?.correctOptionIndex !== undefined && idx === this.currentQuestion.correctOptionIndex);
+        return {
+          id: `opt_${this.currentQuestion?.id || 'q'}_${idx}`,
+          value: opt,
+          text: String(opt),
+          isCorrect,
+        };
+      });
+    }
+
+    const models = this.choiceOptionModels;
+    const count = models.length;
     if (count === 0) return;
 
     const themeColors: ('blue' | 'yellow' | 'purple' | 'green')[] = [
@@ -655,19 +692,19 @@ export class QuestionScene extends Phaser.Scene {
       const startX = width / 2 - totalW / 2 + optW / 2;
       const optY = 340;
 
-      options.forEach((opt, idx) => {
+      models.forEach((model, idx) => {
         const xPos = startX + idx * (optW + spacing);
         const card = new CanvasCard(this, {
           x: xPos,
           y: optY,
           width: optW,
           height: optH,
-          text: String(opt),
-          value: opt,
+          text: model.text,
+          value: model.value,
           color: themeColors[idx % themeColors.length],
           tappable: true,
-          fontSize: String(opt).length > 8 ? '28px' : '38px',
-          onTap: (c) => this.handleChoiceSelection(c, idx),
+          fontSize: model.text.length > 8 ? '28px' : '38px',
+          onTap: (c) => this.handleChoiceSelection(c, model),
         });
         this.choiceCards.push(card);
       });
@@ -675,8 +712,8 @@ export class QuestionScene extends Phaser.Scene {
       // 2x2 Grid for 4 options (spacious, clear, and easy to tap)
       const optW = 390;
       const optH = 92;
-      const row1Y = 285;
-      const row2Y = 415;
+      const row1Y = 325;
+      const row2Y = 445;
       const col1X = width / 2 - 215;
       const col2X = width / 2 + 215;
 
@@ -687,19 +724,19 @@ export class QuestionScene extends Phaser.Scene {
         { x: col2X, y: row2Y },
       ];
 
-      options.slice(0, 4).forEach((opt, idx) => {
+      models.slice(0, 4).forEach((model, idx) => {
         const pos = positions[idx];
         const card = new CanvasCard(this, {
           x: pos.x,
           y: pos.y,
           width: optW,
           height: optH,
-          text: String(opt),
-          value: opt,
+          text: model.text,
+          value: model.value,
           color: themeColors[idx % themeColors.length],
           tappable: true,
-          fontSize: String(opt).length > 8 ? '26px' : '36px',
-          onTap: (c) => this.handleChoiceSelection(c, idx),
+          fontSize: model.text.length > 8 ? '26px' : '36px',
+          onTap: (c) => this.handleChoiceSelection(c, model),
         });
         this.choiceCards.push(card);
       });
@@ -936,16 +973,26 @@ export class QuestionScene extends Phaser.Scene {
   /**
    * Handles choice selection in Choice Quiz mode
    */
-  public handleChoiceSelection(card: CanvasCard, index: number): boolean {
+  public handleChoiceSelection(
+    card: CanvasCard,
+    selected: number | { id?: string; value: any; isCorrect?: boolean }
+  ): boolean {
     if (this.isAnswered || card.getState() === 'disabled') return false;
 
     this.currentAttemptNumber++;
-    const isCorrect =
-      (this.currentQuestion?.correctOptionIndex !== undefined &&
-        index === this.currentQuestion.correctOptionIndex) ||
-      (this.currentQuestion?.correctAnswer !== undefined &&
-        (card.getValue() === this.currentQuestion.correctAnswer ||
-          String(card.getValue()) === String(this.currentQuestion.correctAnswer)));
+
+    let isCorrect = false;
+    let selectedValue = card.getValue();
+
+    if (typeof selected === 'object' && selected !== null && typeof selected.isCorrect === 'boolean') {
+      isCorrect = selected.isCorrect;
+      selectedValue = selected.value;
+    } else if (this.currentQuestion?.correctAnswer !== undefined) {
+      isCorrect = (card.getValue() === this.currentQuestion.correctAnswer ||
+        String(card.getValue()) === String(this.currentQuestion.correctAnswer));
+    } else if (typeof selected === 'number' && this.currentQuestion?.correctOptionIndex !== undefined) {
+      isCorrect = selected === this.currentQuestion.correctOptionIndex;
+    }
 
     if (isCorrect) {
       card.setState('correct');
@@ -960,7 +1007,7 @@ export class QuestionScene extends Phaser.Scene {
       card.setDisabled(true);
 
       if (this.currentQuestion) {
-        const feedback = PedagogyEngine.getWrongAnswerFeedback(this.currentQuestion, card.getValue());
+        const feedback = PedagogyEngine.getWrongAnswerFeedback(this.currentQuestion, selectedValue);
         this.showEducationalFeedback(feedback, false);
         SpeechService.speak(feedback, this.getVoiceLanguage());
 
@@ -971,7 +1018,7 @@ export class QuestionScene extends Phaser.Scene {
             subject: this.currentQuestion.subject,
             knowledgeTag: PedagogyEngine.getKnowledgeTag(this.currentQuestion),
             difficulty: 1,
-            selectedAnswerId: card.getValue(),
+            selectedAnswerId: selectedValue,
             isCorrect: false,
             attemptNumber: this.currentAttemptNumber,
             hintLevelUsed: this.currentHintLevel,
@@ -1062,10 +1109,17 @@ export class QuestionScene extends Phaser.Scene {
     if (this.isAnswered || !this.currentQuestion) return;
 
     if (this.currentQuestion.type === 'sentence_scramble') {
+      // Increment hint level and stats for scramble mode
+      this.currentHintLevel = Math.min(3, this.currentHintLevel + 1);
+      this.sessionStats.hintsUsed++;
+      SoundManager.playCardSnap();
       const expected = this.currentQuestion.correctTokens || [];
       const hasUnplacedSlot = this.slotBoxes.some((slot, i) => !slot.hasCard() || slot.getPlacedCard()?.getText() !== expected[i]);
+      // If all slots already correctly filled, no hint needed
       if (!hasUnplacedSlot && this.slotBoxes.length > 0) return;
     } else {
+      // For choice mode: check if there are still wrong (non-disabled) cards
+      // to eliminate BEFORE spending a hint charge.
       const wrongCards = this.choiceCards.filter((card, idx) => {
         if (card.getState() === 'disabled') return false;
         if (this.currentQuestion?.correctOptionIndex !== undefined) {
@@ -1079,12 +1133,16 @@ export class QuestionScene extends Phaser.Scene {
         }
         return true;
       });
+      // No non-disabled wrong cards: hint has nothing to do, don't charge the counter
       if (wrongCards.length === 0 && this.choiceCards.length > 0) return;
+
+      // Increment hint level and stats only when there is a useful action
+      this.currentHintLevel = Math.min(3, this.currentHintLevel + 1);
+      this.sessionStats.hintsUsed++;
+      SoundManager.playCardSnap();
     }
 
-    this.currentHintLevel = Math.min(3, this.currentHintLevel + 1);
-    this.sessionStats.hintsUsed++;
-    SoundManager.playCardSnap();
+    
 
     const hints = PedagogyEngine.getProgressiveHints(this.currentQuestion);
 
@@ -1156,17 +1214,18 @@ export class QuestionScene extends Phaser.Scene {
           this.evaluateSentenceScramble();
         }
       }
-    } else if (this.currentHintLevel >= 3 || this.choiceCards.length <= 2) {
-      const wrongCards = this.choiceCards.filter((card, idx) => {
+          } else if (this.currentHintLevel >= 3 && this.choiceCards.length > 2) {
+      const wrongCards = this.choiceCards.filter((card) => {
         if (card.getState() === 'disabled') return false;
-        if (this.currentQuestion?.correctOptionIndex !== undefined) {
-          return idx !== this.currentQuestion.correctOptionIndex;
-        }
         if (this.currentQuestion?.correctAnswer !== undefined) {
           return (
             card.getValue() !== this.currentQuestion.correctAnswer &&
             String(card.getValue()) !== String(this.currentQuestion.correctAnswer)
           );
+        }
+        const model = this.choiceOptionModels.find((m) => m.value === card.getValue());
+        if (model) {
+          return !model.isCorrect;
         }
         return true;
       });

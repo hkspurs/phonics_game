@@ -437,6 +437,16 @@ export class CanvasButton extends Phaser.GameObjects.Container {
     return this;
   }
 
+  public isInteractive(): boolean {
+    return this.isBtnEnabled && (this.input ? (this.input as any).enabled !== false : true);
+  }
+
+  public containsPoint(localX: number, localY: number): boolean {
+    const halfW = this.btnWidth / 2;
+    const halfH = this.btnHeight / 2;
+    return localX >= -halfW && localX <= halfW && localY >= -halfH && localY <= halfH;
+  }
+
   public override destroy(fromScene?: boolean): void {
     if (this.scene?.tweens?.killTweensOf) {
       this.scene.tweens.killTweensOf(this);

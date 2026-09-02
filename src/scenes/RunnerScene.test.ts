@@ -785,6 +785,8 @@ describe('RunnerScene (2D Platformer Runner Reward Scene)', () => {
       expect(scene.chestObject.texture.key).toBe('chest_open');
       expect(soundSpy).toHaveBeenCalledWith('chest');
       expect(lootSpy).toHaveBeenCalled();
+      expect(scene.sessionStats.collectedCoins).toBe(5);
+      expect(scene.sessionStats.collectedGems).toBe(1);
       expect(dm.getProfile().coins).toBe(initialCoins + 5);
       expect(dm.getProfile().gems).toBe(initialGems + 1);
       expect((scene as any).celebrationRewardText?.text).toContain('+5');

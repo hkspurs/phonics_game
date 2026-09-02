@@ -1428,6 +1428,32 @@ export class ShopScene extends Phaser.Scene {
       showcase.add(g);
     }
 
+    // Stage-Level 預覽中 / Preview Badge
+    const stageX = layout.stage.x - panelX;
+    const stageY = layout.stage.y - panelY;
+    const badgeContainer = this.add.container ? this.add.container(stageX + layout.stage.width / 2, stageY + 26) : null;
+    if (badgeContainer) {
+      if (this.add.graphics) {
+        const bG = this.add.graphics();
+        bG.fillStyle(0x0f172a, 0.85);
+        bG.fillRoundedRect(-95, -16, 190, 32, 16);
+        bG.lineStyle(1.5, 0xf59e0b, 0.95);
+        bG.strokeRoundedRect(-95, -16, 190, 32, 16);
+        badgeContainer.add(bG);
+      }
+      if (this.add.text) {
+        const badgeTxt = this.add.text(0, 0, '👀 預覽中 · PREVIEW', {
+          fontSize: '13px',
+          fontFamily: "'Kenney Future', 'Noto Sans TC', sans-serif",
+          color: '#ffd700',
+          fontStyle: 'bold',
+        });
+        if (typeof badgeTxt.setOrigin === 'function') badgeTxt.setOrigin(0.5);
+        badgeContainer.add(badgeTxt);
+      }
+      showcase.add(badgeContainer);
+    }
+
     const initSkin = this.skins[this.selectedSkinIndex];
     const characterLayer = this.add.container ? this.add.container(0, 0) : new Phaser.GameObjects.Container(this, 0, 0);
     if (typeof characterLayer.setDepth === 'function') characterLayer.setDepth(42);
@@ -1440,7 +1466,6 @@ export class ShopScene extends Phaser.Scene {
       reducedMotion: this.prefersReducedMotion,
     });
     const characterX = layout.character.x + layout.character.width / 2 - panelX;
-    const stageY = layout.stage.y - panelY;
     const pedestalCenterY = stageY + layout.stage.height * 0.72;
     // Ground character feet precisely on top of the velvet platform disc (pedestalCenterY - 4)
     const characterY = pedestalCenterY - 4 - (55 * layout.character.scale);

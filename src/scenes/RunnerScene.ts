@@ -1598,8 +1598,9 @@ export class RunnerScene extends Phaser.Scene {
       },
     });
 
-    // 4. Interactive Jump Tutorial Prompt ("🕹️ 滑動搖桿左右移動 🦘 按跳躍鍵拾取寶石！")
-    if (this.add.container) {
+    // 4. Interactive Jump Tutorial Prompt (shown ONLY on first run before tutorial completion)
+    const isTutorialDone = DataManager.getInstance().isRunnerTutorialCompleted();
+    if (!isTutorialDone && this.add.container) {
       const hintContainer = this.add.container(width / 2, _height - 54);
       if (this.add.graphics) {
         const hintBg = this.add.graphics();
@@ -2163,14 +2164,10 @@ export class RunnerScene extends Phaser.Scene {
     if (item.collected) return;
     item.collected = true;
 
-    // Update Session Stats & DataManager (2x if Rainbow Rush!)
+    // Update Session Stats (2x if Rainbow Rush!)
     const coinValue = this.isRainbowRush ? 2 : 1;
     this.sessionStats.collectedCoins = (this.sessionStats.collectedCoins || 0) + coinValue;
-    try {
-      DataManager.getInstance().addCoins(coinValue);
-    } catch {
-      // Safe ignore
-    }
+    DataManager.getInstance().recordTransaction('runner_pickups', `station_${this.stationId}_runner_coins`, 'coins', coinValue);
 
     // Audio SFX with progressive arpeggio
     try {
@@ -2544,12 +2541,8 @@ export class RunnerScene extends Phaser.Scene {
     // 4. Award Chest Bonus Loot (+5 coins, +1 gem)
     this.sessionStats.collectedCoins = (this.sessionStats.collectedCoins || 0) + 5;
     this.sessionStats.collectedGems = (this.sessionStats.collectedGems || 0) + 1;
-    try {
-      DataManager.getInstance().addCoins(5);
-      DataManager.getInstance().addGems(1);
-    } catch {
-      // Safe ignore
-    }
+    DataManager.getInstance().recordTransaction('runner_pickups', `station_${this.stationId}_chest`, 'coins', 5);
+    DataManager.getInstance().recordTransaction('runner_pickups', `station_${this.stationId}_chest`, 'gems', 1);
     this.refreshHUD();
 
     // 5. Fountain Burst of Gems & Sparkles from Chest

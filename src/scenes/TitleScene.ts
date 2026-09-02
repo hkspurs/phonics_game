@@ -4,6 +4,7 @@ import { DataManager } from '../services/DataManager';
 import { SoundManager } from '../services/SoundManager';
 import { CanvasButton } from '../ui/CanvasButton';
 import { CanvasModal } from '../ui/CanvasModal';
+import { DiagnosticReportModal } from '../ui/DiagnosticReportModal';
 import { PlayerAvatarService } from '../services/PlayerAvatarService';
 import { OutfitRenderer } from '../ui/OutfitRenderer';
 
@@ -17,7 +18,8 @@ export class TitleScene extends Phaser.Scene {
   public reportButton: CanvasButton | null = null;
   public dailyButton: CanvasButton | null = null;
   public stampButton: CanvasButton | null = null;
-  public reportModal: CanvasModal | null = null;
+  public reportModal: DiagnosticReportModal | null = null;
+  public diagnosticModal: DiagnosticReportModal | null = null;
   public dailyModal: CanvasModal | null = null;
   public stampModal: CanvasModal | null = null;
 
@@ -574,76 +576,30 @@ export class TitleScene extends Phaser.Scene {
   }
 
   public openReportModal(): void {
-    if (this.reportModal && this.reportModal.isOpen()) {
+    if (this.diagnosticModal && this.diagnosticModal.isVisible()) {
       return;
     }
 
-    let profile: any;
-    let totalStars = 0;
-    try {
-      const dm = DataManager.getInstance();
-      profile = dm.getProfile();
-      totalStars = dm.getTotalStars();
-    } catch {
-      profile = {
-        coins: 0,
-        gems: 0,
-        unlockedStations: 1,
-        stats: { chineseCorrect: 0, mathCorrect: 0, englishCorrect: 0, streakDays: 0 },
-      };
-    }
-
-    const modal = new CanvasModal(this, {
-      title: '📊 學習成績表',
-      width: 620,
-      height: 460,
-      theme: 'dark',
+    const modal = new DiagnosticReportModal(this, {
+      onReviewMistakes: () => {
+        const mistakeIds = DataManager.getInstance().getMistakeReviewQueue();
+        if (mistakeIds.length === 0) return;
+        if (this.scene) {
+          this.scene.start('QuestionScene', {
+            stationId: 1,
+            stationName: '錯題溫習練習',
+            questionIndex: 0,
+            questions: [],
+          });
+        }
+      },
       onClose: () => {
+        this.diagnosticModal = null;
         this.reportModal = null;
       },
     });
 
-    if (this.add.text) {
-      const statLines = [
-        `📕 粵語中文科：已答對 ${profile.stats.chineseCorrect} 題`,
-        `📐 數學科運算：已答對 ${profile.stats.mathCorrect} 題`,
-        `🔤 英語科單字：已答對 ${profile.stats.englishCorrect} 題`,
-        `🌟 累積冒險星星：${totalStars} / 30 顆`,
-        `🔥 連續學習天數：${profile.stats.streakDays} 天`,
-        `🏝️ 當前解鎖關卡：第 ${profile.unlockedStations} 關 (共 10 關)`,
-      ];
-
-      const startY = -120;
-      const lineSpacing = 38;
-
-      statLines.forEach((text, i) => {
-        const lineText = this.add.text(0, startY + i * lineSpacing, text, {
-          fontSize: '20px',
-          fontFamily: "'Noto Sans TC', 'Microsoft JhengHei', sans-serif",
-          color: i < 3 ? '#ffffff' : '#ffd700',
-          fontStyle: i < 3 ? 'normal' : 'bold',
-          align: 'center',
-        });
-        if (typeof lineText.setOrigin === 'function') {
-          lineText.setOrigin(0.5);
-        }
-        modal.addContent(lineText);
-      });
-
-      // Encouraging footer text
-      const cheerText = this.add.text(0, startY + statLines.length * lineSpacing + 15, '🌟 每天進步一點點，你就是最棒的小學生！', {
-        fontSize: '18px',
-        fontFamily: "'Noto Sans TC', 'Microsoft JhengHei', sans-serif",
-        color: '#a0c4ff',
-        fontStyle: 'bold',
-        align: 'center',
-      });
-      if (typeof cheerText.setOrigin === 'function') {
-        cheerText.setOrigin(0.5);
-      }
-      modal.addContent(cheerText);
-    }
-
+    this.diagnosticModal = modal;
     this.reportModal = modal;
     modal.show();
   }
