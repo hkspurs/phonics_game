@@ -227,7 +227,7 @@ export class PreloadScene extends Phaser.Scene {
       zombie_cheer1: 'assets/kenney/platformer-characters/PNG/Zombie/Poses/zombie_cheer1.png',
       zombie_cheer2: 'assets/kenney/platformer-characters/PNG/Zombie/Poses/zombie_cheer2.png',
 
-      // Production Master 512x512 Character Sprites (Vertical Slice)
+      // Production Master 512x512 Character Sprites (Full Cast)
       adventurer_idle_front: 'assets/characters/adventurer/sprites/idle_front.png',
       adventurer_idle_side: 'assets/characters/adventurer/sprites/idle_side.png',
       adventurer_run: 'assets/characters/adventurer/sprites/run.png',
@@ -248,11 +248,56 @@ export class PreloadScene extends Phaser.Scene {
       heroine_celebration: 'assets/characters/heroine/sprites/celebration.png',
       heroine_shop_preview: 'assets/characters/heroine/sprites/shop_preview.png',
 
-      // Pet Sprites (Mecha Cat)
+      soldier_idle_front: 'assets/characters/soldier/sprites/idle_front.png',
+      soldier_idle_side: 'assets/characters/soldier/sprites/idle_side.png',
+      soldier_run: 'assets/characters/soldier/sprites/run.png',
+      soldier_hd_jump: 'assets/characters/soldier/sprites/jump.png',
+      soldier_landing: 'assets/characters/soldier/sprites/landing.png',
+      soldier_cheer: 'assets/characters/soldier/sprites/cheer.png',
+      soldier_hurt: 'assets/characters/soldier/sprites/hurt.png',
+      soldier_celebration: 'assets/characters/soldier/sprites/celebration.png',
+      soldier_shop_preview: 'assets/characters/soldier/sprites/shop_preview.png',
+
+      knight_idle_front: 'assets/characters/knight/sprites/idle_front.png',
+      knight_idle_side: 'assets/characters/knight/sprites/idle_side.png',
+      knight_run: 'assets/characters/knight/sprites/run.png',
+      knight_jump: 'assets/characters/knight/sprites/jump.png',
+      knight_landing: 'assets/characters/knight/sprites/landing.png',
+      knight_cheer: 'assets/characters/knight/sprites/cheer.png',
+      knight_hurt: 'assets/characters/knight/sprites/hurt.png',
+      knight_celebration: 'assets/characters/knight/sprites/celebration.png',
+      knight_shop_preview: 'assets/characters/knight/sprites/shop_preview.png',
+
+      ninja_idle_front: 'assets/characters/ninja/sprites/idle_front.png',
+      ninja_idle_side: 'assets/characters/ninja/sprites/idle_side.png',
+      ninja_run: 'assets/characters/ninja/sprites/run.png',
+      ninja_jump: 'assets/characters/ninja/sprites/jump.png',
+      ninja_landing: 'assets/characters/ninja/sprites/landing.png',
+      ninja_cheer: 'assets/characters/ninja/sprites/cheer.png',
+      ninja_hurt: 'assets/characters/ninja/sprites/hurt.png',
+      ninja_celebration: 'assets/characters/ninja/sprites/celebration.png',
+      ninja_shop_preview: 'assets/characters/ninja/sprites/shop_preview.png',
+
+      // Pet Sprites (All 4 Pets)
       pet_mecha_cat_idle: 'assets/pets/mecha_cat/idle.png',
       pet_mecha_cat_fly: 'assets/pets/mecha_cat/fly.png',
       pet_mecha_cat_cheer: 'assets/pets/mecha_cat/cheer.png',
       pet_mecha_cat_thumbnail: 'assets/pets/mecha_cat/thumbnail.png',
+
+      pet_pixie_dragon_idle: 'assets/pets/pixie_dragon/idle.png',
+      pet_pixie_dragon_fly: 'assets/pets/pixie_dragon/fly.png',
+      pet_pixie_dragon_cheer: 'assets/pets/pixie_dragon/cheer.png',
+      pet_pixie_dragon_thumbnail: 'assets/pets/pixie_dragon/thumbnail.png',
+
+      pet_panda_cub_idle: 'assets/pets/panda_cub/idle.png',
+      pet_panda_cub_fly: 'assets/pets/panda_cub/fly.png',
+      pet_panda_cub_cheer: 'assets/pets/panda_cub/cheer.png',
+      pet_panda_cub_thumbnail: 'assets/pets/panda_cub/thumbnail.png',
+
+      pet_phoenix_chick_idle: 'assets/pets/phoenix_chick/idle.png',
+      pet_phoenix_chick_fly: 'assets/pets/phoenix_chick/fly.png',
+      pet_phoenix_chick_cheer: 'assets/pets/phoenix_chick/cheer.png',
+      pet_phoenix_chick_thumbnail: 'assets/pets/phoenix_chick/thumbnail.png',
     };
 
     for (const [key, path] of Object.entries(spriteMap)) {

@@ -40,7 +40,7 @@ describe('Character Art Bible & Production-Quality Vertical Slice QA Suite', () 
     });
   });
 
-  describe('2. Vertical Slice Raster Assets Integrity (Adventurer & Heroine)', () => {
+  describe('2. Full Cast & Major Outfits Raster Assets Integrity', () => {
     const requiredPoses = [
       'idle_front',
       'idle_side',
@@ -53,53 +53,51 @@ describe('Character Art Bible & Production-Quality Vertical Slice QA Suite', () 
       'shop_preview',
     ];
 
-    it('verifies all 9 core poses exist as 32-bit transparent PNGs for Adventurer', () => {
-      const adventurerDir = path.join(rootDir, 'public/assets/characters/adventurer/sprites');
-      expect(fs.existsSync(adventurerDir)).toBe(true);
+    const characters = ['adventurer', 'heroine', 'soldier', 'knight', 'ninja'];
+    const outfits = ['school_uniform', 'scholar_gown', 'princess_dress', 'dino_onesie', 'magic_robe', 'star_hoodie'];
+    const pets = ['mecha_cat', 'pixie_dragon', 'panda_cub', 'phoenix_chick'];
 
-      for (const pose of requiredPoses) {
-        const file = path.join(adventurerDir, `${pose}.png`);
-        expect(fs.existsSync(file), `Missing Adventurer pose: ${pose}.png`).toBe(true);
-        const stat = fs.statSync(file);
-        expect(stat.size).toBeGreaterThan(1000); // Non-empty raster PNG
+    it('verifies all 5 characters have 9 core poses as 32-bit transparent PNGs', () => {
+      for (const char of characters) {
+        const charDir = path.join(rootDir, `public/assets/characters/${char}/sprites`);
+        expect(fs.existsSync(charDir), `Missing dir for character ${char}`).toBe(true);
+
+        for (const pose of requiredPoses) {
+          const file = path.join(charDir, `${pose}.png`);
+          expect(fs.existsSync(file), `Missing ${char} pose: ${pose}.png`).toBe(true);
+          const stat = fs.statSync(file);
+          expect(stat.size).toBeGreaterThan(1000); // Non-empty raster PNG
+        }
       }
     });
 
-    it('verifies all 9 core poses exist as 32-bit transparent PNGs for Heroine', () => {
-      const heroineDir = path.join(rootDir, 'public/assets/characters/heroine/sprites');
-      expect(fs.existsSync(heroineDir)).toBe(true);
-
-      for (const pose of requiredPoses) {
-        const file = path.join(heroineDir, `${pose}.png`);
-        expect(fs.existsSync(file), `Missing Heroine pose: ${pose}.png`).toBe(true);
-        const stat = fs.statSync(file);
-        expect(stat.size).toBeGreaterThan(1000); // Non-empty raster PNG
-      }
-    });
-
-    it('verifies complete School Uniform outfit raster assets exist', () => {
-      const outfitDir = path.join(rootDir, 'public/assets/character/outfits/school_uniform');
-      expect(fs.existsSync(outfitDir)).toBe(true);
-
+    it('verifies all 6 major outfits have complete authored raster assets', () => {
       const outfitPoses = ['idle', 'run', 'cheer', 'jump', 'celebration', 'thumbnail'];
-      for (const pose of outfitPoses) {
-        const file = path.join(outfitDir, `${pose}.png`);
-        expect(fs.existsSync(file), `Missing School Uniform pose: ${pose}.png`).toBe(true);
-        const stat = fs.statSync(file);
-        expect(stat.size).toBeGreaterThan(500);
+      for (const outfit of outfits) {
+        const outfitDir = path.join(rootDir, `public/assets/character/outfits/${outfit}`);
+        expect(fs.existsSync(outfitDir), `Missing dir for outfit ${outfit}`).toBe(true);
+
+        for (const pose of outfitPoses) {
+          const file = path.join(outfitDir, `${pose}.png`);
+          expect(fs.existsSync(file), `Missing ${outfit} pose: ${pose}.png`).toBe(true);
+          const stat = fs.statSync(file);
+          expect(stat.size).toBeGreaterThan(500);
+        }
       }
     });
 
-    it('verifies equipped Mecha Cat pet raster assets exist', () => {
-      const petDir = path.join(rootDir, 'public/assets/pets/mecha_cat');
-      expect(fs.existsSync(petDir)).toBe(true);
-
+    it('verifies all 4 companion pets have complete authored raster assets', () => {
       const petPoses = ['idle', 'fly', 'cheer', 'thumbnail'];
-      for (const pose of petPoses) {
-        const file = path.join(petDir, `${pose}.png`);
-        expect(fs.existsSync(file), `Missing Mecha Cat pose: ${pose}.png`).toBe(true);
-        const stat = fs.statSync(file);
-        expect(stat.size).toBeGreaterThan(500);
+      for (const pet of pets) {
+        const petDir = path.join(rootDir, `public/assets/pets/${pet}`);
+        expect(fs.existsSync(petDir), `Missing dir for pet ${pet}`).toBe(true);
+
+        for (const pose of petPoses) {
+          const file = path.join(petDir, `${pose}.png`);
+          expect(fs.existsSync(file), `Missing ${pet} pose: ${pose}.png`).toBe(true);
+          const stat = fs.statSync(file);
+          expect(stat.size).toBeGreaterThan(500);
+        }
       }
     });
   });
