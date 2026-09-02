@@ -1,5 +1,48 @@
 # AI Coordination Changelog
 
+## 2026-09-02 — Antigravity — TASK-20260902-010
+
+Summary:
+Delivered Character Art Bible & Production-Quality Vertical Slice:
+1. **Master Character Art Bible (`docs/character-art-bible.md` & `ADR-005`)**:
+   - Master Proportions: 1:2.5 Chibi Q-version (Height ~410px in 512x512 Canvas).
+   - Perspective: Frontal 2.5D Orthographic (5° downward tilt) for UI/Shop/Home/Results; Side 2.5D Profile for Runner.
+   - Line Weight & Inking: 3.0px outer contour in dark warm coffee `#2d1a0e`, 1.5px inner seams `#4a2c18`.
+   - Color Palette & Lighting: Defined standard skin tones (`#fcd5b5`), hair tones for 5 core characters, 45° top-left soft 2-step cel-shading.
+   - Master Skeleton Sockets & Foot Baseline: Fixed Ground Baseline `Y = 460 px`, center `X = 256 px`.
+   - Layer Order: Strict Z-depth hierarchy (Depth 35-60) preventing layer fighting.
+   - Format Rule: 100% transparent raster sprite sheets (32-bit RGBA PNG) for characters/outfits/pets; SVG reserved for UI icons.
+2. **Production-Quality Vertical Slice Deliverables**:
+   - 9 Master Poses generated for Adventurer & Heroine (`idle_front`, `idle_side`, `run`, `jump`, `landing`, `cheer`, `hurt`, `celebration`, `shop_preview`).
+   - Complete School Uniform outfit transparent raster assets (`idle`, `run`, `cheer`, `jump`, `celebration`, `thumbnail`).
+   - Equipped Mecha Cat companion pet transparent raster assets (`idle`, `fly`, `cheer`, `thumbnail`).
+3. **Heroine Layering Defect Elimination & Scene Integration**:
+   - Eliminated back-facing, disconnected, and vertical block layering defects on Heroine.
+   - Previewed and verified across Home (`TitleScene.ts`), Runner (`RunnerScene.ts`), Shop (`ShopScene.ts`), Map portrait (`PlayerAvatarBadge.ts` / `MapScene.ts`), and Results (`ResultScene.ts`).
+4. **Verification**:
+   - Created `character-art-bible-vertical-slice.test.ts` (11 dedicated tests).
+   - 59 test suites, 1,835 unit tests passing (100% pass rate).
+   - Clean production compilation (`tsc && vite build`).
+
+Changed:
+- `p1-adventure/docs/character-art-bible.md` (NEW)
+- `p1-adventure/.ai/decisions/ADR-005-character-art-bible.md` (NEW)
+- `p1-adventure/scripts/generate_vertical_slice_art.mjs` (NEW)
+- `p1-adventure/public/assets/characters/adventurer/sprites/*.png` (NEW)
+- `p1-adventure/public/assets/characters/heroine/sprites/*.png` (NEW)
+- `p1-adventure/public/assets/character/outfits/school_uniform/*.png`
+- `p1-adventure/public/assets/pets/mecha_cat/*.png` (NEW)
+- `p1-adventure/src/scenes/PreloadScene.ts`
+- `p1-adventure/src/services/PlayerAvatarService.ts`
+- `p1-adventure/src/test/character-art-bible-vertical-slice.test.ts` (NEW)
+
+Verification:
+- `npm run test:unit`: 59 test suites, 1,835 unit tests passing (100% pass rate).
+- `npm run build`: Clean production bundle compiled and synced to `docs/`.
+
+Pending:
+- Awaiting user visual review of the Adventurer / Heroine vertical slice before batch-generating the remaining cast.
+
 ## 2026-09-02 — Antigravity — TASK-20260902-009
 
 Summary:

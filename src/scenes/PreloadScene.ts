@@ -226,6 +226,33 @@ export class PreloadScene extends Phaser.Scene {
       zombie_jump: 'assets/kenney/platformer-characters/PNG/Zombie/Poses/zombie_jump.png',
       zombie_cheer1: 'assets/kenney/platformer-characters/PNG/Zombie/Poses/zombie_cheer1.png',
       zombie_cheer2: 'assets/kenney/platformer-characters/PNG/Zombie/Poses/zombie_cheer2.png',
+
+      // Production Master 512x512 Character Sprites (Vertical Slice)
+      adventurer_idle_front: 'assets/characters/adventurer/sprites/idle_front.png',
+      adventurer_idle_side: 'assets/characters/adventurer/sprites/idle_side.png',
+      adventurer_run: 'assets/characters/adventurer/sprites/run.png',
+      adventurer_hd_jump: 'assets/characters/adventurer/sprites/jump.png',
+      adventurer_landing: 'assets/characters/adventurer/sprites/landing.png',
+      adventurer_cheer: 'assets/characters/adventurer/sprites/cheer.png',
+      adventurer_hurt: 'assets/characters/adventurer/sprites/hurt.png',
+      adventurer_celebration: 'assets/characters/adventurer/sprites/celebration.png',
+      adventurer_shop_preview: 'assets/characters/adventurer/sprites/shop_preview.png',
+
+      heroine_idle_front: 'assets/characters/heroine/sprites/idle_front.png',
+      heroine_idle_side: 'assets/characters/heroine/sprites/idle_side.png',
+      heroine_run: 'assets/characters/heroine/sprites/run.png',
+      heroine_jump: 'assets/characters/heroine/sprites/jump.png',
+      heroine_landing: 'assets/characters/heroine/sprites/landing.png',
+      heroine_cheer: 'assets/characters/heroine/sprites/cheer.png',
+      heroine_hurt: 'assets/characters/heroine/sprites/hurt.png',
+      heroine_celebration: 'assets/characters/heroine/sprites/celebration.png',
+      heroine_shop_preview: 'assets/characters/heroine/sprites/shop_preview.png',
+
+      // Pet Sprites (Mecha Cat)
+      pet_mecha_cat_idle: 'assets/pets/mecha_cat/idle.png',
+      pet_mecha_cat_fly: 'assets/pets/mecha_cat/fly.png',
+      pet_mecha_cat_cheer: 'assets/pets/mecha_cat/cheer.png',
+      pet_mecha_cat_thumbnail: 'assets/pets/mecha_cat/thumbnail.png',
     };
 
     for (const [key, path] of Object.entries(spriteMap)) {

@@ -211,4 +211,12 @@ export class PlayerAvatarService {
       tint: appearance.skinConfig.tint,
     };
   }
+
+  /**
+   * Returns the HD 512x512 Master Art Bible texture key for a given pose
+   */
+  public getHdTextureKey(pose: AvatarPose = 'idle', skinId?: string): string {
+    const id = skinId || this.getAppearance().skinId;
+    return `${id}_${pose === 'idle' ? 'idle_front' : pose}`;
+  }
 }

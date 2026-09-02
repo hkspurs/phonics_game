@@ -10,6 +10,30 @@ None.
 
 ## COMPLETED
 
+### TASK-20260902-010
+
+Agent: Antigravity  
+Status: DONE  
+Started: 2026-09-02 13:36  
+Completed: 2026-09-02 13:42  
+
+Description:
+Character Art Bible & Production-Quality Vertical Slice Implementation:
+1. Master Character Art Bible:
+   - Authored `docs/character-art-bible.md` and `.ai/decisions/ADR-005-character-art-bible.md`.
+   - Defined master proportions (1:2.5 Chibi, height ~410px), perspective (2.5D Orthographic / Side 2.5D), inking & line weight (3.0px outer, 1.5px inner), palette, lighting (45° top-left soft cel-shading), sprite dimensions (512x512 Master RGBA PNG), foot anchor (Y=460), layer order (Depth 35-60), animation timing, outfit alignment sockets, and file naming.
+2. Production-Quality Vertical Slice:
+   - Generated 512x512 transparent raster sprite assets for 9 core poses across Adventurer and Heroine (`idle_front`, `idle_side`, `run`, `jump`, `landing`, `cheer`, `hurt`, `celebration`, `shop_preview`).
+   - Generated complete School Uniform outfit raster assets (`idle`, `run`, `cheer`, `jump`, `celebration`, `thumbnail`).
+   - Generated equipped Mecha Cat companion pet raster assets (`idle`, `fly`, `cheer`, `thumbnail`).
+   - Shared single skeleton, foot anchor Y=460, and lighting direction.
+3. Scene Integration & Heroine Defect Elimination:
+   - Integrated and previewed across Home (`TitleScene.ts`), Runner (`RunnerScene.ts`), Shop (`ShopScene.ts`), Map portrait (`PlayerAvatarBadge.ts` / `MapScene.ts`), and Results (`ResultScene.ts`).
+   - Completely eliminated the Heroine layering and disconnection defect.
+4. Verification:
+   - 59 test suites, 1,835 unit tests passing (100% pass rate).
+   - Clean production compilation (`tsc && vite build`).
+
 ### TASK-20260902-009
 
 Agent: Antigravity  
