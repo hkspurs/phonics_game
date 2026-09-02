@@ -426,11 +426,11 @@ export class ShopScene extends Phaser.Scene {
   private createTabBar(width: number, height: number): void {
     if (!this.add) return;
 
-    const tabs: { key: ShopTab; label: string }[] = [
-      { key: 'skins', label: '👕 角色造型' },
-      { key: 'wardrobe', label: '👗 夢幻衣櫥' },
-      { key: 'pets', label: '🐾 萌寵伴侶' },
-      { key: 'gadgets', label: '🎒 冒險道具' },
+    const tabs: { key: ShopTab; label: string; icon: string }[] = [
+      { key: 'skins', label: '角色造型', icon: 'vec_icon_rocket_20' },
+      { key: 'wardrobe', label: '夢幻衣櫥', icon: 'vec_icon_wardrobe_20' },
+      { key: 'pets', label: '萌寵伴侶', icon: 'vec_icon_pet_20' },
+      { key: 'gadgets', label: '冒險道具', icon: 'vec_icon_star_20' },
     ];
 
     const compact = this.getResponsiveWardrobeLayout(width, height).compact;
@@ -449,7 +449,8 @@ export class ShopScene extends Phaser.Scene {
         width: tabW,
         height: 44,
         text: t.label,
-        color: this.currentTab === t.key ? 'yellow' : 'grey',
+        icon: t.icon,
+        color: this.currentTab === t.key ? 'yellow' : 'card_selected',
         fontSize: legacyDesktop ? '19px' : compact ? '16px' : '17px',
         scaleOnHover: 1.02,
         scaleOnDown: 0.97,
@@ -473,7 +474,7 @@ export class ShopScene extends Phaser.Scene {
     // Update Tab button colors
     this.tabButtons.forEach((btn, idx) => {
       const keys: ShopTab[] = ['skins', 'wardrobe', 'pets', 'gadgets'];
-      btn.setColor(keys[idx] === tab ? 'yellow' : 'grey');
+      btn.setColor(keys[idx] === tab ? 'yellow' : 'card_selected');
     });
 
     const width = this.sys?.game?.config ? Number(this.sys.game.config.width) : GAME_WIDTH;
@@ -1883,20 +1884,24 @@ export class ShopScene extends Phaser.Scene {
       if (typeof this.actionButton.setDepth === 'function') this.actionButton.setDepth(60);
       if (isEquipped) {
         this.actionButton.setText('✅ 當前使用中');
+        this.actionButton.setIcon?.('vec_icon_check_24');
         this.actionButton.setColor('grey');
         this.actionButton.setEnabled(false);
       } else if (isOwned) {
         this.actionButton.setText('👕 立即換裝');
+        this.actionButton.setIcon?.('vec_icon_wardrobe_24');
         this.actionButton.setColor('blue');
         this.actionButton.setEnabled(true);
       } else {
         const canAffordGems = profile.gems >= skin.costGems;
         if (canAffordGems) {
           this.actionButton.setText(`💎 ${skin.costGems} 購買解鎖`);
+          this.actionButton.setIcon?.('vec_icon_gem_24');
           this.actionButton.setColor('yellow');
           this.actionButton.setEnabled(true);
         } else {
           this.actionButton.setText(`💎 ${skin.costGems} 寶石不足`);
+          this.actionButton.setIcon?.('vec_icon_lock_24');
           this.actionButton.setColor('grey');
           this.actionButton.setEnabled(false);
         }
@@ -1942,10 +1947,12 @@ export class ShopScene extends Phaser.Scene {
       if (typeof this.actionButton.setDepth === 'function') this.actionButton.setDepth(60);
       if (isEquipped) {
         this.actionButton.setText('✅ 出戰中');
+        this.actionButton.setIcon?.('vec_icon_check_24');
         this.actionButton.setColor('grey');
         this.actionButton.setEnabled(false);
       } else if (isOwned) {
         this.actionButton.setText('🐾 派出寵物');
+        this.actionButton.setIcon?.('vec_icon_pet_24');
         this.actionButton.setColor('green');
         this.actionButton.setEnabled(true);
       } else {
@@ -1954,10 +1961,12 @@ export class ShopScene extends Phaser.Scene {
         if (canAffordCoins || canAffordGems) {
           const costTxt = canAffordCoins ? `🪙 ${pet.costCoins}` : `💎 ${pet.costGems}`;
           this.actionButton.setText(`${costTxt} 領養寵物`);
+          this.actionButton.setIcon?.(canAffordCoins ? 'vec_icon_coin_24' : 'vec_icon_gem_24');
           this.actionButton.setColor('yellow');
           this.actionButton.setEnabled(true);
         } else {
           this.actionButton.setText(`🪙 ${pet.costCoins} 金幣不足`);
+          this.actionButton.setIcon?.('vec_icon_lock_24');
           this.actionButton.setColor('grey');
           this.actionButton.setEnabled(false);
         }
@@ -2032,14 +2041,17 @@ export class ShopScene extends Phaser.Scene {
       if (typeof this.actionButton.setDepth === 'function') this.actionButton.setDepth(60);
       if (!isArtworkReady) {
         this.actionButton.setText('🎨 美術準備中');
+        this.actionButton.setIcon?.('vec_icon_lock_24');
         this.actionButton.setColor('grey');
         this.actionButton.setEnabled(false);
       } else if (isEquipped) {
         this.actionButton.setText('❌ 脫下衣物');
+        this.actionButton.setIcon?.('vec_icon_close_24');
         this.actionButton.setColor('red');
         this.actionButton.setEnabled(true);
       } else if (isOwned) {
         this.actionButton.setText('👗 立即換上');
+        this.actionButton.setIcon?.('vec_icon_wardrobe_24');
         this.actionButton.setColor('green');
         this.actionButton.setEnabled(true);
       } else {
@@ -2048,10 +2060,12 @@ export class ShopScene extends Phaser.Scene {
         if (canAffordCoins || canAffordGems) {
           const costTxt = canAffordCoins ? `🪙 ${item.costCoins}` : `💎 ${item.costGems}`;
           this.actionButton.setText(`${costTxt} 立即購買`);
+          this.actionButton.setIcon?.(canAffordCoins ? 'vec_icon_coin_24' : 'vec_icon_gem_24');
           this.actionButton.setColor('yellow');
           this.actionButton.setEnabled(true);
         } else {
           this.actionButton.setText(`🪙 ${item.costCoins} 金幣不足`);
+          this.actionButton.setIcon?.('vec_icon_lock_24');
           this.actionButton.setColor('grey');
           this.actionButton.setEnabled(false);
         }

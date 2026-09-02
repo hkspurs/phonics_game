@@ -367,12 +367,14 @@ export class TitleScene extends Phaser.Scene {
       : new Phaser.GameObjects.Container(this, mascotX, mascotY);
     const appearance = PlayerAvatarService.getInstance().getAppearance();
 
-    // 1. Stage Shadow
+    // 1. Stage Shadow & Ethereal Pedestal Disc
     if (this.add.graphics) {
-      const shadowG = this.add.graphics();
-      shadowG.fillStyle(0x0a0c16, 0.35);
-      shadowG.fillEllipse(0, 52, 110, 24);
-      avatarContainer.add(shadowG);
+      const stageG = this.add.graphics();
+      stageG.fillStyle(0x38bdf8, 0.22);
+      stageG.fillEllipse(0, 52, 140, 36);
+      stageG.fillStyle(0x0a0c16, 0.45);
+      stageG.fillEllipse(0, 52, 110, 24);
+      avatarContainer.add(stageG);
     }
 
     // 2. Player Avatar Sprite (Level 1 Dedicated Full Sprite or Skin Base)
@@ -440,23 +442,23 @@ export class TitleScene extends Phaser.Scene {
     // 4. Speech Bubble: "準備好探險未？"
     if (this.add.graphics && this.add.text) {
       const bubbleG = this.add.graphics();
-      bubbleG.fillStyle(0xffffff, 0.95);
-      bubbleG.fillRoundedRect(-60, -78, 120, 32, 10);
-      bubbleG.lineStyle(2, 0x3b82f6, 1.0);
-      bubbleG.strokeRoundedRect(-60, -78, 120, 32, 10);
+      bubbleG.fillStyle(0xffffff, 0.98);
+      bubbleG.fillRoundedRect(-70, -84, 140, 38, 12);
+      bubbleG.lineStyle(2, 0x0284c7, 1.0);
+      bubbleG.strokeRoundedRect(-70, -84, 140, 38, 12);
       // pointer
-      bubbleG.fillStyle(0xffffff, 0.95);
+      bubbleG.fillStyle(0xffffff, 0.98);
       bubbleG.beginPath();
       bubbleG.moveTo(-10, -46);
       bubbleG.lineTo(10, -46);
-      bubbleG.lineTo(-4, -36);
+      bubbleG.lineTo(-4, -34);
       bubbleG.closePath();
       bubbleG.fillPath();
       avatarContainer.add(bubbleG);
 
-      const bubbleText = this.add.text(0, -62, '準備好探險未？', {
-        fontSize: '14px',
-        color: '#1e3a8a',
+      const bubbleText = this.add.text(0, -65, '準備好探險未？', {
+        fontSize: '16px',
+        color: '#0f172a',
         fontStyle: 'bold',
         fontFamily: "'Noto Sans TC', sans-serif",
       });
@@ -484,6 +486,7 @@ export class TitleScene extends Phaser.Scene {
       width: 320,
       height: 74,
       text: '🚀 開始遊戲',
+      icon: 'vec_icon_rocket_32',
       color: 'green',
       fontSize: '32px',
       soundKey: 'click',
@@ -506,6 +509,7 @@ export class TitleScene extends Phaser.Scene {
       width: btnWidth,
       height: btnHeight,
       text: '📊 成績表',
+      icon: 'vec_icon_report_24',
       color: 'blue',
       fontSize: '22px',
       soundKey: 'click',
@@ -521,6 +525,7 @@ export class TitleScene extends Phaser.Scene {
       width: btnWidth,
       height: btnHeight,
       text: '🛒 商店',
+      icon: 'vec_icon_shop_24',
       color: 'yellow',
       fontSize: '22px',
       soundKey: 'click',
@@ -538,6 +543,7 @@ export class TitleScene extends Phaser.Scene {
       width: btnWidth,
       height: btnHeight,
       text: '🏆 獎盃',
+      icon: 'vec_icon_trophy_24',
       color: 'purple',
       fontSize: '22px',
       soundKey: 'click',
@@ -555,6 +561,7 @@ export class TitleScene extends Phaser.Scene {
       width: btnWidth,
       height: btnHeight,
       text: '⚙️ 設定',
+      icon: 'vec_icon_settings_24',
       color: 'grey',
       fontSize: '22px',
       soundKey: 'click',

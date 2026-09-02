@@ -258,6 +258,7 @@ export class QuestionScene extends Phaser.Scene {
       width: 135,
       height: 48,
       text: '◀ 返回地圖',
+      icon: 'vec_icon_back_24',
       color: 'blue',
       fontSize: '20px',
       onClick: () => {
@@ -278,15 +279,16 @@ export class QuestionScene extends Phaser.Scene {
     });
     header.add(this.backButton);
 
-    // 1b. Quick Station Restart (🔄 重試本關)
+    // 1b. Quick Station Restart (重試本關)
     const restartBtn = new CanvasButton(this, {
       x: 245,
       y: 42,
       width: 135,
       height: 48,
-      text: '🔄 重試本關',
-      color: 'orange',
-      fontSize: '20px',
+      text: '重試本關',
+      icon: 'vec_icon_retry_24',
+      color: 'yellow',
+      fontSize: '18px',
       onClick: () => {
         if (this.transitionTimer) {
           this.transitionTimer.remove();
@@ -486,6 +488,7 @@ export class QuestionScene extends Phaser.Scene {
       width: 145,
       height: 54,
       text: '🔊 朗讀',
+      icon: 'vec_icon_speaker_24',
       color: 'yellow',
       fontSize: '22px',
       onClick: () => {
@@ -1295,7 +1298,9 @@ export class QuestionScene extends Phaser.Scene {
       y: controlsY,
       width: 260,
       height: 58,
-      text: '繼續前進 ➔',
+      text: '繼續前進',
+      icon: 'vec_icon_next_24',
+      iconPosition: 'right',
       color: 'green',
       fontSize: '22px',
       onClick: () => {

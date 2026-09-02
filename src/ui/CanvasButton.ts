@@ -191,19 +191,29 @@ export class CanvasButton extends Phaser.GameObjects.Container {
 
   private createOrUpdateIcon(iconKey: string): void {
     if (this.iconImage) {
-      this.iconImage.destroy();
+      if (typeof this.iconImage.destroy === 'function') {
+        this.iconImage.destroy();
+      }
       this.iconImage = null;
     }
 
-    const img = this.scene.add.image(0, -2, iconKey);
-    if (typeof img.setOrigin === 'function') {
-      img.setOrigin(0.5, 0.5);
+    if (!iconKey || !this.scene?.add?.image) return;
+
+    try {
+      const img = this.scene.add.image(0, -2, iconKey);
+      if (img) {
+        if (typeof img.setOrigin === 'function') {
+          img.setOrigin(0.5, 0.5);
+        }
+        if (typeof img.setScale === 'function' && this.config.iconScale) {
+          img.setScale(this.config.iconScale);
+        }
+        this.iconImage = img;
+        this.add(img);
+      }
+    } catch {
+      // Safe fallback if mock environment
     }
-    if (typeof img.setScale === 'function' && this.config.iconScale) {
-      img.setScale(this.config.iconScale);
-    }
-    this.iconImage = img;
-    this.add(img);
   }
 
   private layoutContents(): void {

@@ -99,13 +99,14 @@ export class TrophyScene extends Phaser.Scene {
 
     const barY = 36;
 
-    // 1. ◀ 返回主頁 (TitleScene)
+    // 1. 返回 (TitleScene)
     this.homeButton = new CanvasButton(this, {
       x: 100,
       y: barY,
       width: 140,
       height: 44,
-      text: '◀ 返回主頁',
+      text: '返回',
+      icon: 'vec_icon_back_24',
       color: 'blue',
       fontSize: '18px',
       onClick: () => {
@@ -118,7 +119,7 @@ export class TrophyScene extends Phaser.Scene {
 
     // 2. Title Text
     if (this.add.text) {
-      const title = this.add.text(width / 2 - 80, barY, '🏆 榮譽殿堂 (Hall of Fame)', {
+      const title = this.add.text(width / 2 - 80, barY, '榮譽殿堂 (Hall of Fame)', {
         fontSize: '24px',
         fontFamily: "'Kenney Future', 'Noto Sans TC', sans-serif",
         color: '#ffd700',
@@ -161,7 +162,7 @@ export class TrophyScene extends Phaser.Scene {
       this.coinText = this.add.text(rightX + 40, barY, `🪙 ${profile.coins}`, {
         fontSize: '18px',
         fontFamily: "'Kenney Future', 'Noto Sans TC', sans-serif",
-        color: '#ffd700',
+        color: '#fbbf24',
         fontStyle: 'bold',
       });
       if (typeof this.coinText.setOrigin === 'function') this.coinText.setOrigin(0.5);
@@ -169,7 +170,7 @@ export class TrophyScene extends Phaser.Scene {
       this.gemText = this.add.text(rightX + 125, barY, `💎 ${profile.gems}`, {
         fontSize: '18px',
         fontFamily: "'Kenney Future', 'Noto Sans TC', sans-serif",
-        color: '#00e5ff',
+        color: '#38bdf8',
         fontStyle: 'bold',
       });
       if (typeof this.gemText.setOrigin === 'function') this.gemText.setOrigin(0.5);
@@ -193,9 +194,10 @@ export class TrophyScene extends Phaser.Scene {
         y: tabY,
         width: tabW,
         height: tabH,
-        text: `${cat.icon} ${cat.name}`,
-        color: isSelected ? 'yellow' : 'grey',
-        fontSize: '17px',
+        text: `${cat.name}`,
+        icon: 'vec_icon_trophy_20',
+        color: isSelected ? 'yellow' : 'card_selected',
+        fontSize: '16px',
         onClick: () => {
           this.switchCategory(cat.key);
         },
@@ -230,7 +232,7 @@ export class TrophyScene extends Phaser.Scene {
     TROPHY_CATEGORIES.forEach((cat, idx) => {
       const btn = this.categoryTabButtons[idx];
       if (btn) {
-        btn.setColor(cat.key === category ? 'yellow' : 'grey');
+        btn.setColor(cat.key === category ? 'yellow' : 'card_selected');
       }
     });
 
@@ -278,7 +280,6 @@ export class TrophyScene extends Phaser.Scene {
       this.createSingleTrophyCard(trophy, cardX, cardY, cardW, cardH, profile);
     });
 
-    // Update page indicator and button states
     this.updatePaginationUI(totalPages, trophies.length);
   }
 
@@ -288,7 +289,7 @@ export class TrophyScene extends Phaser.Scene {
     y: number,
     w: number,
     h: number,
-    profile: UserProfile
+    profile: any
   ): void {
     if (!this.add || !this.cardsContainer) return;
 

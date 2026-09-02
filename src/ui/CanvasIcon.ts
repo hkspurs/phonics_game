@@ -30,12 +30,36 @@ export type IconName =
   | 'hint'
   | 'back'
   | 'close'
-  | 'speaker';
+  | 'speaker'
+  | 'shop'
+  | 'rocket'
+  | 'play'
+  | 'pause'
+  | 'wardrobe'
+  | 'pet'
+  | 'skip';
 
 export type IconSize = 20 | 24 | 32 | 48;
 
 export function getIconTextureKey(name: IconName, size: IconSize = 32): string {
   return `vec_icon_${name}_${size}`;
+}
+
+function safeRoundRect(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  w: number,
+  h: number,
+  r: number
+): void {
+  if (typeof (ctx as any).roundRect === 'function') {
+    (ctx as any).roundRect(x, y, w, h, r);
+  } else if (typeof ctx.rect === 'function') {
+    ctx.rect(x, y, w, h);
+  } else if (typeof ctx.fillRect === 'function') {
+    ctx.fillRect(x, y, w, h);
+  }
 }
 
 export function drawVectorIcon(
@@ -49,6 +73,153 @@ export function drawVectorIcon(
   const half = s / 2;
 
   switch (name) {
+    case 'shop': {
+      // Shopping Bag with Handles
+      ctx.fillStyle = color || '#f59e0b';
+      ctx.beginPath();
+      safeRoundRect(ctx, s * 0.18, s * 0.32, s * 0.64, s * 0.58, s * 0.1);
+      ctx.fill();
+
+      // Handle
+      ctx.strokeStyle = color || '#fef08a';
+      ctx.lineWidth = Math.max(1.5, s * 0.08);
+      ctx.beginPath();
+      ctx.arc(half, s * 0.32, s * 0.2, Math.PI, 0);
+      ctx.stroke();
+
+      // Star emblem on bag
+      ctx.fillStyle = '#ffffff';
+      ctx.beginPath();
+      ctx.arc(half, s * 0.62, s * 0.1, 0, Math.PI * 2);
+      ctx.fill();
+      break;
+    }
+
+    case 'rocket': {
+      // Launch Rocket
+      ctx.fillStyle = color || '#38bdf8';
+      ctx.beginPath();
+      ctx.moveTo(half, s * 0.1);
+      ctx.quadraticCurveTo(s * 0.75, s * 0.35, s * 0.7, s * 0.75);
+      ctx.lineTo(s * 0.3, s * 0.75);
+      ctx.quadraticCurveTo(s * 0.25, s * 0.35, half, s * 0.1);
+      ctx.fill();
+
+      // Side fins
+      ctx.fillStyle = '#e11d48';
+      ctx.beginPath();
+      ctx.moveTo(s * 0.3, s * 0.55);
+      ctx.lineTo(s * 0.12, s * 0.78);
+      ctx.lineTo(s * 0.3, s * 0.75);
+      ctx.fill();
+
+      ctx.beginPath();
+      ctx.moveTo(s * 0.7, s * 0.55);
+      ctx.lineTo(s * 0.88, s * 0.78);
+      ctx.lineTo(s * 0.7, s * 0.75);
+      ctx.fill();
+
+      // Window
+      ctx.fillStyle = '#ffffff';
+      ctx.beginPath();
+      ctx.arc(half, s * 0.42, s * 0.1, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Flame
+      ctx.fillStyle = '#f59e0b';
+      ctx.beginPath();
+      ctx.moveTo(s * 0.38, s * 0.75);
+      ctx.lineTo(half, s * 0.95);
+      ctx.lineTo(s * 0.62, s * 0.75);
+      ctx.fill();
+      break;
+    }
+
+    case 'play': {
+      // Play Triangle
+      ctx.fillStyle = color || '#22c55e';
+      ctx.beginPath();
+      ctx.moveTo(s * 0.28, s * 0.18);
+      ctx.lineTo(s * 0.78, half);
+      ctx.lineTo(s * 0.28, s * 0.82);
+      ctx.closePath();
+      ctx.fill();
+      break;
+    }
+
+    case 'pause': {
+      // Two rounded bars
+      ctx.fillStyle = color || '#ffffff';
+      ctx.beginPath();
+      safeRoundRect(ctx, s * 0.25, s * 0.2, s * 0.18, s * 0.6, s * 0.06);
+      safeRoundRect(ctx, s * 0.57, s * 0.2, s * 0.18, s * 0.6, s * 0.06);
+      ctx.fill();
+      break;
+    }
+
+    case 'wardrobe': {
+      // Shirt / Outfit
+      ctx.fillStyle = color || '#a855f7';
+      ctx.beginPath();
+      ctx.moveTo(half, s * 0.22);
+      ctx.lineTo(s * 0.75, s * 0.22);
+      ctx.lineTo(s * 0.88, s * 0.45);
+      ctx.lineTo(s * 0.74, s * 0.52);
+      ctx.lineTo(s * 0.7, s * 0.45);
+      ctx.lineTo(s * 0.7, s * 0.82);
+      ctx.lineTo(s * 0.3, s * 0.82);
+      ctx.lineTo(s * 0.3, s * 0.45);
+      ctx.lineTo(s * 0.26, s * 0.52);
+      ctx.lineTo(s * 0.12, s * 0.45);
+      ctx.lineTo(s * 0.25, s * 0.22);
+      ctx.closePath();
+      ctx.fill();
+      break;
+    }
+
+    case 'pet': {
+      // Paw Print
+      ctx.fillStyle = color || '#fbbf24';
+      // Main pad
+      ctx.beginPath();
+      ctx.arc(half, s * 0.62, s * 0.22, 0, Math.PI * 2);
+      ctx.fill();
+
+      // 4 Toe pads
+      const toes = [
+        { x: s * 0.25, y: s * 0.38, r: s * 0.08 },
+        { x: s * 0.42, y: s * 0.26, r: s * 0.09 },
+        { x: s * 0.58, y: s * 0.26, r: s * 0.09 },
+        { x: s * 0.75, y: s * 0.38, r: s * 0.08 },
+      ];
+      for (const t of toes) {
+        ctx.beginPath();
+        ctx.arc(t.x, t.y, t.r, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      break;
+    }
+
+    case 'skip': {
+      // Fast Forward >>
+      ctx.strokeStyle = color || '#ffffff';
+      ctx.lineWidth = Math.max(2, s * 0.12);
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+
+      ctx.beginPath();
+      ctx.moveTo(s * 0.2, s * 0.25);
+      ctx.lineTo(s * 0.48, half);
+      ctx.lineTo(s * 0.2, s * 0.75);
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.moveTo(s * 0.5, s * 0.25);
+      ctx.lineTo(s * 0.78, half);
+      ctx.lineTo(s * 0.5, s * 0.75);
+      ctx.stroke();
+      break;
+    }
     case 'coin': {
       // Golden Disc with outer rim & star/symbol
       const grad = ctx.createRadialGradient(half * 0.8, half * 0.8, s * 0.1, half, half, half);
@@ -468,6 +639,13 @@ export function registerAllVectorIcons(scene: Phaser.Scene): void {
     'back',
     'close',
     'speaker',
+    'shop',
+    'rocket',
+    'play',
+    'pause',
+    'wardrobe',
+    'pet',
+    'skip',
   ];
 
   const sizes: IconSize[] = [20, 24, 32, 48];

@@ -1187,6 +1187,7 @@ export class MapScene extends Phaser.Scene {
       width: 280,
       height: 56,
       text: '⚔️ 進入關卡 (進入)',
+      icon: 'vec_icon_rocket_24',
       color: 'green',
       fontSize: '22px',
       onClick: () => {
@@ -1280,13 +1281,14 @@ export class MapScene extends Phaser.Scene {
     header.setScrollFactor(0);
     header.setDepth(500);
 
-    // 1. Back Button (◀ 返回主頁)
+    // 1. Back Button (◀ 返回)
     this.backButton = new CanvasButton(this, {
       x: 105,
       y: 42,
       width: 145,
       height: 48,
       text: '◀ 返回',
+      icon: 'vec_icon_back_24',
       color: 'blue',
       fontSize: '20px',
       onClick: () => {
@@ -1308,6 +1310,7 @@ export class MapScene extends Phaser.Scene {
       width: 140,
       height: 48,
       text: '📊 報告',
+      icon: 'vec_icon_report_24',
       color: 'yellow',
       fontSize: '20px',
       onClick: () => {
@@ -1347,7 +1350,7 @@ export class MapScene extends Phaser.Scene {
       this.progressText = progLabel;
       header.add(progLabel);
 
-      // Resources use the same coin → gem → star order as Title, Shop, and Runner.
+      // Resources use the same coin -> gem -> star order as Title, Shop, and Runner.
       const coinLabel = this.add.text(barX - 70, barY, `🪙 金幣: ${profile.coins}`, {
         fontSize: '18px',
         fontFamily: "'Kenney Future', 'Noto Sans TC', sans-serif",
@@ -1423,7 +1426,7 @@ export class MapScene extends Phaser.Scene {
       variant: 'round',
       text: '🎯',
       color: 'yellow',
-      fontSize: '18px',
+      fontSize: '16px',
       onClick: () => this.focusOnCurrentStation(true),
     });
     if (targetBtn && typeof targetBtn.setScrollFactor === 'function') {

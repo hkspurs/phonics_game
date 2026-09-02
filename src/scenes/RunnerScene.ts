@@ -1526,7 +1526,7 @@ export class RunnerScene extends Phaser.Scene {
       this.coinCounterText = this.add.text(42, 34, `🪙 ${currentCoins}`, {
         fontSize: '22px',
         fontFamily: "'Kenney Future', 'Noto Sans TC', sans-serif",
-        color: '#ffd700',
+        color: '#fbbf24',
         fontStyle: 'bold',
       });
       this.hudContainer.add(this.coinCounterText);
@@ -1534,7 +1534,7 @@ export class RunnerScene extends Phaser.Scene {
       this.gemCounterText = this.add.text(180, 34, `💎 ${currentGems}`, {
         fontSize: '22px',
         fontFamily: "'Kenney Future', 'Noto Sans TC', sans-serif",
-        color: '#00e5ff',
+        color: '#38bdf8',
         fontStyle: 'bold',
       });
       this.hudContainer.add(this.gemCounterText);
@@ -1542,7 +1542,7 @@ export class RunnerScene extends Phaser.Scene {
       this.starCounterText = this.add.text(310, 34, `⭐ ${currentStars}/30`, {
         fontSize: '22px',
         fontFamily: "'Kenney Future', 'Noto Sans TC', sans-serif",
-        color: '#ffdd59',
+        color: '#fde047',
         fontStyle: 'bold',
       });
       this.hudContainer.add(this.starCounterText);
@@ -1567,11 +1567,6 @@ export class RunnerScene extends Phaser.Scene {
     }
 
     if (this.add.text) {
-      const flagText = this.add.text(barX + barW + 10, barY - 4, '🏆', {
-        fontSize: '22px',
-      });
-      this.hudContainer.add(flagText);
-
       // Station badge
       const badgeText = this.add.text(
         width / 2,
@@ -1588,13 +1583,14 @@ export class RunnerScene extends Phaser.Scene {
       this.hudContainer.add(badgeText);
     }
 
-    // 3. Top Right Skip Button (⏩ 跳過)
+    // 3. Top Right Skip Button (跳過)
     this.skipButton = new CanvasButton(this, {
       x: width - 110,
       y: 47,
       width: 145,
       height: 48,
-      text: '⏩ 跳過',
+      text: '跳過',
+      icon: 'vec_icon_skip_24',
       color: 'yellow',
       fontSize: '20px',
       onClick: () => {
@@ -2207,9 +2203,9 @@ export class RunnerScene extends Phaser.Scene {
     }
 
     // Particle sparkle burst
-    this.spawnSparkleParticles(itemX, itemY, 0xffd700, 5);
+    this.spawnSparkleParticles(itemX, itemY, 0xffd700, 8);
 
-    // Floating text +1
+    // Floating score text +1
     this.spawnFloatingFeedbackText(itemX, itemY - 20, '+1 🪙', '#ffd700');
 
     // Update HUD display
@@ -2262,7 +2258,7 @@ export class RunnerScene extends Phaser.Scene {
     }
 
     // Particle burst
-    this.spawnSparkleParticles(itemX, itemY, 0x00e5ff, 8);
+    this.spawnSparkleParticles(itemX, itemY, 0x00e5ff, 10);
 
     // Floating text +1 💎
     this.spawnFloatingFeedbackText(itemX, itemY - 20, '+1 💎', '#00e5ff');
@@ -2278,13 +2274,13 @@ export class RunnerScene extends Phaser.Scene {
     try {
       const profile = DataManager.getInstance().getProfile();
       if (this.coinCounterText && typeof this.coinCounterText.setText === 'function') {
-        this.coinCounterText.setText(`🪙 ${profile.coins}`);
+        this.coinCounterText.setText(`金幣: ${profile.coins}`);
       }
       if (this.gemCounterText && typeof this.gemCounterText.setText === 'function') {
-        this.gemCounterText.setText(`💎 ${profile.gems}`);
+        this.gemCounterText.setText(`寶石: ${profile.gems}`);
       }
       if (this.starCounterText && typeof this.starCounterText.setText === 'function') {
-        this.starCounterText.setText(`⭐ ${DataManager.getInstance().getTotalStars()}/30`);
+        this.starCounterText.setText(`星星: ${DataManager.getInstance().getTotalStars()}/30`);
       }
     } catch {
       // Safe ignore
