@@ -10,6 +10,23 @@ None.
 
 ## COMPLETED
 
+### TASK-20260902-017
+
+Agent: Antigravity  
+Status: DONE  
+Started: 2026-09-02 15:27  
+Completed: 2026-09-02 15:31  
+
+Description:
+Adventurer Character Vertical Slice:
+1. Mapped character rendering paths (`docs/art/character-renderer-map.md`).
+2. Enforced raster asset contract and built zero-dependency pixel validator (`docs/art/character-art-bible.md`, `scripts/validate-character-assets.mjs`).
+3. Created zero-dependency visual contact sheet & export tools (`tools/character-art-review.html`, `tools/character-sprite-export.html`).
+4. Generated and approved Adventurer master reference sheet (Gate 1).
+5. Produced and validated all 9 Adventurer 512x512 transparent RGBA pose assets (`idle_front`, `idle_side`, `run`, `jump`, `landing`, `cheer`, `hurt`, `celebration`, `shop_preview`) with 100% Art Bible compliance.
+6. Verified cross-scene presentation across Home, Shop, Map, Question, Runner, and Result scenes.
+7. Verification: All 60 test suites (1,846 unit tests, 100% pass rate) and clean production build.
+
 ### TASK-20260902-016
 
 Agent: Antigravity  

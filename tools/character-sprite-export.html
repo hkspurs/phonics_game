@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Deterministic Sprite Exporter (512x512)</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card: #1e293b;
+      --text: #f8fafc;
+      --accent: #3b82f6;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+    }
+    .main-container {
+      display: flex;
+      gap: 32px;
+      background: var(--card);
+      padding: 24px;
+      border-radius: 12px;
+      border: 1px solid #334155;
+    }
+    .canvas-wrapper {
+      position: relative;
+      width: 512px;
+      height: 512px;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 2px solid #475569;
+    }
+    .checkerboard {
+      background-image: 
+        linear-gradient(45deg, #2d3748 25%, transparent 25%), 
+        linear-gradient(-45deg, #2d3748 25%, transparent 25%), 
+        linear-gradient(45deg, transparent 75%, #2d3748 75%), 
+        linear-gradient(-45deg, transparent 75%, #2d3748 75%);
+      background-size: 16px 16px;
+      background-position: 0 0, 0 8px, 8px -8px, -8px 0px;
+      background-color: #1a202c;
+    }
+    #render-canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 512px;
+      height: 512px;
+    }
+    #guide-canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 512px;
+      height: 512px;
+      pointer-events: none;
+    }
+    .control-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      width: 280px;
+    }
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    label { font-size: 13px; font-weight: 600; color: #94a3b8; }
+    input, select, button {
+      background: #0f172a;
+      color: #fff;
+      border: 1px solid #475569;
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+    input[type="number"] { width: 100%; }
+    button.primary {
+      background: var(--accent);
+      border: none;
+      font-weight: 600;
+      padding: 12px;
+      cursor: pointer;
+      margin-top: 8px;
+    }
+    button.primary:hover { background: #2563eb; }
+    .status-box {
+      font-size: 12px;
+      padding: 8px;
+      background: #090d16;
+      border-radius: 6px;
+      line-height: 1.4;
+      color: #cbd5e1;
+    }
+  </style>
+</head>
+<body>
+  <h1>Deterministic Character Sprite Exporter</h1>
+  <p style="color: #94a3b8; font-size: 14px;">512x512 Transparent PNG Canvas Alignment</p>
+
+  <div class="main-container">
+    <div class="canvas-wrapper checkerboard">
+      <canvas id="render-canvas" width="512" height="512"></canvas>
+      <canvas id="guide-canvas" width="512" height="512"></canvas>
+    </div>
+
+    <div class="control-panel">
+      <div class="form-group">
+        <label>1. Select Source Image</label>
+        <input type="file" id="file-input" accept="image/png">
+      </div>
+
+      <div class="form-group">
+        <label>2. Target Pose Name</label>
+        <select id="pose-select">
+          <option value="idle_front">idle_front.png</option>
+          <option value="idle_side">idle_side.png</option>
+          <option value="run">run.png</option>
+          <option value="jump">jump.png</option>
+          <option value="landing">landing.png</option>
+          <option value="cheer">cheer.png</option>
+          <option value="hurt">hurt.png</option>
+          <option value="celebration">celebration.png</option>
+          <option value="shop_preview">shop_preview.png</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Uniform Scale (%)</label>
+        <input type="number" id="scale-input" value="100" min="10" max="500" step="1">
+      </div>
+
+      <div class="form-group">
+        <label>Offset X (px)</label>
+        <input type="number" id="offset-x" value="0" step="1">
+      </div>
+
+      <div class="form-group">
+        <label>Offset Y (px)</label>
+        <input type="number" id="offset-y" value="0" step="1">
+      </div>
+
+      <button id="export-btn" class="primary" disabled>Export 512x512 PNG</button>
+
+      <div class="status-box" id="status-box">
+        Load an image to preview and export.
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const fileInput = document.getElementById('file-input');
+    const poseSelect = document.getElementById('pose-select');
+    const scaleInput = document.getElementById('scale-input');
+    const offsetX = document.getElementById('offset-x');
+    const offsetY = document.getElementById('offset-y');
+    const exportBtn = document.getElementById('export-btn');
+    const statusBox = document.getElementById('status-box');
+
+    const renderCanvas = document.getElementById('render-canvas');
+    const renderCtx = renderCanvas.getContext('2d');
+
+    const guideCanvas = document.getElementById('guide-canvas');
+    const guideCtx = guideCanvas.getContext('2d');
+
+    let loadedImg = null;
+
+    function drawGuides() {
+      guideCtx.clearRect(0, 0, 512, 512);
+
+      // Safe box: x=116-396, y=48-460
+      guideCtx.strokeStyle = 'rgba(34, 197, 94, 0.8)';
+      guideCtx.lineWidth = 1.5;
+      guideCtx.setLineDash([4, 4]);
+      guideCtx.strokeRect(116, 48, 280, 412);
+
+      // Centre line: x=256
+      guideCtx.strokeStyle = 'rgba(59, 130, 246, 0.9)';
+      guideCtx.lineWidth = 1.5;
+      guideCtx.setLineDash([2, 2]);
+      guideCtx.beginPath();
+      guideCtx.moveTo(256, 0);
+      guideCtx.lineTo(256, 512);
+      guideCtx.stroke();
+
+      // Ground baseline: y=456
+      guideCtx.strokeStyle = 'rgba(239, 68, 68, 0.95)';
+      guideCtx.lineWidth = 2;
+      guideCtx.setLineDash([]);
+      guideCtx.beginPath();
+      guideCtx.moveTo(0, 456);
+      guideCtx.lineTo(512, 456);
+      guideCtx.stroke();
+
+      // Jump guide: y=440
+      guideCtx.strokeStyle = 'rgba(234, 179, 8, 0.8)';
+      guideCtx.lineWidth = 1;
+      guideCtx.setLineDash([3, 3]);
+      guideCtx.beginPath();
+      guideCtx.moveTo(0, 440);
+      guideCtx.lineTo(512, 440);
+      guideCtx.stroke();
+    }
+
+    function render() {
+      renderCtx.clearRect(0, 0, 512, 512);
+      if (!loadedImg) return;
+
+      const scale = parseFloat(scaleInput.value) / 100;
+      const dx = parseFloat(offsetX.value) || 0;
+      const dy = parseFloat(offsetY.value) || 0;
+
+      const dw = loadedImg.width * scale;
+      const dh = loadedImg.height * scale;
+      const x = 256 - dw / 2 + dx;
+      const y = 256 - dh / 2 + dy;
+
+      renderCtx.drawImage(loadedImg, x, y, dw, dh);
+    }
+
+    drawGuides();
+
+    fileInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = (evt) => {
+        const img = new Image();
+        img.onload = () => {
+          loadedImg = img;
+          exportBtn.disabled = false;
+          statusBox.textContent = `Source loaded: ${img.width}x${img.height}px`;
+          render();
+        };
+        img.src = evt.target.result;
+      };
+      reader.readAsDataURL(file);
+    });
+
+    scaleInput.addEventListener('input', render);
+    offsetX.addEventListener('input', render);
+    offsetY.addEventListener('input', render);
+
+    exportBtn.addEventListener('click', () => {
+      if (!loadedImg) return;
+      const filename = `${poseSelect.value}.png`;
+
+      renderCanvas.toBlob((blob) => {
+        if (!blob) return;
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        a.click();
+        URL.revokeObjectURL(url);
+        statusBox.textContent = `Exported: ${filename} (512x512)`;
+      }, 'image/png');
+    });
+  </script>
+</body>
+</html>

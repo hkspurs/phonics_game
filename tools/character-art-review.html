@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Character Art Review & Contact Sheet</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card-bg: #1e293b;
+      --text: #f8fafc;
+      --accent: #3b82f6;
+      --guide-safe: rgba(34, 197, 94, 0.7);
+      --guide-center: rgba(59, 130, 246, 0.8);
+      --guide-base: rgba(239, 68, 68, 0.8);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      padding: 24px;
+    }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid #334155;
+    }
+    h1 { font-size: 24px; font-weight: 700; }
+    .controls { display: flex; gap: 12px; align-items: center; }
+    button, select {
+      background: #334155;
+      color: #fff;
+      border: 1px solid #475569;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+    button:hover { background: #475569; }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+      gap: 24px;
+    }
+    .card {
+      background: var(--card-bg);
+      border-radius: 12px;
+      padding: 16px;
+      border: 1px solid #334155;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .card-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #93c5fd;
+    }
+    .preview-container {
+      position: relative;
+      width: 256px;
+      height: 256px;
+      margin: 0 auto;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid #475569;
+    }
+    .checkerboard {
+      background-image: 
+        linear-gradient(45deg, #2d3748 25%, transparent 25%), 
+        linear-gradient(-45deg, #2d3748 25%, transparent 25%), 
+        linear-gradient(45deg, transparent 75%, #2d3748 75%), 
+        linear-gradient(-45deg, transparent 75%, #2d3748 75%);
+      background-size: 16px 16px;
+      background-position: 0 0, 0 8px, 8px -8px, -8px 0px;
+      background-color: #1a202c;
+    }
+    .sprite-img {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 256px;
+      height: 256px;
+      object-fit: contain;
+      image-rendering: pixelated;
+    }
+    .overlay-svg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 256px;
+      height: 256px;
+      pointer-events: none;
+    }
+    .variants-row {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      align-items: flex-end;
+      background: #090d16;
+      padding: 12px;
+      border-radius: 8px;
+    }
+    .variant-box {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      font-size: 11px;
+      color: #94a3b8;
+    }
+    .variant-img-128 { width: 128px; height: 128px; }
+    .variant-img-64 { width: 64px; height: 64px; }
+    .silhouette { filter: brightness(0); }
+    .bg-light { background: #f1f5f9; }
+    .bg-dark { background: #020617; }
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <h1 id="page-title">Character Art Review</h1>
+      <p id="sub-title" style="color: #94a3b8; font-size: 14px; margin-top: 4px;">512x512 Master Art Bible Verification</p>
+    </div>
+    <div class="controls">
+      <button id="toggle-guides-btn">Toggle Guides</button>
+      <button id="toggle-labels-btn">Toggle Labels</button>
+    </div>
+  </header>
+
+  <main id="main-grid" class="grid"></main>
+
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const character = urlParams.get('character') || 'adventurer';
+    const hideLabels = urlParams.get('labels') === '0';
+
+    if (!/^[a-z0-9_-]+$/.test(character)) {
+      document.body.innerHTML = '<h1 style="color:#ef4444;padding:40px;">Invalid character parameter</h1>';
+      throw new Error('Invalid character');
+    }
+
+    document.getElementById('page-title').textContent = `Character Review: ${character.toUpperCase()}`;
+
+    const POSES = [
+      'idle_front',
+      'idle_side',
+      'run',
+      'jump',
+      'landing',
+      'cheer',
+      'hurt',
+      'celebration',
+      'shop_preview'
+    ];
+
+    const grid = document.getElementById('main-grid');
+    let showGuides = true;
+    let areLabelsHidden = hideLabels;
+
+    POSES.forEach(pose => {
+      const card = document.createElement('div');
+      card.className = 'card';
+
+      const title = document.createElement('div');
+      title.className = 'card-title' + (areLabelsHidden ? ' hidden' : '');
+      title.textContent = pose;
+      card.appendChild(title);
+
+      // Main 256x256 preview container
+      const previewCont = document.createElement('div');
+      previewCont.className = 'preview-container checkerboard';
+
+      const img = document.createElement('img');
+      img.className = 'sprite-img';
+      img.src = `../assets/characters/${character}/sprites/${pose}.png`;
+      img.alt = pose;
+
+      // SVG Guide Overlay (mapped 512 -> 256, scale 0.5)
+      const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      svg.setAttribute('class', 'overlay-svg');
+      svg.setAttribute('viewBox', '0 0 512 512');
+      svg.innerHTML = `
+        <!-- Safe box: x=116-396, y=48-460 -->
+        <rect x="116" y="48" width="280" height="412" fill="none" stroke="rgba(34, 197, 94, 0.7)" stroke-width="2" stroke-dasharray="4 4" />
+        <!-- Centre: x=256 -->
+        <line x1="256" y1="0" x2="256" y2="512" stroke="rgba(59, 130, 246, 0.8)" stroke-width="2" stroke-dasharray="2 2" />
+        <!-- Baseline: y=456 -->
+        <line x1="0" y1="456" x2="512" y2="456" stroke="rgba(239, 68, 68, 0.9)" stroke-width="3" />
+      `;
+
+      previewCont.appendChild(img);
+      previewCont.appendChild(svg);
+      card.appendChild(previewCont);
+
+      // Variants row (128 light, 128 dark, 128 silhouette, 64 color)
+      const variantsRow = document.createElement('div');
+      variantsRow.className = 'variants-row';
+
+      // 128 Light
+      const vLight = document.createElement('div');
+      vLight.className = 'variant-box';
+      const imgLight = document.createElement('img');
+      imgLight.className = 'variant-img-128 bg-light';
+      imgLight.src = img.src;
+      vLight.appendChild(imgLight);
+      const lblLight = document.createElement('span');
+      lblLight.textContent = '128 Light';
+      vLight.appendChild(lblLight);
+      variantsRow.appendChild(vLight);
+
+      // 128 Dark
+      const vDark = document.createElement('div');
+      vDark.className = 'variant-box';
+      const imgDark = document.createElement('img');
+      imgDark.className = 'variant-img-128 bg-dark';
+      imgDark.src = img.src;
+      vDark.appendChild(imgDark);
+      const lblDark = document.createElement('span');
+      lblDark.textContent = '128 Dark';
+      vDark.appendChild(lblDark);
+      variantsRow.appendChild(vDark);
+
+      // 128 Silhouette
+      const vSil = document.createElement('div');
+      vSil.className = 'variant-box';
+      const imgSil = document.createElement('img');
+      imgSil.className = 'variant-img-128 bg-light silhouette';
+      imgSil.src = img.src;
+      vSil.appendChild(imgSil);
+      const lblSil = document.createElement('span');
+      lblSil.textContent = '128 Sil';
+      vSil.appendChild(lblSil);
+      variantsRow.appendChild(vSil);
+
+      // 64 Color
+      const v64 = document.createElement('div');
+      v64.className = 'variant-box';
+      const img64 = document.createElement('img');
+      img64.className = 'variant-img-64 bg-dark';
+      img64.src = img.src;
+      v64.appendChild(img64);
+      const lbl64 = document.createElement('span');
+      lbl64.textContent = '64 Col';
+      v64.appendChild(lbl64);
+      variantsRow.appendChild(v64);
+
+      card.appendChild(variantsRow);
+      grid.appendChild(card);
+    });
+
+    document.getElementById('toggle-guides-btn').addEventListener('click', () => {
+      showGuides = !showGuides;
+      document.querySelectorAll('.overlay-svg').forEach(el => {
+        el.style.display = showGuides ? 'block' : 'none';
+      });
+    });
+
+    document.getElementById('toggle-labels-btn').addEventListener('click', () => {
+      areLabelsHidden = !areLabelsHidden;
+      document.querySelectorAll('.card-title').forEach(el => {
+        el.classList.toggle('hidden', areLabelsHidden);
+      });
+    });
+  </script>
+</body>
+</html>

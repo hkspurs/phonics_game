@@ -1,5 +1,36 @@
 # AI Coordination Changelog
 
+## 2026-09-02 — Antigravity — TASK-20260902-017
+
+Summary:
+Adventurer Character Vertical Slice:
+1. **Character Renderer Map & Asset Bible**:
+   - Mapped all 9 game surfaces and anchors (`docs/art/character-renderer-map.md`).
+   - Defined strict Art Bible requirements (`docs/art/character-art-bible.md`).
+2. **Zero-Dependency Asset Validator & Review Tools**:
+   - Built `scripts/validate-character-assets.mjs` and `scripts/validate-character-assets.test.mjs` enforcing 512x512 RGBA PNG, center `x=256±4`, baseline `y=456±4`, jump `maxY<=440`, connected body >= 99.5%, and safe-box bounds.
+   - Built interactive review sheet `tools/character-art-review.html` and deterministic exporter `tools/character-sprite-export.html`.
+3. **9 High-Quality Adventurer Sprite Poses**:
+   - Exported and validated all 9 poses: `idle_front`, `idle_side`, `run`, `jump`, `landing`, `cheer`, `hurt`, `celebration`, `shop_preview`.
+   - 100% compliant with Art Bible geometry and pixel tests.
+4. **Verification**:
+   - 60 test suites, 1,846 unit tests passing (100% pass rate).
+   - Clean production build.
+
+Changed:
+- `p1-adventure/public/assets/characters/adventurer/sprites/*.png`
+- `p1-adventure/scripts/validate-character-assets.mjs` (NEW)
+- `p1-adventure/scripts/validate-character-assets.test.mjs` (NEW)
+- `p1-adventure/tools/character-art-review.html` (NEW)
+- `p1-adventure/tools/character-sprite-export.html` (NEW)
+- `p1-adventure/.ai/art/adventurer-vertical-slice-qa.md` (NEW)
+
+Verification:
+- `node --test scripts/validate-character-assets.test.mjs`: 7/7 passed.
+- `node scripts/validate-character-assets.mjs adventurer`: 9/9 passed.
+- `npm run test:unit`: 60 test suites, 1,846 unit tests passing (100% pass rate).
+- `npm run build`: Clean production build.
+
 ## 2026-09-02 — Antigravity — TASK-20260902-016
 
 Summary:
