@@ -61,6 +61,23 @@ export interface QuestionAttempt {
   responseTimeMs?: number;
 }
 
+export interface LearningAttemptRecord {
+  attemptId: string;
+  questionId: string;
+  stationId: number;
+  subject: SubjectType;
+  knowledgeTags: string[];
+  selectedAnswer: string | number;
+  correctAnswer: string | number;
+  isCorrect: boolean;
+  attemptIndexWithinQuestion: number;
+  isFirstAttempt: boolean;
+  highestHintLevelUsed: number;
+  responseTimeMs?: number;
+  createdAt: number;
+  reviewOfAttemptId?: string;
+}
+
 export interface RewardTransaction {
   transactionId: string;
   sourceType: 'learning' | 'runner_pickups' | 'first_clear' | 'achievement' | 'shop_purchase' | 'migration' | 'daily_quest';
@@ -96,6 +113,7 @@ export interface UserProfile {
   };
   rewardLedger?: RewardTransaction[];
   questionAttempts?: QuestionAttempt[];
+  learningAttempts?: LearningAttemptRecord[];
   mistakeReviewQueue?: string[];
   runnerTutorialCompleted?: boolean;
   runnerSkippedCount?: number;

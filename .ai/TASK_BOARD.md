@@ -10,6 +10,37 @@ None.
 
 ## COMPLETED
 
+### TASK-20260902-013
+
+Agent: Antigravity  
+Status: DONE  
+Started: 2026-09-02 15:06  
+Completed: 2026-09-02 15:09  
+
+Description:
+Master Plan Phase 1: P0 State Integrity, Pricing, Rewards, Saves, and Report Entry:
+1. Written comprehensive state-integrity test suites (`src/test/phase1-state-integrity.test.ts`, 12 tests).
+2. Established single authoritative mutation boundary in `DataManager.ts` with transaction ledger, duplicate idempotency via `explicitTxId`, rollback on persistence error, and negative balance protection.
+3. Verified single-source pricing objects across `CHARACTER_SKINS`, `WARDROBE_ITEMS`, and `ShopScene.ts`.
+4. Hardened preview/resize/tab-switch isolation from purchase and equip state.
+5. Defined persisted `LearningAttemptRecord` schema and automatic mistake review queueing.
+6. Verified with all 60 test suites (1,846 unit tests, 100% pass rate) and clean production build.
+
+### TASK-20260902-012
+
+Agent: Antigravity  
+Status: DONE  
+Started: 2026-09-02 15:00  
+Completed: 2026-09-02 15:05  
+
+Description:
+Master Plan Phase 0: Source Inspection, Repository Map, Command Manifest, and Baseline Reproduction:
+1. Inspected real source repository, directory structure, package dependencies, runtime engines, and render architecture.
+2. Created `00-repository-map.md` capturing exact paths, modules, exported symbols, and component mapping.
+3. Created `00-command-manifest.md` recording exact test, build, preview, and deployment commands.
+4. Created `00-baseline.md` documenting reproducible baseline evidence, P0 shop defect reproduction, and report button hit area audit.
+5. Identified all worktree, source access, and environment properties.
+
 ### TASK-20260902-011
 
 Agent: Antigravity  

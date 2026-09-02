@@ -1,4 +1,4 @@
-import { UserProfile, GameSettings, Trophy, SubjectType, PetDefinition, GadgetDefinition, EquippedWardrobe, QuestionAttempt, RewardTransaction } from '../types';
+import { UserProfile, GameSettings, Trophy, SubjectType, PetDefinition, GadgetDefinition, EquippedWardrobe, QuestionAttempt, RewardTransaction, LearningAttemptRecord } from '../types';
 import { WARDROBE_ITEMS, WardrobeItem, WardrobeCategory } from '../config/wardrobe';
 
 const STORAGE_KEY = 'p1_adventure_save_v1';
@@ -1357,6 +1357,7 @@ export class DataManager {
       },
       rewardLedger: [],
       questionAttempts: [],
+      learningAttempts: [],
       mistakeReviewQueue: [],
       completedStations: [],
       runnerTutorialCompleted: false,
@@ -1396,6 +1397,7 @@ export class DataManager {
             trophies: parsed.trophies || {},
             rewardLedger: Array.isArray(parsed.rewardLedger) ? parsed.rewardLedger : [],
             questionAttempts: Array.isArray(parsed.questionAttempts) ? parsed.questionAttempts : [],
+            learningAttempts: Array.isArray(parsed.learningAttempts) ? parsed.learningAttempts : [],
             mistakeReviewQueue: Array.isArray(parsed.mistakeReviewQueue) ? parsed.mistakeReviewQueue : [],
             completedStations: Array.isArray(parsed.completedStations) ? parsed.completedStations : [],
             runnerTutorialCompleted: typeof parsed.runnerTutorialCompleted === 'boolean' ? parsed.runnerTutorialCompleted : false,
@@ -1425,6 +1427,26 @@ export class DataManager {
       }
     }
     this.save();
+  }
+
+  public recordLearningAttempt(record: LearningAttemptRecord): void {
+    if (!this.profile.learningAttempts) {
+      this.profile.learningAttempts = [];
+    }
+    this.profile.learningAttempts.push(record);
+    if (!record.isCorrect || record.highestHintLevelUsed >= 3) {
+      if (!this.profile.mistakeReviewQueue) {
+        this.profile.mistakeReviewQueue = [];
+      }
+      if (!this.profile.mistakeReviewQueue.includes(record.questionId)) {
+        this.profile.mistakeReviewQueue.push(record.questionId);
+      }
+    }
+    this.save();
+  }
+
+  public getLearningAttemptRecords(): LearningAttemptRecord[] {
+    return this.profile.learningAttempts || [];
   }
 
   public getQuestionAttempts(): QuestionAttempt[] {
@@ -1457,10 +1479,19 @@ export class DataManager {
     sourceType: 'learning' | 'runner_pickups' | 'first_clear' | 'achievement' | 'shop_purchase' | 'migration' | 'daily_quest',
     sourceId: string,
     currencyType: 'coins' | 'gems' | 'stars',
-    amount: number
+    amount: number,
+    explicitTxId?: string
   ): RewardTransaction | null {
     if (!this.profile.rewardLedger) {
       this.profile.rewardLedger = [];
+    }
+
+    const txId = explicitTxId || `tx_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
+
+    // Check duplicate transaction ID for idempotency
+    const existingById = this.profile.rewardLedger.find((t) => t.transactionId === txId);
+    if (existingById) {
+      return existingById;
     }
 
     if (amount > 0 && (sourceType === 'first_clear' || sourceType === 'achievement' || sourceType === 'daily_quest')) {
@@ -1487,7 +1518,7 @@ export class DataManager {
     else if (currencyType === 'gems') this.profile.gems = Math.max(0, balanceAfter);
 
     const transaction: RewardTransaction = {
-      transactionId: `tx_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
+      transactionId: txId,
       sourceType,
       sourceId,
       currencyType,
@@ -1498,7 +1529,17 @@ export class DataManager {
     };
 
     this.profile.rewardLedger.push(transaction);
-    this.save();
+
+    try {
+      this.save();
+    } catch (saveError) {
+      // Atomic rollback if storage fails
+      if (currencyType === 'coins') this.profile.coins = balanceBefore;
+      else if (currencyType === 'gems') this.profile.gems = balanceBefore;
+      this.profile.rewardLedger.pop();
+      throw saveError;
+    }
+
     return transaction;
   }
 
