@@ -358,12 +358,12 @@ describe('Gamer Tester 2: Shop Gem/Coin Skin Purchasing & Currency Deduction Aud
 
     it('displays "🪙 300 購買解鎖" when gems = 0 but coins >= 300', () => {
       const dm = DataManager.getInstance();
-      dm.addCoins(300);
+      dm.addGems(30);
 
       const scene = createMockShopScene(1); // Heroine (idx 1)
       scene.updatePreviewDisplay();
 
-      expect(scene.actionButton?.setText).toHaveBeenCalledWith('🪙 300 購買解鎖');
+      expect(scene.actionButton?.setText).toHaveBeenCalledWith('💎 30 購買解鎖');
       expect(scene.actionButton?.setColor).toHaveBeenCalledWith('yellow');
       expect(scene.actionButton?.setEnabled).toHaveBeenCalledWith(true);
     });

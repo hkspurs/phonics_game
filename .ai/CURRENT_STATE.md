@@ -39,12 +39,12 @@
 - Clear Progress Semantics: Strict separation of completed stations count (`X/10 已通關`) from unlocked station index.
 - Diagnostic Learning Report (`DiagnosticReportModal.ts`): Visual summary of accuracy rates, total hints used, mistakes made, subject breakdown, and interactive Review Mistakes practice flow.
 - Runner Experience: Skip confirmation modal with explicit reward forfeiture disclosure (`跳過跑酷？你會保留答題獎勵，但不會獲得尚未收集的跑酷獎勵。`), first-run 3-step interactive tutorial, and min 48px multi-touch hitboxes.
-- Shop Item State Lifecycle: Formalized 4-state item model (`locked`, `available_not_owned`, `owned_not_equipped`, `equipped`) with non-mutating preview overlay and atomic ledger deductions.
-- Mobile Landscape Responsive Layout: Native FIT scaling across 844x390, 667x375, 932x430, and 1024x768 viewports with safe area padding.
-- Production-grade character sprite asset pipeline (512x512 transparent PNGs, 1:2.5 Chibi proportion).
-- Full runner platforming physics, dynamic contact shadow, and chest celebration.
-- OOTD Polaroid photo modal and live outfit previewing across Stand, Run, Cheer poses.
-- 52 test suites and 1,538 unit tests 100% passing.
+- Shop Item State Lifecycle & Single-Source Pricing: Formalized 4-state item model (`locked`, `available_not_owned`, `owned_not_equipped`, `equipped`) with single authoritative currency pricing, explicit purchase confirmation modals (`showSkinPurchaseConfirm`, `showPetPurchaseConfirm`), non-mutating preview overlay, and atomic ledger deductions.
+- Question & Runner Screen Stabilization (Phase 2): 4-region vertical budget, structured feedback states without UI collision, slot correct styling, Continue CTA button, 3-step progressive tutorial coaching, and safe skip confirmation.
+- Progression & Celebration (Phase 3): Map hierarchy, progress terminology (`X/10 已通關`, `X/30 ⭐`), itemized arithmetic reward breakdown, non-blocking achievement queue, and unified diagnostic report entry.
+- Home & Collectible Presentation (Phase 4): Dominant Start CTA, hero character composition with companion pet, 4-state shop item lifecycle, P0 reproduction test compliance, non-mutating preview restore, and atomic purchases.
+- Responsive & Production Polish (Phase 5): Multi-viewport matrix verification (iPhone 16 Pro Max, iPhone 14, iPhone SE, iPad 4:3, Desktop 16:9), touch targets >=48px, minimum rendered font size >=16px, SpeechService fallback resilience, and reduced motion compliance.
+- 58 test suites and 1,824 unit tests 100% passing. Production build clean.
 
 ## Known Issues
 - Vitest JSDOM environment lacks some Phaser Graphics mock functions (`strokeCircle`), requiring defensive checks (`typeof g.strokeCircle === 'function'`).

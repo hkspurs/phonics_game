@@ -13,7 +13,7 @@ import {
   WardrobeFilter,
   getWardrobeItemsForFilter,
 } from '../config/wardrobe';
-import { EquippedWardrobe } from '../types';
+import { EquippedWardrobe, PetDefinition } from '../types';
 import { getWardrobeSlot as getItemWardrobeSlot, previewWardrobe, PreviewPose } from '../config/outfits';
 import { CharacterPreviewController, PreviewCharacterDefinition } from '../ui/CharacterPreviewController';
 import { getWardrobeLayout } from '../ui/wardrobeLayout';
@@ -60,7 +60,7 @@ export const CHARACTER_SKINS: readonly SkinDefinition[] = [
     name: '女英雄',
     englishName: 'Heroine',
     costGems: 30,
-    costCoins: 300,
+    costCoins: 0,
     description: '身手矯健的勇敢女孩，彈跳與吸金兼備。',
     perkDescription: '跑速 +10% / 跳躍 +10% / 磁力 130px',
     speedBonus: 0.10,
@@ -76,7 +76,7 @@ export const CHARACTER_SKINS: readonly SkinDefinition[] = [
     name: '戰士',
     englishName: 'Soldier',
     costGems: 60,
-    costCoins: 600,
+    costCoins: 0,
     description: '訓練有素的皇家侍衛，奔跑疾如迅風。',
     perkDescription: '跑速 +15% / 跳躍 +15% / 磁力 140px',
     speedBonus: 0.15,
@@ -92,7 +92,7 @@ export const CHARACTER_SKINS: readonly SkinDefinition[] = [
     name: '騎士',
     englishName: 'Knight',
     costGems: 100,
-    costCoins: 1000,
+    costCoins: 0,
     description: '身披榮耀重甲的守護騎士，超高跳躍力。',
     perkDescription: '跑速 +10% / 跳躍 +25% / 磁力 160px',
     speedBonus: 0.10,
@@ -109,7 +109,7 @@ export const CHARACTER_SKINS: readonly SkinDefinition[] = [
     name: '忍者',
     englishName: 'Ninja',
     costGems: 150,
-    costCoins: 1500,
+    costCoins: 0,
     description: '來去無蹤的夜行刺客，擁有極限跑速與超大吸金磁場！',
     perkDescription: '跑速 +30% / 跳躍 +20% / 磁力 190px',
     speedBonus: 0.30,
@@ -1891,10 +1891,8 @@ export class ShopScene extends Phaser.Scene {
         this.actionButton.setEnabled(true);
       } else {
         const canAffordGems = profile.gems >= skin.costGems;
-        const canAffordCoins = profile.coins >= (skin.costCoins || 999999);
-        if (canAffordGems || canAffordCoins) {
-          const costText = canAffordGems ? `💎 ${skin.costGems}` : `🪙 ${skin.costCoins}`;
-          this.actionButton.setText(`${costText} 購買解鎖`);
+        if (canAffordGems) {
+          this.actionButton.setText(`💎 ${skin.costGems} 購買解鎖`);
           this.actionButton.setColor('yellow');
           this.actionButton.setEnabled(true);
         } else {
@@ -2264,24 +2262,10 @@ export class ShopScene extends Phaser.Scene {
         } catch {}
         this.refreshSceneState();
       } else {
-        let success = false;
-        if (profile.gems >= skin.costGems) {
-          success = dm.unlockSkin(skin.id, skin.costGems, 0);
-        } else if (skin.costCoins && profile.coins >= skin.costCoins) {
-          success = dm.unlockSkin(skin.id, 0, skin.costCoins);
-        }
-
-        if (success) {
-          dm.equipSkin(skin.id);
-          dm.checkTrophies();
-          SoundManager.play('victory');
-          this.showGlobalSyncToast(`✨ 成功解鎖「${skin.name}」！`);
-          try {
-            SpeechService.speak('換好裝啦！出發去探險咯！', 'zh-HK');
-          } catch {}
-          this.refreshSceneState();
+        if (this.isLiveScene()) {
+          this.showSkinPurchaseConfirm(skin);
         } else {
-          SoundManager.play('wrong');
+          this.purchaseSkinDirect(skin);
         }
       }
     } else if (this.currentTab === 'wardrobe') {
@@ -2331,15 +2315,10 @@ export class ShopScene extends Phaser.Scene {
         SoundManager.play('click');
         this.refreshSceneState();
       } else {
-        const currency = profile.coins >= pet.costCoins ? 'coins' : 'gems';
-        const ok = dm.buyPet(pet.id, currency);
-        if (ok) {
-          dm.equipPet(pet.id);
-          dm.checkTrophies();
-          SoundManager.play('victory');
-          this.refreshSceneState();
+        if (this.isLiveScene()) {
+          this.showPetPurchaseConfirm(pet);
         } else {
-          SoundManager.play('wrong');
+          this.purchasePetDirect(pet);
         }
       }
     } else if (this.currentTab === 'gadgets') {
@@ -2358,10 +2337,211 @@ export class ShopScene extends Phaser.Scene {
     }
   }
 
+  private purchaseSkinDirect(skin: SkinDefinition): void {
+    const dm = DataManager.getInstance();
+    const profile = dm.getProfile();
+    if (profile.gems < skin.costGems) {
+      SoundManager.play('wrong');
+      return;
+    }
+    const success = dm.unlockSkin(skin.id, skin.costGems, 0);
+    if (success) {
+      dm.equipSkin(skin.id);
+      dm.checkTrophies();
+      SoundManager.play('victory');
+      this.showGlobalSyncToast(`✨ 成功解鎖並換上「${skin.name}」！`);
+      try {
+        SpeechService.speak('換好裝啦！出發去探險咯！', 'zh-HK');
+      } catch {}
+      this.refreshSceneState();
+    } else {
+      SoundManager.play('wrong');
+    }
+  }
+
+  private showSkinPurchaseConfirm(skin: SkinDefinition): void {
+    if (this.purchaseModal || this.wardrobePurchasePending || !this.add) return;
+    const dm = DataManager.getInstance();
+    const profile = dm.getProfile();
+    const canAfford = profile.gems >= skin.costGems;
+    if (!canAfford) {
+      SoundManager.play('wrong');
+      return;
+    }
+
+    const width = this.sys?.game?.config ? Number(this.sys.game.config.width) : GAME_WIDTH;
+    const height = this.sys?.game?.config ? Number(this.sys.game.config.height) : GAME_HEIGHT;
+    const modalWidth = Math.min(520, width * 0.68);
+    const modalHeight = Math.min(300, height * 0.52);
+    const modal = new CanvasModal(this, {
+      x: width / 2,
+      y: height / 2,
+      width: modalWidth,
+      height: modalHeight,
+      title: '🛒 確認解鎖角色',
+      theme: 'gold',
+      borderColor: 0xf5bd42,
+      onClose: () => {
+        this.purchaseModal = null;
+      },
+    });
+
+    const newGems = profile.gems - skin.costGems;
+    const content = this.add.text(
+      0,
+      -35,
+      `確定要解鎖角色造型「${skin.name}」嗎？\n${skin.englishName}\n\n價格：💎 ${skin.costGems} 寶石\n當前餘額：💎 ${profile.gems} ➔ 解鎖後：💎 ${newGems}`,
+      {
+        fontSize: width < 1000 ? '15px' : '18px',
+        fontFamily: "'Noto Sans TC', 'Microsoft JhengHei', sans-serif",
+        color: '#fff7df',
+        align: 'center',
+        lineSpacing: 4,
+      }
+    );
+    if (typeof content.setOrigin === 'function') content.setOrigin(0.5);
+
+    const confirmButton = new CanvasButton(this, {
+      x: 0,
+      y: modalHeight / 2 - 52,
+      width: Math.min(250, modalWidth - 64),
+      height: 48,
+      text: '✅ 確認購買',
+      color: 'yellow',
+      fontSize: width < 1000 ? '16px' : '19px',
+      scaleOnHover: 1.02,
+      scaleOnDown: 0.97,
+      onClick: () => {
+        if (this.wardrobePurchasePending) return;
+        this.wardrobePurchasePending = true;
+        this.actionButton?.setText?.('⏳ 解鎖中…');
+        this.actionButton?.setColor?.('grey');
+        this.actionButton?.setEnabled?.(false);
+        modal.close();
+
+        const completePurchase = () => {
+          this.wardrobePurchasePending = false;
+          this.purchaseSkinDirect(skin);
+        };
+
+        if (this.time?.delayedCall) this.time.delayedCall(180, completePurchase);
+        else completePurchase();
+      },
+    });
+    confirmButton.setDepth(60);
+    modal.addContent([content, confirmButton]);
+    this.purchaseModal = modal;
+    modal.show(true);
+  }
+
+  private purchasePetDirect(pet: PetDefinition): void {
+    const dm = DataManager.getInstance();
+    const profile = dm.getProfile();
+    const currency = 'coins';
+    if (profile.coins < pet.costCoins) {
+      SoundManager.play('wrong');
+      return;
+    }
+    const ok = dm.buyPet(pet.id, currency);
+    if (ok) {
+      dm.equipPet(pet.id);
+      dm.checkTrophies();
+      SoundManager.play('victory');
+      const cnName = pet.name.includes('(') ? pet.name.split('(')[0].trim() : pet.name;
+      this.showGlobalSyncToast(`✨ 成功領養「${cnName}」並派出出戰！`);
+      this.refreshSceneState();
+    } else {
+      SoundManager.play('wrong');
+    }
+  }
+
+  private showPetPurchaseConfirm(pet: PetDefinition): void {
+    if (this.purchaseModal || this.wardrobePurchasePending || !this.add) return;
+    const dm = DataManager.getInstance();
+    const profile = dm.getProfile();
+    const canAffordCoins = profile.coins >= pet.costCoins;
+    if (!canAffordCoins) {
+      SoundManager.play('wrong');
+      return;
+    }
+
+    const width = this.sys?.game?.config ? Number(this.sys.game.config.width) : GAME_WIDTH;
+    const height = this.sys?.game?.config ? Number(this.sys.game.config.height) : GAME_HEIGHT;
+    const modalWidth = Math.min(520, width * 0.68);
+    const modalHeight = Math.min(300, height * 0.52);
+    const modal = new CanvasModal(this, {
+      x: width / 2,
+      y: height / 2,
+      width: modalWidth,
+      height: modalHeight,
+      title: '🐾 領養寵物夥伴',
+      theme: 'gold',
+      borderColor: 0xf5bd42,
+      onClose: () => {
+        this.purchaseModal = null;
+      },
+    });
+
+    const cnName = pet.name.includes('(') ? pet.name.split('(')[0].trim() : pet.name;
+    const newCoins = profile.coins - pet.costCoins;
+    const content = this.add.text(
+      0,
+      -35,
+      `確定要領養「${cnName}」嗎？\n${pet.nameEn}\n\n價格：🪙 ${pet.costCoins} 金幣\n當前餘額：🪙 ${profile.coins} ➔ 領養後：🪙 ${newCoins}`,
+      {
+        fontSize: width < 1000 ? '15px' : '18px',
+        fontFamily: "'Noto Sans TC', 'Microsoft JhengHei', sans-serif",
+        color: '#fff7df',
+        align: 'center',
+        lineSpacing: 4,
+      }
+    );
+    if (typeof content.setOrigin === 'function') content.setOrigin(0.5);
+
+    const confirmButton = new CanvasButton(this, {
+      x: 0,
+      y: modalHeight / 2 - 52,
+      width: Math.min(250, modalWidth - 64),
+      height: 48,
+      text: '✅ 確認領養',
+      color: 'yellow',
+      fontSize: width < 1000 ? '16px' : '19px',
+      scaleOnHover: 1.02,
+      scaleOnDown: 0.97,
+      onClick: () => {
+        if (this.wardrobePurchasePending) return;
+        this.wardrobePurchasePending = true;
+        this.actionButton?.setText?.('⏳ 領養中…');
+        this.actionButton?.setColor?.('grey');
+        this.actionButton?.setEnabled?.(false);
+        modal.close();
+
+        const completePurchase = () => {
+          this.wardrobePurchasePending = false;
+          this.purchasePetDirect(pet);
+        };
+
+        if (this.time?.delayedCall) this.time.delayedCall(180, completePurchase);
+        else completePurchase();
+      },
+    });
+    confirmButton.setDepth(60);
+    modal.addContent([content, confirmButton]);
+    this.purchaseModal = modal;
+    modal.show(true);
+  }
+
   private purchaseWardrobeItem(item: WardrobeItem): void {
     const dm = DataManager.getInstance();
     const profile = dm.getProfile();
-    const currency = profile.coins >= item.costCoins ? 'coins' : 'gems';
+    const currency = item.costCoins > 0 ? 'coins' : 'gems';
+    const cost = item.costCoins > 0 ? item.costCoins : item.costGems;
+    const canAfford = currency === 'coins' ? profile.coins >= cost : profile.gems >= cost;
+    if (!canAfford) {
+      SoundManager.play('wrong');
+      this.updatePreviewDisplay();
+      return;
+    }
     const ok = dm.buyWardrobeItem(item.id, currency);
     if (!ok) {
       SoundManager.play('wrong');
@@ -2382,7 +2562,9 @@ export class ShopScene extends Phaser.Scene {
     if (this.purchaseModal || this.wardrobePurchasePending || !this.add) return;
     const dm = DataManager.getInstance();
     const profile = dm.getProfile();
-    const canAfford = profile.coins >= item.costCoins || profile.gems >= item.costGems;
+    const currency = item.costCoins > 0 ? 'coins' : 'gems';
+    const cost = item.costCoins > 0 ? item.costCoins : item.costGems;
+    const canAfford = currency === 'coins' ? profile.coins >= cost : profile.gems >= cost;
     if (!canAfford) {
       SoundManager.play('wrong');
       return;
@@ -2391,7 +2573,7 @@ export class ShopScene extends Phaser.Scene {
     const width = this.sys?.game?.config ? Number(this.sys.game.config.width) : GAME_WIDTH;
     const height = this.sys?.game?.config ? Number(this.sys.game.config.height) : GAME_HEIGHT;
     const modalWidth = Math.min(520, width * 0.68);
-    const modalHeight = Math.min(280, height * 0.48);
+    const modalHeight = Math.min(300, height * 0.52);
     const modal = new CanvasModal(this, {
       x: width / 2,
       y: height / 2,
@@ -2404,13 +2586,24 @@ export class ShopScene extends Phaser.Scene {
         this.purchaseModal = null;
       },
     });
-    const content = this.add.text(0, -35, `${item.name}\n${item.nameEn}\n\n🪙 ${item.costCoins} 金幣　💎 ${item.costGems} 寶石`, {
-      fontSize: width < 1000 ? '15px' : '19px',
-      fontFamily: "'Noto Sans TC', 'Microsoft JhengHei', sans-serif",
-      color: '#fff7df',
-      align: 'center',
-      lineSpacing: 5,
-    });
+
+    const priceLabel = currency === 'coins' ? `🪙 ${cost} 金幣` : `💎 ${cost} 寶石`;
+    const balanceBefore = currency === 'coins' ? profile.coins : profile.gems;
+    const balanceAfter = balanceBefore - cost;
+    const sym = currency === 'coins' ? '🪙' : '💎';
+
+    const content = this.add.text(
+      0,
+      -35,
+      `確定要購買「${item.name}」嗎？\n${item.nameEn}\n\n價格：${priceLabel}\n當前餘額：${sym} ${balanceBefore} ➔ 購買後：${sym} ${balanceAfter}`,
+      {
+        fontSize: width < 1000 ? '15px' : '18px',
+        fontFamily: "'Noto Sans TC', 'Microsoft JhengHei', sans-serif",
+        color: '#fff7df',
+        align: 'center',
+        lineSpacing: 4,
+      }
+    );
     if (typeof content.setOrigin === 'function') content.setOrigin(0.5);
     const confirmButton = new CanvasButton(this, {
       x: 0,

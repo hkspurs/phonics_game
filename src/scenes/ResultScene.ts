@@ -32,6 +32,7 @@ export class ResultScene extends Phaser.Scene {
   public runnerCoins: number = 0;
 
   public starsEarned: number = 3;
+  public isFirstClear: boolean = false;
   public rewardCoins: number = 50;
   public rewardGems: number = 5;
   public newlyUnlockedTrophies: string[] = [];
@@ -69,6 +70,7 @@ export class ResultScene extends Phaser.Scene {
       startTime: Date.now(),
     };
     this.runnerCoins = data?.runnerCoins ?? 0;
+    this.isFirstClear = !DataManager.getInstance().isStationCompleted(this.stationId);
 
     // 1. Calculate 3-Star Rating
     this.starsEarned = this.calculateStars(
@@ -105,8 +107,10 @@ export class ResultScene extends Phaser.Scene {
     const learningCoins = this.starsEarned === 3 ? 50 : this.starsEarned === 2 ? 30 : 20;
     const runnerCoins = Number(this.sessionStats.collectedCoins || this.runnerCoins || 0);
     const runnerGems = Number(this.sessionStats.collectedGems || 0);
-    const isFirstClear = !DataManager.getInstance().isStationCompleted(this.stationId);
-    const firstClearGems = isFirstClear ? (this.starsEarned === 3 ? 5 : this.starsEarned === 2 ? 3 : 1) : 0;
+    const isFirst = this.isFirstClear !== undefined
+      ? this.isFirstClear
+      : !DataManager.getInstance().isStationCompleted(this.stationId);
+    const firstClearGems = isFirst ? (this.starsEarned === 3 ? 5 : this.starsEarned === 2 ? 3 : 1) : 0;
 
     return {
       learningCoins,

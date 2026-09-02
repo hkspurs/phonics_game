@@ -109,23 +109,23 @@ describe('Game Agent 3: Wardrobe UX & Exclusivity Logic Adversarial Audit Suite'
       expect(dm.getEquippedWardrobe().top).toBe('sailor_top');
     });
 
-    it('buys wardrobe item with gems when coins are insufficient but gems are sufficient', () => {
-      // dino_onesie: 200 coins / 20 gems
-      dm.getProfile().coins = 50; // Insufficient coins (< 200)
-      dm.getProfile().gems = 25; // Sufficient gems (>= 20)
+    it('buys wardrobe item with coins when coins are sufficient', () => {
+      // dino_onesie: 200 coins
+      dm.getProfile().coins = 250;
+      dm.getProfile().gems = 25;
 
       scene.create();
       scene.switchTab('wardrobe');
       scene.switchWardrobeCategory('dress');
       scene.selectWardrobeItem(2); // dino_onesie
 
-      expect(scene.actionButton?.getText()).toBe('💎 20 立即購買');
+      expect(scene.actionButton?.getText()).toBe('🪙 200 立即購買');
       expect(scene.actionButton?.isEnabled()).toBe(true);
 
       scene.handleActionClick();
 
-      expect(dm.getProfile().coins).toBe(50); // coins untouched
-      expect(dm.getProfile().gems).toBe(5); // 25 - 20 = 5
+      expect(dm.getProfile().coins).toBe(50); // 250 - 200 = 50
+      expect(dm.getProfile().gems).toBe(25); // gems untouched
       expect(dm.isWardrobeOwned('dino_onesie')).toBe(true);
       expect(dm.getEquippedWardrobe().dress).toBe('dino_onesie');
     });

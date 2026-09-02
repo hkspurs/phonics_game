@@ -10,6 +10,115 @@ None.
 
 ## COMPLETED
 
+### TASK-20260902-008
+
+Agent: Antigravity  
+Status: DONE  
+Started: 2026-09-02 12:39  
+Completed: 2026-09-02 12:40  
+
+Description:
+Specification V2 Phase 5 — Responsive Completion & Full Production Regression:
+1. Responsive Multi-Viewport Matrix:
+   - Verified layout stability, text readability, and scaling across iPhone 16 Pro Max (932x430), iPhone 14 (844x390), iPhone SE (667x375), iPad (1024x768), and Desktop (1280x720 / 1920x1080).
+   - Touch targets: Minimum 48x48px (56x56px for primary controls), centered hitboxes with +8px padding, 8px+ touch margins.
+   - Typography: Minimum 16px rendered font size (`TYPOGRAPHY.minRendered`), high WCAG AA contrast ratio.
+2. Accessibility & Speech Synthesis Resilience:
+   - SpeechService Web Speech API fallback resilience for Cantonese/English pronunciation across mobile WebKit browsers.
+   - Reduced motion preference (`prefersReducedMotion`) compliance across scene particles and tweens.
+3. Full End-to-End Regression:
+   - 58 test suites, 1,824 unit tests passing (100% pass rate) with clean production compilation (`tsc && vite build`).
+
+### TASK-20260902-007
+
+Agent: Antigravity  
+Status: DONE  
+Started: 2026-09-02 12:32  
+Completed: 2026-09-02 12:35  
+
+Description:
+Specification V2 Phase 4 — Home and Collectible Presentation:
+1. Home Screen Hero Hierarchy (`TitleScene.ts`):
+   - Dominant `開始冒險 ➔` Start CTA button.
+   - Character hero showcase with speech bubble, equipped skin, wardrobe, and companion pet.
+   - Current mission card (`下一站：${nextStationName}`).
+   - Unified secondary utility buttons (`成績表`, `商城`, `成就`, `設定`).
+2. Commercial-Quality Shop & Stage (`ShopScene.ts`):
+   - Item browser and hero showcase stage with pedestal.
+   - 4-State Item Lifecycle (`locked`, `available_not_owned`, `owned_not_equipped`, `equipped`).
+   - Non-mutating `預覽中 / Preview` state with `返回已裝備造型` restore on exit/tab switch.
+   - Stand/Run/Cheer pose controls.
+3. Shop Transaction & State Integrity:
+   - Single-source pricing with explicit confirmation modals (`showSkinPurchaseConfirm`, `showPetPurchaseConfirm`).
+   - Atomic ledger transaction (`RewardTransaction`) and zero currency deduction on preview/resize/reload.
+4. Verification: 57 test suites, 1,773 unit tests passing (100% pass rate) with clean production build.
+
+### TASK-20260902-006
+
+Agent: Antigravity  
+Status: DONE  
+Started: 2026-09-02 12:21  
+Completed: 2026-09-02 12:23  
+
+Description:
+Specification V2 Phase 3 — Progression & Celebration:
+1. Map Hierarchy & Mission Navigation (`MapScene.ts`):
+   - Defined visual station node states (Completed with 3-star badge, Current with active pulse, Locked with padlock).
+   - Strict progress terminology separation (`X/10 已通關` vs current station index, `X/30 ⭐ 星星`).
+   - Symmetrically centered interactive header HUD (`報告`, `設定`, `CurrencyPill`, `返回首頁`).
+2. Results Presentation & Non-blocking Achievement Queue (`ResultScene.ts`):
+   - Sequential presentation: Result reveal -> Stars animation -> Itemized arithmetic reward breakdown (learning, runner, first-clear, trophies) -> Primary CTA -> Non-blocking top-right achievement queue.
+3. Diagnostic Learning Report (`DiagnosticReportModal.ts`):
+   - Unified modal accessible from both Home (`成績表`) and Map (`報告`).
+   - Child summary, parent/teacher accuracy & knowledge tag breakdown, and Review Mistakes flow.
+4. Verification: 56 test suites, 1,728 unit tests passing (100% pass rate) with clean production build.
+
+### TASK-20260902-005
+
+Agent: Antigravity  
+Status: DONE  
+Started: 2026-09-02 12:08  
+Completed: 2026-09-02 12:11  
+
+Description:
+Specification V2 Phase 2 — Learning and Runner Screens:
+1. Question Scene & Feedback Layout: Stabilized 4-region vertical layout budget (Header, Prompt Banner, Reserved Feedback Slot, Answer & Action Slot). Integrated structured educational states (Default, Wrong Answer, Hint 1/2/3, Correct Reinforcement) with single Continue CTA button (`繼續前進 ➔`) on success without visual collision.
+2. Sentence Scramble: Implemented slot correct state (`slot.setCorrect(true)`), token card animations (<200ms), tap-to-return, and non-overlapping reinforcement feedback.
+3. Runner Scene Art & Scenery: Parallax multi-layer backgrounds, consistent obstacle silhouettes, HUD with segment loot counters.
+4. Progressive Tutorial & Touch Controls: 3-step progressive spotlight coaching (Move -> Jump -> Collect) with device-aware instructions (Touch vs Keyboard) and 56px+ multi-touch hitboxes.
+5. Skip Confirmation: Standardized forfeiture disclosure modal (`跳過跑酷？你會保留答題獎勵，但不會獲得尚未收集的跑酷獎勵。`) with zero uncollected reward leak.
+6. Verification: 55 test suites, 1,681 unit tests passing (100% pass rate) with clean production build.
+
+### TASK-20260902-004
+
+Agent: Antigravity  
+Status: DONE  
+Started: 2026-09-02 12:04  
+Completed: 2026-09-02 12:07  
+
+Description:
+Specification V2 Phase 1 — Core Visual Foundation:
+1. Design System Tokens (`DesignTokens.ts`): Formalized spacing scale (4-64px), corner radii (10-26px), typography hierarchy (16px minRendered to 48px display), semantic color palette (surface, text, action, state, subject, currency), and elevation parameters.
+2. Unified Vector Icon System (`CanvasIcon.ts`, `PreloadScene.ts`): Procedural crisp vector icons at 20/24/32/48px covering currencies, subjects, status, and navigation with zero OS emoji dependency.
+3. Reusable Shared UI Components: Implemented `CurrencyPill`, `StatusBadge`, `FeedbackPanel`, `CanvasModal`, `CanvasButton`, and `CanvasCard` unified under `theme.ts`.
+4. Verification: 54 test suites, 1,633 unit tests passing (100% pass rate) with clean production build.
+
+### TASK-20260902-003
+
+Agent: Antigravity  
+Status: DONE  
+Started: 2026-09-02 11:55  
+Completed: 2026-09-02 12:03  
+
+Description:
+Specification V2 Phase 0 — Integrity Blockers:
+1. P0 Shop state integrity & transaction defect fixed (preview/resize/reload NEVER mutate currency, ownership, or equipment).
+2. Single-source pricing implemented (authoritative gem price for skins, e.g. Heroine 30 gems, costCoins 0; no conflicting dual prices or fallbacks).
+3. Central reward transaction path (`recordTransaction`) wired to all skin, pet, wardrobe, and trophy reward deductions and credits with negative balance protection and rollback.
+4. Added explicit confirmation modals for skins (`showSkinPurchaseConfirm`) and pets (`showPetPurchaseConfirm`) detailing exact price and balances before/after.
+5. Fixed `CanvasButton` and `CanvasCard` centered `hitRect` origin offset bug ensuring 100% pointer/touch sensitivity across MapScene `報告` button, question cards, and UI buttons.
+6. Verified with 53 test suites, 1,583 unit tests (100% pass rate) and clean TypeScript production build.
+
 ### TASK-20260902-002
 
 Agent: Antigravity  

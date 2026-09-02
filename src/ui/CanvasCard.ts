@@ -211,7 +211,7 @@ export class CanvasCard extends Phaser.GameObjects.Container {
     const hitW = this.cardWidth + hitPadX * 2;
     const hitH = this.cardHeight + hitPadY * 2;
     const hitRect = (Phaser && Phaser.Geom && Phaser.Geom.Rectangle)
-      ? new Phaser.Geom.Rectangle(-hitPadX, -hitPadY, hitW, hitH)
+      ? new Phaser.Geom.Rectangle(-this.cardWidth / 2 - hitPadX, -this.cardHeight / 2 - hitPadY, hitW, hitH)
       : undefined;
 
     if (hitRect) {

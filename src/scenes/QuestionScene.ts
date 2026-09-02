@@ -870,6 +870,16 @@ export class QuestionScene extends Phaser.Scene {
     const isCorrect = SentenceEngine.verifyOrder(placedTokens, expectedTokens);
 
     if (isCorrect) {
+      for (const slot of this.slotBoxes) {
+        slot.setCorrect(true);
+        const card = slot.getPlacedCard();
+        if (card) {
+          card.setState('correct');
+          if (typeof card.pulse === 'function') {
+            card.pulse();
+          }
+        }
+      }
       this.onCorrectAnswer();
       return true;
     } else {
@@ -1267,6 +1277,35 @@ export class QuestionScene extends Phaser.Scene {
         });
       }
     };
+
+    // 5. Update Action Controls to show Continue CTA Button
+    if (this.hintButton) {
+      this.hintButton.setVisible(false);
+    }
+    if (this.resetButton) {
+      this.resetButton.setVisible(false);
+    }
+
+    const width = this.sys?.game?.config ? Number(this.sys.game.config.width) : GAME_WIDTH;
+    const height = this.sys?.game?.config ? Number(this.sys.game.config.height) : GAME_HEIGHT;
+    const controlsY = height - 84;
+
+    const continueBtn = new CanvasButton(this, {
+      x: width / 2,
+      y: controlsY,
+      width: 260,
+      height: 58,
+      text: '繼續前進 ➔',
+      color: 'green',
+      fontSize: '22px',
+      onClick: () => {
+        executeTransition();
+      },
+    });
+
+    if (this.controlsContainer) {
+      this.controlsContainer.add(continueBtn);
+    }
 
     if (this.input) {
       this.input.once('pointerdown', (pointer: any) => {

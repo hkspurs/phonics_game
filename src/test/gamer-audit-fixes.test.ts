@@ -137,22 +137,22 @@ describe('Gamer Audit Fixes & Enhancements Suite', () => {
       expect(unlockedTrophies.length).toBeLessThan(15);
     });
 
-    it('defines accurate character perks in ShopScene', () => {
+    it('defines accurate character perks and single-source gem prices in ShopScene', () => {
       const adventurer = CHARACTER_SKINS.find(s => s.id === 'adventurer')!;
       expect(adventurer.costGems).toBe(0);
       expect(adventurer.costCoins).toBe(0);
 
       const heroine = CHARACTER_SKINS.find(s => s.id === 'heroine')!;
       expect(heroine.costGems).toBe(30);
-      expect(heroine.costCoins).toBe(300);
+      expect(heroine.costCoins).toBe(0);
 
       const soldier = CHARACTER_SKINS.find(s => s.id === 'soldier')!;
       expect(soldier.costGems).toBe(60);
-      expect(soldier.costCoins).toBe(600);
+      expect(soldier.costCoins).toBe(0);
 
       const ninja = CHARACTER_SKINS.find(s => s.id === 'ninja')!;
       expect(ninja.costGems).toBe(150);
-      expect(ninja.costCoins).toBe(1500);
+      expect(ninja.costCoins).toBe(0);
       expect(ninja.waterGlide).toBe(true);
     });
   });

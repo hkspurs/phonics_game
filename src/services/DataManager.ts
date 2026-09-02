@@ -1540,6 +1540,10 @@ export class DataManager {
     this.save();
   }
 
+  public getRunnerSkippedCount(): number {
+    return this.profile.runnerSkippedCount || 0;
+  }
+
   public getDiagnosticSummary(): {
     totalQuestionsCompleted: number;
     totalAttempts: number;
@@ -1645,6 +1649,10 @@ export class DataManager {
     }
   }
 
+  public getStationStars(stationId: number): number {
+    return this.profile.stationStars[stationId] || 0;
+  }
+
   public getTotalStars(): number {
     return Object.values(this.profile.stationStars).reduce((sum, s) => sum + s, 0);
   }
@@ -1664,14 +1672,18 @@ export class DataManager {
     if (this.profile.ownedSkins.includes(skinId)) {
       return true;
     }
-    if (costGems > 0 && this.profile.gems >= costGems) {
-      this.profile.gems -= costGems;
+    if (costGems > 0) {
+      if (this.profile.gems < costGems) return false;
+      const tx = this.recordTransaction('shop_purchase', `skin_${skinId}`, 'gems', -costGems);
+      if (!tx) return false;
       this.profile.ownedSkins.push(skinId);
       this.save();
       return true;
     }
-    if (costCoins > 0 && this.profile.coins >= costCoins) {
-      this.profile.coins -= costCoins;
+    if (costCoins > 0) {
+      if (this.profile.coins < costCoins) return false;
+      const tx = this.recordTransaction('shop_purchase', `skin_${skinId}`, 'coins', -costCoins);
+      if (!tx) return false;
       this.profile.ownedSkins.push(skinId);
       this.save();
       return true;
@@ -1715,28 +1727,22 @@ export class DataManager {
 
   public updateStreak(): void {
     const todayStr = this.getLocalDateString();
-    const lastPlayed = this.profile.stats.lastPlayedDate;
+    const lastDateStr = this.profile.stats.lastPlayedDate;
 
-    if (!lastPlayed) {
-      this.profile.stats.lastPlayedDate = todayStr;
+    if (!lastDateStr) {
       this.profile.stats.streakDays = 1;
-      this.save();
-      return;
-    }
+    } else if (lastDateStr === todayStr) {
+      // Already played today, streak remains
+    } else {
+      const lastDate = new Date(lastDateStr);
+      const today = new Date(todayStr);
+      const diffDays = Math.round((today.getTime() - lastDate.getTime()) / (1000 * 3600 * 24));
 
-    if (lastPlayed === todayStr) {
-      return;
-    }
-
-    const lastDate = new Date(lastPlayed);
-    const todayDate = new Date(todayStr);
-    const diffTime = todayDate.getTime() - lastDate.getTime();
-    const diffDays = Math.round(diffTime / (1000 * 3600 * 24));
-
-    if (diffDays === 1) {
-      this.profile.stats.streakDays += 1;
-    } else if (diffDays > 1 || diffDays < 0) {
-      this.profile.stats.streakDays = 1;
+      if (diffDays === 1) {
+        this.profile.stats.streakDays += 1;
+      } else {
+        this.profile.stats.streakDays = 1;
+      }
     }
     this.profile.stats.lastPlayedDate = todayStr;
     this.save();
@@ -1748,25 +1754,20 @@ export class DataManager {
 
     while (hadNewUnlocks) {
       hadNewUnlocks = false;
-      let coinsToAdd = 0;
-      let gemsToAdd = 0;
 
       for (const trophy of TROPHY_DEFINITIONS) {
         if (!this.profile.trophies[trophy.id] && trophy.condition(this.profile)) {
           this.profile.trophies[trophy.id] = true;
           if (trophy.rewardCoins) {
-            coinsToAdd += trophy.rewardCoins;
+            this.recordTransaction('achievement', trophy.id, 'coins', trophy.rewardCoins);
           }
           if (trophy.rewardGems) {
-            gemsToAdd += trophy.rewardGems;
+            this.recordTransaction('achievement', trophy.id, 'gems', trophy.rewardGems);
           }
           allNewlyUnlocked.push(trophy.id);
           hadNewUnlocks = true;
         }
       }
-
-      if (coinsToAdd > 0) this.profile.coins += coinsToAdd;
-      if (gemsToAdd > 0) this.profile.gems += gemsToAdd;
     }
 
     if (allNewlyUnlocked.length > 0) {
@@ -1909,12 +1910,12 @@ export class DataManager {
       return true; // Already owned
     }
 
-    if (currency === 'gems') {
-      if (this.profile.gems < pet.costGems) return false;
-      this.profile.gems -= pet.costGems;
-    } else {
-      if (this.profile.coins < pet.costCoins) return false;
-      this.profile.coins -= pet.costCoins;
+    const cost = currency === 'gems' ? pet.costGems : pet.costCoins;
+    if (cost > 0) {
+      if (currency === 'gems' && this.profile.gems < cost) return false;
+      if (currency === 'coins' && this.profile.coins < cost) return false;
+      const tx = this.recordTransaction('shop_purchase', `pet_${petId}`, currency, -cost);
+      if (!tx) return false;
     }
 
     this.profile.ownedPets.push(petId);
@@ -1937,6 +1938,10 @@ export class DataManager {
     return true;
   }
 
+  public getEquippedPetId(): string | null {
+    return this.profile.equippedPet || null;
+  }
+
   // --- Gadgets & Inventory System ---
   public getGadgets(): GadgetDefinition[] {
     return GADGET_DEFINITIONS;
@@ -1955,13 +1960,13 @@ export class DataManager {
 
     const totalCoins = gadget.costCoins * count;
     const totalGems = gadget.costGems * count;
+    const cost = currency === 'coins' ? totalCoins : totalGems;
 
-    if (currency === 'coins') {
-      if (this.profile.coins < totalCoins) return false;
-      this.profile.coins -= totalCoins;
-    } else {
-      if (this.profile.gems < totalGems) return false;
-      this.profile.gems -= totalGems;
+    if (cost > 0) {
+      if (currency === 'coins' && this.profile.coins < cost) return false;
+      if (currency === 'gems' && this.profile.gems < cost) return false;
+      const tx = this.recordTransaction('shop_purchase', `gadget_${gadgetId}_x${count}`, currency, -cost);
+      if (!tx) return false;
     }
 
     if (!this.profile.inventory || typeof this.profile.inventory !== 'object') {
@@ -2008,12 +2013,12 @@ export class DataManager {
     const item = WARDROBE_ITEMS.find((w) => w.id === itemId);
     if (!item || this.isWardrobeOwned(itemId)) return false;
 
-    if (currency === 'coins') {
-      if (this.profile.coins < item.costCoins) return false;
-      this.profile.coins -= item.costCoins;
-    } else {
-      if (this.profile.gems < item.costGems) return false;
-      this.profile.gems -= item.costGems;
+    const cost = currency === 'coins' ? item.costCoins : item.costGems;
+    if (cost > 0) {
+      if (currency === 'coins' && this.profile.coins < cost) return false;
+      if (currency === 'gems' && this.profile.gems < cost) return false;
+      const tx = this.recordTransaction('shop_purchase', `wardrobe_${itemId}`, currency, -cost);
+      if (!tx) return false;
     }
 
     if (!Array.isArray(this.profile.ownedWardrobe)) {

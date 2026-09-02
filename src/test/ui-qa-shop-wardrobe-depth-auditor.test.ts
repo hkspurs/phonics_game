@@ -110,21 +110,21 @@ describe('UI QA Tester 2: Shop & Wardrobe Visual Hierarchy, Depth Stacking & Fit
       expect(scene.actionButton?.getText()).toBe('✅ 當前使用中');
     });
 
-    it('Skin 2 (Heroine 30💎 / 300🪙): Alternative Coin Purchase with 300🪙 -> Button says "🪙 300 購買解鎖", click deducts 300🪙 to 0 and equips', () => {
+    it('Skin 2 (Heroine 30💎): Exact 30 Gems -> Button says "💎 30 購買解鎖", click deducts 30💎 to 0 and equips', () => {
       const dm = DataManager.getInstance();
-      dm.getProfile().gems = 0;
-      dm.getProfile().coins = 300;
+      dm.getProfile().gems = 30;
+      dm.getProfile().coins = 0;
 
       scene.create();
       scene.selectSkin(1); // Heroine
 
-      expect(scene.actionButton?.getText()).toBe('🪙 300 購買解鎖');
+      expect(scene.actionButton?.getText()).toBe('💎 30 購買解鎖');
       expect(scene.actionButton?.getColor()).toBe('yellow');
       expect(scene.actionButton?.isEnabled()).toBe(true);
 
       scene.actionButton?.triggerClick();
 
-      expect(dm.getProfile().coins).toBe(0);
+      expect(dm.getProfile().gems).toBe(0);
       expect(dm.getProfile().ownedSkins).toContain('heroine');
       expect(dm.getProfile().equippedSkin).toBe('heroine');
       expect(scene.actionButton?.getText()).toBe('✅ 當前使用中');

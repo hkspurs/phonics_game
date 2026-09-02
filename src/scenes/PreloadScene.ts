@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import { GAME_WIDTH, GAME_HEIGHT, GAME_TITLE } from '../config';
 import { getWardrobePreloadPaths } from '../config/outfits';
 import { SoundManager } from '../services/SoundManager';
+import { registerAllVectorIcons } from '../ui/CanvasIcon';
 
 export const LEARNING_TIPS: string[] = [
   '小提示：每天朗讀 10 分鐘，語文能力更出色！',
@@ -1170,6 +1171,9 @@ export class PreloadScene extends Phaser.Scene {
       ctx.ellipse(128, 64, 120, 56, 0, 0, Math.PI * 2);
       ctx.fill();
     });
+
+    // 24. Standard Vector Icon Texture Library (20, 24, 32, 48px)
+    registerAllVectorIcons(this);
   }
 
   create(): void {

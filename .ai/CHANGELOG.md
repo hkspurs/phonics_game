@@ -1,6 +1,196 @@
 # AI Coordination Changelog
 
-## 2026-09-02 — Antigravity — TASK-20260902-002
+## 2026-09-02 — Antigravity — TASK-20260902-008
+
+Summary:
+Delivered Specification V2 Phase 5 — Responsive Completion & Full Production Regression:
+1. **Multi-Viewport Responsive Matrix Verification**:
+   - Tested and verified scene stability and layout rendering across 5 standard viewports: iPhone 16 Pro Max (932x430), iPhone 14 (844x390), iPhone SE (667x375), iPad Landscape 4:3 (1024x768), and Desktop Standard 16:9 (1280x720).
+   - Zero black-space clipping, zero element overlap, and zero microtext (<16px rendered).
+2. **Touch Targets & Geometry Centering**:
+   - Enforced minimum 48x48px (56x56px for primary action buttons) hit areas with centered touch boxes and +8px touch padding.
+3. **Accessibility & Speech Synthesis Resilience**:
+   - Web Speech API fallback resilience for Cantonese (`zh-HK`), Mandarin (`zh-CN`), and English (`en-US`).
+   - Reduced motion preference (`prefersReducedMotion`) compliance across confetti particles and camera tweens.
+4. **Comprehensive Production Regression Verification**:
+   - Created `phase5-responsive-regression.test.ts` (11 dedicated tests).
+   - All 58 test suites, 1,824 unit tests passing (100% pass rate).
+   - Clean production compilation (`tsc && vite build`).
+
+Changed:
+- `p1-adventure/src/test/phase5-responsive-regression.test.ts` (NEW)
+
+Verification:
+- `npm run test:unit`: 58 test suites, 1,824 unit tests passing (100% pass rate).
+- `npm run build`: Clean production bundle.
+
+Pending:
+- Specification V2 Full Implementation Complete (Phases 0 through 5). Ready for user deployment.
+
+## 2026-09-02 — Antigravity — TASK-20260902-007
+
+Summary:
+Delivered Specification V2 Phase 4 — Home and Collectible Presentation:
+1. **TitleScene Hero Composition & Action Hierarchy**:
+   - Primary `🚀 開始遊戲` Start CTA dominates visual hierarchy without competing banners.
+   - Mascot character hero showcase with speech bubble, equipped skin, wardrobe layers, and animated companion pet.
+   - Unified secondary utility buttons (`📊 成績表`, `🛒 商店`, `🏆 獎盃`, `⚙️ 設定`) with balanced color accents and centered hitboxes.
+2. **ShopScene Authoritative State & Non-Mutating Preview**:
+   - 4-State Item Model (`locked`, `available_not_owned`, `owned_not_equipped`, `equipped`).
+   - Non-mutating preview state: selecting/previewing/tab-switching never transacts or modifies equipped profile until confirmed.
+   - Passed P0 reproduction test verifying zero currency leak and state stability across tabs and navigation.
+   - Hero character showcase with pedestal, Stand/Run/Cheer pose controls, and full anatomical layering.
+3. **Pet Collection & Companion Presentation**:
+   - Pet collection with persistent equip tracking (`getEquippedPetId`), companion follower in scenes, and stat perks.
+4. **Verification**:
+   - Created `phase4-home-collectible-presentation.test.ts` (5 dedicated integration tests).
+   - All 57 test suites, 1,773 unit tests passing (100% pass rate).
+   - Clean production compilation (`tsc && vite build`).
+
+Changed:
+- `p1-adventure/src/services/DataManager.ts`: Added `getEquippedPetId()` getter.
+- `p1-adventure/src/test/phase4-home-collectible-presentation.test.ts` (NEW)
+
+Verification:
+- `npm run test:unit`: 57 test suites, 1,773 unit tests passing (100% pass rate).
+- `npm run build`: Clean production bundle.
+
+Pending:
+- Proceed to Phase 5 (Responsive and Production Polish: iPhone 16 Pro touch boundaries, iPad landscape scaling, Sound & Voice speech synthesis fallbacks, End-to-end regression & deployment).
+
+## 2026-09-02 — Antigravity — TASK-20260902-006
+
+Summary:
+Delivered Specification V2 Phase 3 — Progression & Celebration:
+1. **MapScene Hierarchy, Progress Terminology & Navigation**:
+   - Distinct station node visual states: Completed (3-star badge, solid backdrop, green border), Current (pulsing focus highlight), Locked (padlock, slate tone).
+   - Strict progress terminology separation: `已通關: ${completedCount}/10 站` (not highest unlocked station) and `星星: ${totalStars}/30 ⭐`.
+   - Connected `報告` button directly to `DiagnosticReportModal`.
+2. **ResultScene Presentation & Itemized Reward Breakdown**:
+   - Sequential presentation: Result fanfare -> Animated 3-star rating -> Itemized reward ledger breakdown (learning clear, runner pickups, first-clear bonus) -> Dominant Continue CTA.
+   - Non-blocking top-right achievement toast queue without obscuring the primary result panel.
+3. **Diagnostic Learning Report Integration**:
+   - Single authoritative report modal accessible from Home (`TitleScene:成績表`) and Map (`MapScene:報告`).
+   - Displays 4 metric badges (Completed questions, First-attempt accuracy rate, Hints used, Mistakes made), subject breakdown (Chinese, Math, English), and Review Mistakes practice queue.
+4. **Verification**:
+   - Created `phase3-progression-celebration.test.ts` (7 dedicated integration tests).
+   - All 56 test suites, 1,728 unit tests passing (100% pass rate).
+   - Clean production compilation (`tsc && vite build`).
+
+Changed:
+- `p1-adventure/src/scenes/MapScene.ts`: Connected `diagnosticModal` tracking and centered header HUD.
+- `p1-adventure/src/scenes/ResultScene.ts`: Added `isFirstClear` lifecycle persistence and itemized arithmetic reward breakdown.
+- `p1-adventure/src/services/DataManager.ts`: Added `getStationStars()` getter.
+- `p1-adventure/src/test/phase3-progression-celebration.test.ts` (NEW)
+
+Verification:
+- `npm run test:unit`: 56 test suites, 1,728 unit tests passing (100% pass rate).
+- `npm run build`: Clean production bundle.
+
+Pending:
+- Proceed to Phase 4 (Home and Collectible Presentation: Home Hero Area, Mission card, Commercial-quality shop stage, Pet & outfit consistency).
+
+## 2026-09-02 — Antigravity — TASK-20260902-005
+
+Summary:
+Delivered Specification V2 Phase 2 — Learning and Runner Screens:
+1. **QuestionScene Stable 4-Region Layout & State Sequence**:
+   - Stabilized vertical layout budget: Navigation/Header (Y=0..80), Prompt Banner (Y=80..190), Reserved Feedback Slot (Y=190..260), Answer & Action Slot (Y=260..720).
+   - Structured states: Default, Wrong Answer (disables only selected card with feedback strategy hint), 3-Tier Progressive Hints (Direction -> Visual Support -> Guided Solution), and Correct Answer.
+   - On correct answer: Displays `FeedbackPanel` reinforcement with highlighted learning concepts, hides hint/reset controls, and displays a prominent single Continue CTA button (`繼續前進 ➔`).
+2. **Sentence Scramble Alignment & Feedback**:
+   - Added `SlotBox.setCorrect(true)` emerald styling upon sentence completion.
+   - Preserved fast token-to-slot snapping (<200ms) and tap-to-return interactions.
+3. **Runner Scene Visual Hierarchy & Progressive Tutorial**:
+   - Multi-layer parallax background with clear obstacle silhouettes and segment resource HUD (`🪙 +X`, `💎 +Y`).
+   - 3-Step progressive spotlight coaching (Move -> Jump -> Collect) with device-aware instructions (Keyboard vs Touch).
+   - Skip confirmation modal with explicit forfeiture disclosure (`跳過跑酷？你會保留答題獎勵，但不會獲得尚未收集的跑酷獎勵。`) guaranteeing zero uncollected reward leak.
+4. **Verification**:
+   - Created `phase2-learning-runner-screens.test.ts` (8 dedicated integration tests).
+   - All 55 test suites and 1,681 unit tests passing (100% pass rate).
+   - Clean production compilation (`tsc && vite build`).
+
+Changed:
+- `p1-adventure/src/scenes/QuestionScene.ts`: Integrated Continue CTA button, slot correct state updates, and debounced transitions.
+- `p1-adventure/src/ui/SlotBox.ts`: Added `isCorrectState` and `setCorrect()` / `hasCorrect()` methods.
+- `p1-adventure/src/services/DataManager.ts`: Added `getRunnerSkippedCount()` getter.
+- `p1-adventure/src/test/phase2-learning-runner-screens.test.ts` (NEW)
+
+Verification:
+- `npm run test:unit`: 55 test suites, 1,681 unit tests passing (100% pass rate).
+- `npm run build`: Clean production bundle.
+
+Pending:
+- Proceed to Phase 3 (Progression & Celebration: Map hierarchy, Results settlement redesign, Trophy/Achievement queue, Reward breakdown, Diagnostic report).
+
+## 2026-09-02 — Antigravity — TASK-20260902-004
+
+Summary:
+Delivered Specification V2 Phase 1 — Core Visual Foundation:
+1. **Design System Tokens (`DesignTokens.ts`)**:
+   - Formalized comprehensive spacing tokens (`SPACING`: 4 to 64px).
+   - Standardized corner radii (`RADIUS`: small 10px, medium 14px, large 18px, xl 22px, xxl 26px, round 999px).
+   - Defined stable typography hierarchy (`TYPOGRAPHY`: display 48px to minRendered 16px).
+   - Structured semantic color palette (`COLORS`: surface, text, action, state, subject, currency) with WCAG AA compliance.
+2. **Unified Vector Icon System (`CanvasIcon.ts`, `PreloadScene.ts`)**:
+   - Built procedural crisp canvas vector icon drawing system generating textures at 20, 24, 32, 48px across 22 categories (currencies, subjects, status, navigation).
+   - Removed OS emoji dependencies from core production UI.
+3. **Reusable Shared UI Components**:
+   - Created `CurrencyPill.ts` for high-contrast, rounded currency balances.
+   - Created `StatusBadge.ts` for structured item and station badges (`locked`, `available`, `owned`, `equipped`, `completed`, `preview`).
+   - Created `FeedbackPanel.ts` for structured pedagogical learning feedback with highlighted concept keywords.
+   - Created unified barrel export in `theme.ts`.
+4. **Verification**:
+   - Created `phase1-core-visual-foundation.test.ts` (10 dedicated tests).
+   - All 54 test suites and 1,633 unit tests pass with 100% success rate.
+   - Clean production compilation with TypeScript and Vite.
+
+Changed:
+- `p1-adventure/src/ui/DesignTokens.ts` (NEW)
+- `p1-adventure/src/ui/CanvasIcon.ts` (NEW)
+- `p1-adventure/src/ui/CurrencyPill.ts` (NEW)
+- `p1-adventure/src/ui/StatusBadge.ts` (NEW)
+- `p1-adventure/src/ui/FeedbackPanel.ts` (NEW)
+- `p1-adventure/src/ui/theme.ts` (NEW)
+- `p1-adventure/src/scenes/PreloadScene.ts`: Registered all standard vector icon textures.
+- `p1-adventure/src/test/phase1-core-visual-foundation.test.ts` (NEW)
+
+Verification:
+- `npm run test:unit`: 54 test suites, 1,633 unit tests passing (100% pass rate).
+- `npm run build`: Clean TypeScript compilation and Vite bundling.
+
+Pending:
+- Proceed to Phase 2 (Learning and Runner Screens: question/feedback layout, Sentence Scramble, runner hierarchy, progressive tutorial).
+
+## 2026-09-02 — Antigravity — TASK-20260902-003
+
+Summary:
+Delivered Specification V2 Phase 0 — Integrity Blockers & State Safeguards:
+1. **P0 Shop State & Transaction Defect Resolved**:
+   - Identified root causes of the mathematical balance anomaly (`661c/22g -> 411c/27g`): dual currency fallback on Heroine (`30 gems` vs `300 coins`), instant unconfirmed transaction upon action click, and cascaded trophy unlock (`adv_skin_2` awarding `+50c/+5g`).
+   - Implemented single-source pricing: All character skins now have one authoritative currency definition (`adventurer: 0g`, `heroine: 30g`, `soldier: 60g`, `knight: 100g`, `ninja: 150g` with `costCoins: 0`).
+   - Built explicit confirmation modals (`showSkinPurchaseConfirm`, `showPetPurchaseConfirm`, `showWardrobePurchaseConfirm`) detailing exact item name, canonical price, and before/after balances. No transaction occurs during preview, selection, resize, tab switch, or reload.
+2. **Central Reward Ledger & Negative Balance Safeguards**:
+   - Routed all skin, pet, wardrobe, and trophy reward transactions directly through `DataManager.recordTransaction`.
+   - Guaranteed atomic balance mutation, ledger logging, and rollback on insufficient funds.
+3. **MapScene & UI Component Touch Deadzone Fix**:
+   - Fixed `CanvasButton` and `CanvasCard` container-relative `hitRect` origin offset bug.
+   - Symmetrically centered hitboxes on `(0, 0)` spanning `[-w/2 - pad, -h/2 - pad]` to `[w/2 + pad, h/2 + pad]`, eliminating the 50% deadzone on the left/top halves of all buttons including MapScene `報告` button.
+
+Changed:
+- `p1-adventure/src/ui/CanvasButton.ts`: Fixed container origin centering for hitRect.
+- `p1-adventure/src/ui/CanvasCard.ts`: Fixed container origin centering for hitRect.
+- `p1-adventure/src/scenes/ShopScene.ts`: Authoritative single gem pricing for `CHARACTER_SKINS`, added `showSkinPurchaseConfirm`, `showPetPurchaseConfirm`, and preview safety.
+- `p1-adventure/src/services/DataManager.ts`: Connected `unlockSkin`, `buyPet`, `buyWardrobeItem`, and `checkTrophies` to `recordTransaction`.
+- `p1-adventure/src/test/phase0-integrity-blockers.test.ts` (NEW): 5 dedicated adversarial verification tests for Phase 0.
+- `p1-adventure/src/test/*`: Updated test assertions to reflect single-source pricing and centered hitboxes.
+
+Verification:
+- `npm run test:unit`: 53 test suites, 1,583 unit tests passing (100% pass rate, 0 failures).
+- `npm run build`: Clean TypeScript compilation and Vite production bundle.
+
+Pending:
+- Stop for user review of Phase 0 before starting Phase 1 visual overhaul.
 
 Summary:
 Delivered the Google AI Implementation Specification: Full 9-Enhancement Commercial Quality Overhaul for HK Primary 1 Pupils (`升夢大冒險 / P1 Adventure`):

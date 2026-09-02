@@ -141,6 +141,7 @@ export class MapScene extends Phaser.Scene {
   public stationNodes: Phaser.GameObjects.Container[] = [];
   public backButton: CanvasButton | null = null;
   public activeModal: CanvasModal | null = null;
+  public diagnosticModal: DiagnosticReportModal | null = null;
   public headerContainer: Phaser.GameObjects.Container | null = null;
   public currentPinMarker: Phaser.GameObjects.Container | null = null;
 
@@ -1495,6 +1496,7 @@ export class MapScene extends Phaser.Scene {
         this.startMistakeReview();
       },
     });
+    this.diagnosticModal = modal;
     modal.show();
   }
 

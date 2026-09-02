@@ -24,6 +24,7 @@ export class SlotBox extends Phaser.GameObjects.Container {
   private placedCard: CanvasCard | null = null;
   private isHighlightedState: boolean = false;
   private isErrorState: boolean = false;
+  private isCorrectState: boolean = false;
 
   private bgGraphics: Phaser.GameObjects.Graphics | null = null;
   private placeholderText: Phaser.GameObjects.Text | null = null;
@@ -72,6 +73,11 @@ export class SlotBox extends Phaser.GameObjects.Container {
       borderWidth = 3;
       borderAlpha = 1.0;
       fillColor = 0x3d1b1e;
+    } else if (this.isCorrectState) {
+      borderColor = 0x22c55e;
+      borderWidth = 3;
+      borderAlpha = 1.0;
+      fillColor = 0x064e3b;
     } else if (this.isHighlightedState) {
       borderColor = this.config.highlightColor ?? 0x00d2ff;
       borderWidth = 3.5;
@@ -248,6 +254,16 @@ export class SlotBox extends Phaser.GameObjects.Container {
 
   public hasError(): boolean {
     return this.isErrorState;
+  }
+
+  public setCorrect(isCorrect: boolean): this {
+    this.isCorrectState = isCorrect;
+    this.createBackground();
+    return this;
+  }
+
+  public hasCorrect(): boolean {
+    return this.isCorrectState;
   }
 
   public getCenterPosition(): { x: number; y: number } {
