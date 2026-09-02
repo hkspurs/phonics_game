@@ -138,7 +138,15 @@ export class PlayerAvatarBadge {
     // 4. Interactive Click handler
     if (options.interactive && options.onClick) {
       this.container.setSize(this.size, this.size);
-      this.container.setInteractive({ useHandCursor: true });
+      const hitRadius = (this.size / 2) + 4;
+      const hitRect = (Phaser && Phaser.Geom && Phaser.Geom.Rectangle)
+        ? new Phaser.Geom.Rectangle(-hitRadius, -hitRadius, hitRadius * 2, hitRadius * 2)
+        : undefined;
+      if (hitRect && typeof this.container.setInteractive === 'function') {
+        this.container.setInteractive(hitRect, Phaser.Geom.Rectangle.Contains);
+      } else if (typeof this.container.setInteractive === 'function') {
+        this.container.setInteractive({ useHandCursor: true });
+      }
       this.container.on('pointerdown', options.onClick);
     }
 

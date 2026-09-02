@@ -42,9 +42,24 @@ export class SlotBox extends Phaser.GameObjects.Container {
 
     this.createBackground();
     this.createPlaceholder();
+    this.setupInteractivity();
 
     if (scene.add && typeof scene.add.existing === 'function') {
       scene.add.existing(this);
+    }
+  }
+
+  private setupInteractivity(): void {
+    const hitPadX = 8;
+    const hitPadY = 8;
+    const hitW = this.slotWidth + hitPadX * 2;
+    const hitH = this.slotHeight + hitPadY * 2;
+    const hitRect = (Phaser && Phaser.Geom && Phaser.Geom.Rectangle)
+      ? new Phaser.Geom.Rectangle(-this.slotWidth / 2 - hitPadX, -this.slotHeight / 2 - hitPadY, hitW, hitH)
+      : undefined;
+
+    if (hitRect && typeof this.setInteractive === 'function') {
+      this.setInteractive(hitRect, Phaser.Geom.Rectangle.Contains);
     }
   }
 
@@ -293,6 +308,22 @@ export class SlotBox extends Phaser.GameObjects.Container {
       this.placeholderText.setScrollFactor(x, sy);
     }
     return this;
+  }
+
+  public isInteractive(): boolean {
+    return this.input ? (this.input as any).enabled !== false : true;
+  }
+
+  public containsPoint(localX: number, localY: number, includePadding: boolean = true): boolean {
+    const padX = includePadding ? 8 : 0;
+    const padY = includePadding ? 8 : 0;
+    const halfW = this.slotWidth / 2 + padX;
+    const halfH = this.slotHeight / 2 + padY;
+    return localX >= -halfW && localX <= halfW && localY >= -halfH && localY <= halfH;
+  }
+
+  public getHitArea(): Phaser.Geom.Rectangle | undefined {
+    return this.input?.hitArea as Phaser.Geom.Rectangle | undefined;
   }
 
   public override destroy(fromScene?: boolean): void {

@@ -1,5 +1,39 @@
 # AI Coordination Changelog
 
+## 2026-09-02 — Antigravity — TASK-20260902-020
+
+Summary:
+Button HitArea, Touch Coordinate & Viewport Offset Audit & Repair:
+1. **Root Cause Analysis & HitArea Origin Standardization**:
+   - Identified Phaser Container local coordinate offset behavior: child elements centered at `(0, 0)` extend from `[-W/2, +W/2]` and `[-H/2, +H/2]`.
+   - Identified shifted hitArea definitions that used `Rectangle(-pad, -pad, W + 2*pad, H + 2*pad)` or default unconfigured `setInteractive()` (`Rectangle(0, 0, W, H)`), which placed the hitbox entirely in the bottom-right quadrant (+X, +Y), creating 100% deadzones across top-left, top, and left edges.
+2. **Component HitArea Corrections**:
+   - `CanvasButton.ts`: Confirmed centered `Rectangle(-W/2 - pad, -H/2 - pad, W + 2*pad, H + 2*pad)` with `+8px` margin; enhanced `containsPoint(x, y, includePadding)` and added `getHitArea()`.
+   - `CanvasCard.ts`: Confirmed centered `Rectangle(-W/2 - pad, -H/2 - pad, W + 2*pad, H + 2*pad)` with `+12px` margin; added `containsPoint(x, y, includePadding)` and `getHitArea()`.
+   - `SlotBox.ts`: Added internal `setupInteractivity()` establishing centered `Rectangle(-W/2 - pad, -H/2 - pad, W + 2*pad, H + 2*pad)` and `containsPoint()`.
+   - `QuestionScene.ts`: Fixed sentence scramble slot `setInteractive` hitRect from `(-padX, -padY, ...)` to `(-cardWidth / 2 - padX, -cardHeight / 2 - padY, ...)`.
+   - `MapScene.ts`: Fixed station node container hitArea from `(-8, -8, 126, 126)` to `(-63, -62, 126, 176)` and sub-level mission card row from `(-padX, -padY, ...)` to `(-rowW / 2 - padX, -rowH / 2 - padY, ...)`.
+   - `PlayerAvatarBadge.ts`: Fixed unconfigured container hitArea to centered `Rectangle(-hitRadius, -hitRadius, hitRadius * 2, hitRadius * 2)`.
+3. **Comprehensive 9-Point Unit Testing**:
+   - Authored `src/test/button-corner-touch-hitarea-auditor.test.ts` testing 9 key points (center, 4 visual corners, 4 edges, 2px inside corners, padded touch zones, and outer deadzones) and mathematical regression proofs.
+   - 62 test suites, 1,934 unit tests passing 100%. Production build cleanly compiled.
+
+Changed:
+- `p1-adventure/src/ui/CanvasButton.ts`
+- `p1-adventure/src/ui/CanvasCard.ts`
+- `p1-adventure/src/ui/SlotBox.ts`
+- `p1-adventure/src/ui/PlayerAvatarBadge.ts`
+- `p1-adventure/src/scenes/QuestionScene.ts`
+- `p1-adventure/src/scenes/MapScene.ts`
+- `p1-adventure/src/test/button-corner-touch-hitarea-auditor.test.ts`
+
+Verification:
+- `npm run test:unit`: 62 test suites, 1,934 unit tests passing (100% pass rate).
+- `npm run build`: Production build cleanly compiled with TypeScript and Vite.
+
+Pending:
+- None. Ready for deployment.
+
 ## 2026-09-02 — Antigravity — TASK-20260902-019
 
 Summary:

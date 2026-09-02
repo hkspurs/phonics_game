@@ -441,10 +441,16 @@ export class CanvasButton extends Phaser.GameObjects.Container {
     return this.isBtnEnabled && (this.input ? (this.input as any).enabled !== false : true);
   }
 
-  public containsPoint(localX: number, localY: number): boolean {
-    const halfW = this.btnWidth / 2;
-    const halfH = this.btnHeight / 2;
+  public containsPoint(localX: number, localY: number, includePadding: boolean = true): boolean {
+    const padX = includePadding ? 8 : 0;
+    const padY = includePadding ? 8 : 0;
+    const halfW = this.btnWidth / 2 + padX;
+    const halfH = this.btnHeight / 2 + padY;
     return localX >= -halfW && localX <= halfW && localY >= -halfH && localY <= halfH;
+  }
+
+  public getHitArea(): Phaser.Geom.Rectangle | undefined {
+    return this.input?.hitArea as Phaser.Geom.Rectangle | undefined;
   }
 
   public override destroy(fromScene?: boolean): void {

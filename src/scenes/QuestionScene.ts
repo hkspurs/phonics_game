@@ -572,8 +572,10 @@ export class QuestionScene extends Phaser.Scene {
       if (typeof slot.setInteractive === 'function') {
         const hitPadX = 8;
         const hitPadY = 8;
+        const hitW = cardWidth + hitPadX * 2;
+        const hitH = cardHeight + hitPadY * 2;
         const hitRect = (Phaser && Phaser.Geom && Phaser.Geom.Rectangle)
-          ? new Phaser.Geom.Rectangle(-hitPadX, -hitPadY, cardWidth + hitPadX * 2, cardHeight + hitPadY * 2)
+          ? new Phaser.Geom.Rectangle(-cardWidth / 2 - hitPadX, -cardHeight / 2 - hitPadY, hitW, hitH)
           : { useHandCursor: true };
         slot.setInteractive(hitRect, Phaser.Geom.Rectangle.Contains);
         slot.on('pointerup', () => {

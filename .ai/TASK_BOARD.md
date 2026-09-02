@@ -10,6 +10,24 @@ None.
 
 ## COMPLETED
 
+### TASK-20260902-020
+
+Agent: Antigravity  
+Status: DONE  
+Started: 2026-09-02 17:41  
+Completed: 2026-09-02 17:47  
+
+Description:
+Button HitArea, Touch Coordinate & Viewport Offset Audit & Repair:
+1. **Container HitArea Origin Alignment**: Repaired Phaser Container hitArea offset geometry across `CanvasButton`, `CanvasCard`, `SlotBox`, `PlayerAvatarBadge`, and `MapScene` interactive nodes.
+2. **Elimination of Deadzones & Quadrant Shifts**:
+   - Replaced positive/top-left shifted `Rectangle(-hitPad, -hitPad, ...)` and default `Rectangle(0, 0, W, H)` with centered `Rectangle(-W/2 - pad, -H/2 - pad, W + 2*pad, H + 2*pad)`.
+   - Guaranteed all 4 visual corners (top-left, top-right, bottom-left, bottom-right), 4 edges, and center trigger pointer/touch events seamlessly without deadzones.
+3. **SlotBox Interactivity**: Encapsulated hitArea setup in `SlotBox.ts` and corrected sentence scramble slot hitArea in `QuestionScene.ts`.
+4. **MapScene HitArea Alignment**: Fixed station node and mission card row container hit areas, eliminating left-half deadzones.
+5. **Comprehensive 9-Point Unit Testing**: Added `src/test/button-corner-touch-hitarea-auditor.test.ts` testing 9-point geometries, corner checks, and mathematical regression proofs (62 test suites, 1,934 tests passing 100%). Clean production build.
+
+
 ### TASK-20260902-019
 
 Agent: Antigravity  

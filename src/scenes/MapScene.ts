@@ -701,8 +701,12 @@ export class MapScene extends Phaser.Scene {
 
     // 8. Interactivity & Click Handling
     if (typeof container.setInteractive === 'function') {
+      const pad = 8;
+      const halfW = 55 + pad;
+      const topY = -58 - pad;
+      const totalH = 170 + pad * 2;
       const nodeHitRect = (Phaser && Phaser.Geom && Phaser.Geom.Rectangle)
-        ? new Phaser.Geom.Rectangle(-8, -8, 110 + 16, 110 + 16)
+        ? new Phaser.Geom.Rectangle(-halfW, topY, halfW * 2, totalH)
         : undefined;
       if (nodeHitRect) {
         container.setInteractive(nodeHitRect, Phaser.Geom.Rectangle.Contains);
@@ -1045,11 +1049,12 @@ export class MapScene extends Phaser.Scene {
       }
 
       // Make the entire row clickable to start this subject's question directly
-      // Note: Container setSize(580, 56) shifts hit area by displayOrigin (290, 28)
       const padX = 16;
       const padY = 8;
+      const rowW = 580;
+      const rowH = 56;
       const hitRect = (Phaser && Phaser.Geom && Phaser.Geom.Rectangle)
-        ? new Phaser.Geom.Rectangle(-padX, -padY, 580 + padX * 2, 56 + padY * 2)
+        ? new Phaser.Geom.Rectangle(-rowW / 2 - padX, -rowH / 2 - padY, rowW + padX * 2, rowH + padY * 2)
         : undefined;
 
       if (typeof rowContainer.setInteractive === 'function') {

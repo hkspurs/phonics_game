@@ -567,9 +567,13 @@ export class ShopScene extends Phaser.Scene {
     }
 
     // Mini Avatar Thumbnail inside portrait frame
-    if (this.textures?.exists && this.textures.exists(skin.standSprite)) {
-      const avatar = this.add.image(cx - 200, cy, skin.standSprite);
-      if (typeof avatar.setScale === 'function') avatar.setScale(0.72);
+    const portraitKey = `${skin.id}_shop_preview`;
+    const avatarKey = (this.textures?.exists && this.textures.exists(portraitKey))
+      ? portraitKey
+      : skin.standSprite;
+    if (this.textures?.exists && this.textures.exists(avatarKey)) {
+      const avatar = this.add.image(cx - 200, cy, avatarKey);
+      if (typeof avatar.setScale === 'function') avatar.setScale(0.24);
       if (skin.tint && typeof avatar.setTint === 'function') avatar.setTint(skin.tint);
       this.tabGameObjects.push(avatar);
     }
