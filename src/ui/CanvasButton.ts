@@ -343,6 +343,10 @@ export class CanvasButton extends Phaser.GameObjects.Container {
     return this;
   }
 
+  public setDisabled(disabled: boolean): this {
+    return this.setEnabled(!disabled);
+  }
+
   public isEnabled(): boolean {
     return this.isBtnEnabled;
   }

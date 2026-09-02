@@ -1,5 +1,3 @@
-# Active AI Ownership
-
 | Path / Module | Agent | Task | Status |
 |---|---|---|---|
 

@@ -258,6 +258,14 @@ export class RunnerScene extends Phaser.Scene {
   public prefersReducedMotion: boolean = false;
   private celebrationTimer: Phaser.Time.TimerEvent | any = null;
 
+  // Tutorial & Skip Modal Properties
+  public isTutorialActive: boolean = false;
+  public tutorialStep: number = 0;
+  public tutorialPromptContainer: Phaser.GameObjects.Container | null = null;
+  public skipConfirmationModal: Phaser.GameObjects.Container | null = null;
+  public skipConfirmationText: string = '';
+  public isSkipModalOpen: boolean = false;
+
   constructor() {
     super({ key: 'RunnerScene' });
   }
@@ -516,6 +524,15 @@ export class RunnerScene extends Phaser.Scene {
     // 6. Play startup runner sound
     try {
       SoundManager.play('jump');
+    } catch {
+      // Safe ignore
+    }
+
+    // 7. Initialize First-run Tutorial if not yet completed
+    try {
+      if (!DataManager.getInstance().isRunnerTutorialCompleted()) {
+        this.startFirstRunTutorial();
+      }
     } catch {
       // Safe ignore
     }
@@ -2694,48 +2711,201 @@ export class RunnerScene extends Phaser.Scene {
   }
 
   /**
-   * Skip / Fast-Forward: sweeps all visible coins/gems, awards chest bonus, and completes transition
+   * Skip / Fast-Forward: prompts confirmation dialog before forfeiting uncollected items
    */
   public skipRunner(): void {
-    if (this.isTransitioning) return;
+    this.promptSkipConfirmation();
+  }
 
-    // Collect all uncollected items immediately
-    for (let i = 0; i < this.worldItems.length; i++) {
-      const item = this.worldItems[i];
-      if (item && !item.collected) {
-        if (item.type === 'coin') {
-          this.sessionStats.collectedCoins = (this.sessionStats.collectedCoins || 0) + 1;
-          try {
-            DataManager.getInstance().addCoins(1);
-          } catch {
-            // Safe ignore
-          }
-        } else if (item.type === 'gem') {
-          this.sessionStats.collectedGems = (this.sessionStats.collectedGems || 0) + 1;
-          try {
-            DataManager.getInstance().addGems(1);
-          } catch {
-            // Safe ignore
-          }
-        }
-        item.collected = true;
-      }
+  /**
+   * Prompts skip confirmation modal dialog
+   */
+  public promptSkipConfirmation(): void {
+    if (this.isTransitioning || this.isSkipModalOpen) return;
+    this.isSkipModalOpen = true;
+
+    this.skipConfirmationText = '跳過跑酷？你會保留答題獎勵，但不會獲得尚未收集的跑酷獎勵。';
+
+    if (!this.add) return;
+
+    const width = this.sys?.game?.config ? Number(this.sys.game.config.width) : GAME_WIDTH;
+    const height = this.sys?.game?.config ? Number(this.sys.game.config.height) : GAME_HEIGHT;
+
+    const modal = this.add.container
+      ? this.add.container(width / 2, height / 2)
+      : new Phaser.GameObjects.Container(this, width / 2, height / 2);
+    modal.setDepth(200);
+
+    if (this.add.graphics) {
+      const bg = this.add.graphics();
+      bg.fillStyle(0x000000, 0.7);
+      bg.fillRect(-width / 2, -height / 2, width, height);
+
+      bg.fillStyle(0x0f172a, 0.96);
+      bg.fillRoundedRect(-240, -130, 480, 260, 20);
+      bg.lineStyle(2, 0xf59e0b, 0.9);
+      bg.strokeRoundedRect(-240, -130, 480, 260, 20);
+      modal.add(bg);
     }
 
-    // Award chest bonus if chest wasn't opened yet
-    if (!this.isCelebrating) {
-      this.sessionStats.collectedCoins = (this.sessionStats.collectedCoins || 0) + 5;
-      this.sessionStats.collectedGems = (this.sessionStats.collectedGems || 0) + 1;
+    if (this.add.text) {
+      const title = this.add.text(0, -85, '⏩ 跳過跑酷確認', {
+        fontSize: '24px',
+        fontFamily: "'Kenney Future', 'Noto Sans TC', sans-serif",
+        color: '#fde047',
+        fontStyle: 'bold',
+      });
+      if (typeof title.setOrigin === 'function') title.setOrigin(0.5);
+      modal.add(title);
+
+      const msg = this.add.text(0, -20, this.skipConfirmationText, {
+        fontSize: '18px',
+        fontFamily: "'Noto Sans TC', sans-serif",
+        color: '#e2e8f0',
+        align: 'center',
+        wordWrap: { width: 420 },
+      });
+      if (typeof msg.setOrigin === 'function') msg.setOrigin(0.5);
+      modal.add(msg);
+    }
+
+    // Continue Playing Button
+    const continueBtn = new CanvasButton(this, {
+      x: -110,
+      y: 65,
+      width: 170,
+      height: 52,
+      text: '▶️ 繼續遊玩',
+      color: 'blue',
+      fontSize: '18px',
+      onClick: () => {
+        this.closeSkipConfirmation();
+      },
+    });
+    modal.add(continueBtn);
+
+    // Skip Button
+    const confirmSkipBtn = new CanvasButton(this, {
+      x: 110,
+      y: 65,
+      width: 170,
+      height: 52,
+      text: '⏩ 跳過跑酷',
+      color: 'red',
+      fontSize: '18px',
+      onClick: () => {
+        this.closeSkipConfirmation();
+        this.executeSkipRunner();
+      },
+    });
+    modal.add(confirmSkipBtn);
+
+    this.skipConfirmationModal = modal;
+    if (this.add && typeof this.add.existing === 'function') {
+      this.add.existing(modal);
+    }
+  }
+
+  /**
+   * Closes the skip confirmation modal
+   */
+  public closeSkipConfirmation(): void {
+    if (this.skipConfirmationModal) {
+      this.skipConfirmationModal.destroy();
+      this.skipConfirmationModal = null;
+    }
+    this.isSkipModalOpen = false;
+  }
+
+  /**
+   * Executes the skip action: forfeits uncollected items, increments skip count, and finishes runner
+   */
+  public executeSkipRunner(): void {
+    if (this.isTransitioning) return;
+
+    try {
+      DataManager.getInstance().incrementRunnerSkippedCount();
+    } catch {
+      // Safe ignore
+    }
+
+    this.finishRunner();
+  }
+
+  /**
+   * First-run tutorial triggers & steps
+   */
+  public startFirstRunTutorial(): void {
+    this.isTutorialActive = true;
+    this.tutorialStep = 1;
+    this.showTutorialPrompt('👉 請向右滑動搖桿或按方向鍵【右】，讓角色向前跑！');
+  }
+
+  public simulateTutorialAction(action: 'move_right' | 'jump' | 'pickup'): void {
+    if (!this.isTutorialActive) return;
+
+    if (action === 'move_right' && this.tutorialStep === 1) {
+      this.tutorialStep = 2;
+      this.showTutorialPrompt('🦘 太棒了！現在按下【跳躍鍵】跳躍！');
+    } else if (action === 'jump' && this.tutorialStep === 2) {
+      this.tutorialStep = 3;
+      this.showTutorialPrompt('✨ 做得好！前方有金幣，請向前跳躍收集它！');
+    } else if (action === 'pickup' && this.tutorialStep === 3) {
+      this.isTutorialActive = false;
+      this.tutorialStep = 0;
+      if (this.tutorialPromptContainer) {
+        this.tutorialPromptContainer.destroy();
+        this.tutorialPromptContainer = null;
+      }
       try {
-        DataManager.getInstance().addCoins(5);
-        DataManager.getInstance().addGems(1);
+        DataManager.getInstance().setRunnerTutorialCompleted(true);
       } catch {
         // Safe ignore
       }
     }
+  }
 
-    this.refreshHUD();
-    this.finishRunner();
+  public showTutorialPrompt(message: string): void {
+    if (!this.add) return;
+    if (this.tutorialPromptContainer) {
+      this.tutorialPromptContainer.destroy();
+      this.tutorialPromptContainer = null;
+    }
+
+    const width = this.sys?.game?.config ? Number(this.sys.game.config.width) : GAME_WIDTH;
+    const height = this.sys?.game?.config ? Number(this.sys.game.config.height) : GAME_HEIGHT;
+
+    const container = this.add.container
+      ? this.add.container(width / 2, height / 2 - 90)
+      : new Phaser.GameObjects.Container(this, width / 2, height / 2 - 90);
+    container.setDepth(180);
+
+    if (this.add.graphics) {
+      const bg = this.add.graphics();
+      bg.fillStyle(0x0f172a, 0.95);
+      bg.fillRoundedRect(-260, -32, 520, 64, 16);
+      bg.lineStyle(2, 0x38bdf8, 0.95);
+      bg.strokeRoundedRect(-260, -32, 520, 64, 16);
+      container.add(bg);
+    }
+
+    if (this.add.text) {
+      const txt = this.add.text(0, 0, message, {
+        fontSize: '18px',
+        fontFamily: "'Noto Sans TC', sans-serif",
+        color: '#f8fafc',
+        fontStyle: 'bold',
+        align: 'center',
+        wordWrap: { width: 480 },
+      });
+      if (typeof txt.setOrigin === 'function') txt.setOrigin(0.5);
+      container.add(txt);
+    }
+
+    this.tutorialPromptContainer = container;
+    if (this.add && typeof this.add.existing === 'function') {
+      this.add.existing(container);
+    }
   }
 
   /**

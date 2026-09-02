@@ -877,7 +877,7 @@ describe('RunnerScene (2D Platformer Runner Reward Scene)', () => {
   // 8. Skip Button & Navigation Transitions
   // =========================================================================
   describe('Skip / Fast-Forward & Navigation Flow', () => {
-    it('skipRunner sweeps remaining coins, awards chest bonus and transitions immediately', () => {
+    it('skipRunner prompts confirmation and executeSkipRunner forfeits uncollected items while transitioning', () => {
       scene.init({ isStationComplete: false, questionIndex: 0 });
       scene.create();
 
@@ -885,8 +885,11 @@ describe('RunnerScene (2D Platformer Runner Reward Scene)', () => {
       const initialCoins = dm.getProfile().coins;
 
       scene.skipRunner();
+      expect((scene as any).isSkipModalOpen).toBe(true);
 
-      expect(dm.getProfile().coins).toBeGreaterThan(initialCoins);
+      scene.executeSkipRunner();
+
+      expect(dm.getProfile().coins).toBe(initialCoins);
       expect(mockScene.scene.start).toHaveBeenCalledWith(
         'QuestionScene',
         expect.objectContaining({

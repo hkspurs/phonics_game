@@ -215,4 +215,15 @@ export class QuestionEngine {
       };
     }
   }
+
+  /**
+   * Generates a remedial question targeting a specific subject or knowledge tag for reinforcement.
+   */
+  public static generateRemedialQuestion(
+    subject: SubjectType,
+    _knowledgeTag?: string,
+    difficulty: number = 1
+  ): QuizQuestion {
+    return this.generateSingleQuestion(subject, difficulty);
+  }
 }

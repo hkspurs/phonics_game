@@ -11,12 +11,15 @@ import { CanvasCard } from '../ui/CanvasCard';
 import { SlotBox } from '../ui/SlotBox';
 import { PlayerAvatarBadge } from '../ui/PlayerAvatarBadge';
 import { STATIONS } from './MapScene';
+import { PedagogyEngine } from '../engine/PedagogyEngine';
 
 export interface QuestionSessionStats {
   hintsUsed: number;
   mistakes: number;
   correctCount: number;
   startTime: number;
+  collectedCoins?: number;
+  collectedGems?: number;
 }
 
 export interface QuestionSceneInitData {
@@ -48,6 +51,9 @@ export class QuestionScene extends Phaser.Scene {
   };
 
   public isAnswered: boolean = false;
+  public currentAttemptNumber: number = 0;
+  public currentQuestionStartTime: number = Date.now();
+  public currentHintLevel: number = 0;
 
   // UI Components
   public transitionTimer: Phaser.Time.TimerEvent | null = null;
@@ -63,6 +69,7 @@ export class QuestionScene extends Phaser.Scene {
   public progressCounterText: Phaser.GameObjects.Text | null = null;
   public promptText: Phaser.GameObjects.Text | null = null;
   public avatarBadge: PlayerAvatarBadge | null = null;
+  public feedbackContainer: Phaser.GameObjects.Container | null = null;
 
   // Mode A: Sentence Scramble
   public slotBoxes: SlotBox[] = [];
@@ -101,6 +108,9 @@ export class QuestionScene extends Phaser.Scene {
       correctCount: 0,
       startTime: Date.now(),
     };
+    this.currentAttemptNumber = 0;
+    this.currentQuestionStartTime = Date.now();
+    this.currentHintLevel = 0;
 
     if (data?.questions && data.questions.length > 0) {
       this.questions = [...data.questions];
@@ -853,6 +863,7 @@ export class QuestionScene extends Phaser.Scene {
     const allFilled = this.slotBoxes.length > 0 && this.slotBoxes.every((s) => s.hasCard());
     if (!allFilled) return false;
 
+    this.currentAttemptNumber++;
     const placedTokens = this.slotBoxes.map((s) => s.getPlacedCard()?.getText() || '');
     const expectedTokens = this.currentQuestion?.correctTokens || [];
 
@@ -865,6 +876,30 @@ export class QuestionScene extends Phaser.Scene {
       SoundManager.playSoftWrong();
       this.sessionStats.mistakes++;
       this.avatarBadge?.think();
+
+      if (this.currentQuestion) {
+        const feedback = PedagogyEngine.getWrongAnswerFeedback(this.currentQuestion);
+        this.showEducationalFeedback(feedback, false);
+        SpeechService.speak(feedback, this.getVoiceLanguage());
+
+        try {
+          DataManager.getInstance().recordAttempt({
+            questionId: this.currentQuestion.id,
+            stationId: this.stationId,
+            subject: this.currentQuestion.subject,
+            knowledgeTag: PedagogyEngine.getKnowledgeTag(this.currentQuestion),
+            difficulty: 1,
+            selectedAnswerId: placedTokens.join(''),
+            isCorrect: false,
+            attemptNumber: this.currentAttemptNumber,
+            hintLevelUsed: this.currentHintLevel,
+            timestamp: Date.now(),
+            responseTimeMs: Date.now() - this.currentQuestionStartTime,
+          });
+        } catch {
+          // Ignore
+        }
+      }
 
       for (const slot of this.slotBoxes) {
         if (!slot.isCorrect()) {
@@ -891,6 +926,7 @@ export class QuestionScene extends Phaser.Scene {
   public handleChoiceSelection(card: CanvasCard, index: number): boolean {
     if (this.isAnswered || card.getState() === 'disabled') return false;
 
+    this.currentAttemptNumber++;
     const isCorrect =
       (this.currentQuestion?.correctOptionIndex !== undefined &&
         index === this.currentQuestion.correctOptionIndex) ||
@@ -909,21 +945,170 @@ export class QuestionScene extends Phaser.Scene {
       this.avatarBadge?.think();
       card.wobble();
       card.setDisabled(true);
+
+      if (this.currentQuestion) {
+        const feedback = PedagogyEngine.getWrongAnswerFeedback(this.currentQuestion, card.getValue());
+        this.showEducationalFeedback(feedback, false);
+        SpeechService.speak(feedback, this.getVoiceLanguage());
+
+        try {
+          DataManager.getInstance().recordAttempt({
+            questionId: this.currentQuestion.id,
+            stationId: this.stationId,
+            subject: this.currentQuestion.subject,
+            knowledgeTag: PedagogyEngine.getKnowledgeTag(this.currentQuestion),
+            difficulty: 1,
+            selectedAnswerId: card.getValue(),
+            isCorrect: false,
+            attemptNumber: this.currentAttemptNumber,
+            hintLevelUsed: this.currentHintLevel,
+            timestamp: Date.now(),
+            responseTimeMs: Date.now() - this.currentQuestionStartTime,
+          });
+        } catch {
+          // Ignore
+        }
+      }
+
       return false;
     }
   }
 
   /**
-   * Hint Action
-   * Sentence Scramble: Auto-places the next correct token into its slot
-   * Multiple Choice: Eliminates 1 wrong distractor option
+   * Renders educational feedback banner
+   */
+  public showEducationalFeedback(message: string, isCorrect: boolean): void {
+    if (!this.add) return;
+    if (this.feedbackContainer) {
+      this.feedbackContainer.destroy();
+      this.feedbackContainer = null;
+    }
+
+    const width = this.sys?.game?.config ? Number(this.sys.game.config.width) : GAME_WIDTH;
+    const toastW = Math.min(width - 60, 960);
+    const toastH = 68;
+    const toastX = width / 2;
+    const toastY = 210;
+
+    const container = this.add.container
+      ? this.add.container(toastX, toastY)
+      : new Phaser.GameObjects.Container(this, toastX, toastY);
+    container.setDepth(150);
+
+    if (this.add.graphics) {
+      const bg = this.add.graphics();
+      bg.fillStyle(0x0f172a, 0.95);
+      bg.fillRoundedRect(-toastW / 2, -toastH / 2, toastW, toastH, 16);
+
+      const borderColor = isCorrect ? 0x22c55e : 0xf59e0b;
+      bg.lineStyle(2, borderColor, 0.95);
+      bg.strokeRoundedRect(-toastW / 2, -toastH / 2, toastW, toastH, 16);
+      container.add(bg);
+    }
+
+    if (this.add.text) {
+      const prefix = isCorrect ? '✨ 知識點：' : '💡 觀察提示：';
+      const toastTxt = this.add.text(0, 0, `${prefix}${message}`, {
+        fontSize: '18px',
+        fontFamily: "'Noto Sans TC', sans-serif",
+        color: isCorrect ? '#86efac' : '#fde047',
+        fontStyle: 'bold',
+        align: 'center',
+        wordWrap: { width: toastW - 40 },
+        resolution: typeof window !== 'undefined' ? Math.max(2, window.devicePixelRatio || 2) : 2,
+      });
+      if (typeof toastTxt.setOrigin === 'function') toastTxt.setOrigin(0.5);
+      container.add(toastTxt);
+    }
+
+    this.feedbackContainer = container;
+    if (this.add && typeof this.add.existing === 'function') {
+      this.add.existing(container);
+    }
+
+    if (this.tweens?.add) {
+      container.setScale(0.9);
+      container.setAlpha(0);
+      this.tweens.add({
+        targets: container,
+        scale: 1,
+        alpha: 1,
+        duration: 200,
+        ease: 'Back.easeOut',
+      });
+    }
+  }
+
+  /**
+   * Progressive 3-Tier Hint Action
+   * Level 1: Direction strategy
+   * Level 2: Visual support clue highlight
+   * Level 3: Guided solution elimination / auto-place
    */
   public handleHint(): void {
     if (this.isAnswered || !this.currentQuestion) return;
 
     if (this.currentQuestion.type === 'sentence_scramble') {
       const expected = this.currentQuestion.correctTokens || [];
-      // Find first slot that is empty or incorrect
+      const hasUnplacedSlot = this.slotBoxes.some((slot, i) => !slot.hasCard() || slot.getPlacedCard()?.getText() !== expected[i]);
+      if (!hasUnplacedSlot && this.slotBoxes.length > 0) return;
+    } else {
+      const wrongCards = this.choiceCards.filter((card, idx) => {
+        if (card.getState() === 'disabled') return false;
+        if (this.currentQuestion?.correctOptionIndex !== undefined) {
+          return idx !== this.currentQuestion.correctOptionIndex;
+        }
+        if (this.currentQuestion?.correctAnswer !== undefined) {
+          return (
+            card.getValue() !== this.currentQuestion.correctAnswer &&
+            String(card.getValue()) !== String(this.currentQuestion.correctAnswer)
+          );
+        }
+        return true;
+      });
+      if (wrongCards.length === 0 && this.choiceCards.length > 0) return;
+    }
+
+    this.currentHintLevel = Math.min(3, this.currentHintLevel + 1);
+    this.sessionStats.hintsUsed++;
+    SoundManager.playCardSnap();
+
+    const hints = PedagogyEngine.getProgressiveHints(this.currentQuestion);
+
+    if (this.currentHintLevel === 1) {
+      this.showEducationalFeedback(hints.level1Direction, false);
+      SpeechService.speak(hints.level1Direction, this.getVoiceLanguage());
+      if (this.hintButton) {
+        this.hintButton.setText('💡 提示 (2/3)');
+      }
+    } else if (this.currentHintLevel === 2) {
+      this.showEducationalFeedback(hints.level2VisualSupport, false);
+      SpeechService.speak(hints.level2VisualSupport, this.getVoiceLanguage());
+      if (this.hintButton) {
+        this.hintButton.setText('💡 提示 (3/3)');
+      }
+      for (const card of this.choiceCards) {
+        if (card.getState() !== 'disabled' && typeof (card as any).pulse === 'function') {
+          (card as any).pulse();
+        }
+      }
+      for (const slot of this.slotBoxes) {
+        if (typeof slot.setHighlighted === 'function') {
+          slot.setHighlighted(true);
+        }
+      }
+    } else {
+      this.showEducationalFeedback(hints.level3GuidedSolution, false);
+      SpeechService.speak(hints.level3GuidedSolution, this.getVoiceLanguage());
+      if (this.hintButton) {
+        this.hintButton.setText('💡 提示已用完');
+        this.hintButton.setEnabled(false);
+      }
+    }
+
+    // Interactive Action: Auto-place next token in Scramble OR eliminate wrong option in Choice
+    if (this.currentQuestion.type === 'sentence_scramble') {
+      const expected = this.currentQuestion.correctTokens || [];
       let targetIndex = -1;
       for (let i = 0; i < this.slotBoxes.length; i++) {
         const slot = this.slotBoxes[i];
@@ -934,16 +1119,12 @@ export class QuestionScene extends Phaser.Scene {
       }
 
       if (targetIndex >= 0) {
-        this.sessionStats.hintsUsed++;
-        SoundManager.playCardSnap();
-
         const targetSlot = this.slotBoxes[targetIndex];
         if (targetSlot.hasCard()) {
           targetSlot.removePlacedCard()?.snapBack();
         }
 
         const expectedVal = expected[targetIndex];
-        // Find chip with expectedVal (either unplaced or misplaced in another slot)
         let chip = this.cardChips.find(
           (c) => c.getText() === expectedVal && c.getCurrentSlot() === null
         );
@@ -956,12 +1137,13 @@ export class QuestionScene extends Phaser.Scene {
 
         if (chip) {
           targetSlot.setPlacedCard(chip);
-          chip.pulse();
+          if (typeof chip.pulse === 'function') {
+            chip.pulse();
+          }
           this.evaluateSentenceScramble();
         }
       }
-    } else {
-      // Eliminate one un-disabled incorrect choice option
+    } else if (this.currentHintLevel >= 3 || this.choiceCards.length <= 2) {
       const wrongCards = this.choiceCards.filter((card, idx) => {
         if (card.getState() === 'disabled') return false;
         if (this.currentQuestion?.correctOptionIndex !== undefined) {
@@ -977,15 +1159,11 @@ export class QuestionScene extends Phaser.Scene {
       });
 
       if (wrongCards.length > 0) {
-        this.sessionStats.hintsUsed++;
-        SoundManager.playCardSnap();
         const toEliminate = wrongCards[0];
-        toEliminate.wobble();
+        if (typeof toEliminate.wobble === 'function') {
+          toEliminate.wobble();
+        }
         toEliminate.setDisabled(true);
-      }
-
-      if (this.currentQuestion.hintText) {
-        SpeechService.speak(this.currentQuestion.hintText, this.getVoiceLanguage());
       }
     }
   }
@@ -1018,7 +1196,7 @@ export class QuestionScene extends Phaser.Scene {
 
   /**
    * Handles correct answer: plays sound, speaks full sentence, shows celebration,
-   * records stats to DataManager, and transitions to RunnerScene
+   * records stats and attempts to DataManager, and transitions to RunnerScene
    */
   public onCorrectAnswer(): void {
     if (this.isAnswered || !this.currentQuestion) return;
@@ -1026,15 +1204,31 @@ export class QuestionScene extends Phaser.Scene {
 
     this.sessionStats.correctCount++;
 
-    // 1. Record stats in DataManager
+    // 1. Record stats and attempt in DataManager
     try {
       DataManager.getInstance().recordCorrectAnswer(this.currentQuestion.subject);
+      DataManager.getInstance().recordAttempt({
+        questionId: this.currentQuestion.id,
+        stationId: this.stationId,
+        subject: this.currentQuestion.subject,
+        knowledgeTag: PedagogyEngine.getKnowledgeTag(this.currentQuestion),
+        difficulty: 1,
+        selectedAnswerId: this.currentQuestion.correctAnswer || 'correct',
+        isCorrect: true,
+        attemptNumber: Math.max(1, this.currentAttemptNumber),
+        hintLevelUsed: this.currentHintLevel,
+        timestamp: Date.now(),
+        responseTimeMs: Date.now() - this.currentQuestionStartTime,
+      });
     } catch {
       // Ignore
     }
 
     // 2. Play Audio & Speech
     SoundManager.playComboCorrect(this.sessionStats.correctCount);
+    const reinforcement = PedagogyEngine.getReinforcementSentence(this.currentQuestion);
+    this.showEducationalFeedback(reinforcement, true);
+
     const speakSentence =
       this.currentQuestion.speakText || this.currentQuestion.prompt || '';
     SpeechService.speak(speakSentence, this.getVoiceLanguage());

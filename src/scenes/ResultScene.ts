@@ -94,17 +94,34 @@ export class ResultScene extends Phaser.Scene {
     }
   }
 
+  public getItemisedRewardBreakdown(): {
+    learningCoins: number;
+    runnerCoins: number;
+    runnerGems: number;
+    firstClearGems: number;
+    totalCoins: number;
+    totalGems: number;
+  } {
+    const learningCoins = this.starsEarned === 3 ? 50 : this.starsEarned === 2 ? 30 : 20;
+    const runnerCoins = Number(this.sessionStats.collectedCoins || this.runnerCoins || 0);
+    const runnerGems = Number(this.sessionStats.collectedGems || 0);
+    const isFirstClear = !DataManager.getInstance().isStationCompleted(this.stationId);
+    const firstClearGems = isFirstClear ? (this.starsEarned === 3 ? 5 : this.starsEarned === 2 ? 3 : 1) : 0;
+
+    return {
+      learningCoins,
+      runnerCoins,
+      runnerGems,
+      firstClearGems,
+      totalCoins: learningCoins + runnerCoins,
+      totalGems: runnerGems + firstClearGems,
+    };
+  }
+
   private calculateRewards(): void {
-    if (this.starsEarned === 3) {
-      this.rewardCoins = 50 + this.runnerCoins;
-      this.rewardGems = 5;
-    } else if (this.starsEarned === 2) {
-      this.rewardCoins = 30 + this.runnerCoins;
-      this.rewardGems = 3;
-    } else {
-      this.rewardCoins = 20 + this.runnerCoins;
-      this.rewardGems = 1;
-    }
+    const breakdown = this.getItemisedRewardBreakdown();
+    this.rewardCoins = breakdown.totalCoins;
+    this.rewardGems = breakdown.totalGems;
   }
 
   private isSettled: boolean = false;
@@ -114,14 +131,24 @@ export class ResultScene extends Phaser.Scene {
     this.isSettled = true;
     try {
       const dm = DataManager.getInstance();
+      const breakdown = this.getItemisedRewardBreakdown();
+
+      // Record itemised atomic transactions in ledger
+      dm.recordTransaction('learning', `station_${this.stationId}_clear`, 'coins', breakdown.learningCoins);
+      if (breakdown.runnerCoins > 0) {
+        dm.recordTransaction('runner_pickups', `station_${this.stationId}_runner_coins`, 'coins', breakdown.runnerCoins);
+      }
+      if (breakdown.runnerGems > 0) {
+        dm.recordTransaction('runner_pickups', `station_${this.stationId}_runner_gems`, 'gems', breakdown.runnerGems);
+      }
+      if (breakdown.firstClearGems > 0) {
+        dm.recordTransaction('first_clear', `station_${this.stationId}_first_clear_gems`, 'gems', breakdown.firstClearGems);
+      }
 
       // Update station stars & unlock next station
+      dm.markStationCompleted(this.stationId);
       dm.setStationStars(this.stationId, this.starsEarned);
       dm.unlockNextStation(this.stationId);
-
-      // Add coins & gems
-      dm.addCoins(this.rewardCoins);
-      dm.addGems(this.rewardGems);
 
       // Unlock Hong Kong landmark stamp
       dm.unlockStamp(`station_${this.stationId}`);

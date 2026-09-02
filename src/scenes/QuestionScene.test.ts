@@ -569,15 +569,26 @@ describe('QuestionScene — Interactive Quiz Scene Suite', () => {
 
       expect(scene.slotBoxes[0].hasCard()).toBe(false);
 
+      // Hint 1: Direction
       scene.handleHint();
-
       expect(scene.sessionStats.hintsUsed).toBe(1);
+      expect(scene.currentHintLevel).toBe(1);
+
+      // Hint 2: Visual support
+      scene.handleHint();
+      expect(scene.sessionStats.hintsUsed).toBe(2);
+      expect(scene.currentHintLevel).toBe(2);
+
+      // Hint 3: Guided solution (places correct token)
+      scene.handleHint();
+      expect(scene.sessionStats.hintsUsed).toBe(3);
+      expect(scene.currentHintLevel).toBe(3);
       expect(scene.slotBoxes[0].hasCard()).toBe(true);
       expect(scene.slotBoxes[0].getPlacedCard()?.getText()).toBe('姐姐');
       expect(scene.slotBoxes[0].isCorrect()).toBe(true);
     });
 
-    it('eliminates one incorrect distractor option in multiple choice on hint', () => {
+    it('eliminates one incorrect distractor option in multiple choice on hint level 3', () => {
       scene.init({
         stationId: 2,
         questionIndex: 0,
@@ -588,9 +599,18 @@ describe('QuestionScene — Interactive Quiz Scene Suite', () => {
       const initialDisabledCount = scene.choiceCards.filter((c) => c.getState() === 'disabled').length;
       expect(initialDisabledCount).toBe(0);
 
+      // Hint 1: Direction
       scene.handleHint();
+      expect(scene.currentHintLevel).toBe(1);
 
-      expect(scene.sessionStats.hintsUsed).toBe(1);
+      // Hint 2: Visual support
+      scene.handleHint();
+      expect(scene.currentHintLevel).toBe(2);
+
+      // Hint 3: Guided solution (eliminates distractor)
+      scene.handleHint();
+      expect(scene.sessionStats.hintsUsed).toBe(3);
+      expect(scene.currentHintLevel).toBe(3);
       const afterDisabledCount = scene.choiceCards.filter((c) => c.getState() === 'disabled').length;
       expect(afterDisabledCount).toBe(1);
 

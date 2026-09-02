@@ -1,5 +1,39 @@
 # AI Coordination Changelog
 
+## 2026-09-02 — Antigravity — TASK-20260902-002
+
+Summary:
+Delivered the Google AI Implementation Specification: Full 9-Enhancement Commercial Quality Overhaul for HK Primary 1 Pupils (`升夢大冒險 / P1 Adventure`):
+1. **Enhancement 1 (Educational Answer Feedback & Progressive Hints)**: Created `PedagogyEngine.ts` to provide 3-tier progressive hints (Direction -> Visual support -> Guided solution), age-appropriate wrong-answer instructional feedback, and reinforcement sentences for correct answers. Added telemetry attempt logging with response time.
+2. **Enhancement 2 (Runner Role, Skip Rules & Reward Separation)**: Added clear skip confirmation modal with forfeiture disclosure (`跳過跑酷？你會保留答題獎勵，但不會獲得尚未收集的跑酷獎勵。`). Preserved learning rewards while isolating uncollected runner coins/gems.
+3. **Enhancement 3 (Authoritative Reward Ledger & Progress Semantics)**: Implemented atomic `RewardTransaction` ledger in `DataManager.ts` with balance transitions and idempotency. Strictly separated completed stations from unlocked stations, updating MapScene and ResultScene itemised breakdowns.
+4. **Enhancement 4 (First-Run Runner Tutorial & Touch Controls)**: Created 3-step interactive state tutorial in `RunnerScene.ts` (Move right -> Jump -> Safe pickup) with min 48px hit targets and touch controls.
+5. **Enhancement 5 (Mobile Landscape Responsive Layout)**: Validated aspect ratio scaling and safe area padding across 844x390, 667x375, 932x430, and 1024x768 viewports.
+6. **Enhancement 6 (Diagnostic Learning Report & Mistake Review Queue)**: Created `DiagnosticReportModal.ts` displaying accuracy, hints used, subject radar, and interactive mistake review flow without erasing history.
+7. **Enhancement 7 (Unified Vector Game Icon & UI Component System)**: Eliminated OS system emojis from core HUD in favor of procedural canvas vector icons (`icon_coin`, `icon_gem`, `icon_star`, `icon_chinese`, `icon_math`, `icon_english`, `icon_check`, `icon_cross`).
+8. **Enhancement 8 (Shop Item State Model & Transaction Safety)**: Formalized 4-state item lifecycle (`locked`, `available_not_owned`, `owned_not_equipped`, `equipped`) with non-mutating preview overlays and atomic ledger deductions.
+9. **Enhancement 9 (Question Sequence Depth & Cognitive Progression)**: Structured question sequences with 3 cognitive tiers and transparent remedial follow-up for mistakes.
+
+Changed:
+- `p1-adventure/src/types/index.ts`
+- `p1-adventure/src/engine/PedagogyEngine.ts` (NEW)
+- `p1-adventure/src/engine/QuestionEngine.ts`
+- `p1-adventure/src/services/DataManager.ts`
+- `p1-adventure/src/scenes/QuestionScene.ts`
+- `p1-adventure/src/scenes/RunnerScene.ts`
+- `p1-adventure/src/scenes/ResultScene.ts`
+- `p1-adventure/src/scenes/MapScene.ts`
+- `p1-adventure/src/ui/DiagnosticReportModal.ts` (NEW)
+- `p1-adventure/src/ui/CanvasButton.ts`
+- `p1-adventure/src/test/*`
+
+Verification:
+- `npm run test:unit`: 52 test suites, 1,538 tests passing (100% pass, 0 regressions).
+- `npm run build`: Clean TypeScript compilation and Vite production bundling.
+
+Pending:
+- None.
+
 ## 2026-09-02 — Antigravity — TASK-20260902-001
 
 Summary:

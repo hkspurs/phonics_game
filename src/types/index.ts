@@ -41,10 +41,42 @@ export interface EquippedWardrobe {
   wings?: string;
 }
 
+export interface ProgressiveHints {
+  level1Direction: string;
+  level2VisualSupport: string;
+  level3GuidedSolution: string;
+}
+
+export interface QuestionAttempt {
+  questionId: string;
+  stationId: number;
+  subject: SubjectType;
+  knowledgeTag: string;
+  difficulty: number;
+  selectedAnswerId: string | number;
+  isCorrect: boolean;
+  attemptNumber: number;
+  hintLevelUsed: number;
+  timestamp: number;
+  responseTimeMs?: number;
+}
+
+export interface RewardTransaction {
+  transactionId: string;
+  sourceType: 'learning' | 'runner_pickups' | 'first_clear' | 'achievement' | 'shop_purchase' | 'migration' | 'daily_quest';
+  sourceId: string;
+  currencyType: 'coins' | 'gems' | 'stars';
+  amount: number;
+  balanceBefore: number;
+  balanceAfter: number;
+  timestamp: number;
+}
+
 export interface UserProfile {
   coins: number;
   gems: number;
   unlockedStations: number;
+  completedStations?: number[];
   stationStars: Record<number, number>; // stationId -> stars (0-3)
   equippedSkin: string;
   ownedSkins: string[];
@@ -62,6 +94,11 @@ export interface UserProfile {
     completed: boolean;
     spinClaimed: boolean;
   };
+  rewardLedger?: RewardTransaction[];
+  questionAttempts?: QuestionAttempt[];
+  mistakeReviewQueue?: string[];
+  runnerTutorialCompleted?: boolean;
+  runnerSkippedCount?: number;
 }
 
 export interface PetDefinition {
@@ -105,6 +142,10 @@ export interface QuizQuestion {
   type: QuestionType;
   prompt: string;
   speakText: string;
+  knowledgeTag?: string;
+  cognitiveLevel?: 1 | 2 | 3;
+  explanation?: string;
+  hints?: ProgressiveHints;
   // For sentence scramble:
   correctTokens?: string[];
   shuffledTokens?: string[];

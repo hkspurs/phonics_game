@@ -1,4 +1,4 @@
-import { UserProfile, GameSettings, Trophy, SubjectType, PetDefinition, GadgetDefinition, EquippedWardrobe } from '../types';
+import { UserProfile, GameSettings, Trophy, SubjectType, PetDefinition, GadgetDefinition, EquippedWardrobe, QuestionAttempt, RewardTransaction } from '../types';
 import { WARDROBE_ITEMS, WardrobeItem, WardrobeCategory } from '../config/wardrobe';
 
 const STORAGE_KEY = 'p1_adventure_save_v1';
@@ -1350,6 +1350,17 @@ export class DataManager {
         difficulty: 1,
         soundVolume: 1.0,
       },
+      dailyQuest: {
+        date: today,
+        completed: false,
+        spinClaimed: false,
+      },
+      rewardLedger: [],
+      questionAttempts: [],
+      mistakeReviewQueue: [],
+      completedStations: [],
+      runnerTutorialCompleted: false,
+      runnerSkippedCount: 0,
     };
   }
 
@@ -1383,6 +1394,12 @@ export class DataManager {
             ownedWardrobe: Array.isArray(parsed.ownedWardrobe) ? parsed.ownedWardrobe : [],
             inventory: parsed.inventory && typeof parsed.inventory === 'object' ? parsed.inventory : {},
             trophies: parsed.trophies || {},
+            rewardLedger: Array.isArray(parsed.rewardLedger) ? parsed.rewardLedger : [],
+            questionAttempts: Array.isArray(parsed.questionAttempts) ? parsed.questionAttempts : [],
+            mistakeReviewQueue: Array.isArray(parsed.mistakeReviewQueue) ? parsed.mistakeReviewQueue : [],
+            completedStations: Array.isArray(parsed.completedStations) ? parsed.completedStations : [],
+            runnerTutorialCompleted: typeof parsed.runnerTutorialCompleted === 'boolean' ? parsed.runnerTutorialCompleted : false,
+            runnerSkippedCount: typeof parsed.runnerSkippedCount === 'number' ? parsed.runnerSkippedCount : 0,
           };
         }
       }
@@ -1390,6 +1407,217 @@ export class DataManager {
       console.warn('Failed to load save data from localStorage, falling back to default:', e);
     }
     return this.getDefaultProfile();
+  }
+
+  public recordAttempt(attempt: QuestionAttempt): void {
+    if (!this.profile.questionAttempts) {
+      this.profile.questionAttempts = [];
+    }
+    this.profile.questionAttempts.push(attempt);
+
+    if (!this.profile.mistakeReviewQueue) {
+      this.profile.mistakeReviewQueue = [];
+    }
+
+    if (!attempt.isCorrect || attempt.hintLevelUsed >= 3) {
+      if (!this.profile.mistakeReviewQueue.includes(attempt.questionId)) {
+        this.profile.mistakeReviewQueue.push(attempt.questionId);
+      }
+    }
+    this.save();
+  }
+
+  public getQuestionAttempts(): QuestionAttempt[] {
+    return this.profile.questionAttempts || [];
+  }
+
+  public isFirstAttemptCorrect(questionId: string): boolean {
+    const attempts = (this.profile.questionAttempts || []).filter((a) => a.questionId === questionId);
+    if (attempts.length === 0) return false;
+    const first = attempts.find((a) => a.attemptNumber === 1) || attempts[0];
+    return first.isCorrect && (first.hintLevelUsed === 0 || first.hintLevelUsed < 3);
+  }
+
+  public isQuestionCompleted(questionId: string): boolean {
+    const attempts = (this.profile.questionAttempts || []).filter((a) => a.questionId === questionId);
+    return attempts.some((a) => a.isCorrect);
+  }
+
+  public getMistakeReviewQueue(): string[] {
+    return this.profile.mistakeReviewQueue || [];
+  }
+
+  public removeMistakeFromQueue(questionId: string): void {
+    if (!this.profile.mistakeReviewQueue) return;
+    this.profile.mistakeReviewQueue = this.profile.mistakeReviewQueue.filter((id) => id !== questionId);
+    this.save();
+  }
+
+  public recordTransaction(
+    sourceType: 'learning' | 'runner_pickups' | 'first_clear' | 'achievement' | 'shop_purchase' | 'migration' | 'daily_quest',
+    sourceId: string,
+    currencyType: 'coins' | 'gems' | 'stars',
+    amount: number
+  ): RewardTransaction | null {
+    if (!this.profile.rewardLedger) {
+      this.profile.rewardLedger = [];
+    }
+
+    if (amount > 0 && (sourceType === 'first_clear' || sourceType === 'achievement' || sourceType === 'daily_quest')) {
+      const existing = this.profile.rewardLedger.find(
+        (t) => t.sourceType === sourceType && t.sourceId === sourceId && t.currencyType === currencyType
+      );
+      if (existing) {
+        return existing;
+      }
+    }
+
+    let balanceBefore = 0;
+    if (currencyType === 'coins') balanceBefore = this.profile.coins;
+    else if (currencyType === 'gems') balanceBefore = this.profile.gems;
+    else if (currencyType === 'stars') balanceBefore = this.getTotalStars();
+
+    if (amount < 0 && balanceBefore + amount < 0) {
+      return null;
+    }
+
+    const balanceAfter = balanceBefore + amount;
+
+    if (currencyType === 'coins') this.profile.coins = Math.max(0, balanceAfter);
+    else if (currencyType === 'gems') this.profile.gems = Math.max(0, balanceAfter);
+
+    const transaction: RewardTransaction = {
+      transactionId: `tx_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
+      sourceType,
+      sourceId,
+      currencyType,
+      amount,
+      balanceBefore,
+      balanceAfter,
+      timestamp: Date.now(),
+    };
+
+    this.profile.rewardLedger.push(transaction);
+    this.save();
+    return transaction;
+  }
+
+  public getRewardLedger(): RewardTransaction[] {
+    return this.profile.rewardLedger || [];
+  }
+
+  public getCompletedStationCount(): number {
+    return (this.profile.completedStations || []).length;
+  }
+
+  public isStationCompleted(stationId: number): boolean {
+    return (this.profile.completedStations || []).includes(stationId);
+  }
+
+  public markStationCompleted(stationId: number): boolean {
+    if (!this.profile.completedStations) {
+      this.profile.completedStations = [];
+    }
+    if (!this.profile.completedStations.includes(stationId)) {
+      this.profile.completedStations.push(stationId);
+      this.save();
+      return true;
+    }
+    return false;
+  }
+
+  public isRunnerTutorialCompleted(): boolean {
+    return !!this.profile.runnerTutorialCompleted;
+  }
+
+  public setRunnerTutorialCompleted(completed: boolean): void {
+    this.profile.runnerTutorialCompleted = completed;
+    this.save();
+  }
+
+  public incrementRunnerSkippedCount(): void {
+    this.profile.runnerSkippedCount = (this.profile.runnerSkippedCount || 0) + 1;
+    this.save();
+  }
+
+  public getDiagnosticSummary(): {
+    totalQuestionsCompleted: number;
+    totalAttempts: number;
+    firstAttemptAccuracyRate: number;
+    eventualCompletionRate: number;
+    totalHintsUsed: number;
+    totalMistakes: number;
+    subjectBreakdown: {
+      chinese: { completed: number; totalAttempts: number; firstAttemptCorrect: number; firstAttemptAccuracy: number };
+      math: { completed: number; totalAttempts: number; firstAttemptCorrect: number; firstAttemptAccuracy: number };
+      english: { completed: number; totalAttempts: number; firstAttemptCorrect: number; firstAttemptAccuracy: number };
+    };
+    mistakeQueue: string[];
+  } {
+    const attempts = this.profile.questionAttempts || [];
+    const questionIds = Array.from(new Set(attempts.map((a) => a.questionId)));
+
+    let totalCompleted = 0;
+    let firstAttemptCorrectCount = 0;
+    let totalHints = 0;
+    let totalMistakes = 0;
+
+    const subjectStats: Record<SubjectType, { completed: number; totalAttempts: number; firstAttemptCorrect: number }> = {
+      chinese: { completed: 0, totalAttempts: 0, firstAttemptCorrect: 0 },
+      math: { completed: 0, totalAttempts: 0, firstAttemptCorrect: 0 },
+      english: { completed: 0, totalAttempts: 0, firstAttemptCorrect: 0 },
+    };
+
+    for (const qId of questionIds) {
+      const qAttempts = attempts.filter((a) => a.questionId === qId);
+      const isCompleted = qAttempts.some((a) => a.isCorrect);
+      if (isCompleted) totalCompleted++;
+
+      const firstAttempt = qAttempts.find((a) => a.attemptNumber === 1) || qAttempts[0];
+      const isFirstCorrect = firstAttempt && firstAttempt.isCorrect && (firstAttempt.hintLevelUsed === 0 || firstAttempt.hintLevelUsed < 3);
+
+      if (isFirstCorrect) firstAttemptCorrectCount++;
+
+      const subject = firstAttempt?.subject || 'chinese';
+      if (subjectStats[subject]) {
+        if (isCompleted) subjectStats[subject].completed++;
+        if (isFirstCorrect) subjectStats[subject].firstAttemptCorrect++;
+      }
+    }
+
+    for (const a of attempts) {
+      if (subjectStats[a.subject]) {
+        subjectStats[a.subject].totalAttempts++;
+      }
+      if (a.hintLevelUsed > 0) totalHints += a.hintLevelUsed;
+      if (!a.isCorrect) totalMistakes++;
+    }
+
+    const calcAcc = (correct: number, total: number) => (total > 0 ? correct / total : 0);
+
+    return {
+      totalQuestionsCompleted: totalCompleted,
+      totalAttempts: attempts.length,
+      firstAttemptAccuracyRate: calcAcc(firstAttemptCorrectCount, questionIds.length),
+      eventualCompletionRate: calcAcc(totalCompleted, questionIds.length),
+      totalHintsUsed: totalHints,
+      totalMistakes,
+      subjectBreakdown: {
+        chinese: {
+          ...subjectStats.chinese,
+          firstAttemptAccuracy: calcAcc(subjectStats.chinese.firstAttemptCorrect, subjectStats.chinese.completed),
+        },
+        math: {
+          ...subjectStats.math,
+          firstAttemptAccuracy: calcAcc(subjectStats.math.firstAttemptCorrect, subjectStats.math.completed),
+        },
+        english: {
+          ...subjectStats.english,
+          firstAttemptAccuracy: calcAcc(subjectStats.english.firstAttemptCorrect, subjectStats.english.completed),
+        },
+      },
+      mistakeQueue: this.getMistakeReviewQueue(),
+    };
   }
 
   public getProfile(): UserProfile {

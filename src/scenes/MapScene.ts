@@ -6,6 +6,7 @@ import { CanvasButton } from '../ui/CanvasButton';
 import { CanvasModal } from '../ui/CanvasModal';
 import { StarRating } from '../ui/StarRating';
 import { PlayerAvatarBadge } from '../ui/PlayerAvatarBadge';
+import { DiagnosticReportModal } from '../ui/DiagnosticReportModal';
 
 export interface StationData {
   id: number;
@@ -1284,7 +1285,7 @@ export class MapScene extends Phaser.Scene {
       y: 42,
       width: 145,
       height: 48,
-      text: '◀ 返回主頁',
+      text: '◀ 返回',
       color: 'blue',
       fontSize: '20px',
       onClick: () => {
@@ -1299,23 +1300,42 @@ export class MapScene extends Phaser.Scene {
     }
     header.add(this.backButton);
 
+    // 1.1 Report Button (📊 報告)
+    const reportBtn = new CanvasButton(this, {
+      x: 260,
+      y: 42,
+      width: 140,
+      height: 48,
+      text: '📊 報告',
+      color: 'yellow',
+      fontSize: '20px',
+      onClick: () => {
+        SoundManager.play('click');
+        this.openDiagnosticReport();
+      },
+    });
+    if (reportBtn && typeof reportBtn.setScrollFactor === 'function') {
+      reportBtn.setScrollFactor(0);
+    }
+    header.add(reportBtn);
+
     // 2. Status & Currency Bar Pill
-    const barX = width / 2 + 100;
+    const barX = width / 2 + 150;
     const barY = 42;
 
     if (this.add.graphics) {
       const bg = this.add.graphics();
       bg.fillStyle(0x0e1320, 0.85);
-      bg.fillRoundedRect(barX - 330, barY - 24, 660, 48, 24);
+      bg.fillRoundedRect(barX - 300, barY - 24, 600, 48, 24);
       bg.lineStyle(2, 0x4a90e2, 0.85);
-      bg.strokeRoundedRect(barX - 330, barY - 24, 660, 48, 24);
+      bg.strokeRoundedRect(barX - 300, barY - 24, 600, 48, 24);
       header.add(bg);
     }
 
     // 3. Status Labels
     if (this.add.text) {
-      // Progress (第 X/10 站)
-      const progLabel = this.add.text(barX - 240, barY, `🚩 進度: ${profile.unlockedStations}/10 站`, {
+      const completedCount = DataManager.getInstance().getCompletedStationCount();
+      const progLabel = this.add.text(barX - 220, barY, `🚩 通關: ${completedCount}/10 站`, {
         fontSize: '18px',
         fontFamily: "'Kenney Future', 'Noto Sans TC', sans-serif",
         color: '#67e8f9',
@@ -1327,7 +1347,7 @@ export class MapScene extends Phaser.Scene {
       header.add(progLabel);
 
       // Resources use the same coin → gem → star order as Title, Shop, and Runner.
-      const coinLabel = this.add.text(barX - 85, barY, `🪙 金幣: ${profile.coins}`, {
+      const coinLabel = this.add.text(barX - 70, barY, `🪙 金幣: ${profile.coins}`, {
         fontSize: '18px',
         fontFamily: "'Kenney Future', 'Noto Sans TC', sans-serif",
         color: '#fbbf24',
@@ -1338,7 +1358,7 @@ export class MapScene extends Phaser.Scene {
       this.coinText = coinLabel;
       header.add(coinLabel);
 
-      const gemLabel = this.add.text(barX + 60, barY, `💎 寶石: ${profile.gems}`, {
+      const gemLabel = this.add.text(barX + 50, barY, `💎 寶石: ${profile.gems}`, {
         fontSize: '18px',
         fontFamily: "'Kenney Future', 'Noto Sans TC', sans-serif",
         color: '#38bdf8',
@@ -1349,7 +1369,7 @@ export class MapScene extends Phaser.Scene {
       this.gemText = gemLabel;
       header.add(gemLabel);
 
-      const starLabel = this.add.text(barX + 200, barY, `⭐ 星星: ${totalStars}/30`, {
+      const starLabel = this.add.text(barX + 170, barY, `⭐ 星星: ${totalStars}/30`, {
         fontSize: '18px',
         fontFamily: "'Kenney Future', 'Noto Sans TC', sans-serif",
         color: '#fde047',
@@ -1466,6 +1486,29 @@ export class MapScene extends Phaser.Scene {
       return DataManager.getInstance().getProfile().unlockedStations;
     } catch {
       return 1;
+    }
+  }
+
+  public openDiagnosticReport(): void {
+    const modal = new DiagnosticReportModal(this, {
+      onReviewMistakes: () => {
+        this.startMistakeReview();
+      },
+    });
+    modal.show();
+  }
+
+  public startMistakeReview(): void {
+    const mistakeIds = DataManager.getInstance().getMistakeReviewQueue();
+    if (mistakeIds.length === 0) return;
+
+    if (this.scene) {
+      this.scene.start('QuestionScene', {
+        stationId: 1,
+        stationName: '錯題溫習練習',
+        questionIndex: 0,
+        questions: [],
+      });
     }
   }
 
