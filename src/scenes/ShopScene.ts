@@ -555,16 +555,27 @@ export class ShopScene extends Phaser.Scene {
     const isEquipped = profile.equippedSkin === skin.id;
     const isSelected = idx === this.selectedSkinIndex;
 
-    // Mini Avatar Thumbnail
+    // 1. Large Portrait Box Frame (64x64)
+    if (this.add.graphics) {
+      const pBox = this.add.graphics();
+      pBox.fillStyle(skin.tint || 0x38bdf8, isSelected ? 0.28 : 0.15);
+      pBox.fillRoundedRect(cx - 232, cy - 32, 64, 64, 14);
+      pBox.lineStyle(1.5, isSelected ? 0xf59e0b : 0x475569, 0.85);
+      pBox.strokeRoundedRect(cx - 232, cy - 32, 64, 64, 14);
+      this.tabGameObjects.push(pBox);
+    }
+
+    // Mini Avatar Thumbnail inside portrait frame
     if (this.textures?.exists && this.textures.exists(skin.standSprite)) {
-      const avatar = this.add.image(cx - 210, cy, skin.standSprite);
-      if (typeof avatar.setScale === 'function') avatar.setScale(0.58);
+      const avatar = this.add.image(cx - 200, cy, skin.standSprite);
+      if (typeof avatar.setScale === 'function') avatar.setScale(0.72);
       if (skin.tint && typeof avatar.setTint === 'function') avatar.setTint(skin.tint);
       this.tabGameObjects.push(avatar);
     }
 
     if (this.add.text) {
-      const nameTxt = this.add.text(cx - 155, cy - 16, `${skin.name} (${skin.englishName})`, {
+      // 2. Clear Two-Line Hierarchy: Title + Subtitle
+      const nameTxt = this.add.text(cx - 150, cy - 18, `${skin.name}  •  ${skin.englishName}`, {
         fontSize: '24px',
         fontFamily: "'Kenney Future', 'Noto Sans TC', sans-serif",
         color: '#ffffff',
@@ -573,15 +584,22 @@ export class ShopScene extends Phaser.Scene {
       if (typeof nameTxt.setOrigin === 'function') nameTxt.setOrigin(0, 0.5);
       this.tabGameObjects.push(nameTxt);
 
-      const perkTxt = this.add.text(cx - 155, cy + 16, `✨ ${skin.perkDescription}`, {
-        fontSize: '17px',
-        fontFamily: "'Noto Sans TC', 'Microsoft JhengHei', sans-serif",
-        color: isSelected ? '#fde047' : '#ffd166',
-        fontStyle: isSelected ? 'bold' : 'normal',
-      });
+      // 3. Structured Stat Chips Row (Clean components, no string clutter)
+      const perkTxt = this.add.text(
+        cx - 150,
+        cy + 16,
+        `🏃 +${Math.round(skin.speedBonus * 100)}%   🦘 +${Math.round(skin.jumpBonus * 100)}%   🧲 ${skin.magnetBonus || 120}px`,
+        {
+          fontSize: '17px',
+          fontFamily: "'Noto Sans TC', 'Microsoft JhengHei', sans-serif",
+          color: isSelected ? '#fde047' : '#cbd5e1',
+          fontStyle: 'bold',
+        }
+      );
       if (typeof perkTxt.setOrigin === 'function') perkTxt.setOrigin(0, 0.5);
       this.tabGameObjects.push(perkTxt);
 
+      // 4. Fixed Right-Aligned Price Tag
       let statusLabel = `💎 ${skin.costGems}`;
       let statusColor = isSelected ? '#38bdf8' : '#00e5ff';
       if (isEquipped) {
@@ -592,7 +610,7 @@ export class ShopScene extends Phaser.Scene {
         statusColor = isSelected ? '#93c5fd' : '#a0c4ff';
       }
 
-      const statusTxt = this.add.text(cx + 195, cy + 14, statusLabel, {
+      const statusTxt = this.add.text(cx + 205, cy + 14, statusLabel, {
         fontSize: '22px',
         fontFamily: "'Kenney Future', 'Noto Sans TC', sans-serif",
         color: statusColor,
@@ -601,7 +619,8 @@ export class ShopScene extends Phaser.Scene {
       if (typeof statusTxt.setOrigin === 'function') statusTxt.setOrigin(1, 0.5);
       this.tabGameObjects.push(statusTxt);
 
-      const marker = this.addSelectedPreviewMarker(cx + 195, cy - 20, isSelected && !isEquipped);
+      // 5. Independent Top-Right Status Badge (Zero collision with stats!)
+      const marker = this.addSelectedPreviewMarker(cx + 205, cy - 20, isSelected && !isEquipped);
       this.skinCardTextObjects.push({ name: nameTxt, perk: perkTxt, status: statusTxt, marker });
     }
   }
@@ -1134,15 +1153,15 @@ export class ShopScene extends Phaser.Scene {
       const isOwned = profile.ownedPets?.includes(pet.id);
       const isEquipped = profile.equippedPet === pet.id;
 
-      // 1. Dedicated Portrait Frame (60x60)
-      const portraitX = listX - 195;
+      // 1. Dedicated Portrait Frame (64x64)
+      const portraitX = listX - 200;
       const portraitY = y + 25;
       if (this.add.graphics) {
         const frame = this.add.graphics();
         frame.fillStyle(pet.tint, isSelected ? 0.28 : 0.16);
-        frame.fillRoundedRect(portraitX - 28, portraitY - 28, 56, 56, 12);
+        frame.fillRoundedRect(portraitX - 32, portraitY - 32, 64, 64, 14);
         frame.lineStyle(1.5, isSelected ? 0xf59e0b : pet.tint, 0.85);
-        frame.strokeRoundedRect(portraitX - 28, portraitY - 28, 56, 56, 12);
+        frame.strokeRoundedRect(portraitX - 32, portraitY - 32, 64, 64, 14);
         this.tabGameObjects.push(frame);
       }
 
@@ -1150,7 +1169,7 @@ export class ShopScene extends Phaser.Scene {
       const portraitKey = `icon_pet_${pet.id}_portrait`;
       if (this.textures?.exists && this.textures.exists(portraitKey)) {
         const portrait = this.add.image(portraitX, portraitY, portraitKey);
-        portrait.setDisplaySize(50, 50);
+        portrait.setDisplaySize(54, 54);
         portrait.setOrigin(0.5);
         this.tabGameObjects.push(portrait);
       } else if (this.add.text) {
@@ -1160,27 +1179,37 @@ export class ShopScene extends Phaser.Scene {
       }
 
       if (this.add.text) {
-        // 2. Clean Two-Line Typography (Chinese + English)
+        // 2. Clean Typography (Chinese Title + English Subtitle)
         const cnName = pet.name.includes('(') ? pet.name.split('(')[0].trim() : pet.name;
-        const nameTxt = this.add.text(listX - 150, y + 4, `${cnName}  •  ${pet.nameEn}`, {
+        const nameTxt = this.add.text(listX - 150, y + 2, cnName, {
           fontSize: '24px',
           fontFamily: "'Kenney Future', 'Noto Sans TC', sans-serif",
           color: '#ffffff',
           fontStyle: 'bold',
         });
-        if (typeof nameTxt.setOrigin === 'function') nameTxt.setOrigin(0, 0.5);
+        if (typeof nameTxt.setOrigin === 'function') nameTxt.setOrigin(0, 0);
         this.tabGameObjects.push(nameTxt);
 
+        const enTxt = this.add.text(listX - 150, y + 27, pet.nameEn, {
+          fontSize: '14px',
+          fontFamily: "'Kenney Future', sans-serif",
+          color: '#94a3b8',
+        });
+        if (typeof enTxt.setOrigin === 'function') enTxt.setOrigin(0, 0);
+        this.tabGameObjects.push(enTxt);
+
         // 3. Scan-Friendly Perk Tag
-        const perkTxt = this.add.text(listX - 150, y + 36, `🐾 ${pet.perkDescription}`, {
+        const perkTxt = this.add.text(listX - 150, y + 44, `🐾 ${pet.perkDescription}`, {
           fontSize: '17px',
           fontFamily: "'Noto Sans TC', 'Microsoft JhengHei', sans-serif",
-          color: isSelected ? '#fde047' : '#ffd166',
+          color: isSelected ? '#fde047' : '#cbd5e1',
+          fontStyle: 'bold',
+          wordWrap: { width: 190 },
         });
-        if (typeof perkTxt.setOrigin === 'function') perkTxt.setOrigin(0, 0.5);
+        if (typeof perkTxt.setOrigin === 'function') perkTxt.setOrigin(0, 0);
         this.tabGameObjects.push(perkTxt);
 
-        // 4. Status / Cost Badge
+        // 4. Fixed Right-Aligned Price Tag
         let statusLabel = `🪙 ${pet.costCoins}`;
         let statusColor = isSelected ? '#fde047' : '#ffd700';
         if (isEquipped) {
@@ -1191,7 +1220,7 @@ export class ShopScene extends Phaser.Scene {
           statusColor = isSelected ? '#93c5fd' : '#a0c4ff';
         }
 
-        const statusTxt = this.add.text(listX + 195, y + 14, statusLabel, {
+        const statusTxt = this.add.text(listX + 215, y + 48, statusLabel, {
           fontSize: '22px',
           fontFamily: "'Kenney Future', 'Noto Sans TC', sans-serif",
           color: statusColor,
@@ -1200,7 +1229,8 @@ export class ShopScene extends Phaser.Scene {
         if (typeof statusTxt.setOrigin === 'function') statusTxt.setOrigin(1, 0.5);
         this.tabGameObjects.push(statusTxt);
 
-        const marker = this.addSelectedPreviewMarker(listX + 195, y - 20, isSelected && !isEquipped);
+        // 5. Independent Top-Right Status Badge
+        const marker = this.addSelectedPreviewMarker(listX + 215, y + 4, isSelected && !isEquipped);
         this.skinCardTextObjects.push({ name: nameTxt, perk: perkTxt, status: statusTxt, marker });
       }
     });
@@ -1322,51 +1352,58 @@ export class ShopScene extends Phaser.Scene {
       g.fillStyle(0x151b3b, 0.95);
       g.fillRoundedRect(stageX, stageY, layout.stage.width, layout.stage.height, 18);
 
-      // Soft magical ambient gradient & spotlight
+      // Soft magical ambient gradient
       g.fillStyle(0x4338ca, 0.20);
       g.fillEllipse(stageX + layout.stage.width / 2, stageY + layout.stage.height * 0.42, layout.stage.width * 0.9, layout.stage.height * 0.85);
 
-      // Subtle Soft Conical Spotlight Beam (Feathered, Non-intrusive)
-      g.fillStyle(0xfef08a, 0.045);
-      g.beginPath();
-      g.moveTo(stageX + layout.stage.width / 2 - 40, stageY);
-      g.lineTo(stageX + layout.stage.width / 2 + 40, stageY);
-      g.lineTo(stageX + layout.stage.width / 2 + layout.stage.width * 0.38, stageY + layout.stage.height - 18);
-      g.lineTo(stageX + layout.stage.width / 2 - layout.stage.width * 0.38, stageY + layout.stage.height - 18);
-      g.closePath();
-      g.fillPath();
+      // Soft Feathered Spotlight Texture (Feathered, Non-intrusive)
+      if (this.textures?.exists && this.textures.exists('tex_feathered_spotlight')) {
+        const spot = this.add.image(stageX + layout.stage.width / 2, stageY + layout.stage.height * 0.38, 'tex_feathered_spotlight');
+        spot.setDisplaySize(layout.stage.width * 0.88, layout.stage.height * 0.82);
+        spot.setAlpha(0.65);
+        showcase.add(spot);
+      }
 
       // Golden inner border
       g.lineStyle(1.5, 0x818cf8, 0.35);
       g.strokeRoundedRect(stageX + 7, stageY + 7, Math.max(1, layout.stage.width - 14), Math.max(1, layout.stage.height - 14), 14);
 
-      // 3D Stepped Pedestal Base & Glowing Disc (Aligned to Hero Stage Baseline)
+      // 3D Stepped Pedestal Base & Glowing Disc (Proportional Hero Platform)
       const pedestalCenterY = stageY + layout.stage.height * 0.72;
+      const pedestalWidth = Math.min(300, layout.stage.width * 0.48);
+
+      // Soft Floor Light Pool Texture
+      if (this.textures?.exists && this.textures.exists('tex_floor_glow')) {
+        const floorGlow = this.add.image(stageX + layout.stage.width / 2, pedestalCenterY, 'tex_floor_glow');
+        floorGlow.setDisplaySize(pedestalWidth * 1.35, 54);
+        floorGlow.setAlpha(0.65);
+        showcase.add(floorGlow);
+      }
 
       // Cyan / Gold Ambient Under-Glow
       g.fillStyle(0x38bdf8, 0.16);
-      g.fillEllipse(stageX + layout.stage.width / 2, pedestalCenterY + 4, layout.stage.width * 0.72, compact ? 28 : 38);
+      g.fillEllipse(stageX + layout.stage.width / 2, pedestalCenterY + 4, pedestalWidth * 1.15, compact ? 24 : 32);
 
       // 3D Stepped Pedestal Base Shadow
       g.fillStyle(0x020617, 0.85);
-      g.fillEllipse(stageX + layout.stage.width / 2, pedestalCenterY + 10, layout.stage.width * 0.66, compact ? 24 : 32);
+      g.fillEllipse(stageX + layout.stage.width / 2, pedestalCenterY + 8, pedestalWidth * 1.05, compact ? 20 : 28);
 
       // Stepped Brass Rim Step
       g.fillStyle(0xb45309, 0.95);
-      g.fillEllipse(stageX + layout.stage.width / 2, pedestalCenterY + 6, layout.stage.width * 0.62, compact ? 22 : 28);
+      g.fillEllipse(stageX + layout.stage.width / 2, pedestalCenterY + 5, pedestalWidth * 0.96, compact ? 18 : 24);
       g.fillStyle(0xf59e0b, 0.95);
-      g.fillEllipse(stageX + layout.stage.width / 2, pedestalCenterY + 3, layout.stage.width * 0.61, compact ? 21 : 26);
+      g.fillEllipse(stageX + layout.stage.width / 2, pedestalCenterY + 2, pedestalWidth * 0.94, compact ? 17 : 22);
 
       // Top Royal Velvet Platform Disc
       g.fillStyle(0x1e1b4b, 0.98);
-      g.fillEllipse(stageX + layout.stage.width / 2, pedestalCenterY, layout.stage.width * 0.58, compact ? 19 : 24);
+      g.fillEllipse(stageX + layout.stage.width / 2, pedestalCenterY, pedestalWidth * 0.88, compact ? 15 : 20);
 
       // Pedestal golden glowing ring
-      g.lineStyle(2.5, 0xfde047, 0.85);
+      g.lineStyle(2.2, 0xfde047, 0.85);
       if (typeof (g as any).strokeEllipse === 'function') {
-        (g as any).strokeEllipse(stageX + layout.stage.width / 2, pedestalCenterY, layout.stage.width * 0.56, compact ? 18 : 23);
+        (g as any).strokeEllipse(stageX + layout.stage.width / 2, pedestalCenterY, pedestalWidth * 0.86, compact ? 14 : 19);
       } else {
-        g.strokeRoundedRect(stageX + layout.stage.width / 2 - (layout.stage.width * 0.28), pedestalCenterY - (compact ? 9 : 12), layout.stage.width * 0.56, compact ? 18 : 24, 12);
+        g.strokeRoundedRect(stageX + layout.stage.width / 2 - (pedestalWidth * 0.43), pedestalCenterY - (compact ? 7 : 10), pedestalWidth * 0.86, compact ? 14 : 20, 10);
       }
 
       // Soft twinkle star particles
@@ -1382,7 +1419,7 @@ export class ShopScene extends Phaser.Scene {
       const dockX = layout.details.x - panelX;
       const dockY = layout.details.y - panelY;
       const dockW = layout.details.width;
-      const dockH = layout.details.height + layout.action.height + (compact ? 12 : 20);
+      const dockH = layout.details.height + layout.action.height + (compact ? 14 : 22);
       g.fillStyle(0x0a0f1d, 0.94);
       g.fillRoundedRect(dockX - 8, dockY - 6, dockW + 16, dockH, 16);
       g.lineStyle(1.8, 0x334155, 0.85);
@@ -1404,14 +1441,15 @@ export class ShopScene extends Phaser.Scene {
     const characterX = layout.character.x + layout.character.width / 2 - panelX;
     const stageY = layout.stage.y - panelY;
     const pedestalCenterY = stageY + layout.stage.height * 0.72;
-    const characterY = pedestalCenterY - (layout.character.height * 0.38);
+    // Ground character feet precisely on top of the velvet platform disc (pedestalCenterY - 4)
+    const characterY = pedestalCenterY - 4 - (55 * layout.character.scale);
     characterLayer.setPosition(characterX, characterY);
     this.previewController = controller;
     this.previewSprite = controller.sprite;
     this.wardrobeGraphics = controller.wardrobeGraphics;
 
-    // Dedicated Companion Pet Hero Stage Layer
-    const petLayer = this.add.container ? this.add.container(characterX + 115, characterY - 20) : new Phaser.GameObjects.Container(this, characterX + 115, characterY - 20);
+    // Dedicated Companion Pet Hero Stage Layer (Hovering in upper-right composition triangle)
+    const petLayer = this.add.container ? this.add.container(characterX + 130, characterY - 35) : new Phaser.GameObjects.Container(this, characterX + 130, characterY - 35);
     if (typeof petLayer.setDepth === 'function') petLayer.setDepth(43);
     showcase.add(petLayer);
     this.petPreviewLayer = petLayer;
@@ -1460,10 +1498,10 @@ export class ShopScene extends Phaser.Scene {
       this.walkAnimTimer = null;
     }
 
-    const poseY = layout.stage.y + Math.min(24, layout.stage.height * 0.1);
-    const poseWidth = Math.min(82, Math.max(62, layout.preview.width * 0.15));
+    const poseY = layout.stage.y + Math.min(18, layout.stage.height * 0.08);
+    const poseWidth = Math.min(76, Math.max(58, layout.preview.width * 0.13));
     const poseStartX = layout.preview.x + 18 + poseWidth / 2;
-    const poseGap = 6;
+    const poseGap = 5;
     const poseStand = new CanvasButton(this, {
       x: poseStartX,
       y: poseY,
@@ -1471,7 +1509,7 @@ export class ShopScene extends Phaser.Scene {
       height: 44,
       text: '🧍 站立',
       color: this.currentPose === 'stand' ? 'yellow' : 'grey',
-      fontSize: compact ? '16px' : '16px',
+      fontSize: '16px',
       scaleOnHover: 1.02,
       scaleOnDown: 0.97,
       onClick: () => this.switchPose('stand'),
@@ -1484,7 +1522,7 @@ export class ShopScene extends Phaser.Scene {
       height: 44,
       text: '🏃 奔跑',
       color: this.currentPose === 'walk' ? 'yellow' : 'grey',
-      fontSize: compact ? '16px' : '16px',
+      fontSize: '16px',
       scaleOnHover: 1.02,
       scaleOnDown: 0.97,
       onClick: () => this.switchPose('walk'),
@@ -1497,7 +1535,7 @@ export class ShopScene extends Phaser.Scene {
       height: 44,
       text: '🎉 歡呼',
       color: this.currentPose === 'cheer' ? 'yellow' : 'grey',
-      fontSize: compact ? '16px' : '16px',
+      fontSize: '16px',
       scaleOnHover: 1.02,
       scaleOnDown: 0.97,
       onClick: () => this.switchPose('cheer'),
@@ -1510,7 +1548,7 @@ export class ShopScene extends Phaser.Scene {
       height: 44,
       text: '📸 今日穿搭',
       color: 'blue',
-      fontSize: compact ? '16px' : '17px',
+      fontSize: '16px',
       scaleOnHover: 1.02,
       scaleOnDown: 0.97,
       onClick: () => this.showOOTDPhotoModal(),
@@ -1523,7 +1561,7 @@ export class ShopScene extends Phaser.Scene {
     const detailFont = compact ? '14px' : '18px';
     const detailTextScale = compact ? 1 : 0.85;
     if (this.add.text) {
-      this.previewNameText = this.add.text(detailX, detailY + (compact ? 12 : 14), compact ? initSkin.name : `${initSkin.name} (${initSkin.englishName})`, {
+      this.previewNameText = this.add.text(detailX, detailY + (compact ? 12 : 16), compact ? initSkin.name : `${initSkin.name} (${initSkin.englishName})`, {
         fontSize: compact ? '20px' : '26px',
         fontFamily: "'Kenney Future', 'Noto Sans TC', sans-serif",
         color: '#ffd45b',
@@ -1534,7 +1572,7 @@ export class ShopScene extends Phaser.Scene {
       if (typeof this.previewNameText.setOrigin === 'function') this.previewNameText.setOrigin(0.5);
       showcase.add(this.previewNameText);
 
-      this.previewDescText = this.add.text(detailX, detailY + (compact ? 32 : 36), initSkin.description, {
+      this.previewDescText = this.add.text(detailX, detailY + (compact ? 32 : 38), initSkin.description, {
         fontSize: detailFont,
         fontFamily: "'Noto Sans TC', 'Microsoft JhengHei', sans-serif",
         color: '#cbd5e1',
@@ -1544,7 +1582,7 @@ export class ShopScene extends Phaser.Scene {
       if (typeof this.previewDescText.setOrigin === 'function') this.previewDescText.setOrigin(0.5);
       showcase.add(this.previewDescText);
 
-      this.previewSpeedText = this.add.text(detailX - layout.details.width * 0.40, detailY + (compact ? 52 : 58), `🏃 跑速加成: +${Math.round(initSkin.speedBonus * 100)}%`, {
+      this.previewSpeedText = this.add.text(detailX - layout.details.width * 0.40, detailY + (compact ? 52 : 62), `🏃 跑速加成: +${Math.round(initSkin.speedBonus * 100)}%`, {
         fontSize: detailFont,
         fontFamily: "'Noto Sans TC', 'Microsoft JhengHei', sans-serif",
         color: '#ffffff',
@@ -1553,7 +1591,7 @@ export class ShopScene extends Phaser.Scene {
       if (typeof this.previewSpeedText.setOrigin === 'function') this.previewSpeedText.setOrigin(0, 0.5);
       showcase.add(this.previewSpeedText);
 
-      this.previewJumpText = this.add.text(detailX + layout.details.width * 0.08, detailY + (compact ? 52 : 58), `🦘 跳躍加成: +${Math.round(initSkin.jumpBonus * 100)}%`, {
+      this.previewJumpText = this.add.text(detailX + layout.details.width * 0.08, detailY + (compact ? 52 : 62), `🦘 跳躍加成: +${Math.round(initSkin.jumpBonus * 100)}%`, {
         fontSize: detailFont,
         fontFamily: "'Noto Sans TC', 'Microsoft JhengHei', sans-serif",
         color: '#ffffff',
@@ -1562,7 +1600,7 @@ export class ShopScene extends Phaser.Scene {
       if (typeof this.previewJumpText.setOrigin === 'function') this.previewJumpText.setOrigin(0, 0.5);
       showcase.add(this.previewJumpText);
 
-      this.previewSpecialText = this.add.text(detailX, detailY + (compact ? 72 : 80), initSkin.waterGlide ? '🌊 特殊能力：水面輕功滑行 (不沉水)' : `✨ 專屬特技：${initSkin.perkDescription}`, {
+      this.previewSpecialText = this.add.text(detailX, detailY + (compact ? 72 : 84), initSkin.waterGlide ? '🌊 特殊能力：水面輕功滑行 (不沉水)' : `✨ 專屬特技：${initSkin.perkDescription}`, {
         fontSize: detailFont,
         fontFamily: "'Noto Sans TC', 'Microsoft JhengHei', sans-serif",
         color: '#ffd166',
@@ -1818,7 +1856,7 @@ export class ShopScene extends Phaser.Scene {
     this.updateWardrobeOverlay();
 
     if (this.previewNameText && typeof this.previewNameText.setText === 'function') {
-      this.previewNameText.setText(`${skin.name} (${skin.englishName})`);
+      this.previewNameText.setText(this.previewIsCompact ? skin.name : `${skin.name}  •  ${skin.englishName}`);
     }
 
     if (this.previewDescText && typeof this.previewDescText.setText === 'function') {

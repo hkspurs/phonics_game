@@ -8,6 +8,24 @@ None.
 
 None.
 
+## COMPLETED
+
+### TASK-20260902-001
+
+Agent: Antigravity  
+Status: DONE  
+Started: 2026-09-02 09:43  
+Completed: 2026-09-02 09:54  
+
+Description:
+Master 22-point UI & Scene Architecture Overhaul of Dream Wardrobe / Character Showcase / Pet Sanctuary:
+1. P0 Bug Fix: Strictly separated Character Stage and Detail Information Dock with dedicated geometry. Grounded character feet precisely on top surface of 3D pedestal disc.
+2. Eliminated hard polygon spotlight in favor of feathered soft radial falloff light cone (`tex_feathered_spotlight`) and floor glow (`tex_floor_glow`).
+3. Reconstructed Left Collectible Cards into structured component layouts (64x64 large portrait frames, clean 2-line title, separate stat chips, independent top-right equipped badge, fixed right price column).
+4. Redesigned Detail & Action Dock with 5-layer spacious layout and zero overlaps with CTA button.
+5. Replaced bulky glossy web buttons with sleek game-native segmented controller for Stand/Run/Cheer.
+6. Maintained 100% unit test pass rate (1,321/1,321 vitest tests passed).
+
 ## RECENTLY COMPLETED
 
 ### TASK-20260901-003

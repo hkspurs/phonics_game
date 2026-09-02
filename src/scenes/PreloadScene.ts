@@ -1122,6 +1122,54 @@ export class PreloadScene extends Phaser.Scene {
       ctx.arc(37, 30.5, 1.6, 0, Math.PI * 2);
       ctx.fill();
     });
+
+    // 22. Soft Feathered Spotlight Cone (256x384)
+    createSafeCanvasTexture('tex_feathered_spotlight', 256, 384, (ctx) => {
+      const grad = ctx.createLinearGradient(128, 0, 128, 384);
+      grad.addColorStop(0, 'rgba(254, 240, 138, 0.18)');
+      grad.addColorStop(0.3, 'rgba(253, 224, 71, 0.12)');
+      grad.addColorStop(0.7, 'rgba(56, 189, 248, 0.05)');
+      grad.addColorStop(1, 'rgba(56, 189, 248, 0.0)');
+
+      ctx.save();
+      ctx.beginPath();
+      ctx.moveTo(104, 0);
+      ctx.lineTo(152, 0);
+      ctx.lineTo(248, 384);
+      ctx.lineTo(8, 384);
+      ctx.closePath();
+      ctx.fillStyle = grad;
+      ctx.fill();
+      ctx.restore();
+
+      // Soft center core beam
+      const coreGrad = ctx.createLinearGradient(128, 0, 128, 384);
+      coreGrad.addColorStop(0, 'rgba(255, 255, 255, 0.15)');
+      coreGrad.addColorStop(0.5, 'rgba(254, 240, 138, 0.06)');
+      coreGrad.addColorStop(1, 'rgba(254, 240, 138, 0.0)');
+      ctx.beginPath();
+      ctx.moveTo(116, 0);
+      ctx.lineTo(140, 0);
+      ctx.lineTo(190, 384);
+      ctx.lineTo(66, 384);
+      ctx.closePath();
+      ctx.fillStyle = coreGrad;
+      ctx.fill();
+    });
+
+    // 23. Soft Elliptical Floor Light Pool (256x128)
+    createSafeCanvasTexture('tex_floor_glow', 256, 128, (ctx) => {
+      const radGrad = ctx.createRadialGradient(128, 64, 10, 128, 64, 120);
+      radGrad.addColorStop(0, 'rgba(253, 224, 71, 0.28)');
+      radGrad.addColorStop(0.4, 'rgba(56, 189, 248, 0.12)');
+      radGrad.addColorStop(0.8, 'rgba(56, 189, 248, 0.03)');
+      radGrad.addColorStop(1, 'rgba(0, 0, 0, 0.0)');
+
+      ctx.fillStyle = radGrad;
+      ctx.beginPath();
+      ctx.ellipse(128, 64, 120, 56, 0, 0, Math.PI * 2);
+      ctx.fill();
+    });
   }
 
   create(): void {

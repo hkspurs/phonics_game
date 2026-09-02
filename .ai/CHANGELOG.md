@@ -1,6 +1,28 @@
 # AI Coordination Changelog
 
-## 2026-09-02 — Antigravity — TASK-20260901-003
+## 2026-09-02 — Antigravity — TASK-20260902-001
+
+Summary:
+Resolved Master 22-point UI & Scene Architecture overhaul of Dream Wardrobe & Pet Sanctuary:
+1. P0 Bug Fix: Strictly partitioned Character Stage and Detail Information Dock with dedicated non-overlapping geometry. Grounded character feet firmly on the royal 3D pedestal disc surface (`characterY = pedestalCenterY - 4 - 55 * scale`).
+2. Replaced raw hard-edged polygon spotlight with feathered soft radial falloff light cone (`tex_feathered_spotlight`) and floor glow (`tex_floor_glow`).
+3. Overhauled Collectible Cards into structured component layouts (64x64 large portrait frames, clean 2-line title, separate stat chips, independent top-right equipped badge, fixed right price column).
+4. Redesigned Detail & Action Dock with 5-layer spacious layout and zero overlaps with CTA button.
+5. Upgraded animation mode selector (Stand/Run/Cheer) into sleek, game-native segmented controller.
+
+Changed:
+- `p1-adventure/src/scenes/PreloadScene.ts`: Added canvas procedural textures for `tex_feathered_spotlight` and `tex_floor_glow`.
+- `p1-adventure/src/ui/wardrobeLayout.ts`: Recomputed stage, details (116px), action (64px), and character scale (1.55x).
+- `p1-adventure/src/scenes/ShopScene.ts`: Rebuilt `createLivePreviewShowcase`, `createSkinSelectionList`, `createPetSelectionList`, `updateSkinPreviewDisplay`, and `updatePetPreviewDisplay`.
+- `docs/*`: Synced production build bundle.
+
+Verification:
+- `npm run test:unit`: 43 test suites, 1,321 tests passing (100% pass, 0 regressions).
+- `npm run build`: Clean compilation with TypeScript and Vite.
+- Playwright live UI screenshots: `commercial_audit_01_skins.png`, `commercial_audit_02_pets_mecha_cat.png`, `commercial_audit_03_pets_pixie_dragon.png`.
+
+Pending:
+- None.
 
 Summary:
 Completed Commercial Indie Game / Steam / App Store level visual & architectural overhaul of Dream Wardrobe & Pet Sanctuary (`Dream Wardrobe / 萌寵伴侶`). Eliminated OS system emoji rendering across perks and pet portraits using procedural vector canvas textures. Scaled hero character preview up 1.55x onto an illuminated 3D stepped royal pedestal with companion pet hovering beside the hero. Overhauled collectible loadout cards with high-contrast deep royal indigo background and subtle gold surface elevation. Added dedicated 5-part separation dark glass detail dock.
