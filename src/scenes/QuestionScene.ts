@@ -64,6 +64,7 @@ export class QuestionScene extends Phaser.Scene {
   public speakerButton: CanvasButton | null = null;
   public hintButton: CanvasButton | null = null;
   public resetButton: CanvasButton | null = null;
+  public continueButton: CanvasButton | null = null;
 
   public headerTitleText: Phaser.GameObjects.Text | null = null;
   public progressCounterText: Phaser.GameObjects.Text | null = null;
@@ -140,6 +141,7 @@ export class QuestionScene extends Phaser.Scene {
     this.cardChips = [];
     this.choiceCards = [];
     this.choiceOptionModels = [];
+    this.continueButton = null;
   }
 
   public create(): void {
@@ -211,7 +213,7 @@ export class QuestionScene extends Phaser.Scene {
 
     if (this.add.graphics) {
       const g = this.add.graphics();
-      g.fillGradientStyle(0x131a2a, 0x131a2a, 0x0c101b, 0x0c101b, 1);
+      g.fillGradientStyle(0x315846, 0x315846, 0x172f27, 0x172f27, 1);
       g.fillRect(0, 0, width, height);
 
       // Subtle atmospheric circular glows
@@ -224,7 +226,7 @@ export class QuestionScene extends Phaser.Scene {
       g.lineStyle(2, 0x2b3952, 0.8);
       g.strokeRect(0, 0, width, height);
     } else if (this.add.rectangle) {
-      this.add.rectangle(width / 2, height / 2, width, height, 0x131a2a);
+      this.add.rectangle(width / 2, height / 2, width, height, 0x24483a);
     }
 
     // Background floating stars
@@ -279,7 +281,7 @@ export class QuestionScene extends Phaser.Scene {
       y: 42,
       width: 135,
       height: 48,
-      text: '◀ 返回地圖',
+      text: '返回地圖',
       icon: 'vec_icon_back_24',
       color: 'blue',
       fontSize: '20px',
@@ -348,7 +350,7 @@ export class QuestionScene extends Phaser.Scene {
       const title = this.add.text(width / 2, 28, titleString, {
         fontSize: '24px',
         fontFamily: "'Kenney Future', 'Noto Sans TC', sans-serif",
-        color: '#ffd700',
+        color: '#fff3c4',
         fontStyle: 'bold',
         stroke: '#0f172a',
         strokeThickness: 3,
@@ -391,7 +393,7 @@ export class QuestionScene extends Phaser.Scene {
         {
           fontSize: '18px',
           fontFamily: "'Kenney Future', 'Noto Sans TC', sans-serif",
-          color: '#94a3b8',
+          color: '#d7e7dc',
           fontStyle: 'bold',
           resolution: typeof window !== 'undefined' ? Math.max(2, window.devicePixelRatio || 2) : 2,
         }
@@ -449,12 +451,12 @@ export class QuestionScene extends Phaser.Scene {
       bg.fillStyle(0x0a0e17, 0.45);
       bg.fillRoundedRect(-bannerW / 2 + 4, -bannerH / 2 + 6, bannerW, bannerH, 20);
 
-      // Deep Slate Chalkboard Body
-      bg.fillStyle(0x151e2e, 0.96);
+      // Calm paper card keeps the question readable over the storybook scene.
+      bg.fillStyle(0xfffbf2, 0.98);
       bg.fillRoundedRect(-bannerW / 2, -bannerH / 2, bannerW, bannerH, 20);
 
       // Inner Chalkboard Rim
-      bg.fillStyle(0x1e293b, 0.5);
+      bg.fillStyle(0xf4ecd9, 0.72);
       bg.fillRoundedRect(-bannerW / 2 + 6, -bannerH / 2 + 6, bannerW - 12, bannerH - 12, 16);
 
       const subjectColor = this.getSubjectColor();
@@ -462,7 +464,7 @@ export class QuestionScene extends Phaser.Scene {
       bg.strokeRoundedRect(-bannerW / 2, -bannerH / 2, bannerW, bannerH, 20);
 
       // Chalkboard corner accents
-      bg.lineStyle(1.5, 0x64748b, 0.4);
+      bg.lineStyle(1.5, 0x8da88a, 0.55);
       bg.strokeRoundedRect(-bannerW / 2 + 8, -bannerH / 2 + 8, bannerW - 16, bannerH - 16, 14);
 
       // Subject Badge Pill
@@ -492,7 +494,7 @@ export class QuestionScene extends Phaser.Scene {
       const promptLbl = this.add.text(-bannerW / 2 + 150, 0, promptStr, {
         fontSize: promptStr.length > 32 ? '24px' : '28px',
         fontFamily: "-apple-system, BlinkMacSystemFont, 'PingFang HK', 'Noto Sans TC', sans-serif",
-        color: '#ffffff',
+        color: '#243e35',
         fontStyle: 'bold',
         align: 'left',
         wordWrap: { width: bannerW - 350 },
@@ -509,7 +511,7 @@ export class QuestionScene extends Phaser.Scene {
       y: 0,
       width: 145,
       height: 54,
-      text: '🔊 朗讀',
+      text: '聽一次',
       icon: 'vec_icon_speaker_24',
       color: 'yellow',
       fontSize: '22px',
@@ -1311,7 +1313,9 @@ export class QuestionScene extends Phaser.Scene {
     this.playCelebrationEffect();
     this.avatarBadge?.cheer();
 
-    // 4. Delayed Transition to RunnerScene with Tap-to-Fast-Forward
+    // 4. Transition only after the learner explicitly chooses Continue. This
+    // leaves enough time to read or hear the explanation and prevents an
+    // accidental whole-screen tap from skipping it.
     const isComplete = this.questionIndex >= this.questions.length - 1;
     const isRainbow = this.sessionStats.correctCount >= 2;
 
@@ -1368,25 +1372,13 @@ export class QuestionScene extends Phaser.Scene {
         executeTransition();
       },
     });
+    this.continueButton = continueBtn;
 
     if (this.controlsContainer) {
       this.controlsContainer.add(continueBtn);
     }
 
-    if (this.input) {
-      this.input.once('pointerdown', (pointer: any) => {
-        // Exclude top header area from tap-to-fast-forward
-        if (pointer && pointer.y < 80) return;
-        executeTransition();
-      });
-    }
-
-    if (this.time?.delayedCall) {
-      if (this.transitionTimer) {
-        this.transitionTimer.remove();
-      }
-      this.transitionTimer = this.time.delayedCall(1200, executeTransition);
-    }
+    this.transitionTimer = null;
   }
 
   /**

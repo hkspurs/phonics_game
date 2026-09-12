@@ -333,7 +333,7 @@ describe('QuestionScene — Interactive Quiz Scene Suite', () => {
 
     it('renders header with back button and station/level text', () => {
       expect(scene.backButton).toBeDefined();
-      expect(scene.backButton?.getText()).toBe('◀ 返回地圖');
+      expect(scene.backButton?.getText()).toBe('返回地圖');
       expect(scene.headerTitleText?.text).toContain('第 3-1 關');
       expect(scene.headerTitleText?.text).toContain('櫻花樹・中文');
     });
@@ -363,7 +363,7 @@ describe('QuestionScene — Interactive Quiz Scene Suite', () => {
       expect(scene.promptText).toBeDefined();
       expect(scene.promptText?.text).toContain('重組句子');
       expect(scene.speakerButton).toBeDefined();
-      expect(scene.speakerButton?.getText()).toBe('🔊 朗讀');
+      expect(scene.speakerButton?.getText()).toBe('聽一次');
     });
 
     it('navigates back to MapScene when back button is clicked', () => {
@@ -705,6 +705,9 @@ describe('QuestionScene — Interactive Quiz Scene Suite', () => {
 
       scene.onCorrectAnswer();
 
+      expect(mockScene.scene.start).not.toHaveBeenCalled();
+      scene.continueButton?.triggerClick();
+
       expect(mockScene.scene.start).toHaveBeenCalledWith('RunnerScene', {
         stationId: 1,
         stationName: '小木屋',
@@ -727,6 +730,9 @@ describe('QuestionScene — Interactive Quiz Scene Suite', () => {
       scene.create();
 
       scene.onCorrectAnswer();
+
+      expect(mockScene.scene.start).not.toHaveBeenCalled();
+      scene.continueButton?.triggerClick();
 
       expect(mockScene.scene.start).toHaveBeenCalledWith('RunnerScene', {
         stationId: 1,

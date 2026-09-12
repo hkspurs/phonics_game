@@ -1,10 +1,13 @@
 // Mock browser globals for Phaser imports under Node environment in unit tests
 if (typeof window === 'undefined') {
   (globalThis as any).window = globalThis;
-  (globalThis as any).navigator = {
-    userAgent: 'node',
-    maxTouchPoints: 0,
-  };
+  // Node 24 exposes `navigator` as a read-only accessor. Define a configurable
+  // test value rather than assigning to it so the normal test command works
+  // consistently across supported Node runtimes.
+  Object.defineProperty(globalThis, 'navigator', {
+    configurable: true,
+    value: { userAgent: 'node', maxTouchPoints: 0 },
+  });
   (globalThis as any).document = {
     documentElement: {},
     createElement: (tag: string) => {

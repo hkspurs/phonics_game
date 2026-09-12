@@ -200,7 +200,7 @@ export class ResultScene extends Phaser.Scene {
     if (this.add.graphics) {
       const g = this.add.graphics();
       // Celebratory night gradient
-      g.fillGradientStyle(0x1a1e36, 0x1a1e36, 0x0f1124, 0x0f1124, 1);
+      g.fillGradientStyle(0x456f59, 0x456f59, 0x1c382d, 0x1c382d, 1);
       g.fillRect(0, 0, width, height);
 
       // Golden celebratory radial glow in center
@@ -209,7 +209,7 @@ export class ResultScene extends Phaser.Scene {
       g.fillStyle(0x38bdf8, 0.06);
       g.fillCircle(width / 2, height / 2 - 30, 480);
     } else if (this.add.rectangle) {
-      this.add.rectangle(width / 2, height / 2, width, height, 0x1a1e36);
+      this.add.rectangle(width / 2, height / 2, width, height, 0x294b3c);
     }
   }
 

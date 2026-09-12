@@ -1,5 +1,6 @@
 | Path / Module | Agent | Task | Status |
 |---|---|---|---|
+| src/, index.html, public/assets/storybook/, docs/ | OpenAI Codex | TASK-20260912-STORYBOOK-UX | LOCKED |
 
 
 ---

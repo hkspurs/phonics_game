@@ -293,19 +293,19 @@ export class ShopScene extends Phaser.Scene {
 
     if (this.add.graphics) {
       const g = this.add.graphics();
-      g.fillGradientStyle(0x231a2e, 0x231a2e, 0x140e1b, 0x140e1b, 1);
+      g.fillGradientStyle(0x3f574d, 0x3f574d, 0x1f352c, 0x1f352c, 1);
       g.fillRect(0, 0, width, height);
 
       // Gold shimmer accent circles
       g.fillStyle(0xf5a623, 0.06);
       g.fillCircle(width * 0.75, height * 0.45, 340);
-      g.fillStyle(0x8e44ad, 0.08);
+      g.fillStyle(0xf2c567, 0.08);
       g.fillCircle(width * 0.25, height * 0.6, 280);
 
-      g.lineStyle(2, 0x3e2b52, 0.8);
+      g.lineStyle(2, 0x8da88a, 0.8);
       g.strokeRect(0, 0, width, height);
     } else if (this.add.rectangle) {
-      this.add.rectangle(width / 2, height / 2, width, height, 0x231a2e);
+      this.add.rectangle(width / 2, height / 2, width, height, 0x2b4439);
     }
   }
 

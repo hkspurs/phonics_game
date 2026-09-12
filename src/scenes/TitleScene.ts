@@ -63,10 +63,16 @@ export class TitleScene extends Phaser.Scene {
   private createSkyBackground(width: number, height: number): void {
     if (!this.add) return;
 
+    if (this.textures?.exists?.('storybook_woodland_home') && this.add.image) {
+      const background = this.add.image(width / 2, height / 2, 'storybook_woodland_home');
+      background.setDisplaySize(width, height);
+      return;
+    }
+
     if (this.add.graphics) {
       const g = this.add.graphics();
       // Draw atmospheric sky layers
-      g.fillGradientStyle(0x3a7bd5, 0x3a7bd5, 0x86c5f7, 0xb8e2f2, 1);
+      g.fillGradientStyle(0xfff4dc, 0xfff4dc, 0xdcead7, 0xb9d6b1, 1);
       g.fillRect(0, 0, width, height);
 
       // Distant rolling mountain silhouette at the bottom
@@ -214,7 +220,7 @@ export class TitleScene extends Phaser.Scene {
       profile = { coins: 0, gems: 0, stats: { streakDays: 0 } };
     }
 
-    const barY = 36;
+    const barY = 38;
 
     // Container for Top Currency Header
     const headerContainer = this.add.container ? this.add.container(width / 2, barY) : null;
@@ -222,19 +228,19 @@ export class TitleScene extends Phaser.Scene {
     // Background pill for header
     if (this.add.graphics && headerContainer) {
       const bg = this.add.graphics();
-      bg.fillStyle(0x0e1320, 0.75);
-      bg.fillRoundedRect(-400, -24, 800, 48, 24);
-      bg.lineStyle(2, 0x4a90e2, 0.85);
-      bg.strokeRoundedRect(-400, -24, 800, 48, 24);
+      bg.fillStyle(0xfffbf2, 0.96);
+      bg.fillRoundedRect(-250, -25, 500, 50, 25);
+      bg.lineStyle(2, 0x8da88a, 0.9);
+      bg.strokeRoundedRect(-250, -25, 500, 50, 25);
       headerContainer.add(bg);
     }
 
     // 1. Coins Display
     if (this.add.text && headerContainer) {
-      const coinLabel = this.add.text(-280, 0, `🪙 金幣: ${profile.coins}`, {
+      const coinLabel = this.add.text(-150, 0, `金幣 ${profile.coins}`, {
         fontSize: '20px',
         fontFamily: "'Kenney Future', 'Noto Sans TC', sans-serif",
-        color: '#ffd700',
+        color: '#725419',
         fontStyle: 'bold',
       });
       if (typeof coinLabel.setOrigin === 'function') coinLabel.setOrigin(0.5);
@@ -242,10 +248,10 @@ export class TitleScene extends Phaser.Scene {
       headerContainer.add(coinLabel);
 
       // 2. Gems Display
-      const gemLabel = this.add.text(-95, 0, `💎 寶石: ${profile.gems}`, {
+      const gemLabel = this.add.text(0, 0, `寶石 ${profile.gems}`, {
         fontSize: '20px',
         fontFamily: "'Kenney Future', 'Noto Sans TC', sans-serif",
-        color: '#00e5ff',
+        color: '#287f87',
         fontStyle: 'bold',
       });
       if (typeof gemLabel.setOrigin === 'function') gemLabel.setOrigin(0.5);
@@ -253,36 +259,16 @@ export class TitleScene extends Phaser.Scene {
       headerContainer.add(gemLabel);
 
       // 3. Stars Display
-      const starLabel = this.add.text(85, 0, `⭐ 星星: ${totalStars}/30`, {
+      const starLabel = this.add.text(160, 0, `星星 ${totalStars}/30`, {
         fontSize: '20px',
         fontFamily: "'Kenney Future', 'Noto Sans TC', sans-serif",
-        color: '#ffdd59',
+        color: '#9a681e',
         fontStyle: 'bold',
       });
       if (typeof starLabel.setOrigin === 'function') starLabel.setOrigin(0.5);
       this.starText = starLabel;
       headerContainer.add(starLabel);
 
-      // 4. Streak Days Display
-      const streakLabel = this.add.text(230, 0, `🔥 連續: ${profile.stats.streakDays} 天`, {
-        fontSize: '18px',
-        fontFamily: "'Kenney Future', 'Noto Sans TC', sans-serif",
-        color: '#ff6b6b',
-        fontStyle: 'bold',
-      });
-      if (typeof streakLabel.setOrigin === 'function') streakLabel.setOrigin(0.5);
-      headerContainer.add(streakLabel);
-
-      // 5. Pet Companion Milestone Display
-      const pet = DataManager.getInstance().getPetCompanion();
-      const petLabel = this.add.text(345, 0, `${pet.icon} ${pet.stage === 'hatched' ? '萌寵' : '萌蛋'}: ${pet.progress}/${pet.target}`, {
-        fontSize: '17px',
-        fontFamily: "'Noto Sans TC', sans-serif",
-        color: '#a78bfa',
-        fontStyle: 'bold',
-      });
-      if (typeof petLabel.setOrigin === 'function') petLabel.setOrigin(0.5);
-      headerContainer.add(petLabel);
     }
   }
 
@@ -290,31 +276,25 @@ export class TitleScene extends Phaser.Scene {
     if (!this.add) return;
 
     const titleY = 175;
-    const titleContainer = this.add.container ? this.add.container(width / 2, titleY) : null;
+    const titleContainer = this.add.container ? this.add.container(width * 0.58, titleY) : null;
 
     // Title banner backing graphic
     if (this.add.graphics && titleContainer) {
       const banner = this.add.graphics();
-      // Drop Shadow
-      banner.fillStyle(0x000000, 0.4);
-      banner.fillRoundedRect(-370, -52, 740, 108, 24);
-      // Dark Blue Glass Body
-      banner.fillStyle(0x0f172a, 0.94);
-      banner.fillRoundedRect(-370, -54, 740, 108, 24);
-      // Outer Gold Foil Border
-      banner.lineStyle(3.5, 0xf59e0b, 1.0);
-      banner.strokeRoundedRect(-370, -54, 740, 108, 24);
-      // Inner Light Highlight Rim
-      banner.lineStyle(1.5, 0xffffff, 0.35);
-      banner.strokeRoundedRect(-365, -49, 730, 98, 18);
+      banner.fillStyle(0x705644, 0.14);
+      banner.fillRoundedRect(-330, -48, 660, 112, 28);
+      banner.fillStyle(0xfffbf2, 0.94);
+      banner.fillRoundedRect(-330, -54, 660, 112, 28);
+      banner.lineStyle(3, 0x8da88a, 0.95);
+      banner.strokeRoundedRect(-330, -54, 660, 112, 28);
       titleContainer.add(banner);
     }
 
     if (this.add.text && titleContainer) {
       // Left/Right decorative sparkles
-      const leftSparkle = this.add.text(-320, -14, '✨', { fontSize: '28px' });
+      const leftSparkle = this.add.text(-285, -14, '★', { fontSize: '24px', color: '#e0aa45' });
       leftSparkle.setOrigin(0.5);
-      const rightSparkle = this.add.text(320, -14, '✨', { fontSize: '28px' });
+      const rightSparkle = this.add.text(285, -14, '★', { fontSize: '24px', color: '#e0aa45' });
       rightSparkle.setOrigin(0.5);
       titleContainer.add([leftSparkle, rightSparkle]);
 
@@ -322,47 +302,35 @@ export class TitleScene extends Phaser.Scene {
       const mainTitle = this.add.text(0, -14, '升夢大冒險', {
         fontSize: '46px',
         fontFamily: "'Kenney Future', 'Noto Sans TC', sans-serif",
-        color: '#ffffff',
+        color: '#243e35',
         fontStyle: 'bold',
-        stroke: '#0f172a',
-        strokeThickness: 5,
+        stroke: '#fff9ed',
+        strokeThickness: 2,
       });
       if (typeof mainTitle.setOrigin === 'function') mainTitle.setOrigin(0.5);
       if (typeof mainTitle.setShadow === 'function') {
-        mainTitle.setShadow(2, 4, 'rgba(0,0,0,0.7)', 6, true, true);
+        mainTitle.setShadow(1, 2, 'rgba(36,62,53,0.16)', 3, true, true);
       }
       titleContainer.add(mainTitle);
 
       // Subtitle with Subject tags
-      const subtitle = this.add.text(0, 28, '⭐ 香港小一學科闖關 ── 廣東話・數學・英語 ⭐', {
+      const subtitle = this.add.text(0, 30, '香港小一 · 中文 · 數學 · 英語', {
         fontSize: '20px',
         fontFamily: "'Noto Sans TC', 'Microsoft JhengHei', sans-serif",
-        color: '#fde047',
+        color: '#55715f',
         fontStyle: 'bold',
       });
       if (typeof subtitle.setOrigin === 'function') subtitle.setOrigin(0.5);
       titleContainer.add(subtitle);
     }
 
-    // Title container breathing animation
-    if (titleContainer && !this.prefersReducedMotion && this.tweens?.add) {
-      this.tweens.add({
-        targets: titleContainer,
-        scaleX: 1.025,
-        scaleY: 1.025,
-        duration: 2000,
-        yoyo: true,
-        repeat: -1,
-        ease: 'Sine.easeInOut',
-      });
-    }
   }
 
   private createMascotCharacter(): void {
     if (!this.add) return;
 
-    const mascotX = 220;
-    const mascotY = 430;
+    const mascotX = 280;
+    const mascotY = 455;
 
     const avatarContainer = this.add.container
       ? this.add.container(mascotX, mascotY)
@@ -458,7 +426,7 @@ export class TitleScene extends Phaser.Scene {
       bubbleG.fillPath();
       avatarContainer.add(bubbleG);
 
-      const bubbleText = this.add.text(0, -65, '準備好探險未？', {
+      const bubbleText = this.add.text(0, -65, '今日一齊學新本領！', {
         fontSize: '16px',
         color: '#0f172a',
         fontStyle: 'bold',
@@ -481,16 +449,42 @@ export class TitleScene extends Phaser.Scene {
   }
 
   private createNavigationButtons(width: number, height: number): void {
+    let hasProgress = false;
+    try {
+      const profile = DataManager.getInstance().getProfile();
+      hasProgress = profile.unlockedStations > 1 || DataManager.getInstance().getTotalStars() > 0;
+    } catch {
+      hasProgress = false;
+    }
+
+    const actionX = width * 0.58;
+    if (this.add?.text) {
+      let nextStation = 1;
+      try {
+        nextStation = Math.min(10, Math.max(1, DataManager.getInstance().getProfile().unlockedStations));
+      } catch {
+        nextStation = 1;
+      }
+      const nextLabel = this.add.text(actionX, height / 2 - 32, `下一站 · 第 ${nextStation} 關`, {
+        fontSize: '22px',
+        fontFamily: "'Noto Sans TC', 'Microsoft JhengHei', sans-serif",
+        color: '#355b47',
+        fontStyle: 'bold',
+        backgroundColor: 'rgba(255, 251, 242, 0.92)',
+        padding: { x: 18, y: 8 },
+      });
+      nextLabel.setOrigin?.(0.5);
+    }
     // 1. Primary Big Action: 開始遊戲 (Start Game) -> MapScene
     this.startButton = new CanvasButton(this, {
-      x: width / 2,
-      y: height / 2 + 35,
-      width: 320,
-      height: 74,
-      text: '🚀 開始遊戲',
+      x: actionX,
+      y: height / 2 + 28,
+      width: 370,
+      height: 82,
+      text: hasProgress ? '繼續冒險' : '開始冒險',
       icon: 'vec_icon_rocket_32',
       color: 'green',
-      fontSize: '32px',
+      fontSize: '30px',
       soundKey: 'click',
       onClick: () => {
         if (this.scene) {
@@ -500,20 +494,20 @@ export class TitleScene extends Phaser.Scene {
     });
 
     // 2. Secondary Row Buttons: 成績表 | 商店 | 獎盃 | 設定
-    const rowY = height / 2 + 135;
-    const btnWidth = 165;
-    const btnHeight = 58;
+    const rowY = height / 2 + 137;
+    const btnWidth = 150;
+    const btnHeight = 62;
 
     // 成績表 (Report Card Modal)
     this.reportButton = new CanvasButton(this, {
-      x: width / 2 - 275,
+      x: actionX - 245,
       y: rowY,
       width: btnWidth,
       height: btnHeight,
-      text: '📊 成績表',
+      text: '學習報告',
       icon: 'vec_icon_report_24',
       color: 'blue',
-      fontSize: '22px',
+      fontSize: '20px',
       soundKey: 'click',
       onClick: () => {
         this.openReportModal();
@@ -522,14 +516,14 @@ export class TitleScene extends Phaser.Scene {
 
     // 商店 (ShopScene)
     this.shopButton = new CanvasButton(this, {
-      x: width / 2 - 92,
+      x: actionX - 80,
       y: rowY,
       width: btnWidth,
       height: btnHeight,
-      text: '🛒 商店',
+      text: '換新造型',
       icon: 'vec_icon_shop_24',
       color: 'yellow',
-      fontSize: '22px',
+      fontSize: '20px',
       soundKey: 'click',
       onClick: () => {
         if (this.scene) {
@@ -540,14 +534,14 @@ export class TitleScene extends Phaser.Scene {
 
     // 獎盃 (TrophyScene)
     this.trophyButton = new CanvasButton(this, {
-      x: width / 2 + 92,
+      x: actionX + 85,
       y: rowY,
       width: btnWidth,
       height: btnHeight,
-      text: '🏆 獎盃',
+      text: '我的獎章',
       icon: 'vec_icon_trophy_24',
       color: 'purple',
-      fontSize: '22px',
+      fontSize: '20px',
       soundKey: 'click',
       onClick: () => {
         if (this.scene) {
@@ -558,14 +552,14 @@ export class TitleScene extends Phaser.Scene {
 
     // 設定 (SettingsScene)
     this.settingsButton = new CanvasButton(this, {
-      x: width / 2 + 275,
+      x: actionX + 250,
       y: rowY,
       width: btnWidth,
       height: btnHeight,
-      text: '⚙️ 設定',
+      text: '設定',
       icon: 'vec_icon_settings_24',
       color: 'grey',
-      fontSize: '22px',
+      fontSize: '20px',
       soundKey: 'click',
       onClick: () => {
         if (this.scene) {
@@ -611,13 +605,13 @@ export class TitleScene extends Phaser.Scene {
       const totalStars = dm.getTotalStars();
 
       if (this.coinText && typeof this.coinText.setText === 'function') {
-        this.coinText.setText(`🪙 金幣: ${profile.coins}`);
+        this.coinText.setText(`金幣 ${profile.coins}`);
       }
       if (this.gemText && typeof this.gemText.setText === 'function') {
-        this.gemText.setText(`💎 寶石: ${profile.gems}`);
+        this.gemText.setText(`寶石 ${profile.gems}`);
       }
       if (this.starText && typeof this.starText.setText === 'function') {
-        this.starText.setText(`⭐ 星星: ${totalStars}/30`);
+        this.starText.setText(`星星 ${totalStars}/30`);
       }
     } catch {
       // Ignore

@@ -1192,7 +1192,7 @@ export class MapScene extends Phaser.Scene {
       y: 175,
       width: 280,
       height: 56,
-      text: '⚔️ 進入關卡 (進入)',
+      text: '開始這一關',
       icon: 'vec_icon_rocket_24',
       color: 'green',
       fontSize: '22px',

@@ -35,14 +35,14 @@ interface ColorPalette {
 }
 
 const COLOR_MAP: Record<string, ColorPalette> = {
-  blue: { base: 0x0284c7, dark: 0x0369a1, light: 0x7dd3fc, border: 0x075985, textColor: '#ffffff' },
-  green: { base: 0x16a34a, dark: 0x15803d, light: 0x86efac, border: 0x14532d, textColor: '#ffffff' },
-  red: { base: 0xe11d48, dark: 0xbe123c, light: 0xfda4af, border: 0x881337, textColor: '#ffffff' },
-  yellow: { base: 0xf59e0b, dark: 0xd97706, light: 0xfef08a, border: 0xb45309, textColor: '#451a03' },
+  blue: { base: 0x4e8494, dark: 0x356875, light: 0xb9dce2, border: 0x315b64, textColor: '#ffffff' },
+  green: { base: 0x4f8a62, dark: 0x3c6f4e, light: 0xbddbbf, border: 0x315d40, textColor: '#ffffff' },
+  red: { base: 0xbd513d, dark: 0x963c2e, light: 0xf0b2a4, border: 0x7d3328, textColor: '#ffffff' },
+  yellow: { base: 0xf2c567, dark: 0xd7a64b, light: 0xffe6aa, border: 0x9a6d27, textColor: '#3f3524' },
   card_selected: { base: 0x1e1b4b, dark: 0x0f172a, light: 0x312e81, border: 0xf59e0b, textColor: '#ffffff' },
-  grey: { base: 0x475569, dark: 0x334155, light: 0x94a3b8, border: 0x1e293b, textColor: '#ffffff' },
-  gray: { base: 0x475569, dark: 0x334155, light: 0x94a3b8, border: 0x1e293b, textColor: '#ffffff' },
-  purple: { base: 0x9333ea, dark: 0x7e22ce, light: 0xd8b4fe, border: 0x581c87, textColor: '#ffffff' },
+  grey: { base: 0x708078, dark: 0x596860, light: 0xcbd6cf, border: 0x46544d, textColor: '#ffffff' },
+  gray: { base: 0x708078, dark: 0x596860, light: 0xcbd6cf, border: 0x46544d, textColor: '#ffffff' },
+  purple: { base: 0x8a719b, dark: 0x705b80, light: 0xd8c8df, border: 0x5f4d6c, textColor: '#ffffff' },
   teal: { base: 0x0d9488, dark: 0x0f766e, light: 0x5eead4, border: 0x115e59, textColor: '#ffffff' },
 };
 
@@ -114,7 +114,7 @@ export class CanvasButton extends Phaser.GameObjects.Container {
     const w = this.btnWidth;
     const h = this.btnHeight;
     const radius = this.config.cornerRadius ?? (this.config.variant === 'round' ? Math.min(w, h) / 2 : 14);
-    const depth = 4;
+    const depth = 5;
 
     const g = this.scene.add.graphics();
     const halfW = w / 2;
@@ -132,12 +132,8 @@ export class CanvasButton extends Phaser.GameObjects.Container {
     g.fillStyle(palette.base, 1.0);
     g.fillRoundedRect(-halfW, -halfH, w, h - depth, radius);
 
-    // 4. Top Specular Gloss Cap
-    g.fillStyle(palette.light, 0.45);
-    g.fillRoundedRect(-halfW + 3, -halfH + 2, w - 6, Math.max(4, (h - depth) * 0.46), Math.max(2, radius - 3));
-
-    // 5. Inner subtle highlight sheen
-    g.lineStyle(1.5, 0xffffff, 0.35);
+    // Soft paper-like highlight rather than a glossy plastic cap.
+    g.lineStyle(1.5, palette.light, 0.8);
     g.strokeRoundedRect(-halfW + 1.5, -halfH + 1.5, w - 3, h - depth - 3, Math.max(2, radius - 2));
 
     // 6. Outer border stroke
@@ -460,4 +456,3 @@ export class CanvasButton extends Phaser.GameObjects.Container {
     super.destroy(fromScene);
   }
 }
-

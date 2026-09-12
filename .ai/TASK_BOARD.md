@@ -2,7 +2,14 @@
 
 ## ACTIVE
 
-None.
+### TASK-20260912-STORYBOOK-UX
+
+Agent: OpenAI Codex  
+Status: IN_PROGRESS  
+Started: 2026-09-12  
+
+Description: Implement the approved picture-book UI, responsive UX, graphics,
+learning-flow pacing and whole-game visual consistency plan.
 
 ## BLOCKED
 
