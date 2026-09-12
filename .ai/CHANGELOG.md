@@ -1,5 +1,38 @@
 # AI Coordination Changelog
 
+## 2026-09-12 — OpenAI Codex — TASK-20260912-STORYBOOK-UX (phases 0–7 complete)
+
+Summary:
+- Completed the approved warm Japanese picture-book direction across the game,
+  including optimized woodland art, paper-and-sage controls, calmer hierarchy,
+  and consistent Home, Map, Question, Runner, Shop, and Result styling.
+- Added a lifecycle-owned responsive presentation layer for Home, Map, station
+  detail, questions, and results. The CSS-pixel surfaces provide safe-area
+  spacing, keyboard focus, 48px-class controls, explicit Continue pacing, and a
+  child-readable mobile landscape layout while preserving Phaser fallback paths.
+- Added station detail navigation, authoritative progress copy, sentence-token
+  DOM interaction with duplicate-token support, reading-first result rewards,
+  and Runner input release on window blur.
+
+Changed:
+- `src/presentation/{ScreenHost,HomeView,MapView,StationDetailView,QuestionView,ResultView,responsive}.ts`
+- `src/scenes/{Title,Map,Question,Result,Runner,Shop,Preload}Scene.ts`
+- `src/ui/CanvasButton.ts`, `src/test/setup.ts`, `index.html`
+- `public/assets/storybook/woodland-home.webp`
+- Responsive browser assertions in `e2e/{responsive-layout,sentence-tap-and-button-hover}.spec.ts`
+
+Verification:
+- `npm run test:unit`: 63 test files, 1,937 tests passed.
+- `npm run build`: TypeScript and Vite production build succeeded.
+- Changed-area Playwright flow: 5 tests passed across responsive layout,
+  math speech/layout, sentence correction, and sentence card interaction.
+- Inspected Home, Map, station detail, choice question, sentence question, and
+  result screenshots at 844×390.
+
+Known limitation:
+- Headless screenshot environments may substitute a font without Traditional
+  Chinese glyphs; browser fallback fonts determine glyph appearance.
+
 ## 2026-09-12 — OpenAI Codex — TASK-20260912-STORYBOOK-UX (checkpoint 2)
 
 Summary:

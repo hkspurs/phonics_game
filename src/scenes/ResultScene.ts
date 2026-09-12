@@ -8,6 +8,8 @@ import { CanvasModal } from '../ui/CanvasModal';
 import { StarRating } from '../ui/StarRating';
 import { STATIONS } from './MapScene';
 import { QuestionSessionStats } from './QuestionScene';
+import { ScreenHost } from '../presentation/ScreenHost';
+import { mountResultView } from '../presentation/ResultView';
 
 export interface ResultSceneInitData {
   stationId?: StationId;
@@ -49,6 +51,7 @@ export class ResultScene extends Phaser.Scene {
   public panelContainer: Phaser.GameObjects.Container | null = null;
   public confettiParticles: Phaser.GameObjects.GameObject[] = [];
   public prefersReducedMotion = false;
+  private resultScreenHandle: { destroy(): void } | null = null;
 
   constructor() {
     super({ key: 'ResultScene' });
@@ -182,6 +185,10 @@ export class ResultScene extends Phaser.Scene {
     // 4. Action Navigation Buttons
     this.createActionButtons(width, height);
 
+    // Reading-heavy result content uses the responsive presentation layer when
+    // the host exists; Phaser remains the fallback for embedded/test contexts.
+    this.startResponsiveResult();
+
     // 5. Newly Unlocked Trophy Popup (if any)
     if (this.newlyUnlockedTrophies.length > 0) {
       if (this.time?.delayedCall) {
@@ -192,6 +199,18 @@ export class ResultScene extends Phaser.Scene {
         this.showTrophyUnlockBanner();
       }
     }
+  }
+
+  private startResponsiveResult(): void {
+    this.resultScreenHandle = ScreenHost.mount((host) => mountResultView(host, this));
+    if (!this.resultScreenHandle) return;
+    this.panelContainer?.setVisible(false);
+    this.starRating?.setVisible(false);
+    // The responsive result view owns the action row. Hide the Phaser buttons
+    // as well so they cannot peek through or intercept taps underneath it.
+    [this.mapButton, this.retryButton, this.nextStationButton, this.homeButton]
+      .forEach((button) => button?.setVisible(false));
+    this.confettiParticles.forEach((particle) => (particle as any).setVisible?.(false));
   }
 
   private createFestiveBackground(width: number, height: number): void {
@@ -592,6 +611,9 @@ export class ResultScene extends Phaser.Scene {
   }
 
   public shutdown(): void {
+    this.resultScreenHandle?.destroy();
+    this.resultScreenHandle = null;
+    ScreenHost.clear();
     this.confettiParticles.forEach(particle => {
       this.tweens?.killTweensOf?.(particle);
       particle.destroy?.();

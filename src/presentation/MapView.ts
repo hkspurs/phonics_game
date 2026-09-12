@@ -23,8 +23,8 @@ export function mountMapView(host: HTMLElement, stations: readonly StationData[]
   head.append(titles);
   shell.append(head);
   const progress = makeElement('div', 'map-progress');
-  addText(progress, 'strong', `${Math.min(10, profile.unlockedStations)} / 10`, 'map-progress-number');
-  addText(progress, 'span', '個地方已開放', 'map-progress-copy');
+  addText(progress, 'strong', `${Math.min(10, dm.getCompletedStationCount())} / 10`, 'map-progress-number');
+  addText(progress, 'span', `個地方已通關 · ${Math.min(10, profile.unlockedStations)} 個已開放`, 'map-progress-copy');
   shell.append(progress);
   const list = makeElement('div', 'station-list');
   list.setAttribute('role', 'list');

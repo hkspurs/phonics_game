@@ -9,6 +9,7 @@ import { PlayerAvatarBadge } from '../ui/PlayerAvatarBadge';
 import { DiagnosticReportModal } from '../ui/DiagnosticReportModal';
 import { ScreenHost } from '../presentation/ScreenHost';
 import { mountMapView } from '../presentation/MapView';
+import { mountStationDetailView } from '../presentation/StationDetailView';
 
 export interface StationData {
   id: number;
@@ -159,6 +160,7 @@ export class MapScene extends Phaser.Scene {
   public progressText: Phaser.GameObjects.Text | null = null;
   public prefersReducedMotion: boolean = false;
   private mapScreenHandle: { destroy(): void } | null = null;
+  private stationDetailHandle: { destroy(): void } | null = null;
 
   constructor() {
     super({ key: 'MapScene' });
@@ -204,15 +206,49 @@ export class MapScene extends Phaser.Scene {
   private startResponsiveMap(): void {
     this.mapScreenHandle = ScreenHost.mount((host) => mountMapView(host, STATIONS, {
       open: (station) => {
-        if (station.id <= this.getUnlockedStationsCount()) this.openStationModal(station);
+        if (station.id <= this.getUnlockedStationsCount()) {
+          this.mapScreenHandle?.destroy();
+          this.mapScreenHandle = null;
+          ScreenHost.clear();
+          this.openResponsiveStationDetail(station);
+        }
       },
       home: () => this.scene?.start('TitleScene'),
+    }));
+  }
+
+  private openResponsiveStationDetail(station: StationData): void {
+    let stationStars = 0;
+    try {
+      stationStars = DataManager.getInstance().getProfile().stationStars[station.id] || 0;
+    } catch {
+      stationStars = 0;
+    }
+
+    this.stationDetailHandle = ScreenHost.mount((host) => mountStationDetailView(host, station, stationStars, {
+      close: () => {
+        this.stationDetailHandle = null;
+        this.startResponsiveMap();
+      },
+      start: (selectedStation, questionIndex) => {
+        this.stationDetailHandle?.destroy();
+        this.stationDetailHandle = null;
+        ScreenHost.clear();
+        SoundManager.play('click');
+        this.scene?.start('QuestionScene', {
+          stationId: selectedStation.id,
+          stationName: selectedStation.name,
+          ...(questionIndex === undefined ? {} : { questionIndex }),
+        });
+      },
     }));
   }
 
   private clearResponsiveMap(): void {
     this.mapScreenHandle?.destroy();
     this.mapScreenHandle = null;
+    this.stationDetailHandle?.destroy();
+    this.stationDetailHandle = null;
     ScreenHost.clear();
   }
 

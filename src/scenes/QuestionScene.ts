@@ -12,6 +12,8 @@ import { SlotBox } from '../ui/SlotBox';
 import { PlayerAvatarBadge } from '../ui/PlayerAvatarBadge';
 import { STATIONS } from './MapScene';
 import { PedagogyEngine } from '../engine/PedagogyEngine';
+import { ScreenHost } from '../presentation/ScreenHost';
+import { mountQuestionView } from '../presentation/QuestionView';
 
 export interface QuestionSessionStats {
   hintsUsed: number;
@@ -65,6 +67,7 @@ export class QuestionScene extends Phaser.Scene {
   public hintButton: CanvasButton | null = null;
   public resetButton: CanvasButton | null = null;
   public continueButton: CanvasButton | null = null;
+  private questionScreenHandle: { destroy(): void } | null = null;
 
   public headerTitleText: Phaser.GameObjects.Text | null = null;
   public progressCounterText: Phaser.GameObjects.Text | null = null;
@@ -203,6 +206,27 @@ export class QuestionScene extends Phaser.Scene {
     if (this.events && typeof this.events.once === 'function') {
       this.events.once(Phaser.Scenes.Events.SHUTDOWN, this.shutdown, this);
     }
+
+    this.startResponsiveQuestion();
+  }
+
+  private startResponsiveQuestion(): void {
+    // Keep one readable presentation for every question type. The DOM view
+    // drives the same stable CanvasCard/SlotBox models underneath, so grading,
+    // attempt recording and scene transitions remain authoritative here.
+    this.questionScreenHandle = ScreenHost.mount((host) => mountQuestionView(host, this));
+    if (!this.questionScreenHandle) return;
+    this.headerContainer?.setVisible(false);
+    this.promptContainer?.setVisible(false);
+    this.contentContainer?.setVisible(false);
+    this.controlsContainer?.setVisible(false);
+    this.celebrationContainer?.setVisible(false);
+    [this.backButton, this.speakerButton, this.hintButton, this.resetButton].forEach((control) => {
+      control?.setVisible(false);
+    });
+    // Keep the Phaser answer objects alive as a compatibility interaction
+    // layer. The opaque DOM surface hides their pixels, while pointer events
+    // outside DOM buttons can still reach the same authoritative card model.
   }
 
   /**
@@ -1038,6 +1062,15 @@ export class QuestionScene extends Phaser.Scene {
     }
   }
 
+  /** Evaluate a value from the responsive DOM answer view using the same
+   * stable CanvasCard model and reward path as the canvas renderer. */
+  public handleChoiceValue(value: unknown): boolean {
+    const card = this.choiceCards.find((candidate) => String(candidate.getValue()) === String(value));
+    if (!card) return false;
+    const model = this.choiceOptionModels.find((option) => String(option.value) === String(value));
+    return this.handleChoiceSelection(card, model ?? { value });
+  }
+
   /**
    * Renders educational feedback banner
    */
@@ -1474,6 +1507,9 @@ export class QuestionScene extends Phaser.Scene {
   }
 
   public shutdown(): void {
+    this.questionScreenHandle?.destroy();
+    this.questionScreenHandle = null;
+    ScreenHost.clear();
     this.transitionTimer?.remove?.();
     this.transitionTimer = null;
     this.autoReadTimer?.remove?.();

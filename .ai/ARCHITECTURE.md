@@ -23,6 +23,7 @@ p1-adventure/
 │   ├── engine/                # QuestionEngine, SentenceEngine, MathGenerator
 │   ├── scenes/                # Phaser 3 Scenes (Preload, Title, Map, Question, Runner, Shop)
 │   ├── services/              # DataManager, SoundManager, SpeechService, PlayerAvatarService
+│   ├── presentation/         # ScreenHost and responsive CSS-pixel storybook views
 │   ├── ui/                    # CanvasButton, CanvasCard, SlotBox, OutfitRenderer, Compositor
 │   └── main.ts                # Phaser game bootstrap & Scale FIT
 ├── AGENTS.md                  # Master AI Development Protocol
@@ -72,3 +73,18 @@ p1-adventure/
 ## 5. Audio & TTS Architecture
 - **SoundManager**: Procedural Web Audio oscillator synthesis (no external audio assets required).
 - **SpeechService**: Web Speech API (`window.speechSynthesis`) with voice selection for Cantonese (`zh-HK`), Mandarin (`zh-TW`), and English (`en-US`).
+
+## 6. Responsive Presentation Boundary
+- **`ScreenHost`** owns one active DOM view under `#screen-host`, toggles the
+  `body.has-screen-view` state, and destroys the previous view before mounting a
+  new scene surface.
+- **Responsive views** (`HomeView`, `MapView`, `StationDetailView`,
+  `QuestionView`, `ResultView`) render reading-heavy controls in CSS pixels with
+  safe-area padding and keyboard/focus semantics. Their callbacks call the
+  owning Phaser scene, so navigation and progression still use scene models and
+  `DataManager` as the source of truth.
+- **Fallback behavior**: when no host is available (embedded tests or a
+  non-browser shell), the existing Phaser canvas UI remains usable. On desktop
+  question screens the opaque DOM surface lets legacy canvas answer objects
+  retain coordinate compatibility; on touch-sized screens the DOM surface owns
+  the interaction.

@@ -14,6 +14,7 @@ export function mountHomeView(host: HTMLElement, actions: HomeViewActions): Scre
   const profile = dm.getProfile();
   const progressed = profile.unlockedStations > 1 || dm.getTotalStars() > 0;
   const currentStation = Math.min(10, Math.max(1, profile.unlockedStations));
+  const completedStations = Math.min(10, Math.max(0, dm.getCompletedStationCount()));
   const shell = makeElement('section', 'screen-view home-view');
   shell.setAttribute('aria-labelledby', 'home-title');
 
@@ -34,6 +35,7 @@ export function mountHomeView(host: HTMLElement, actions: HomeViewActions): Scre
   const next = makeElement('div', 'home-next-card');
   addText(next, 'span', '下一站', 'home-next-label');
   addText(next, 'strong', `第 ${currentStation} 關 · 準備出發`, 'home-next-title');
+  addText(next, 'span', `${completedStations} / 10 個地方已通關`, 'home-next-progress');
   addText(next, 'span', '每關有 3 題小挑戰', 'home-next-hint');
   copy.append(next);
   const primary = makeElement('button', 'story-button story-button-primary');
