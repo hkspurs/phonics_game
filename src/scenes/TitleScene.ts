@@ -484,7 +484,7 @@ export class TitleScene extends Phaser.Scene {
       text: hasProgress ? '繼續冒險' : '開始冒險',
       icon: 'vec_icon_rocket_32',
       color: 'green',
-      fontSize: '30px',
+      fontSize: '32px',
       soundKey: 'click',
       onClick: () => {
         if (this.scene) {
@@ -507,7 +507,7 @@ export class TitleScene extends Phaser.Scene {
       text: '學習報告',
       icon: 'vec_icon_report_24',
       color: 'blue',
-      fontSize: '20px',
+      fontSize: '22px',
       soundKey: 'click',
       onClick: () => {
         this.openReportModal();
@@ -523,7 +523,7 @@ export class TitleScene extends Phaser.Scene {
       text: '換新造型',
       icon: 'vec_icon_shop_24',
       color: 'yellow',
-      fontSize: '20px',
+      fontSize: '22px',
       soundKey: 'click',
       onClick: () => {
         if (this.scene) {
@@ -541,7 +541,7 @@ export class TitleScene extends Phaser.Scene {
       text: '我的獎章',
       icon: 'vec_icon_trophy_24',
       color: 'purple',
-      fontSize: '20px',
+      fontSize: '22px',
       soundKey: 'click',
       onClick: () => {
         if (this.scene) {
@@ -559,7 +559,7 @@ export class TitleScene extends Phaser.Scene {
       text: '設定',
       icon: 'vec_icon_settings_24',
       color: 'grey',
-      fontSize: '20px',
+      fontSize: '22px',
       soundKey: 'click',
       onClick: () => {
         if (this.scene) {

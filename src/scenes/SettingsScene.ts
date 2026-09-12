@@ -81,21 +81,20 @@ export class SettingsScene extends Phaser.Scene {
 
     if (this.add.graphics) {
       const g = this.add.graphics();
-      // Sleek tech-slate background gradient
-      g.fillGradientStyle(0x16202c, 0x16202c, 0x0c131b, 0x0c131b, 1);
+      g.fillGradientStyle(0x456f59, 0x456f59, 0x1c382d, 0x1c382d, 1);
       g.fillRect(0, 0, width, height);
 
       // Subtle atmospheric glows
-      g.fillStyle(0x38bdf8, 0.05);
+      g.fillStyle(0xf2c567, 0.06);
       g.fillCircle(width * 0.2, height * 0.4, 300);
       g.fillStyle(0x48b64e, 0.04);
       g.fillCircle(width * 0.8, height * 0.7, 340);
 
       // Border outline
-      g.lineStyle(2, 0x27364b, 0.8);
+      g.lineStyle(2, 0x8da88a, 0.8);
       g.strokeRect(0, 0, width, height);
     } else if (this.add.rectangle) {
-      this.add.rectangle(width / 2, height / 2, width, height, 0x16202c);
+      this.add.rectangle(width / 2, height / 2, width, height, 0x294b3c);
     }
   }
 
@@ -652,4 +651,3 @@ export class SettingsScene extends Phaser.Scene {
     }
   }
 }
-

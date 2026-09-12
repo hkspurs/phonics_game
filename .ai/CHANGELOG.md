@@ -1,5 +1,28 @@
 # AI Coordination Changelog
 
+## 2026-09-12 — OpenAI Codex — TASK-20260912-STORYBOOK-UX (checkpoint 1)
+
+Summary:
+- Established the approved warm picture-book visual direction across the home,
+  question, result, shop, trophy and settings backgrounds.
+- Added and optimized a generated woodland home scene (WebP, about 212 KB).
+- Simplified home hierarchy, currency display and navigation copy.
+- Removed the 1.2-second automatic post-answer transition; the learner now
+  reads or hears feedback and explicitly selects Continue.
+- Fixed Node 24 test bootstrap compatibility for the global navigator value.
+
+Changed:
+- `src/scenes/{Title,Preload,Question,Map,Result,Shop,Settings,Trophy}Scene.ts`
+- `src/ui/CanvasButton.ts`, `src/test/setup.ts`, `index.html`
+- `public/assets/storybook/woodland-home.webp`
+
+Verification:
+- Full unit suite and production build rerun for this checkpoint.
+- Desktop and 844×390 landscape screenshots inspected.
+
+Pending:
+- Responsive reading layer and remaining per-screen layout work from the plan.
+
 ## 2026-09-02 — Antigravity — TASK-20260902-020
 
 Summary:
