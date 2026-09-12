@@ -1,5 +1,24 @@
 # AI Coordination Changelog
 
+## 2026-09-12 — OpenAI Codex — TASK-20260912-STORYBOOK-UX (checkpoint 2)
+
+Summary:
+- Added the responsive presentation foundation (`ScreenHost`) with typed
+  viewport classification and lifecycle cleanup.
+- Added child-facing responsive Home and Map views with real CSS-pixel text,
+  48px-class controls, keyboard focus, safe-area padding and phone layouts.
+- Wired Home and Map views to the existing Phaser navigation, station catalog,
+  DataManager progress and station modal flows.
+- Added focused responsive tests and verified the phone landscape browser flow.
+
+Verification:
+- Focused suites: 5 files, 134 tests passed.
+- Production TypeScript/Vite build completed.
+- Browser walkthrough: Home → Map on 844×390 with station list rendered.
+
+Pending:
+- Question, Runner, Result and Shop responsive presentation work.
+
 ## 2026-09-12 — OpenAI Codex — TASK-20260912-STORYBOOK-UX (checkpoint 1)
 
 Summary:

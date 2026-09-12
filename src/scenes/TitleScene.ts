@@ -7,6 +7,8 @@ import { CanvasModal } from '../ui/CanvasModal';
 import { DiagnosticReportModal } from '../ui/DiagnosticReportModal';
 import { PlayerAvatarService } from '../services/PlayerAvatarService';
 import { OutfitRenderer } from '../ui/OutfitRenderer';
+import { ScreenHost } from '../presentation/ScreenHost';
+import { mountHomeView } from '../presentation/HomeView';
 
 declare const __APP_VERSION__: string;
 
@@ -29,6 +31,9 @@ export class TitleScene extends Phaser.Scene {
   public clouds: Phaser.GameObjects.GameObject[] = [];
   public airship: Phaser.GameObjects.GameObject | null = null;
   public prefersReducedMotion: boolean = false;
+  private homeScreenHandle: { destroy(): void } | null = null;
+  private titleContainer: Phaser.GameObjects.Container | null = null;
+  private currencyContainer: Phaser.GameObjects.Container | null = null;
 
   constructor() {
     super({ key: 'TitleScene' });
@@ -58,6 +63,33 @@ export class TitleScene extends Phaser.Scene {
 
     // 6. Version Number Display (ver 1.YYYYMMDDHHII)
     this.createVersionFooter(width, height);
+
+    this.startResponsiveHome();
+    if (this.events?.once) this.events.once(Phaser.Scenes.Events.SHUTDOWN, this.clearResponsiveHome, this);
+  }
+
+  private startResponsiveHome(): void {
+    this.homeScreenHandle = ScreenHost.mount((host) => mountHomeView(host, {
+      start: () => this.scene?.start('MapScene'),
+      report: () => this.openReportModal(),
+      shop: () => this.scene?.start('ShopScene'),
+      trophies: () => this.scene?.start('TrophyScene'),
+      settings: () => this.scene?.start('SettingsScene'),
+    }));
+    if (!this.homeScreenHandle) return;
+    this.titleContainer?.setVisible(false);
+    this.currencyContainer?.setVisible(false);
+    this.startButton?.setVisible(false);
+    this.shopButton?.setVisible(false);
+    this.trophyButton?.setVisible(false);
+    this.settingsButton?.setVisible(false);
+    this.reportButton?.setVisible(false);
+  }
+
+  private clearResponsiveHome(): void {
+    this.homeScreenHandle?.destroy();
+    this.homeScreenHandle = null;
+    ScreenHost.clear();
   }
 
   private createSkyBackground(width: number, height: number): void {
@@ -224,6 +256,7 @@ export class TitleScene extends Phaser.Scene {
 
     // Container for Top Currency Header
     const headerContainer = this.add.container ? this.add.container(width / 2, barY) : null;
+    this.currencyContainer = headerContainer;
 
     // Background pill for header
     if (this.add.graphics && headerContainer) {
@@ -277,6 +310,7 @@ export class TitleScene extends Phaser.Scene {
 
     const titleY = 175;
     const titleContainer = this.add.container ? this.add.container(width * 0.58, titleY) : null;
+    this.titleContainer = titleContainer;
 
     // Title banner backing graphic
     if (this.add.graphics && titleContainer) {

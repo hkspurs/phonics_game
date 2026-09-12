@@ -7,6 +7,8 @@ import { CanvasModal } from '../ui/CanvasModal';
 import { StarRating } from '../ui/StarRating';
 import { PlayerAvatarBadge } from '../ui/PlayerAvatarBadge';
 import { DiagnosticReportModal } from '../ui/DiagnosticReportModal';
+import { ScreenHost } from '../presentation/ScreenHost';
+import { mountMapView } from '../presentation/MapView';
 
 export interface StationData {
   id: number;
@@ -156,6 +158,7 @@ export class MapScene extends Phaser.Scene {
   public starText: Phaser.GameObjects.Text | null = null;
   public progressText: Phaser.GameObjects.Text | null = null;
   public prefersReducedMotion: boolean = false;
+  private mapScreenHandle: { destroy(): void } | null = null;
 
   constructor() {
     super({ key: 'MapScene' });
@@ -193,6 +196,24 @@ export class MapScene extends Phaser.Scene {
 
     // 8. Focus camera on the latest unlocked station
     this.focusOnCurrentStation(false);
+
+    this.startResponsiveMap();
+    if (this.events?.once) this.events.once(Phaser.Scenes.Events.SHUTDOWN, this.clearResponsiveMap, this);
+  }
+
+  private startResponsiveMap(): void {
+    this.mapScreenHandle = ScreenHost.mount((host) => mountMapView(host, STATIONS, {
+      open: (station) => {
+        if (station.id <= this.getUnlockedStationsCount()) this.openStationModal(station);
+      },
+      home: () => this.scene?.start('TitleScene'),
+    }));
+  }
+
+  private clearResponsiveMap(): void {
+    this.mapScreenHandle?.destroy();
+    this.mapScreenHandle = null;
+    ScreenHost.clear();
   }
 
   private setupCamera(_width: number, _height: number): void {

@@ -62,6 +62,45 @@
       touch-action: none;
     }
 
+    #screen-host {
+      position: fixed;
+      inset: 0;
+      z-index: 40;
+      pointer-events: none;
+      font-family: -apple-system, BlinkMacSystemFont, "PingFang HK", "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+    }
+    .screen-view { pointer-events: auto; }
+    .home-view {
+      min-height: 100%; padding: max(18px, env(safe-area-inset-top)) max(20px, env(safe-area-inset-right)) max(18px, env(safe-area-inset-bottom)) max(20px, env(safe-area-inset-left));
+      color: #243e35; display: flex; flex-direction: column;
+    }
+    .home-topbar { display: flex; justify-content: space-between; align-items: center; gap: 20px; max-width: 1180px; width: 100%; margin: 0 auto; }
+    .home-brand { font-size: 18px; font-weight: 800; color: #355b47; background: rgba(255,251,242,.9); border: 2px solid #8da88a; border-radius: 999px; padding: 10px 16px; }
+    .home-counters { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+    .counter { min-height: 40px; display: inline-flex; align-items: center; padding: 8px 14px; border-radius: 999px; background: rgba(255,251,242,.94); border: 1px solid #b3c6ae; font-size: 16px; font-weight: 800; }
+    .counter-coin { color: #725419; } .counter-gem { color: #287f87; } .counter-star { color: #9a681e; }
+    .home-content { width: min(680px, 100%); margin: auto 5% auto auto; display: flex; flex-direction: column; align-items: stretch; gap: 16px; }
+    .home-copy { background: rgba(255,251,242,.93); border: 2px solid #8da88a; border-radius: 26px; padding: clamp(22px, 3vw, 36px); box-shadow: 0 14px 30px rgba(36,62,53,.16); }
+    .home-kicker, .map-kicker { margin: 0 0 6px; color: #bd513d; font-size: 18px; font-weight: 800; }
+    .home-title, .map-title { margin: 0; color: #243e35; font-size: clamp(26px, 4vw, 42px); line-height: 1.2; font-weight: 900; }
+    .home-description { margin: 12px 0 18px; color: #496557; font-size: 19px; line-height: 1.55; }
+    .home-next-card { display: grid; gap: 3px; background: #e8f0df; border-radius: 16px; padding: 13px 16px; margin-bottom: 16px; }
+    .home-next-label, .home-next-hint { font-size: 15px; color: #55715f; } .home-next-title { font-size: 20px; color: #355b47; }
+    .story-button { border: 0; cursor: pointer; font: inherit; font-weight: 900; border-radius: 16px; min-height: 52px; padding: 12px 18px; transition: transform .14s ease, filter .14s ease; }
+    .story-button:hover, .story-button:focus-visible { filter: brightness(1.04); transform: translateY(-2px); outline: 3px solid rgba(189,81,61,.35); outline-offset: 2px; }
+    .story-button:active { transform: translateY(1px); } .story-button-primary { background: #4f8a62; color: #fff; box-shadow: 0 5px 0 #315d40; font-size: 25px; }
+    .home-secondary { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+    .story-button-secondary { background: rgba(255,251,242,.95); border: 2px solid #8da88a; color: #355b47; font-size: 16px; display: flex; align-items: center; justify-content: center; gap: 6px; }
+    .button-mark { width: 25px; height: 25px; display: grid; place-items: center; background: #e8f0df; border-radius: 50%; font-size: 13px; }
+    .map-view { position: absolute; right: 0; top: 0; bottom: 0; width: min(430px, 100%); background: rgba(255,251,242,.97); border-left: 2px solid #8da88a; box-shadow: -12px 0 28px rgba(36,62,53,.18); padding: max(18px, env(safe-area-inset-top)) 18px max(18px, env(safe-area-inset-bottom)); overflow-y: auto; }
+    .map-view-head { display: flex; gap: 12px; align-items: flex-start; margin-bottom: 18px; } .map-back-button { min-width: 72px; min-height: 48px; border: 2px solid #8da88a; color: #355b47; background: #e8f0df; border-radius: 14px; font: inherit; font-size: 16px; font-weight: 800; cursor: pointer; }
+    .map-heading { flex: 1; } .map-title { font-size: 28px; } .map-progress { display: flex; align-items: baseline; gap: 8px; padding: 14px 16px; background: #e8f0df; border-radius: 16px; margin-bottom: 14px; color: #55715f; } .map-progress-number { color: #355b47; font-size: 24px; }
+    .station-list { display: grid; gap: 9px; } .station-choice { width: 100%; min-height: 64px; display: grid; grid-template-columns: 30px 42px 1fr; align-items: center; gap: 8px; text-align: left; border: 2px solid #b3c6ae; border-radius: 16px; background: #fff; color: #355b47; padding: 8px 12px; font: inherit; cursor: pointer; } .station-choice:hover, .station-choice:focus-visible { border-color: #bd513d; outline: 3px solid rgba(189,81,61,.2); } .station-choice.is-locked { opacity: .5; cursor: not-allowed; } .station-number { font-weight: 900; color: #bd513d; } .station-icon { font-size: 27px; text-align: center; } .station-copy { display: grid; gap: 2px; } .station-copy strong { font-size: 17px; } .station-copy small { color: #668172; font-size: 14px; }
+    @media (max-width: 900px) { .home-content { margin: auto; width: min(650px, 100%); } .home-view { background: linear-gradient(180deg, rgba(255,249,237,.05), rgba(255,249,237,.3)); } }
+    @media (max-width: 600px) { .home-topbar { align-items: stretch; flex-direction: column; } .home-counters { justify-content: stretch; } .counter { flex: 1; justify-content: center; font-size: 15px; } .home-content { margin: auto auto 12px; } .home-copy { padding: 20px; } .home-description { font-size: 18px; } .home-secondary { grid-template-columns: repeat(2, 1fr); } .map-view { width: 100%; top: auto; max-height: 78%; border-left: 0; border-top: 2px solid #8da88a; } }
+    @media (orientation: landscape) and (max-height: 500px) { .home-view { padding: 10px 16px; } .home-topbar { position: absolute; top: 10px; left: 16px; right: 16px; } .home-brand { display: none; } .home-counters { justify-content: flex-end; } .counter { min-height: 34px; padding: 6px 10px; font-size: 14px; } .home-content { width: min(520px, 61vw); margin: auto 3% auto auto; gap: 8px; } .home-copy { padding: 14px 18px; border-radius: 18px; } .home-kicker { font-size: 15px; margin-bottom: 2px; } .home-title { font-size: 27px; } .home-description { font-size: 15px; margin: 5px 0 8px; } .home-next-card { padding: 7px 10px; margin-bottom: 8px; } .home-next-label, .home-next-hint { font-size: 12px; } .home-next-title { font-size: 16px; } .story-button-primary { min-height: 46px; font-size: 20px; } .home-secondary { gap: 6px; } .story-button-secondary { min-height: 42px; padding: 6px 8px; font-size: 14px; } .button-mark { width: 20px; height: 20px; font-size: 11px; } }
+    @media (prefers-reduced-motion: reduce) { .story-button { transition: none; } }
+
     /* iOS Fullscreen & Add to Home Screen Floating Button */
     #fullscreen-btn {
       position: fixed;
@@ -282,6 +321,7 @@
   </div>
 
   <div id="game-container"></div>
+  <div id="screen-host" aria-live="polite"></div>
   <script>
     // Force purge any legacy service workers or stale PWA caches
     if ('serviceWorker' in navigator) {
