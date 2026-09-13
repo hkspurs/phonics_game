@@ -9,6 +9,7 @@ import { PlayerAvatarService } from '../services/PlayerAvatarService';
 import { OutfitRenderer } from '../ui/OutfitRenderer';
 import { ScreenHost } from '../presentation/ScreenHost';
 import { mountHomeView } from '../presentation/HomeView';
+import { QuestionEngine } from '../engine/QuestionEngine';
 
 declare const __APP_VERSION__: string;
 
@@ -610,14 +611,14 @@ export class TitleScene extends Phaser.Scene {
 
     const modal = new DiagnosticReportModal(this, {
       onReviewMistakes: () => {
-        const mistakeIds = DataManager.getInstance().getMistakeReviewQueue();
-        if (mistakeIds.length === 0) return;
+        const mistakeQuestions = QuestionEngine.getMistakeReviewQuestions();
+        if (mistakeQuestions.length === 0) return;
         if (this.scene) {
           this.scene.start('QuestionScene', {
             stationId: 1,
             stationName: '錯題溫習練習',
             questionIndex: 0,
-            questions: [],
+            questions: mistakeQuestions,
           });
         }
       },

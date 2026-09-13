@@ -4,6 +4,8 @@ import { Trophy, TrophyCategory, UserProfile } from '../types';
 import { DataManager, TROPHY_DEFINITIONS } from '../services/DataManager';
 import { SoundManager } from '../services/SoundManager';
 import { CanvasButton } from '../ui/CanvasButton';
+import { ScreenHost } from '../presentation/ScreenHost';
+import { mountTrophyView } from '../presentation/TrophyView';
 
 export interface TrophyCategoryTab {
   key: TrophyCategory;
@@ -41,6 +43,7 @@ export class TrophyScene extends Phaser.Scene {
 
   // Trophy Cards Container
   public cardsContainer: Phaser.GameObjects.Container | null = null;
+  private trophyScreenHandle: { destroy(): void } | null = null;
 
   constructor() {
     super({ key: 'TrophyScene' });
@@ -69,7 +72,12 @@ export class TrophyScene extends Phaser.Scene {
 
     // 6. Initial Render of Trophy Cards
     this.renderCurrentTrophyPage(width);
+    this.trophyScreenHandle = ScreenHost.mount((host) => mountTrophyView(host, this));
+    if (this.trophyScreenHandle) this.cardsContainer?.setVisible(false);
+    if (this.events?.once) this.events.once(Phaser.Scenes.Events.SHUTDOWN, this.shutdown, this);
   }
+
+  public shutdown(): void { this.trophyScreenHandle?.destroy(); this.trophyScreenHandle = null; ScreenHost.clear(); }
 
   private createBackground(width: number, height: number): void {
     if (!this.add) return;

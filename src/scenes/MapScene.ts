@@ -7,6 +7,7 @@ import { CanvasModal } from '../ui/CanvasModal';
 import { StarRating } from '../ui/StarRating';
 import { PlayerAvatarBadge } from '../ui/PlayerAvatarBadge';
 import { DiagnosticReportModal } from '../ui/DiagnosticReportModal';
+import { QuestionEngine } from '../engine/QuestionEngine';
 import { ScreenHost } from '../presentation/ScreenHost';
 import { mountMapView } from '../presentation/MapView';
 import { mountStationDetailView } from '../presentation/StationDetailView';
@@ -1572,15 +1573,15 @@ export class MapScene extends Phaser.Scene {
   }
 
   public startMistakeReview(): void {
-    const mistakeIds = DataManager.getInstance().getMistakeReviewQueue();
-    if (mistakeIds.length === 0) return;
+    const mistakeQuestions = QuestionEngine.getMistakeReviewQuestions();
+    if (mistakeQuestions.length === 0) return;
 
     if (this.scene) {
       this.scene.start('QuestionScene', {
         stationId: 1,
         stationName: '錯題溫習練習',
         questionIndex: 0,
-        questions: [],
+        questions: mistakeQuestions,
       });
     }
   }

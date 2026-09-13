@@ -3,6 +3,7 @@ import { addText, makeElement, type ScreenHandle } from './responsive';
 
 export interface QuestionViewScene {
   currentQuestion: QuizQuestion | null;
+  lastFeedbackMessage?: string;
   stationName: string;
   questionIndex: number;
   questions: QuizQuestion[];
@@ -31,7 +32,7 @@ export function mountQuestionView(host: HTMLElement, scene: QuestionViewScene): 
   shell.setAttribute('aria-labelledby', 'question-title');
   const top = makeElement('div', 'question-topbar');
   const back = makeElement('button', 'question-back'); back.type = 'button'; back.textContent = '‹ 地圖'; back.addEventListener('click', () => scene.backButton?.triggerClick()); top.append(back);
-  const heading = makeElement('div', 'question-heading'); addText(heading, 'span', `第 ${scene.questionIndex + 1} / ${Math.max(1, scene.questions.length)} 題`, 'question-progress'); addText(heading, 'h1', `${scene.stationName} · ${question.subject === 'math' ? '數學' : question.subject === 'english' ? '英語' : '中文'}`, 'question-title'); top.append(heading);
+  const heading = makeElement('div', 'question-heading'); addText(heading, 'span', `第 ${scene.questionIndex + 1} / ${Math.max(1, scene.questions.length)} 題`, 'question-progress'); addText(heading, 'h1', `${scene.stationName} · ${question.subject === 'math' ? '數學' : question.subject === 'english' ? '英語' : '中文'}`, 'question-title').id = 'question-title'; top.append(heading);
   shell.append(top);
   const card = makeElement('div', 'question-card');
   const promptRow = makeElement('div', 'question-prompt-row');
@@ -43,7 +44,7 @@ export function mountQuestionView(host: HTMLElement, scene: QuestionViewScene): 
   let resetControl: HTMLButtonElement | null = null;
   const syncFeedback = (correct: boolean): void => {
     feedback.className = `question-feedback ${correct ? 'is-correct' : 'is-hint'}`;
-    feedback.textContent = correct ? '答啱啦！聽埋解釋，再撳繼續。' : '再諗吓，睇清楚題目再試一次。';
+    feedback.textContent = scene.lastFeedbackMessage || (correct ? '答啱啦！聽埋解釋，再撳繼續。' : '再諗吓，睇清楚題目再試一次。');
   };
   if (question.type === 'sentence_scramble') {
     const slots = makeElement('div', 'dom-answer-slots');
@@ -72,7 +73,7 @@ export function mountQuestionView(host: HTMLElement, scene: QuestionViewScene): 
   }
   card.append(answerArea);
   const actions = makeElement('div', 'question-actions');
-  const hint = makeElement('button', 'question-action-button'); hint.type = 'button'; hint.textContent = '提示'; hint.addEventListener('click', () => { scene.handleHint(); refreshAnswerView?.(); }); actions.append(hint);
+  const hint = makeElement('button', 'question-action-button'); hint.type = 'button'; hint.textContent = '提示'; hint.addEventListener('click', () => { scene.handleHint(); refreshAnswerView?.(); if (scene.lastFeedbackMessage) { feedback.className = `question-feedback ${scene.isAnswered ? 'is-correct' : 'is-hint'}`; feedback.textContent = scene.lastFeedbackMessage; } if (scene.isAnswered) showContinue(); }); actions.append(hint);
   if (question.type === 'sentence_scramble') { resetControl = makeElement('button', 'question-action-button') as HTMLButtonElement; resetControl.type = 'button'; resetControl.textContent = '重新來過'; resetControl.addEventListener('click', () => { scene.handleReset(); refreshAnswerView?.(); }); actions.append(resetControl); }
   const continueBtn = makeElement('button', 'story-button story-button-primary question-continue'); continueBtn.type = 'button'; continueBtn.textContent = '繼續前進'; continueBtn.hidden = true; continueBtn.addEventListener('click', () => scene.continueButton?.triggerClick()); actions.append(continueBtn);
   const showContinue = (): void => { continueBtn.hidden = false; hint.hidden = true; if (resetControl) resetControl.hidden = true; };

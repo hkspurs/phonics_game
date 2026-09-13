@@ -19,7 +19,7 @@ export function mountMapView(host: HTMLElement, stations: readonly StationData[]
   head.append(home);
   const titles = makeElement('div', 'map-heading');
   addText(titles, 'span', '森林探險地圖', 'map-kicker');
-  addText(titles, 'h1', '揀一個地方出發', 'map-title');
+  addText(titles, 'h1', '揀一個地方出發', 'map-title').id = 'map-title';
   head.append(titles);
   shell.append(head);
   const progress = makeElement('div', 'map-progress');
@@ -33,7 +33,6 @@ export function mountMapView(host: HTMLElement, stations: readonly StationData[]
     const stars = profile.stationStars?.[station.id] ?? 0;
     const item = makeElement('button', `station-choice${available ? '' : ' is-locked'}`);
     item.type = 'button'; item.disabled = !available;
-    item.setAttribute('role', 'listitem');
     item.setAttribute('aria-label', available ? `第 ${station.id} 關 ${station.name}` : `第 ${station.id} 關，尚未開放`);
     item.innerHTML = `<span class="station-number">${station.id}</span><span class="station-icon" aria-hidden="true">${available ? station.icon : '•'}</span><span class="station-copy"><strong>${station.name}</strong><small>${available ? `${stars}/3 ⭐ · ${station.biome}` : '完成上一關後開放'}</small></span>`;
     if (available) item.addEventListener('click', () => actions.open(station));

@@ -30,7 +30,7 @@ export function mountHomeView(host: HTMLElement, actions: HomeViewActions): Scre
   const content = makeElement('div', 'home-content');
   const copy = makeElement('div', 'home-copy');
   addText(copy, 'p', '小小探險家，', 'home-kicker');
-  addText(copy, 'h1', '今日一齊學新本領！', 'home-title');
+  addText(copy, 'h1', '今日一齊學新本領！', 'home-title').id = 'home-title';
   addText(copy, 'p', '完成中文、數學同英語挑戰，逐步解鎖森林新地方。', 'home-description');
   const next = makeElement('div', 'home-next-card');
   addText(next, 'span', '下一站', 'home-next-label');

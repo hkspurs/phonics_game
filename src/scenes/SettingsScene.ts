@@ -6,6 +6,8 @@ import { SoundManager } from '../services/SoundManager';
 import { SpeechService } from '../services/SpeechService';
 import { CanvasButton } from '../ui/CanvasButton';
 import { CanvasModal } from '../ui/CanvasModal';
+import { ScreenHost } from '../presentation/ScreenHost';
+import { mountSettingsView } from '../presentation/SettingsView';
 
 export interface DifficultyOption {
   level: number;
@@ -53,6 +55,7 @@ export class SettingsScene extends Phaser.Scene {
 
   // Containers
   public mainPanel: Phaser.GameObjects.Container | null = null;
+  private settingsScreenHandle: { destroy(): void } | null = null;
 
   constructor() {
     super({ key: 'SettingsScene' });
@@ -74,7 +77,12 @@ export class SettingsScene extends Phaser.Scene {
 
     // 3. Settings Cards Panel
     this.createSettingsPanel(width, height);
+    this.settingsScreenHandle = ScreenHost.mount((host) => mountSettingsView(host, this));
+    if (this.settingsScreenHandle) this.mainPanel?.setVisible(false);
+    if (this.events?.once) this.events.once(Phaser.Scenes.Events.SHUTDOWN, this.shutdown, this);
   }
+
+  public shutdown(): void { this.settingsScreenHandle?.destroy(); this.settingsScreenHandle = null; ScreenHost.clear(); SpeechService.stop(); }
 
   private createBackground(width: number, height: number): void {
     if (!this.add) return;

@@ -2,6 +2,8 @@ import Phaser from 'phaser';
 import { DataManager } from '../services/DataManager';
 import { CanvasButton } from './CanvasButton';
 import { GAME_WIDTH, GAME_HEIGHT } from '../config';
+import { getScreenHost, type ScreenHandle } from '../presentation/responsive';
+import { mountDiagnosticReportView } from '../presentation/DiagnosticReportView';
 
 export class DiagnosticReportModal {
   private scene: Phaser.Scene;
@@ -9,6 +11,7 @@ export class DiagnosticReportModal {
   private isShown: boolean = false;
   private onReviewCallback?: () => void;
   private onCloseCallback?: () => void;
+  private domHandle: ScreenHandle | null = null;
 
   constructor(scene: Phaser.Scene, options?: { onReviewMistakes?: () => void; onClose?: () => void }) {
     this.scene = scene;
@@ -19,6 +22,15 @@ export class DiagnosticReportModal {
   public show(): void {
     if (this.isShown) return;
     this.isShown = true;
+
+    const host = getScreenHost();
+    if (host) {
+      this.domHandle = mountDiagnosticReportView(host, {
+        close: () => { this.domHandle = null; this.isShown = false; this.onCloseCallback?.(); },
+        review: () => { this.hide(); this.onReviewCallback?.(); },
+      });
+      return;
+    }
 
     const width = this.scene.sys?.game?.config ? Number(this.scene.sys.game.config.width) : GAME_WIDTH;
     const height = this.scene.sys?.game?.config ? Number(this.scene.sys.game.config.height) : GAME_HEIGHT;
@@ -200,6 +212,7 @@ export class DiagnosticReportModal {
   }
 
   public hide(): void {
+    if (this.domHandle) { const handle = this.domHandle; this.domHandle = null; handle.destroy(); }
     if (this.container) {
       this.container.destroy();
       this.container = null;

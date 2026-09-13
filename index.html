@@ -2,7 +2,7 @@
 <html lang="zh-HK">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="升夢大冒險" />
@@ -104,26 +104,31 @@
     .station-detail-progress { display: flex; justify-content: space-between; align-items: center; gap: 14px; margin-top: 14px; padding: 12px 16px; border-radius: 14px; background: #f4ecd9; color: #55715f; } .station-detail-progress-label { font-size: 16px; font-weight: 800; } .station-detail-stars { color: #9a681e; font-size: 20px; }
     .station-activities { display: grid; gap: 9px; margin-top: 20px; } .station-activities-title { margin: 0 0 2px; color: #355b47; font-size: 20px; } .station-activity { display: grid; grid-template-columns: 44px 1fr; align-items: center; gap: 12px; min-height: 64px; padding: 8px 12px; border: 2px solid #b3c6ae; border-radius: 16px; background: #fff; color: #355b47; text-align: left; font: inherit; cursor: pointer; } .station-activity:hover, .station-activity:focus-visible { border-color: #bd513d; outline: 3px solid rgba(189,81,61,.18); } .station-activity-mark { display: grid; place-items: center; width: 38px; height: 38px; border-radius: 50%; background: #e8f0df; color: #bd513d; font-size: 15px; font-weight: 900; } .station-activity-copy { display: grid; gap: 2px; } .station-activity-copy strong { font-size: 17px; } .station-activity-copy small { color: #668172; font-size: 14px; }
     .station-detail-start { width: 100%; margin-top: 18px; }
-    .result-view { min-height: 100%; display: grid; place-items: center; overflow-y: auto; padding: max(18px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) max(18px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left)); background: rgba(36,62,53,.2); color: #243e35; }
-    .result-card { width: min(760px, 100%); max-height: min(720px, 100%); overflow-y: auto; background: #fffaf0; border: 2px solid #8da88a; border-radius: 28px; padding: clamp(22px, 4vw, 38px); box-shadow: 0 18px 44px rgba(36,62,53,.25); text-align: center; }
+    .result-view { width: 100%; height: 100%; min-height: 0; box-sizing: border-box; display: grid; place-items: center; overflow-y: auto; padding: max(18px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) max(18px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left)); background: rgba(36,62,53,.2); color: #243e35; }
+    .result-card { width: min(760px, 100%); max-height: calc(100% - 36px); overflow-y: auto; background: #fffaf0; border: 2px solid #8da88a; border-radius: 28px; padding: clamp(22px, 4vw, 38px); box-shadow: 0 18px 44px rgba(36,62,53,.25); text-align: center; }
     .result-kicker { margin: 0 0 5px; color: #bd513d; font-size: 16px; font-weight: 900; } .result-title { margin: 0; color: #243e35; font-size: clamp(34px, 7vw, 56px); line-height: 1.05; } .result-copy { margin: 10px auto 0; max-width: 560px; color: #55715f; font-size: 18px; line-height: 1.5; }
     .result-stars { margin: 18px 0 14px; color: #d4972c; font-size: clamp(40px, 8vw, 64px); letter-spacing: 5px; line-height: 1; }
     .result-rewards { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin: 0 auto 14px; max-width: 480px; } .result-reward { display: grid; gap: 2px; border-radius: 16px; padding: 12px; background: #f4ecd9; } .result-reward-label { color: #55715f; font-size: 15px; font-weight: 800; } .result-reward-value { font-size: 25px; } .result-reward.is-coin .result-reward-value { color: #9a681e; } .result-reward.is-gem .result-reward-value { color: #287f87; }
     .result-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin: 0 auto; max-width: 600px; } .result-stat { display: grid; gap: 2px; padding: 10px 8px; border-radius: 14px; background: #e8f0df; } .result-stat span { color: #668172; font-size: 14px; } .result-stat strong { color: #355b47; font-size: 18px; } .result-trophy-note { margin: 14px 0 0; color: #bd513d; font-size: 16px; font-weight: 900; }
     .result-primary { position: sticky; bottom: 0; z-index: 2; width: min(420px, 100%); margin: 20px auto 0; }
     .result-secondary-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 12px; } .result-secondary-actions .story-button-secondary { min-width: 120px; }
-    .question-view { min-height: 100%; padding: max(12px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) max(12px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left)); color: #243e35; display: flex; flex-direction: column; align-items: center; overflow-y: auto; background: #fffaf0; }
+    .question-view { width: 100%; height: 100%; min-height: 0; box-sizing: border-box; padding: max(12px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) max(12px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left)); color: #243e35; display: flex; flex-direction: column; align-items: center; overflow-y: auto; background: #fffaf0; }
     .question-topbar { width: min(100%, 1060px); display: flex; align-items: center; gap: 14px; } .question-back { min-width: 80px; min-height: 48px; border: 2px solid #8da88a; border-radius: 14px; background: #e8f0df; color: #355b47; font: inherit; font-size: 16px; font-weight: 800; cursor: pointer; } .question-heading { display: grid; gap: 2px; } .question-progress { color: #bd513d; font-size: 15px; font-weight: 800; } .question-title { margin: 0; color: #243e35; font-size: clamp(22px, 3vw, 30px); }
     .question-card { width: min(100%, 1060px); margin: 16px auto 0; background: rgba(255,251,242,.97); border: 2px solid #8da88a; border-radius: 24px; box-shadow: 0 14px 30px rgba(36,62,53,.16); padding: clamp(18px, 3vw, 32px); } .question-prompt-row { display: flex; align-items: center; gap: 14px; justify-content: space-between; } .question-prompt { margin: 0; font-size: clamp(22px, 3vw, 32px); line-height: 1.3; font-weight: 900; } .question-listen { flex: 0 0 auto; min-height: 48px; border: 2px solid #9a6d27; border-radius: 14px; padding: 8px 16px; background: #f2c567; color: #3f3524; font: inherit; font-size: 17px; font-weight: 900; cursor: pointer; } .question-feedback { min-height: 26px; margin: 14px 0 8px; color: #668172; font-size: 17px; font-weight: 700; } .question-feedback.is-correct { color: #3c6f4e; } .question-feedback.is-hint { color: #9a6d27; }
     .question-answer-area { display: grid; gap: 12px; } .answer-label { margin: 0; color: #55715f; font-size: 17px; } .choice-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; } .answer-choice, .answer-token { min-height: 64px; padding: 12px 16px; border: 2px solid #b3c6ae; border-radius: 16px; background: #fff; color: #243e35; font: inherit; font-size: clamp(22px, 3vw, 32px); font-weight: 900; cursor: pointer; } .answer-choice:hover, .answer-choice:focus-visible, .answer-token:focus-visible { border-color: #bd513d; outline: 3px solid rgba(189,81,61,.18); } .answer-choice:disabled { opacity: .52; cursor: default; } .dom-answer-slots, .dom-token-bank { display: flex; flex-wrap: wrap; gap: 10px; min-height: 70px; padding: 12px; border-radius: 16px; background: #e8f0df; } .dom-token-bank { background: #f4ecd9; } .answer-token { min-height: 52px; font-size: 21px; } .placed-token { background: #fff; border-color: #4f8a62; } .question-actions { position: sticky; bottom: 0; z-index: 2; display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 10px; margin-top: 20px; padding: 12px 0 max(4px, env(safe-area-inset-bottom)); background: linear-gradient(180deg, rgba(255,250,240,0), #fffaf0 24%); } .question-action-button { min-height: 48px; border: 2px solid #8da88a; border-radius: 14px; padding: 8px 16px; background: #e8f0df; color: #355b47; font: inherit; font-size: 17px; font-weight: 900; cursor: pointer; } .question-continue { position: fixed; right: max(16px, env(safe-area-inset-right)); bottom: max(16px, env(safe-area-inset-bottom)); z-index: 100; min-height: 52px; padding: 10px 24px; font-size: 20px; }
     @media (max-width: 600px) { .question-prompt-row { align-items: stretch; flex-direction: column; } .question-listen { align-self: flex-start; } .choice-grid { grid-template-columns: 1fr; } .question-actions { justify-content: stretch; } .question-actions > * { flex: 1; } }
-    @media (min-width: 901px) { .question-view { pointer-events: none; } .question-view button { pointer-events: auto; } }
+    .support-view { width: 100%; height: 100%; min-height: 0; box-sizing: border-box; overflow-y: auto; padding: max(16px, env(safe-area-inset-top)) max(18px, env(safe-area-inset-right)) max(16px, env(safe-area-inset-bottom)) max(18px, env(safe-area-inset-left)); background: #fffaf0; color: #243e35; }
+    .support-head { width: min(1040px, 100%); margin: 0 auto 16px; display: flex; align-items: center; gap: 16px; } .support-title { margin: 0; font-size: clamp(26px, 4vw, 40px); } .support-back, .setting-choice, .trophy-tab, .page-nav button, .dialog-actions button, .settings-reset { min-height: 48px; border: 2px solid #8da88a; border-radius: 14px; padding: 8px 14px; background: #fff; color: #355b47; font: inherit; font-size: 16px; font-weight: 900; cursor: pointer; }
+    .support-view button:focus-visible, .support-dialog button:focus-visible { outline: 4px solid #bd513d; outline-offset: 3px; } .support-status { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; } .settings-grid { width: min(1040px, 100%); margin: auto; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; } .support-card { display: flex; flex-wrap: wrap; align-content: start; gap: 10px; padding: 18px; border: 2px solid #b3c6ae; border-radius: 20px; background: #fff; } .support-card h2, .support-card .support-help { flex-basis: 100%; } .support-card h2 { font-size: 21px; } .support-help { color: #55715f; line-height: 1.5; } .setting-choice.is-selected { border-color: #4f8a62; background: #e8f0df; } .danger-card { border-color: #d78673; } .settings-reset, .dialog-confirm { border-color: #a43f34 !important; background: #bd513d !important; color: #fff !important; }
+    .trophy-summary { width: min(1040px, 100%); margin: 0 auto 12px; font-size: 18px; font-weight: 900; } .trophy-tabs { width: min(1040px, 100%); margin: 0 auto 14px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; padding: 3px; } .trophy-tab { min-width: 0; } .trophy-tab[aria-selected="true"] { background: #f2c567; border-color: #9a6d27; } .trophy-grid { width: min(1040px, 100%); margin: auto; list-style: none; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; } .trophy-card { position: relative; padding: 16px; border: 2px solid #b3c6ae; border-radius: 18px; background: #fff; } .trophy-card h2 { margin: 0 0 6px; font-size: 19px; } .trophy-card p { min-height: 2.8em; color: #55715f; line-height: 1.4; } .trophy-card progress { width: 100%; height: 14px; margin-top: 12px; accent-color: #4f8a62; } .trophy-mark { float: right; color: #d4972c; font-size: 28px; } .trophy-progress { display: block; margin-top: 4px; font-weight: 900; } .page-nav { display: flex; justify-content: center; align-items: center; gap: 12px; margin: 16px auto 0; }
+    .dialog-backdrop { position: fixed; inset: 0; z-index: 500; display: grid; place-items: center; padding: 16px; background: rgba(36,62,53,.7); pointer-events: auto; } .support-dialog { width: min(720px, 100%); max-height: calc(100dvh - 32px); overflow-y: auto; padding: clamp(18px, 4vw, 30px); border: 3px solid #8da88a; border-radius: 22px; background: #fffaf0; color: #243e35; box-shadow: 0 20px 50px rgba(0,0,0,.3); } .support-dialog h1 { font-size: clamp(26px, 5vw, 38px); } .support-dialog h2 { font-size: 19px; } .report-dialog-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; } .report-dialog-head h1 { margin: 0; } .report-dialog-head .dialog-cancel { flex: 0 0 auto; } .dialog-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 10px; margin-top: 20px; } .report-metrics { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px 14px; margin: 16px 0; } .report-metrics div { display: contents; } .report-metrics dt { color: #55715f; } .report-metrics dd { font-size: 20px; font-weight: 900; } .report-subjects { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-top: 16px; } .report-subject { padding: 12px; border-radius: 14px; background: #e8f0df; } .report-subject p { margin-top: 5px; line-height: 1.4; }
+    @media (max-width: 650px) { .settings-grid, .trophy-grid { grid-template-columns: 1fr; } .report-subjects { grid-template-columns: 1fr; } }
     @media (max-width: 900px) { .home-content { margin: auto; width: min(650px, 100%); } .home-view { background: linear-gradient(180deg, rgba(255,249,237,.05), rgba(255,249,237,.3)); } }
     @media (max-width: 600px) { .home-topbar { align-items: stretch; flex-direction: column; } .home-counters { justify-content: stretch; } .counter { flex: 1; justify-content: center; font-size: 15px; } .home-content { margin: auto auto 12px; } .home-copy { padding: 20px; } .home-description { font-size: 18px; } .home-secondary { grid-template-columns: repeat(2, 1fr); } .map-view { width: 100%; top: auto; max-height: 78%; border-left: 0; border-top: 2px solid #8da88a; } }
     @media (max-width: 600px) { .station-detail-card { border-radius: 20px; padding: 16px; } .station-detail-head { gap: 10px; } .station-detail-close { min-width: 72px; padding-inline: 8px; } .station-detail-illustration { margin-top: 16px; } .station-detail-title { font-size: 30px; } .station-detail-description { font-size: 16px; } .station-activity-copy strong { font-size: 16px; } }
     @media (max-width: 600px) { .result-card { border-radius: 20px; padding: 20px 16px; } .result-copy { font-size: 16px; } .result-stars { margin: 14px 0 10px; letter-spacing: 3px; } .result-rewards { gap: 8px; } .result-reward-value { font-size: 22px; } .result-stats { gap: 6px; } .result-stat { padding: 8px 5px; } .result-stat span { font-size: 13px; } .result-stat strong { font-size: 16px; } .result-secondary-actions .story-button-secondary { flex: 1; min-width: 0; } }
-    @media (orientation: landscape) and (max-height: 500px) { .home-view { padding: 10px 16px; } .home-topbar { position: absolute; top: 10px; left: 16px; right: 16px; } .home-brand { display: none; } .home-counters { justify-content: flex-end; } .counter { min-height: 34px; padding: 6px 10px; font-size: 14px; } .home-content { width: min(520px, 61vw); margin: auto 3% auto auto; gap: 8px; } .home-copy { padding: 14px 18px; border-radius: 18px; } .home-kicker { font-size: 15px; margin-bottom: 2px; } .home-title { font-size: 27px; } .home-description { font-size: 15px; margin: 5px 0 8px; } .home-next-card { padding: 7px 10px; margin-bottom: 8px; } .home-next-label, .home-next-hint { font-size: 12px; } .home-next-title { font-size: 16px; } .story-button-primary { min-height: 46px; font-size: 20px; } .home-secondary { gap: 6px; } .story-button-secondary { min-height: 42px; padding: 6px 8px; font-size: 14px; } .button-mark { width: 20px; height: 20px; font-size: 11px; } }
-    @media (prefers-reduced-motion: reduce) { .story-button { transition: none; } }
+    @media (orientation: landscape) and (max-height: 500px) { .home-view { padding: 10px 16px; } .home-topbar { position: absolute; top: 10px; left: 16px; right: 16px; } .home-brand { display: none; } .home-counters { justify-content: flex-end; } .counter { min-height: 34px; padding: 6px 10px; font-size: 14px; } .home-content { width: min(520px, 61vw); margin: auto 3% auto auto; gap: 8px; } .home-copy { padding: 14px 18px; border-radius: 18px; } .home-kicker { font-size: 15px; margin-bottom: 2px; } .home-title { font-size: 27px; } .home-description { font-size: 15px; margin: 5px 0 8px; } .home-next-card { padding: 7px 10px; margin-bottom: 8px; } .home-next-label, .home-next-hint { font-size: 12px; } .home-next-title { font-size: 16px; } .story-button-primary { min-height: 48px; font-size: 20px; } .home-secondary { gap: 6px; } .story-button-secondary { min-height: 48px; padding: 6px 8px; font-size: 14px; } .button-mark { width: 20px; height: 20px; font-size: 11px; } }
+    @media (prefers-reduced-motion: reduce) { .story-button { transition: none; } .rotate-icon { animation: none; } }
 
     /* iOS Fullscreen & Add to Home Screen Floating Button */
     #fullscreen-btn {
@@ -224,37 +229,42 @@
       width: 100%;
     }
 
-    /* Forced Landscape Overlay on iPhone / iPad in Portrait */
+    /* Optional landscape suggestion; portrait remains fully usable. */
     #orientation-warning {
       display: none;
       position: fixed;
-      inset: 0;
-      width: 100vw;
-      height: 100vh;
-      height: 100dvh;
-      background: linear-gradient(135deg, #0b0f19 0%, #1e1b4b 100%);
+      top: max(12px, env(safe-area-inset-top));
+      left: 50%;
+      width: min(360px, calc(100vw - 24px));
+      background: rgba(36, 62, 53, .94);
       color: #ffffff;
-      z-index: 999999;
+      z-index: 35;
       flex-direction: column;
       justify-content: center;
       align-items: center;
       text-align: center;
-      padding: 32px;
-      backdrop-filter: blur(14px);
+      padding: 10px 14px;
+      border-radius: 16px;
+      transform: translateX(-50%);
+      pointer-events: none;
     }
 
     /* Force landscape on all portrait screens */
     @media screen and (orientation: portrait) {
       #orientation-warning {
-        display: flex !important;
+        display: flex;
       }
     }
 
     .rotate-icon {
-      font-size: 80px;
-      margin-bottom: 24px;
+      font-size: 24px;
+      margin-bottom: 2px;
       display: inline-block;
       animation: phoneRotate 2.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .rotate-icon { animation: none; }
     }
 
     @keyframes phoneRotate {
@@ -346,7 +356,7 @@
   </div>
 
   <div id="game-container"></div>
-  <div id="screen-host" aria-live="polite"></div>
+  <div id="screen-host"></div>
   <script>
     // Force purge any legacy service workers or stale PWA caches
     if ('serviceWorker' in navigator) {

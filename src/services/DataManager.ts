@@ -1,4 +1,4 @@
-import { UserProfile, GameSettings, Trophy, SubjectType, PetDefinition, GadgetDefinition, EquippedWardrobe, QuestionAttempt, RewardTransaction, LearningAttemptRecord } from '../types';
+import { UserProfile, GameSettings, Trophy, SubjectType, PetDefinition, GadgetDefinition, EquippedWardrobe, QuestionAttempt, RewardTransaction, LearningAttemptRecord, QuizQuestion } from '../types';
 import { WARDROBE_ITEMS, WardrobeItem, WardrobeCategory } from '../config/wardrobe';
 
 const STORAGE_KEY = 'p1_adventure_save_v1';
@@ -1469,6 +1469,14 @@ export class DataManager {
     return this.profile.mistakeReviewQueue || [];
   }
 
+  public getMistakeReviewQuestions(): QuizQuestion[] {
+    const attempts = this.profile.questionAttempts || [];
+    return this.getMistakeReviewQueue().flatMap((questionId) => {
+      const snapshot = [...attempts].reverse().find((attempt) => attempt.questionId === questionId && attempt.questionSnapshot)?.questionSnapshot;
+      return snapshot ? [{ ...snapshot }] : [];
+    });
+  }
+
   public removeMistakeFromQueue(questionId: string): void {
     if (!this.profile.mistakeReviewQueue) return;
     this.profile.mistakeReviewQueue = this.profile.mistakeReviewQueue.filter((id) => id !== questionId);
@@ -1593,9 +1601,9 @@ export class DataManager {
     totalHintsUsed: number;
     totalMistakes: number;
     subjectBreakdown: {
-      chinese: { completed: number; totalAttempts: number; firstAttemptCorrect: number; firstAttemptAccuracy: number };
-      math: { completed: number; totalAttempts: number; firstAttemptCorrect: number; firstAttemptAccuracy: number };
-      english: { completed: number; totalAttempts: number; firstAttemptCorrect: number; firstAttemptAccuracy: number };
+      chinese: { attempted: number; completed: number; totalAttempts: number; firstAttemptCorrect: number; firstAttemptAccuracy: number };
+      math: { attempted: number; completed: number; totalAttempts: number; firstAttemptCorrect: number; firstAttemptAccuracy: number };
+      english: { attempted: number; completed: number; totalAttempts: number; firstAttemptCorrect: number; firstAttemptAccuracy: number };
     };
     mistakeQueue: string[];
   } {
@@ -1607,10 +1615,10 @@ export class DataManager {
     let totalHints = 0;
     let totalMistakes = 0;
 
-    const subjectStats: Record<SubjectType, { completed: number; totalAttempts: number; firstAttemptCorrect: number }> = {
-      chinese: { completed: 0, totalAttempts: 0, firstAttemptCorrect: 0 },
-      math: { completed: 0, totalAttempts: 0, firstAttemptCorrect: 0 },
-      english: { completed: 0, totalAttempts: 0, firstAttemptCorrect: 0 },
+    const subjectStats: Record<SubjectType, { attempted: number; completed: number; totalAttempts: number; firstAttemptCorrect: number }> = {
+      chinese: { attempted: 0, completed: 0, totalAttempts: 0, firstAttemptCorrect: 0 },
+      math: { attempted: 0, completed: 0, totalAttempts: 0, firstAttemptCorrect: 0 },
+      english: { attempted: 0, completed: 0, totalAttempts: 0, firstAttemptCorrect: 0 },
     };
 
     for (const qId of questionIds) {
@@ -1625,6 +1633,7 @@ export class DataManager {
 
       const subject = firstAttempt?.subject || 'chinese';
       if (subjectStats[subject]) {
+        subjectStats[subject].attempted++;
         if (isCompleted) subjectStats[subject].completed++;
         if (isFirstCorrect) subjectStats[subject].firstAttemptCorrect++;
       }
@@ -1634,9 +1643,31 @@ export class DataManager {
       if (subjectStats[a.subject]) {
         subjectStats[a.subject].totalAttempts++;
       }
-      if (a.hintLevelUsed > 0) totalHints += a.hintLevelUsed;
       if (!a.isCorrect) totalMistakes++;
     }
+    // `hintLevelUsed` is cumulative within one question session, so counting
+    // every attempt would overstate usage after wrong answers. Question IDs
+    // can reappear when a learner revisits a station, though; split a question
+    // into sessions whenever its attempt number resets and count each session's
+    // highest level. This preserves the per-session semantics while retaining
+    // the full history in the saved attempt records.
+    totalHints = questionIds.reduce((sum, id) => {
+      const qAttempts = attempts.filter((attempt) => attempt.questionId === id);
+      let sessionMax = 0;
+      let previousAttemptNumber: number | null = null;
+      let questionHints = 0;
+
+      for (const attempt of qAttempts) {
+        if (previousAttemptNumber !== null && attempt.attemptNumber <= previousAttemptNumber) {
+          questionHints += sessionMax;
+          sessionMax = 0;
+        }
+        sessionMax = Math.max(sessionMax, attempt.hintLevelUsed || 0);
+        previousAttemptNumber = attempt.attemptNumber;
+      }
+
+      return sum + questionHints + sessionMax;
+    }, 0);
 
     const calcAcc = (correct: number, total: number) => (total > 0 ? correct / total : 0);
 
@@ -1650,15 +1681,15 @@ export class DataManager {
       subjectBreakdown: {
         chinese: {
           ...subjectStats.chinese,
-          firstAttemptAccuracy: calcAcc(subjectStats.chinese.firstAttemptCorrect, subjectStats.chinese.completed),
+          firstAttemptAccuracy: calcAcc(subjectStats.chinese.firstAttemptCorrect, subjectStats.chinese.attempted),
         },
         math: {
           ...subjectStats.math,
-          firstAttemptAccuracy: calcAcc(subjectStats.math.firstAttemptCorrect, subjectStats.math.completed),
+          firstAttemptAccuracy: calcAcc(subjectStats.math.firstAttemptCorrect, subjectStats.math.attempted),
         },
         english: {
           ...subjectStats.english,
-          firstAttemptAccuracy: calcAcc(subjectStats.english.firstAttemptCorrect, subjectStats.english.completed),
+          firstAttemptAccuracy: calcAcc(subjectStats.english.firstAttemptCorrect, subjectStats.english.attempted),
         },
       },
       mistakeQueue: this.getMistakeReviewQueue(),

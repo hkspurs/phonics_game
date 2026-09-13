@@ -18,8 +18,17 @@
   - `ShopScene`: Dream Wardrobe, skin purchasing, live character preview controller, spotlight pedestal, OOTD Polaroid with washi tape, and warm storybook palette.
   - `ResultScene`: Reward settlement, star celebration, trophy queue, and responsive reading-first result view.
 - **Responsive presentation layer**:
-  - `ScreenHost` owns one active DOM view and its lifecycle, while `HomeView`, `MapView`, `StationDetailView`, `QuestionView`, and `ResultView` provide CSS-pixel layouts with safe-area padding, keyboard focus, and 48px-class touch controls.
-  - Phaser remains the fallback renderer for embedded or test-only contexts; scene models and `DataManager` remain the single source of truth.
+  - `ScreenHost` owns one active DOM view and its lifecycle. `HomeView`,
+    `MapView`, `StationDetailView`, `QuestionView`, `ResultView`,
+    `SettingsView`, `TrophyView` and `DiagnosticReportView` provide CSS-pixel
+    layouts with safe-area padding, keyboard focus and 48px-class touch
+    controls.
+  - The responsive question surface is the sole interactive layer while it is
+    mounted; its callbacks still use the scene models and `DataManager` as the
+    single source of truth, and Phaser input is restored during shutdown.
+  - Supporting dialogs expose named headings, live status, Escape handling,
+    focus trapping/return and explicit destructive reset confirmation. Phaser
+    remains the fallback renderer where no DOM host exists.
 - **Character & Wardrobe System**:
   - 5 Playable Character Skins (Adventurer, Heroine, Soldier, Knight, Ninja) with distinct stat perks.
   - 5 Major Production Full-Sprite Outfits (`school_uniform`, `scholar_gown`, `princess_dress`, `dino_onesie`, `magic_robe`) at 512x512 with ground baseline Y=460.
@@ -49,12 +58,14 @@
 - Home & Collectible Presentation (Phase 4): Dominant Start CTA, hero character composition with companion pet, 4-state shop item lifecycle, P0 reproduction test compliance, non-mutating preview restore, and atomic purchases.
 - Responsive & Production Polish (Phase 5): Multi-viewport matrix verification (iPhone 16 Pro Max, iPhone 14, iPhone SE, iPad 4:3, Desktop 16:9), touch targets >=48px, minimum rendered font size >=16px, SpeechService fallback resilience, and reduced motion compliance.
 - Storybook UX migration (Phases 0–7): Warm woodland art direction, responsive Home → Map → Station Detail → Question → Result flow, explicit answer feedback pacing, stable sentence-token interaction, runner input blur safety, and consistent shop/result styling.
-- 63 test suites and 1,937 unit tests passing. Production TypeScript/Vite build succeeds; Vite reports only its existing large-chunk advisory.
+- Supporting accessibility and release verification (Phases 8–9): Responsive Settings/Trophy/Diagnostic Report destinations, truthful diagnostic empty states, semantic keyboard/touch controls, queued mistake reconstruction for current and legacy saves, per-session diagnostic hint counts, optional portrait guidance, 48px short-landscape scrolling fixes, real-control journey coverage and the seven-viewport release matrix.
+- 63 test suites and 1,940 unit tests passing. Production TypeScript/Vite build succeeds; Vite reports only its existing large-chunk advisory.
 
 ## Known Issues
 - Vitest JSDOM environment lacks some Phaser Graphics mock functions (`strokeCircle`), requiring defensive checks (`typeof g.strokeCircle === 'function'`).
 - Web Speech API voice availability varies by OS/browser, requiring text-only fallback on unsupported platforms.
 - Traditional Chinese glyph shape depends on fonts installed by the host browser; responsive layout uses system fallback fonts and keeps the minimum readable size at 16px.
+- The repository-wide Playwright collection still contains legacy canvas-coordinate and live GitHub Pages suites. The semantic DOM release gates pass; those older suites need a follow-up migration before `npm run test:e2e` can be an all-green release gate.
 
 ## Important Decisions
 - **Master Character Spec**: Standard 512x512 canvas, ground baseline Y=460, X=256 center, Chibi 1:2.5 ratio.

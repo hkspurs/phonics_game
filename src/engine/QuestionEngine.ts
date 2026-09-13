@@ -28,6 +28,23 @@ export class QuestionEngine {
     return [...this.recentHistory];
   }
 
+  /** Resolve queued review content in queue order, including legacy saves without snapshots. */
+  static getMistakeReviewQuestions(): QuizQuestion[] {
+    const dm = DataManager.getInstance();
+    const attempts = dm.getQuestionAttempts();
+    return dm.getMistakeReviewQueue().map((questionId) => {
+      const latest = [...attempts].reverse().find((attempt) => attempt.questionId === questionId);
+      if (latest?.questionSnapshot) return { ...latest.questionSnapshot };
+      const item = CurriculumBank.getItems(latest?.subject === 'english' ? 'english' : 'chinese', latest?.difficulty).find((candidate) => candidate.id === questionId);
+      if (item) {
+        if (item.type === 'sentence_scramble') return { id: item.id, subject: item.subject, type: item.type, prompt: item.prompt, speakText: item.speakText, correctTokens: [...(item.tokens ?? [])], shuffledTokens: SentenceEngine.shuffleTokens(item.tokens ?? []), hintText: item.hintText };
+        return { id: item.id, subject: item.subject, type: item.type, prompt: item.prompt, speakText: item.speakText, options: [...(item.options ?? [])], correctOptionIndex: item.correctOptionIndex ?? 0, correctAnswer: item.correctAnswer, hintText: item.hintText };
+      }
+      const replacement = this.generateSingleQuestion(latest?.subject ?? 'math', latest?.difficulty ?? 1);
+      return { ...replacement, id: questionId };
+    });
+  }
+
   /**
    * Records a question ID into the circular buffer.
    */

@@ -56,6 +56,8 @@ export class QuestionScene extends Phaser.Scene {
   public currentAttemptNumber: number = 0;
   public currentQuestionStartTime: number = Date.now();
   public currentHintLevel: number = 0;
+  public lastFeedbackMessage: string = '';
+  private previousInputEnabled: boolean | null = null;
 
   // UI Components
   public transitionTimer: Phaser.Time.TimerEvent | null = null;
@@ -224,9 +226,7 @@ export class QuestionScene extends Phaser.Scene {
     [this.backButton, this.speakerButton, this.hintButton, this.resetButton].forEach((control) => {
       control?.setVisible(false);
     });
-    // Keep the Phaser answer objects alive as a compatibility interaction
-    // layer. The opaque DOM surface hides their pixels, while pointer events
-    // outside DOM buttons can still reach the same authoritative card model.
+    if (this.input) { this.previousInputEnabled = this.input.enabled; this.input.enabled = false; }
   }
 
   /**
@@ -973,6 +973,7 @@ export class QuestionScene extends Phaser.Scene {
             hintLevelUsed: this.currentHintLevel,
             timestamp: Date.now(),
             responseTimeMs: Date.now() - this.currentQuestionStartTime,
+            questionSnapshot: { ...this.currentQuestion },
           });
         } catch {
           // Ignore
@@ -1052,6 +1053,7 @@ export class QuestionScene extends Phaser.Scene {
             hintLevelUsed: this.currentHintLevel,
             timestamp: Date.now(),
             responseTimeMs: Date.now() - this.currentQuestionStartTime,
+            questionSnapshot: { ...this.currentQuestion },
           });
         } catch {
           // Ignore
@@ -1075,6 +1077,7 @@ export class QuestionScene extends Phaser.Scene {
    * Renders educational feedback banner
    */
   public showEducationalFeedback(message: string, isCorrect: boolean): void {
+    this.lastFeedbackMessage = message;
     if (!this.add) return;
     if (this.feedbackContainer) {
       this.feedbackContainer.destroy();
@@ -1328,6 +1331,7 @@ export class QuestionScene extends Phaser.Scene {
         hintLevelUsed: this.currentHintLevel,
         timestamp: Date.now(),
         responseTimeMs: Date.now() - this.currentQuestionStartTime,
+        questionSnapshot: { ...this.currentQuestion },
       });
     } catch {
       // Ignore
@@ -1507,6 +1511,8 @@ export class QuestionScene extends Phaser.Scene {
   }
 
   public shutdown(): void {
+    if (this.input && this.previousInputEnabled !== null) this.input.enabled = this.previousInputEnabled;
+    this.previousInputEnabled = null;
     this.questionScreenHandle?.destroy();
     this.questionScreenHandle = null;
     ScreenHost.clear();
