@@ -4,6 +4,8 @@ import { Trophy, TrophyCategory, UserProfile } from '../types';
 import { DataManager, TROPHY_DEFINITIONS } from '../services/DataManager';
 import { SoundManager } from '../services/SoundManager';
 import { CanvasButton } from '../ui/CanvasButton';
+import { ScreenHost } from '../presentation/ScreenHost';
+import { mountTrophyView } from '../presentation/TrophyView';
 
 export interface TrophyCategoryTab {
   key: TrophyCategory;
@@ -41,6 +43,7 @@ export class TrophyScene extends Phaser.Scene {
 
   // Trophy Cards Container
   public cardsContainer: Phaser.GameObjects.Container | null = null;
+  private trophyScreenHandle: { destroy(): void } | null = null;
 
   constructor() {
     super({ key: 'TrophyScene' });
@@ -69,28 +72,32 @@ export class TrophyScene extends Phaser.Scene {
 
     // 6. Initial Render of Trophy Cards
     this.renderCurrentTrophyPage(width);
+    this.trophyScreenHandle = ScreenHost.mount((host) => mountTrophyView(host, this));
+    if (this.trophyScreenHandle) this.cardsContainer?.setVisible(false);
+    if (this.events?.once) this.events.once(Phaser.Scenes.Events.SHUTDOWN, this.shutdown, this);
   }
+
+  public shutdown(): void { this.trophyScreenHandle?.destroy(); this.trophyScreenHandle = null; ScreenHost.clear(); }
 
   private createBackground(width: number, height: number): void {
     if (!this.add) return;
 
     if (this.add.graphics) {
       const g = this.add.graphics();
-      // Regal purple / dark navy gradient
-      g.fillGradientStyle(0x1e152a, 0x1e152a, 0x0f0b17, 0x0f0b17, 1);
+      g.fillGradientStyle(0x456f59, 0x456f59, 0x1c382d, 0x1c382d, 1);
       g.fillRect(0, 0, width, height);
 
       // Gold halo glow
       g.fillStyle(0xffd700, 0.05);
       g.fillCircle(width / 2, 200, 420);
-      g.fillStyle(0x9b5de5, 0.06);
+      g.fillStyle(0x8da88a, 0.08);
       g.fillCircle(width / 2, height / 2 + 50, 360);
 
       // Border line
-      g.lineStyle(2, 0x3d2757, 0.8);
+      g.lineStyle(2, 0x8da88a, 0.8);
       g.strokeRect(0, 0, width, height);
     } else if (this.add.rectangle) {
-      this.add.rectangle(width / 2, height / 2, width, height, 0x1e152a);
+      this.add.rectangle(width / 2, height / 2, width, height, 0x294b3c);
     }
   }
 
@@ -552,4 +559,3 @@ export class TrophyScene extends Phaser.Scene {
     }
   }
 }
-

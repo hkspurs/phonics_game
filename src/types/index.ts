@@ -59,6 +59,8 @@ export interface QuestionAttempt {
   hintLevelUsed: number;
   timestamp: number;
   responseTimeMs?: number;
+  /** Serializable question content retained so dynamic questions can be reviewed faithfully. */
+  questionSnapshot?: QuizQuestion;
 }
 
 export interface LearningAttemptRecord {

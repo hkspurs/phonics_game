@@ -497,11 +497,11 @@ describe('Scene Lifecycle & Navigation Flow', () => {
       expect(titleScene.settingsButton).toBeDefined();
       expect(titleScene.reportButton).toBeDefined();
 
-      expect(titleScene.startButton?.getText()).toBe('🚀 開始遊戲');
-      expect(titleScene.shopButton?.getText()).toBe('🛒 商店');
-      expect(titleScene.trophyButton?.getText()).toBe('🏆 獎盃');
-      expect(titleScene.settingsButton?.getText()).toBe('⚙️ 設定');
-      expect(titleScene.reportButton?.getText()).toBe('📊 成績表');
+      expect(titleScene.startButton?.getText()).toBe('開始冒險');
+      expect(titleScene.shopButton?.getText()).toBe('換新造型');
+      expect(titleScene.trophyButton?.getText()).toBe('我的獎章');
+      expect(titleScene.settingsButton?.getText()).toBe('設定');
+      expect(titleScene.reportButton?.getText()).toBe('學習報告');
     });
 
     it('navigates to MapScene on start button click', () => {

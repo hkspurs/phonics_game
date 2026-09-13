@@ -265,6 +265,14 @@ export class RunnerScene extends Phaser.Scene {
   public skipConfirmationModal: Phaser.GameObjects.Container | null = null;
   public skipConfirmationText: string = '';
   public isSkipModalOpen: boolean = false;
+  private readonly handleWindowBlur = (): void => {
+    // Release held movement whenever the tab, browser chrome or an incoming
+    // touch gesture takes focus. This prevents a runner from continuing off
+    // screen after a cancelled pointer sequence.
+    this.resetJoystick();
+    this.isLeftDown = false;
+    this.isRightDown = false;
+  };
 
   constructor() {
     super({ key: 'RunnerScene' });
@@ -519,6 +527,10 @@ export class RunnerScene extends Phaser.Scene {
         this.input.keyboard.on('keydown-UP', () => this.handleJumpInput());
         this.input.keyboard.on('keydown-W', () => this.handleJumpInput());
       }
+    }
+
+    if (typeof window !== 'undefined' && typeof window.addEventListener === 'function') {
+      window.addEventListener('blur', this.handleWindowBlur);
     }
 
     // 6. Play startup runner sound
@@ -1510,9 +1522,9 @@ export class RunnerScene extends Phaser.Scene {
     // 1. Top Left Currency Bar & Badge
     if (this.add.graphics) {
       const badgeG = this.add.graphics();
-      badgeG.fillStyle(0x0a1128, 0.75);
+      badgeG.fillStyle(0xfffbf2, 0.94);
       badgeG.fillRoundedRect(24, 20, 430, 54, 16);
-      badgeG.lineStyle(2, 0x4a90e2, 0.9);
+      badgeG.lineStyle(2, 0x8da88a, 0.95);
       badgeG.strokeRoundedRect(24, 20, 430, 54, 16);
       this.hudContainer.add(badgeG);
     }
@@ -1556,9 +1568,9 @@ export class RunnerScene extends Phaser.Scene {
 
     if (this.add.graphics) {
       const progTrack = this.add.graphics();
-      progTrack.fillStyle(0x0e1320, 0.75);
+      progTrack.fillStyle(0xf4ecd9, 0.96);
       progTrack.fillRoundedRect(barX, barY, barW, barH, 9);
-      progTrack.lineStyle(2, 0xffd700, 0.85);
+      progTrack.lineStyle(2, 0x8da88a, 0.9);
       progTrack.strokeRoundedRect(barX, barY, barW, barH, 9);
       this.hudContainer.add(progTrack);
 
@@ -1575,7 +1587,7 @@ export class RunnerScene extends Phaser.Scene {
         {
           fontSize: '18px',
           fontFamily: "'Noto Sans TC', sans-serif",
-          color: '#ffffff',
+          color: '#243e35',
           fontStyle: 'bold',
         }
       );
@@ -1604,8 +1616,8 @@ export class RunnerScene extends Phaser.Scene {
       const hintContainer = this.add.container(width / 2, _height - 54);
       if (this.add.graphics) {
         const hintBg = this.add.graphics();
-        hintBg.fillStyle(0x0e1320, 0.75);
-        hintBg.lineStyle(1.5, 0xffd700, 0.85);
+        hintBg.fillStyle(0xfffbf2, 0.96);
+        hintBg.lineStyle(1.5, 0x8da88a, 0.9);
         hintBg.fillRoundedRect(-165, -20, 330, 40, 20);
         hintBg.strokeRoundedRect(-165, -20, 330, 40, 20);
         hintContainer.add(hintBg);
@@ -1615,7 +1627,7 @@ export class RunnerScene extends Phaser.Scene {
         const hintText = this.add.text(0, 0, '🕹️ 滑動搖桿左右移動 🦘 按跳躍鍵拾取寶石！', {
           fontSize: '16px',
           fontFamily: "'Noto Sans TC', 'Microsoft JhengHei', sans-serif",
-          color: '#ffffff',
+          color: '#355b47',
           fontStyle: 'bold',
         });
         if (typeof hintText.setOrigin === 'function') hintText.setOrigin(0.5);
@@ -2952,13 +2964,13 @@ export class RunnerScene extends Phaser.Scene {
     // 1. Draw Joystick Base (Translucent Compact Cyber Ring with Directional Indicators)
     if (this.add.graphics) {
       const gBase = this.add.graphics();
-      gBase.fillStyle(0x0f172a, 0.48);
+      gBase.fillStyle(0xfffbf2, 0.88);
       gBase.fillCircle(this.joystickBaseX, this.joystickBaseY, this.joystickRadius);
-      gBase.lineStyle(2.5, 0x38bdf8, 0.75);
+      gBase.lineStyle(2.5, 0x8da88a, 0.95);
       if (typeof gBase.strokeCircle === 'function') gBase.strokeCircle(this.joystickBaseX, this.joystickBaseY, this.joystickRadius);
 
       // Inner guidelines
-      gBase.lineStyle(1.2, 0x38bdf8, 0.30);
+      gBase.lineStyle(1.2, 0x8da88a, 0.45);
       if (typeof gBase.strokeCircle === 'function') gBase.strokeCircle(this.joystickBaseX, this.joystickBaseY, 22);
       if (typeof gBase.lineBetween === 'function') gBase.lineBetween(this.joystickBaseX - 38, this.joystickBaseY, this.joystickBaseX + 38, this.joystickBaseY);
 
@@ -2976,7 +2988,7 @@ export class RunnerScene extends Phaser.Scene {
     if (this.add.text) {
       const leftLabel = this.add.text(this.joystickBaseX - 30, this.joystickBaseY, '◀', {
         fontSize: '14px',
-        color: '#38bdf8',
+        color: '#355b47',
         fontStyle: 'bold',
       });
       if (typeof leftLabel.setOrigin === 'function') leftLabel.setOrigin(0.5);
@@ -2984,7 +2996,7 @@ export class RunnerScene extends Phaser.Scene {
 
       const rightLabel = this.add.text(this.joystickBaseX + 30, this.joystickBaseY, '▶', {
         fontSize: '14px',
-        color: '#38bdf8',
+        color: '#355b47',
         fontStyle: 'bold',
       });
       if (typeof rightLabel.setOrigin === 'function') rightLabel.setOrigin(0.5);
@@ -3055,19 +3067,19 @@ export class RunnerScene extends Phaser.Scene {
 
     const r = 22;
     // Drop shadow
-    g.fillStyle(0x000000, 0.35);
+    g.fillStyle(0x243e35, 0.18);
     g.fillCircle(x + 2, y + 3, r);
 
     // Main knob gradient base
-    g.fillStyle(0x0284c7, 0.92);
+    g.fillStyle(0x4f8a62, 0.96);
     g.fillCircle(x, y, r);
 
     // Specular gloss cap
-    g.fillStyle(0x7dd3fc, 0.65);
+    g.fillStyle(0xdcead7, 0.7);
     g.fillCircle(x - 3, y - 5, r * 0.55);
 
     // Inner glowing ring
-    g.lineStyle(1.5, 0xffffff, 0.85);
+    g.lineStyle(1.5, 0xfffbf2, 0.95);
     if (typeof g.strokeCircle === 'function') g.strokeCircle(x, y, r * 0.7);
     g.fillStyle(0xffffff, 0.9);
     g.fillCircle(x, y, 3);
@@ -3248,6 +3260,9 @@ export class RunnerScene extends Phaser.Scene {
         this.input.keyboard.off('keydown-UP');
         this.input.keyboard.off('keydown-W');
       }
+    }
+    if (typeof window !== 'undefined' && typeof window.removeEventListener === 'function') {
+      window.removeEventListener('blur', this.handleWindowBlur);
     }
   }
 }

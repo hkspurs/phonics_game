@@ -8,6 +8,8 @@ import { CanvasModal } from '../ui/CanvasModal';
 import { StarRating } from '../ui/StarRating';
 import { STATIONS } from './MapScene';
 import { QuestionSessionStats } from './QuestionScene';
+import { ScreenHost } from '../presentation/ScreenHost';
+import { mountResultView } from '../presentation/ResultView';
 
 export interface ResultSceneInitData {
   stationId?: StationId;
@@ -49,6 +51,7 @@ export class ResultScene extends Phaser.Scene {
   public panelContainer: Phaser.GameObjects.Container | null = null;
   public confettiParticles: Phaser.GameObjects.GameObject[] = [];
   public prefersReducedMotion = false;
+  private resultScreenHandle: { destroy(): void } | null = null;
 
   constructor() {
     super({ key: 'ResultScene' });
@@ -182,6 +185,10 @@ export class ResultScene extends Phaser.Scene {
     // 4. Action Navigation Buttons
     this.createActionButtons(width, height);
 
+    // Reading-heavy result content uses the responsive presentation layer when
+    // the host exists; Phaser remains the fallback for embedded/test contexts.
+    this.startResponsiveResult();
+
     // 5. Newly Unlocked Trophy Popup (if any)
     if (this.newlyUnlockedTrophies.length > 0) {
       if (this.time?.delayedCall) {
@@ -194,13 +201,25 @@ export class ResultScene extends Phaser.Scene {
     }
   }
 
+  private startResponsiveResult(): void {
+    this.resultScreenHandle = ScreenHost.mount((host) => mountResultView(host, this));
+    if (!this.resultScreenHandle) return;
+    this.panelContainer?.setVisible(false);
+    this.starRating?.setVisible(false);
+    // The responsive result view owns the action row. Hide the Phaser buttons
+    // as well so they cannot peek through or intercept taps underneath it.
+    [this.mapButton, this.retryButton, this.nextStationButton, this.homeButton]
+      .forEach((button) => button?.setVisible(false));
+    this.confettiParticles.forEach((particle) => (particle as any).setVisible?.(false));
+  }
+
   private createFestiveBackground(width: number, height: number): void {
     if (!this.add) return;
 
     if (this.add.graphics) {
       const g = this.add.graphics();
       // Celebratory night gradient
-      g.fillGradientStyle(0x1a1e36, 0x1a1e36, 0x0f1124, 0x0f1124, 1);
+      g.fillGradientStyle(0x456f59, 0x456f59, 0x1c382d, 0x1c382d, 1);
       g.fillRect(0, 0, width, height);
 
       // Golden celebratory radial glow in center
@@ -209,7 +228,7 @@ export class ResultScene extends Phaser.Scene {
       g.fillStyle(0x38bdf8, 0.06);
       g.fillCircle(width / 2, height / 2 - 30, 480);
     } else if (this.add.rectangle) {
-      this.add.rectangle(width / 2, height / 2, width, height, 0x1a1e36);
+      this.add.rectangle(width / 2, height / 2, width, height, 0x294b3c);
     }
   }
 
@@ -592,6 +611,9 @@ export class ResultScene extends Phaser.Scene {
   }
 
   public shutdown(): void {
+    this.resultScreenHandle?.destroy();
+    this.resultScreenHandle = null;
+    ScreenHost.clear();
     this.confettiParticles.forEach(particle => {
       this.tweens?.killTweensOf?.(particle);
       particle.destroy?.();

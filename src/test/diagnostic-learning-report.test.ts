@@ -2,6 +2,7 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { DataManager } from '../services/DataManager';
 import { DiagnosticReportModal } from '../ui/DiagnosticReportModal';
 import { createMockSceneForMeta } from '../scenes/MetaScenes.test';
+import { QuestionEngine } from '../engine/QuestionEngine';
 
 describe('Enhancement 6: Diagnostic Learning Report & Review Mistakes Queue', () => {
   let localStorageMock: Record<string, string>;
@@ -131,5 +132,36 @@ describe('Enhancement 6: Diagnostic Learning Report & Review Mistakes Queue', ()
 
     expect(modal.isVisible()).toBe(true);
     expect(modal.getMistakeCount()).toBe(1);
+  });
+
+  it('uses attempted questions as each subject accuracy denominator and counts highest hint level once per question session', () => {
+    const dm = DataManager.getInstance();
+    const base = { stationId: 1, subject: 'math' as const, knowledgeTag: 'addition', difficulty: 1, timestamp: Date.now() };
+    dm.recordAttempt({ ...base, questionId: 'm1', selectedAnswerId: 2, isCorrect: false, attemptNumber: 1, hintLevelUsed: 1 });
+    dm.recordAttempt({ ...base, questionId: 'm1', selectedAnswerId: 3, isCorrect: false, attemptNumber: 2, hintLevelUsed: 2 });
+    // Revisiting the same curriculum question starts a fresh attempt sequence;
+    // its hint use must contribute to the usage metric as another session.
+    dm.recordAttempt({ ...base, questionId: 'm1', selectedAnswerId: 2, isCorrect: false, attemptNumber: 1, hintLevelUsed: 1 });
+    const report = dm.getDiagnosticSummary();
+    expect(report.subjectBreakdown.math.attempted).toBe(1);
+    expect(report.subjectBreakdown.math.completed).toBe(0);
+    expect(report.subjectBreakdown.math.firstAttemptAccuracy).toBe(0);
+    expect(report.totalHintsUsed).toBe(3);
+  });
+
+  it('returns queued questions in queue order using saved snapshots', () => {
+    const dm = DataManager.getInstance();
+    const snapshot = { id: 'math_dynamic_1', subject: 'math' as const, type: 'multiple_choice' as const, prompt: '2 + 3 = ?', speakText: '二加三', options: ['4', '5'], correctAnswer: 5 };
+    dm.recordAttempt({ questionId: snapshot.id, stationId: 1, subject: 'math', knowledgeTag: 'addition', difficulty: 1, selectedAnswerId: 4, isCorrect: false, attemptNumber: 1, hintLevelUsed: 0, timestamp: Date.now(), questionSnapshot: snapshot });
+    expect(dm.getMistakeReviewQuestions()).toEqual([snapshot]);
+  });
+
+  it('provides usable same-subject review content for legacy dynamic mistakes', () => {
+    const dm = DataManager.getInstance();
+    dm.recordAttempt({ questionId: 'legacy_math', stationId: 1, subject: 'math', knowledgeTag: 'addition', difficulty: 1, selectedAnswerId: 4, isCorrect: false, attemptNumber: 1, hintLevelUsed: 0, timestamp: Date.now() });
+    const review = QuestionEngine.getMistakeReviewQuestions();
+    expect(review).toHaveLength(1);
+    expect(review[0]).toMatchObject({ id: 'legacy_math', subject: 'math' });
+    expect(review[0].options?.length).toBeGreaterThan(1);
   });
 });

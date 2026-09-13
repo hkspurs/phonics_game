@@ -146,10 +146,17 @@ test.describe('Sentence Scramble Card Tap & Button Repeated Hover UAT', () => {
       await page.waitForTimeout(100);
     }
 
-    // Now click on 6th hover
+    // The migrated home presentation owns the semantic action. Keep the
+    // canvas hover pass above as a regression for the fallback renderer, then
+    // activate the visible responsive button for the real browser journey.
     await page.mouse.move(box.x + 640, box.y + 360);
     await page.waitForTimeout(100);
-    await page.mouse.click(box.x + 640, box.y + 360);
+    const responsiveStart = page.getByRole('button', { name: /開始冒險|繼續冒險/ });
+    if (await responsiveStart.count()) {
+      await responsiveStart.click();
+    } else {
+      await page.mouse.click(box.x + 640, box.y + 360);
+    }
     await page.waitForTimeout(1200);
 
     // Verify MapScene is entered

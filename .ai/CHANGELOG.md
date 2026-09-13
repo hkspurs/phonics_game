@@ -1,5 +1,160 @@
 # AI Coordination Changelog
 
+## 2026-09-13 — OpenAI Codex — TASK-20260913-PHASE89-FOLLOWUP
+
+Follow-up review fixes for the Phase 8–9 release gates:
+- A sentence hint that auto-places the final token now updates the responsive
+  feedback state to correct and reveals the DOM `繼續前進` action.
+- Diagnostic hint usage counts the highest hint level once per question
+  session, including revisits where the same curriculum question ID starts a
+  fresh attempt sequence.
+- Added a deterministic browser regression for hint-completed sentence flow
+  and a repeated-session diagnostic aggregation case.
+
+Verification:
+- `npm run test:unit`: 63 test files, 1,940 tests passed.
+- `npm run build`: passed; the existing Vite large-chunk advisory remains.
+- Focused release Playwright gates: 5 tests passed.
+- Compatible responsive/sentence regression set: 3 tests passed.
+
+## 2026-09-13 — OpenAI Codex — TASK-20260913-PHASE89 (phases 8–9 complete)
+
+Summary:
+- Finished the supporting-screen accessibility pass with CSS-pixel Settings,
+  Trophy and Diagnostic Report views sharing the storybook treatment used by
+  the learning flow.
+- Kept diagnostic numbers factual by separating first-attempt accuracy from
+  eventual completion and providing an explicit no-history state. Mistake
+  review reconstructs queued snapshots exactly and provides same-subject
+  fallback content for legacy saves.
+- Added semantic headings, named controls, visible focus, live question and
+  settings announcements, keyboard dialog trapping, Escape/focus return and a
+  destructive reset confirmation. Settings preserve focus after a change;
+  trophy tabs expose roving keyboard semantics without horizontal scrolling.
+  Portrait guidance is now an optional, non-blocking toast; portrait remains
+  usable and zoomable, with the rotate animation disabled for reduced motion.
+- Made the responsive question view the sole interactive surface while it is
+  mounted, disabling the hidden Phaser input layer and restoring it on
+  shutdown. Fixed short-landscape Result/Question scrolling and kept controls
+  at 48px class touch targets.
+- Added real-control Playwright coverage for the full Home → Map → station →
+  wrong answer → hint → correct → Continue → Runner skip → Result → Shop →
+  Home journey, support destinations, the seven viewport matrix and portrait
+  rotation. Save snapshots verify `p1_adventure_save_v1`, completed station 1
+  and unique reward transaction IDs remain stable after navigation.
+- Normalized two pre-existing Playwright type imports so the repository suite
+  can start under the installed runner.
+
+Changed:
+- `src/presentation/{SettingsView,TrophyView,DiagnosticReportView,HomeView,MapView,QuestionView}.ts`
+- `src/scenes/{Settings,Trophy,Question}Scene.ts`, `src/ui/DiagnosticReportModal.ts`
+- `src/engine/QuestionEngine.ts`, `src/services/DataManager.ts`,
+  `src/types/index.ts`, `src/test/diagnostic-learning-report.test.ts`
+- `index.html`
+- `e2e/{phase8-support-destinations,phase8-9-full-journey,phase9-viewport-accessibility}.spec.ts`
+- `e2e/{game,wardrobe-hybrid-shop-visual}.spec.ts`
+- `.ai/{CURRENT_STATE,TASK_BOARD,OWNERSHIP,ARCHITECTURE,TESTING,CHANGELOG}.md`
+
+Verification:
+- `npm run test:unit`: 63 test files, 1,940 tests passed.
+- `npm run build`: TypeScript and Vite production build passed; the existing
+  1.96 MB bundle / >500 kB advisory remains.
+- Focused release Playwright gates: 5 tests passed (support destinations,
+  full journey, viewport matrix, portrait rotation), plus the existing core
+  responsive/sentence regression set passed.
+- Full `npm run test:e2e`: 57 passed, 33 failed. The failures are the known
+  legacy canvas-coordinate and live GitHub Pages suites that still assume the
+  pre-migration renderer or an available external host; the semantic DOM
+  release gates are green.
+- Headless visual review covered Home, Map, station detail, Question, Result,
+  Report, Settings, Trophy and Shop at 844×390. Traditional Chinese glyph
+  shapes remain host-font dependent in the headless image environment.
+
+Deployment:
+- `.github/workflows/deploy.yml` still publishes `dist/` via GitHub Pages on
+  pushes to `p1-adventure`, `main` or `master`. This branch remains a draft PR
+  targeting `p1-adventure`; merging it is the deployment trigger.
+
+Pending:
+- Migrate or retire legacy canvas-coordinate/live-host Playwright suites in a
+  follow-up so the repository-wide browser command reflects the semantic DOM
+  surface. No player save data is removed by this work.
+
+## 2026-09-12 — OpenAI Codex — TASK-20260912-STORYBOOK-UX (phases 0–7 complete)
+
+Summary:
+- Completed the approved warm Japanese picture-book direction across the game,
+  including optimized woodland art, paper-and-sage controls, calmer hierarchy,
+  and consistent Home, Map, Question, Runner, Shop, and Result styling.
+- Added a lifecycle-owned responsive presentation layer for Home, Map, station
+  detail, questions, and results. The CSS-pixel surfaces provide safe-area
+  spacing, keyboard focus, 48px-class controls, explicit Continue pacing, and a
+  child-readable mobile landscape layout while preserving Phaser fallback paths.
+- Added station detail navigation, authoritative progress copy, sentence-token
+  DOM interaction with duplicate-token support, reading-first result rewards,
+  and Runner input release on window blur.
+
+Changed:
+- `src/presentation/{ScreenHost,HomeView,MapView,StationDetailView,QuestionView,ResultView,responsive}.ts`
+- `src/scenes/{Title,Map,Question,Result,Runner,Shop,Preload}Scene.ts`
+- `src/ui/CanvasButton.ts`, `src/test/setup.ts`, `index.html`
+- `public/assets/storybook/woodland-home.webp`
+- Responsive browser assertions in `e2e/{responsive-layout,sentence-tap-and-button-hover}.spec.ts`
+
+Verification:
+- `npm run test:unit`: 63 test files, 1,937 tests passed.
+- `npm run build`: TypeScript and Vite production build succeeded.
+- Changed-area Playwright flow: 5 tests passed across responsive layout,
+  math speech/layout, sentence correction, and sentence card interaction.
+- Inspected Home, Map, station detail, choice question, sentence question, and
+  result screenshots at 844×390.
+
+Known limitation:
+- Headless screenshot environments may substitute a font without Traditional
+  Chinese glyphs; browser fallback fonts determine glyph appearance.
+
+## 2026-09-12 — OpenAI Codex — TASK-20260912-STORYBOOK-UX (checkpoint 2)
+
+Summary:
+- Added the responsive presentation foundation (`ScreenHost`) with typed
+  viewport classification and lifecycle cleanup.
+- Added child-facing responsive Home and Map views with real CSS-pixel text,
+  48px-class controls, keyboard focus, safe-area padding and phone layouts.
+- Wired Home and Map views to the existing Phaser navigation, station catalog,
+  DataManager progress and station modal flows.
+- Added focused responsive tests and verified the phone landscape browser flow.
+
+Verification:
+- Focused suites: 5 files, 134 tests passed.
+- Production TypeScript/Vite build completed.
+- Browser walkthrough: Home → Map on 844×390 with station list rendered.
+
+Pending:
+- Question, Runner, Result and Shop responsive presentation work.
+
+## 2026-09-12 — OpenAI Codex — TASK-20260912-STORYBOOK-UX (checkpoint 1)
+
+Summary:
+- Established the approved warm picture-book visual direction across the home,
+  question, result, shop, trophy and settings backgrounds.
+- Added and optimized a generated woodland home scene (WebP, about 212 KB).
+- Simplified home hierarchy, currency display and navigation copy.
+- Removed the 1.2-second automatic post-answer transition; the learner now
+  reads or hears feedback and explicitly selects Continue.
+- Fixed Node 24 test bootstrap compatibility for the global navigator value.
+
+Changed:
+- `src/scenes/{Title,Preload,Question,Map,Result,Shop,Settings,Trophy}Scene.ts`
+- `src/ui/CanvasButton.ts`, `src/test/setup.ts`, `index.html`
+- `public/assets/storybook/woodland-home.webp`
+
+Verification:
+- Full unit suite and production build rerun for this checkpoint.
+- Desktop and 844×390 landscape screenshots inspected.
+
+Pending:
+- Responsive reading layer and remaining per-screen layout work from the plan.
+
 ## 2026-09-02 — Antigravity — TASK-20260902-020
 
 Summary:

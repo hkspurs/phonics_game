@@ -18,7 +18,8 @@ test('Responsive Layout Verification: iPhone 15 Pro Max landscape, iPad, and Des
   expect(Math.abs(box1.width - expectedWidth)).toBeLessThan(2);
   expect(box1.x).toBeGreaterThan(0); // centered horizontally with side margins
 
-  // Verify TitleScene UI elements are centered inside game
+  // Verify the responsive home keeps the primary action in the right-hand
+  // reading column beside the illustrated character.
   const titleData = await page.evaluate(() => {
     const game = (window as any).__PHASER_GAME__;
     const title = game.scene.getScene('TitleScene');
@@ -32,7 +33,8 @@ test('Responsive Layout Verification: iPhone 15 Pro Max landscape, iPad, and Des
   console.log('TitleScene Dimensions & Coordinates:', titleData);
   expect(titleData.gameW).toBe(1280);
   expect(titleData.gameH).toBe(720);
-  expect(titleData.startBtnX).toBe(640);
+  expect(titleData.startBtnX).toBeGreaterThan(640);
+  expect(titleData.startBtnX).toBeLessThan(900);
 
   // Take screenshot on iPhone
   await page.screenshot({ path: '/tmp/test_iphone_landscape.png' });

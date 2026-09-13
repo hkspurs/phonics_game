@@ -6,6 +6,8 @@ import { SoundManager } from '../services/SoundManager';
 import { SpeechService } from '../services/SpeechService';
 import { CanvasButton } from '../ui/CanvasButton';
 import { CanvasModal } from '../ui/CanvasModal';
+import { ScreenHost } from '../presentation/ScreenHost';
+import { mountSettingsView } from '../presentation/SettingsView';
 
 export interface DifficultyOption {
   level: number;
@@ -53,6 +55,7 @@ export class SettingsScene extends Phaser.Scene {
 
   // Containers
   public mainPanel: Phaser.GameObjects.Container | null = null;
+  private settingsScreenHandle: { destroy(): void } | null = null;
 
   constructor() {
     super({ key: 'SettingsScene' });
@@ -74,28 +77,32 @@ export class SettingsScene extends Phaser.Scene {
 
     // 3. Settings Cards Panel
     this.createSettingsPanel(width, height);
+    this.settingsScreenHandle = ScreenHost.mount((host) => mountSettingsView(host, this));
+    if (this.settingsScreenHandle) this.mainPanel?.setVisible(false);
+    if (this.events?.once) this.events.once(Phaser.Scenes.Events.SHUTDOWN, this.shutdown, this);
   }
+
+  public shutdown(): void { this.settingsScreenHandle?.destroy(); this.settingsScreenHandle = null; ScreenHost.clear(); SpeechService.stop(); }
 
   private createBackground(width: number, height: number): void {
     if (!this.add) return;
 
     if (this.add.graphics) {
       const g = this.add.graphics();
-      // Sleek tech-slate background gradient
-      g.fillGradientStyle(0x16202c, 0x16202c, 0x0c131b, 0x0c131b, 1);
+      g.fillGradientStyle(0x456f59, 0x456f59, 0x1c382d, 0x1c382d, 1);
       g.fillRect(0, 0, width, height);
 
       // Subtle atmospheric glows
-      g.fillStyle(0x38bdf8, 0.05);
+      g.fillStyle(0xf2c567, 0.06);
       g.fillCircle(width * 0.2, height * 0.4, 300);
       g.fillStyle(0x48b64e, 0.04);
       g.fillCircle(width * 0.8, height * 0.7, 340);
 
       // Border outline
-      g.lineStyle(2, 0x27364b, 0.8);
+      g.lineStyle(2, 0x8da88a, 0.8);
       g.strokeRect(0, 0, width, height);
     } else if (this.add.rectangle) {
-      this.add.rectangle(width / 2, height / 2, width, height, 0x16202c);
+      this.add.rectangle(width / 2, height / 2, width, height, 0x294b3c);
     }
   }
 
@@ -652,4 +659,3 @@ export class SettingsScene extends Phaser.Scene {
     }
   }
 }
-

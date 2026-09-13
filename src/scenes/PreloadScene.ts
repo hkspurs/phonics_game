@@ -31,6 +31,9 @@ export class PreloadScene extends Phaser.Scene {
 
     this.createLoadingUI(width, height);
     this.registerLoaderEvents(width, height);
+    if (this.load && typeof this.load.image === 'function') {
+      this.load.image('storybook_woodland_home', 'assets/storybook/woodland-home.webp');
+    }
     this.loadKenneyAssets();
     this.loadWardrobeAssets();
     this.generateProceduralTextures();

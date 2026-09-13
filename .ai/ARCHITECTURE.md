@@ -23,6 +23,7 @@ p1-adventure/
 │   ├── engine/                # QuestionEngine, SentenceEngine, MathGenerator
 │   ├── scenes/                # Phaser 3 Scenes (Preload, Title, Map, Question, Runner, Shop)
 │   ├── services/              # DataManager, SoundManager, SpeechService, PlayerAvatarService
+│   ├── presentation/         # ScreenHost and responsive CSS-pixel storybook views
 │   ├── ui/                    # CanvasButton, CanvasCard, SlotBox, OutfitRenderer, Compositor
 │   └── main.ts                # Phaser game bootstrap & Scale FIT
 ├── AGENTS.md                  # Master AI Development Protocol
@@ -72,3 +73,34 @@ p1-adventure/
 ## 5. Audio & TTS Architecture
 - **SoundManager**: Procedural Web Audio oscillator synthesis (no external audio assets required).
 - **SpeechService**: Web Speech API (`window.speechSynthesis`) with voice selection for Cantonese (`zh-HK`), Mandarin (`zh-TW`), and English (`en-US`).
+
+## 6. Responsive Presentation Boundary
+- **`ScreenHost`** owns one active DOM view under `#screen-host`, toggles the
+  `body.has-screen-view` state, and destroys the previous view before mounting a
+  new scene surface. Settings and Trophy scenes own their view handles, while
+  `DiagnosticReportModal` mounts a modal handle over the current Home surface.
+- **Responsive views** (`HomeView`, `MapView`, `StationDetailView`,
+  `QuestionView`, `ResultView`, `SettingsView`, `TrophyView` and
+  `DiagnosticReportView`) render reading-heavy controls in CSS pixels with
+  safe-area padding, 48px-class targets and keyboard/focus semantics. Their
+  callbacks call the owning Phaser scene, so navigation, progression, reports
+  and reset mutations still use scene models and `DataManager` as the source of
+  truth.
+- **Mistake review reconstruction**: `QuestionEngine.getMistakeReviewQuestions()`
+  resolves queued IDs in persisted order, preferring serialized `questionSnapshot`
+  data and falling back to exact curriculum items or a same-subject generated
+  question for legacy dynamic attempts.
+- **Diagnostic hint aggregation**: `DataManager.getDiagnosticSummary()` treats
+  `hintLevelUsed` as cumulative within a question session. It counts each
+  session's highest level and detects a revisit when `attemptNumber` resets,
+  so repeated practice of one curriculum ID is represented without counting
+  every retry as another hint.
+- **Interactive ownership**: while `QuestionView` is mounted, the hidden
+  Phaser question controls are disabled and restored on scene shutdown. This
+  prevents duplicate answer paths and keeps DOM feedback, hint and Continue
+  actions synchronized with one authoritative scene model. Runner and Shop
+  remain canvas-owned because they have no responsive DOM migration yet.
+- **Fallback behavior**: when no host is available (embedded tests or a
+  non-browser shell), the existing Phaser canvas UI remains usable. The
+  optional portrait orientation toast is non-interactive and never blocks the
+  active view.

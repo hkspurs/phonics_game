@@ -293,19 +293,19 @@ export class ShopScene extends Phaser.Scene {
 
     if (this.add.graphics) {
       const g = this.add.graphics();
-      g.fillGradientStyle(0x231a2e, 0x231a2e, 0x140e1b, 0x140e1b, 1);
+      g.fillGradientStyle(0x3f574d, 0x3f574d, 0x1f352c, 0x1f352c, 1);
       g.fillRect(0, 0, width, height);
 
       // Gold shimmer accent circles
       g.fillStyle(0xf5a623, 0.06);
       g.fillCircle(width * 0.75, height * 0.45, 340);
-      g.fillStyle(0x8e44ad, 0.08);
+      g.fillStyle(0xf2c567, 0.08);
       g.fillCircle(width * 0.25, height * 0.6, 280);
 
-      g.lineStyle(2, 0x3e2b52, 0.8);
+      g.lineStyle(2, 0x8da88a, 0.8);
       g.strokeRect(0, 0, width, height);
     } else if (this.add.rectangle) {
-      this.add.rectangle(width / 2, height / 2, width, height, 0x231a2e);
+      this.add.rectangle(width / 2, height / 2, width, height, 0x2b4439);
     }
   }
 
@@ -357,7 +357,7 @@ export class ShopScene extends Phaser.Scene {
       const title = this.add.text(width / 2 - 20, barY, '🛒 夢幻衣櫥與冒險商店 (Dream Wardrobe)', {
         fontSize: '24px',
         fontFamily: "'Kenney Future', 'Noto Sans TC', sans-serif",
-        color: '#ffd700',
+        color: '#fff9ed',
         fontStyle: 'bold',
       });
       if (typeof title.setOrigin === 'function') title.setOrigin(0.5);
@@ -379,16 +379,16 @@ export class ShopScene extends Phaser.Scene {
     if (this.add.graphics) {
       const g = this.add.graphics();
       // Drop Shadow
-      g.fillStyle(0x000000, 0.35);
+      g.fillStyle(0x243e35, 0.18);
       g.fillRoundedRect(currX - 175, barY - 21, 350, 46, 23);
-      // Dark Blue Glass Body
-      g.fillStyle(0x0f172a, 0.94);
+      // Warm paper body shared with the reading screens
+      g.fillStyle(0xfffbf2, 0.96);
       g.fillRoundedRect(currX - 175, barY - 23, 350, 46, 23);
-      // Golden Rim Border
-      g.lineStyle(2.5, 0xf59e0b, 0.9);
+      // Sage rim border
+      g.lineStyle(2.5, 0x8da88a, 0.95);
       g.strokeRoundedRect(currX - 175, barY - 23, 350, 46, 23);
-      // Inner Light Sheen
-      g.lineStyle(1.2, 0xffffff, 0.35);
+      // Subtle inner paper edge
+      g.lineStyle(1.2, 0xffffff, 0.7);
       g.strokeRoundedRect(currX - 173, barY - 21, 346, 42, 21);
       if (typeof g.setDepth === 'function') g.setDepth(55);
     }
@@ -397,7 +397,7 @@ export class ShopScene extends Phaser.Scene {
       this.coinText = this.add.text(currX - 110, barY, `🪙 ${profile.coins}`, {
         fontSize: '22px',
         fontFamily: "'Kenney Future', 'Noto Sans TC', sans-serif",
-        color: '#fde047',
+        color: '#725419',
         fontStyle: 'bold',
       });
       if (typeof this.coinText.setOrigin === 'function') this.coinText.setOrigin(0.5);
@@ -406,7 +406,7 @@ export class ShopScene extends Phaser.Scene {
       this.gemText = this.add.text(currX, barY, `💎 ${profile.gems}`, {
         fontSize: '22px',
         fontFamily: "'Kenney Future', 'Noto Sans TC', sans-serif",
-        color: '#38bdf8',
+        color: '#287f87',
         fontStyle: 'bold',
       });
       if (typeof this.gemText.setOrigin === 'function') this.gemText.setOrigin(0.5);
@@ -415,7 +415,7 @@ export class ShopScene extends Phaser.Scene {
       this.starText = this.add.text(currX + 110, barY, `⭐ ${totalStars}`, {
         fontSize: '22px',
         fontFamily: "'Kenney Future', 'Noto Sans TC', sans-serif",
-        color: '#fbbf24',
+        color: '#9a681e',
         fontStyle: 'bold',
       });
       if (typeof this.starText.setOrigin === 'function') this.starText.setOrigin(0.5);

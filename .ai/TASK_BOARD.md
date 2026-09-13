@@ -2,13 +2,61 @@
 
 ## ACTIVE
 
-None.
+### TASK-20260912-STORYBOOK-UX
+
+Agent: OpenAI Codex
+Status: DONE
+Started: 2026-09-12  
+Completed: 2026-09-12 19:52 UTC
+
+Description: Implement the approved picture-book UI, responsive UX, graphics,
+learning-flow pacing and whole-game visual consistency plan.
 
 ## BLOCKED
 
 None.
 
 ## COMPLETED
+
+### TASK-20260913-PHASE89
+
+Agent: OpenAI Codex
+Status: DONE
+Started: 2026-09-13
+Completed: 2026-09-13
+
+Description:
+Finished Phases 8–9: added responsive Settings, Trophy and Diagnostic Report
+surfaces; restored semantic focus, live feedback, destructive reset confirmation
+and truthful empty-history reporting; verified the full semantic journey and
+release viewport matrix; updated handover records and deployment notes.
+
+Verification:
+- `npm run test:unit`: 63 files, 1,940 tests passed.
+- `npm run build`: passed; Vite retains the existing >500 kB advisory.
+- Focused Playwright release gates: support destinations 1 passed, full
+  journey 1 passed, viewport matrix + portrait rotation 2 passed.
+- Full repository Playwright run: 57 passed, 33 failed in legacy canvas
+  coordinate/live-host suites that predate the DOM single-renderer contract;
+  those paths are recorded as migration follow-up, while the new semantic
+  gates pass.
+
+### TASK-20260913-PHASE89-FOLLOWUP
+
+Agent: OpenAI Codex
+Status: DONE
+Started: 2026-09-13
+Completed: 2026-09-13
+
+Description:
+Closed final review findings for hint-completed sentence questions and
+diagnostic hint aggregation across repeated question sessions.
+
+Verification:
+- `npm run test:unit`: 63 files, 1,940 tests passed.
+- `npm run build`: passed; existing Vite large-chunk advisory remains.
+- Focused release Playwright gates: 5 passed.
+- Compatible responsive/sentence regression set: 3 passed.
 
 ### TASK-20260902-020
 
