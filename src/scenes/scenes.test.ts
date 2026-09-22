@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 import Phaser from 'phaser';
 import { BootScene } from './BootScene';
 import { PreloadScene, LEARNING_TIPS } from './PreloadScene';
-import { getWardrobePreloadPaths, OUTFIT_DEFINITIONS } from '../config/outfits';
+import { getEquippedWardrobePreloadPaths, getWardrobePreloadPaths, OUTFIT_DEFINITIONS } from '../config/outfits';
 import { TitleScene } from './TitleScene';
 import { MapScene } from './MapScene';
 import { QuestionScene } from './QuestionScene';
@@ -367,7 +367,7 @@ describe('Scene Lifecycle & Navigation Flow', () => {
       expect(loadedImageKeys).toContain('soldier_stand');
     });
 
-    it('registers wardrobe thumbnails and optional wearing poses with the asset loader', () => {
+    it('defers unselected wardrobe art from the initial asset loader', () => {
       const preloadScene = new PreloadScene();
       const mock = createMockSceneForTest('PreloadScene');
       Object.assign(preloadScene, mock);
@@ -375,10 +375,23 @@ describe('Scene Lifecycle & Navigation Flow', () => {
       preloadScene.preload();
 
       const loadedImageKeys = mock.load.image.mock.calls.map((call: any[]) => call[0]);
-      expect(loadedImageKeys).toContain('assets/outfits/scholar_gown/thumbnail.png');
-      expect(loadedImageKeys).toContain('assets/character/outfits/scholar_gown/idle.png');
-      expect(loadedImageKeys).toContain('assets/character/outfits/scholar_gown/run.png');
-      expect(loadedImageKeys).toContain('assets/character/outfits/scholar_gown/cheer.png');
+      expect(loadedImageKeys).not.toContain('assets/outfits/scholar_gown/thumbnail.png');
+      expect(loadedImageKeys).not.toContain('assets/character/outfits/scholar_gown/idle.png');
+      expect(loadedImageKeys).not.toContain('pet_mecha_cat_idle');
+    });
+
+    it('keeps an equipped full-body outfit available during boot', () => {
+      expect(getEquippedWardrobePreloadPaths({ dress: 'scholar_robe' })).toEqual(expect.arrayContaining([
+        'assets/outfits/scholar_gown/thumbnail.png',
+        'assets/character/outfits/scholar_gown/idle.png',
+        'assets/character/outfits/scholar_gown/run.png',
+        'assets/character/outfits/scholar_gown/cheer.png',
+      ]));
+      expect(getEquippedWardrobePreloadPaths({ top: 'hk_school_shirt' })).toEqual(expect.arrayContaining([
+        'assets/character/outfits/school_uniform/idle.png',
+        'assets/character/outfits/school_uniform/run.png',
+        'assets/character/outfits/school_uniform/cheer.png',
+      ]));
     });
 
     it('does not enqueue unavailable Star Hoodie placeholder art', () => {

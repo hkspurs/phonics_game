@@ -3,6 +3,7 @@ import { CurriculumBank, CurriculumItem } from './CurriculumBank';
 import { SentenceEngine } from './SentenceEngine';
 import { MathGenerator } from './MathGenerator';
 import { DataManager } from '../services/DataManager';
+import { cloneQuizQuestion } from './QuestionSnapshot';
 
 /**
  * QuestionEngine
@@ -34,14 +35,18 @@ export class QuestionEngine {
     const attempts = dm.getQuestionAttempts();
     return dm.getMistakeReviewQueue().map((questionId) => {
       const latest = [...attempts].reverse().find((attempt) => attempt.questionId === questionId);
-      if (latest?.questionSnapshot) return { ...latest.questionSnapshot };
+      if (latest?.questionSnapshot) return {
+        ...cloneQuizQuestion(latest.questionSnapshot),
+        reviewSource: 'snapshot' as const,
+        originalQuestionId: questionId,
+      };
       const item = CurriculumBank.getItems(latest?.subject === 'english' ? 'english' : 'chinese', latest?.difficulty).find((candidate) => candidate.id === questionId);
       if (item) {
-        if (item.type === 'sentence_scramble') return { id: item.id, subject: item.subject, type: item.type, prompt: item.prompt, speakText: item.speakText, correctTokens: [...(item.tokens ?? [])], shuffledTokens: SentenceEngine.shuffleTokens(item.tokens ?? []), hintText: item.hintText };
-        return { id: item.id, subject: item.subject, type: item.type, prompt: item.prompt, speakText: item.speakText, options: [...(item.options ?? [])], correctOptionIndex: item.correctOptionIndex ?? 0, correctAnswer: item.correctAnswer, hintText: item.hintText };
+        if (item.type === 'sentence_scramble') return { id: item.id, subject: item.subject, type: item.type, prompt: item.prompt, speakText: item.speakText, correctTokens: [...(item.tokens ?? [])], shuffledTokens: SentenceEngine.shuffleTokens(item.tokens ?? []), hintText: item.hintText, reviewSource: 'curriculum' as const, originalQuestionId: questionId };
+        return { id: item.id, subject: item.subject, type: item.type, prompt: item.prompt, speakText: item.speakText, options: [...(item.options ?? [])], correctOptionIndex: item.correctOptionIndex ?? 0, correctAnswer: item.correctAnswer, hintText: item.hintText, reviewSource: 'curriculum' as const, originalQuestionId: questionId };
       }
       const replacement = this.generateSingleQuestion(latest?.subject ?? 'math', latest?.difficulty ?? 1);
-      return { ...replacement, id: questionId };
+      return { ...replacement, originalQuestionId: questionId, reviewSource: 'replacement' as const, reviewLabel: '相同類型練習' };
     });
   }
 

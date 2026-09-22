@@ -41,25 +41,11 @@ test.describe('UI QA Auditor 1: Adversarial Viewport & Touch Coordinate Drift E2
 
       console.log(`[${dev.name}] Canvas Bounds:`, metrics.canvas);
 
-      // Scale factors
-      const scaleX = metrics.canvas.width / 1280;
-      const scaleY = metrics.canvas.height / 720;
-
-      const toPageCoords = (gameX: number, gameY: number) => ({
-        x: metrics.canvas.left + gameX * scaleX,
-        y: metrics.canvas.top + gameY * scaleY,
-      });
-
-      // 2. Test Start Game Button Click -> Transition to MapScene
-      const startPos = toPageCoords(metrics.buttons.start.x, metrics.buttons.start.y);
-      await page.mouse.click(startPos.x, startPos.y);
-      await page.waitForTimeout(600);
-
-      const mapActive = await page.evaluate(() => {
-        const game = (window as any).__PHASER_GAME__;
-        return game && game.scene && game.scene.isActive('MapScene');
-      });
-      expect(mapActive).toBe(true);
+      // 2. The responsive Home action is the production touch surface.
+      const responsiveStart = page.getByRole('button', { name: /開始冒險|繼續冒險/ }).first();
+      await expect(responsiveStart).toBeVisible();
+      await responsiveStart.click();
+      await expect(page.locator('.map-view')).toBeVisible();
 
       // 3. In MapScene, navigate into QuestionScene (Station 1)
       await page.evaluate(() => {
@@ -94,21 +80,9 @@ test.describe('UI QA Auditor 1: Adversarial Viewport & Touch Coordinate Drift E2
       expect(qData.hasBackButton).toBe(true);
       expect(qData.hasSpeakerButton).toBe(true);
 
-      // 5. Test Back Button click to return to MapScene
-      const backBtnCoords = await page.evaluate(() => {
-        const game = (window as any).__PHASER_GAME__;
-        const qScene = game.scene.getScene('QuestionScene') as any;
-        return { x: qScene.backButton.x, y: qScene.backButton.y };
-      });
-      const backPagePos = toPageCoords(backBtnCoords.x, backBtnCoords.y);
-      await page.mouse.click(backPagePos.x, backPagePos.y);
-      await page.waitForTimeout(600);
-
-      const mapReactivated = await page.evaluate(() => {
-        const game = (window as any).__PHASER_GAME__;
-        return game && game.scene && game.scene.isActive('MapScene');
-      });
-      expect(mapReactivated).toBe(true);
+      // 5. Test the semantic back control to return to MapScene.
+      await page.getByRole('button', { name: '‹ 地圖', exact: true }).click();
+      await expect(page.locator('.map-view')).toBeVisible();
     });
   }
 });

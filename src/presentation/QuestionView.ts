@@ -35,6 +35,9 @@ export function mountQuestionView(host: HTMLElement, scene: QuestionViewScene): 
   const heading = makeElement('div', 'question-heading'); addText(heading, 'span', `第 ${scene.questionIndex + 1} / ${Math.max(1, scene.questions.length)} 題`, 'question-progress'); addText(heading, 'h1', `${scene.stationName} · ${question.subject === 'math' ? '數學' : question.subject === 'english' ? '英語' : '中文'}`, 'question-title').id = 'question-title'; top.append(heading);
   shell.append(top);
   const card = makeElement('div', 'question-card');
+  if (question.reviewLabel) {
+    addText(card, 'p', question.reviewLabel, 'question-review-label');
+  }
   const promptRow = makeElement('div', 'question-prompt-row');
   addText(promptRow, 'p', question.prompt || '請完成以下小挑戰。', 'question-prompt');
   const listen = makeElement('button', 'question-listen'); listen.type = 'button'; listen.textContent = '聽一次'; listen.addEventListener('click', () => scene.speakCurrentQuestion()); promptRow.append(listen); card.append(promptRow);

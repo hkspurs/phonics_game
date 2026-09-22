@@ -5,7 +5,12 @@ import { SoundManager } from '../services/SoundManager';
 import { SpeechService } from '../services/SpeechService';
 import { CanvasButton } from '../ui/CanvasButton';
 import { CanvasModal } from '../ui/CanvasModal';
-import { CharacterOutfitCompositor } from '../ui/CharacterOutfitCompositor';
+import {
+  CharacterOutfitCompositor,
+  FULL_SPRITE_CANVAS_CENTER,
+  FULL_SPRITE_GROUND_BASELINE,
+  FULL_SPRITE_LOCAL_SCALE,
+} from '../ui/CharacterOutfitCompositor';
 import {
   WARDROBE_ITEMS,
   WardrobeItem,
@@ -14,10 +19,11 @@ import {
   getWardrobeItemsForFilter,
 } from '../config/wardrobe';
 import { EquippedWardrobe, PetDefinition } from '../types';
-import { getWardrobeSlot as getItemWardrobeSlot, previewWardrobe, PreviewPose } from '../config/outfits';
+import { getWardrobePreloadPaths, getWardrobeSlot as getItemWardrobeSlot, previewWardrobe, PreviewPose } from '../config/outfits';
 import { CharacterPreviewController, PreviewCharacterDefinition } from '../ui/CharacterPreviewController';
 import { getWardrobeLayout } from '../ui/wardrobeLayout';
 import { wardrobeRegistry } from '../ui/OutfitRegistry';
+import { PET_RUNTIME_ASSETS, RuntimeAssetLoader, RuntimeAssetGroupState } from '../services/RuntimeAssetLoader';
 
 export interface SkinDefinition {
   id: string;
@@ -195,10 +201,20 @@ export class ShopScene extends Phaser.Scene {
   private purchaseModal: CanvasModal | null = null;
   private wardrobePurchasePending = false;
   private previewController: CharacterPreviewController | null = null;
+  private previewCharacterLayer: Phaser.GameObjects.Container | null = null;
+  private previewCharacterX = 0;
+  private previewPedestalCenterY = 0;
+  private previewLayout: ReturnType<typeof getWardrobeLayout> | null = null;
   private previewWardrobeState: EquippedWardrobe | null = null;
   private previewIsCompact = false;
   private wardrobePage = 0;
   private wardrobePageStart = 0;
+  public assetLoadState: Record<'wardrobe' | 'pets', RuntimeAssetGroupState> = {
+    wardrobe: 'idle',
+    pets: 'idle',
+  };
+  private runtimeAssetLoader: RuntimeAssetLoader | null = null;
+  private assetRequestGeneration = 0;
 
   private walkAnimTimer: Phaser.Time.TimerEvent | null = null;
   private currentWalkFrame: number = 0;
@@ -260,6 +276,7 @@ export class ShopScene extends Phaser.Scene {
     this.previewWardrobeState = data?.previewWardrobe
       ? { ...data.previewWardrobe }
       : DataManager.getInstance().getEquippedWardrobe();
+    this.initializeRuntimeAssetLoader();
 
     // 1. Background
     this.createBackground(width, height);
@@ -278,6 +295,9 @@ export class ShopScene extends Phaser.Scene {
 
     // 6. Update Preview Content & Action Button
     this.updatePreviewDisplay();
+    if (this.currentTab === 'wardrobe' || this.currentTab === 'pets') {
+      void this.ensureAssetsForTab(this.currentTab);
+    }
 
     // 7. Bind shutdown cleanup
     if (this.events && typeof this.events.once === 'function') {
@@ -482,6 +502,45 @@ export class ShopScene extends Phaser.Scene {
 
     this.renderCurrentTabList(width, height);
     this.updatePreviewDisplay();
+    if (tab === 'wardrobe' || tab === 'pets') void this.ensureAssetsForTab(tab);
+  }
+
+  private initializeRuntimeAssetLoader(): void {
+    if (
+      typeof this.load?.image !== 'function'
+      || typeof (this.load as any)?.on !== 'function'
+      || typeof (this.load as any)?.start !== 'function'
+    ) return;
+    this.runtimeAssetLoader = new RuntimeAssetLoader(
+      this.load as any,
+      key => Boolean(this.textures?.exists?.(key)),
+    );
+  }
+
+  private getRuntimeAssets(group: 'wardrobe' | 'pets') {
+    return group === 'pets'
+      ? PET_RUNTIME_ASSETS
+      : getWardrobePreloadPaths().map(path => ({ key: path, url: path }));
+  }
+
+  private async ensureAssetsForTab(group: 'wardrobe' | 'pets', retry = false): Promise<void> {
+    if (!this.runtimeAssetLoader) return;
+    const generation = ++this.assetRequestGeneration;
+    this.assetLoadState[group] = 'loading';
+    this.updatePreviewDisplay();
+    const result = retry
+      ? await this.runtimeAssetLoader.retryGroup(group)
+      : await this.runtimeAssetLoader.loadGroup(group, this.getRuntimeAssets(group));
+    this.assetLoadState[group] = result.status;
+    if (generation !== this.assetRequestGeneration || this.currentTab !== group) return;
+    const width = this.sys?.game?.config ? Number(this.sys.game.config.width) : GAME_WIDTH;
+    const height = this.sys?.game?.config ? Number(this.sys.game.config.height) : GAME_HEIGHT;
+    this.renderCurrentTabList(width, height);
+    this.updatePreviewDisplay();
+  }
+
+  public retryAssetGroup(group: 'wardrobe' | 'pets'): void {
+    void this.ensureAssetsForTab(group, true);
   }
 
   private renderCurrentTabList(width: number, height: number): void {
@@ -1374,7 +1433,10 @@ export class ShopScene extends Phaser.Scene {
       g.strokeRoundedRect(stageX + 7, stageY + 7, Math.max(1, layout.stage.width - 14), Math.max(1, layout.stage.height - 14), 14);
 
       // 3D Stepped Pedestal Base & Glowing Disc (Proportional Hero Platform)
-      const pedestalCenterY = stageY + layout.stage.height * 0.72;
+      // Keep the platform low enough to give the authored full-body sprite a
+      // readable 55%+ stage presence while leaving the head and details dock
+      // inside the preview frame.
+      const pedestalCenterY = stageY + layout.stage.height * (compact ? 0.99 : 0.88);
       const pedestalWidth = Math.min(300, layout.stage.width * 0.48);
 
       // Soft Floor Light Pool Texture
@@ -1470,11 +1532,23 @@ export class ShopScene extends Phaser.Scene {
       reducedMotion: this.prefersReducedMotion,
     });
     const characterX = layout.character.x + layout.character.width / 2 - panelX;
-    const pedestalCenterY = stageY + layout.stage.height * 0.72;
-    // Ground character feet precisely on top of the velvet platform disc (pedestalCenterY - 4)
-    const characterY = pedestalCenterY - 4 - (55 * layout.character.scale);
+    const pedestalCenterY = stageY + layout.stage.height * (compact ? 0.99 : 0.88);
+    const isFullSprite = controller.lastRenderResult?.mode === 'fullSprite';
+    // Ground authored full-body art by its shared 512px baseline. Composite
+    // fallback art keeps its historical 55px visual anchor.
+    const characterOffset = isFullSprite
+      ? (FULL_SPRITE_GROUND_BASELINE - FULL_SPRITE_CANVAS_CENTER)
+        * FULL_SPRITE_LOCAL_SCALE
+        * layout.character.scale
+      : 55 * layout.character.scale;
+    const characterY = pedestalCenterY - 4 - characterOffset;
     characterLayer.setPosition(characterX, characterY);
     this.previewController = controller;
+    this.previewCharacterLayer = characterLayer;
+    this.previewCharacterX = characterX;
+    this.previewPedestalCenterY = pedestalCenterY;
+    this.previewLayout = layout;
+    this.positionPreviewCharacter();
     this.previewSprite = controller.sprite;
     this.wardrobeGraphics = controller.wardrobeGraphics;
 
@@ -1785,8 +1859,27 @@ export class ShopScene extends Phaser.Scene {
       this.updateGadgetPreviewDisplay(dm, profile);
     }
 
+    this.positionPreviewCharacter();
     this.updatePetCompanionStage();
     this.refreshCurrencyHUD();
+  }
+
+  /** Re-anchor the preview whenever a try-on changes render mode. */
+  private positionPreviewCharacter(): void {
+    if (!this.previewCharacterLayer || !this.previewController || !this.previewLayout) return;
+    const layout = this.previewLayout;
+    const isFullSprite = this.previewController.lastRenderResult?.mode === 'fullSprite';
+    const characterOffset = isFullSprite
+      ? (FULL_SPRITE_GROUND_BASELINE - FULL_SPRITE_CANVAS_CENTER)
+        * FULL_SPRITE_LOCAL_SCALE
+        * layout.character.scale
+      : 55 * layout.character.scale;
+    this.previewCharacterLayer.setPosition(
+      this.previewCharacterX,
+      // Keep the authored alpha bounds just inside the stage even after
+      // texture rounding at recording-size and compact landscape viewports.
+      this.previewPedestalCenterY + 4 - characterOffset
+    );
   }
 
   private updatePetCompanionStage(): void {
@@ -1974,7 +2067,15 @@ export class ShopScene extends Phaser.Scene {
 
     if (this.actionButton) {
       if (typeof this.actionButton.setDepth === 'function') this.actionButton.setDepth(60);
-      if (isEquipped) {
+      if (this.assetLoadState.pets === 'loading') {
+        this.actionButton.setText('⏳ 載入寵物圖片…');
+        this.actionButton.setColor('grey');
+        this.actionButton.setEnabled(false);
+      } else if (this.assetLoadState.pets === 'error') {
+        this.actionButton.setText('↻ 重新載入寵物圖片');
+        this.actionButton.setColor('yellow');
+        this.actionButton.setEnabled(true);
+      } else if (isEquipped) {
         this.actionButton.setText('✅ 出戰中');
         this.actionButton.setIcon?.('vec_icon_check_24');
         this.actionButton.setColor('grey');
@@ -2068,7 +2169,17 @@ export class ShopScene extends Phaser.Scene {
 
     if (this.actionButton) {
       if (typeof this.actionButton.setDepth === 'function') this.actionButton.setDepth(60);
-      if (!isArtworkReady) {
+      if (this.assetLoadState.wardrobe === 'loading') {
+        this.actionButton.setText('⏳ 載入服裝圖片…');
+        this.actionButton.setIcon?.('vec_icon_wardrobe_24');
+        this.actionButton.setColor('grey');
+        this.actionButton.setEnabled(false);
+      } else if (this.assetLoadState.wardrobe === 'error') {
+        this.actionButton.setText('↻ 重新載入服裝圖片');
+        this.actionButton.setIcon?.('vec_icon_wardrobe_24');
+        this.actionButton.setColor('yellow');
+        this.actionButton.setEnabled(true);
+      } else if (!isArtworkReady) {
         this.actionButton.setText('🎨 美術準備中');
         this.actionButton.setIcon?.('vec_icon_lock_24');
         this.actionButton.setColor('grey');
@@ -2288,6 +2399,18 @@ export class ShopScene extends Phaser.Scene {
   }
 
   public handleActionClick(): void {
+    if (this.currentTab === 'wardrobe' && this.assetLoadState.wardrobe === 'error') {
+      this.retryAssetGroup('wardrobe');
+      return;
+    }
+    if (this.currentTab === 'pets' && this.assetLoadState.pets === 'error') {
+      this.retryAssetGroup('pets');
+      return;
+    }
+    if (
+      (this.currentTab === 'wardrobe' && this.assetLoadState.wardrobe === 'loading')
+      || (this.currentTab === 'pets' && this.assetLoadState.pets === 'loading')
+    ) return;
     const dm = DataManager.getInstance();
     const profile = dm.getProfile();
 
@@ -2351,6 +2474,7 @@ export class ShopScene extends Phaser.Scene {
     } else if (this.currentTab === 'pets') {
       const pet = PET_DEFINITIONS[this.selectedPetIndex];
       if (!pet) return;
+      if (!this.textures?.exists?.(`pet_${pet.id}_idle`)) return;
 
       const isOwned = profile.ownedPets?.includes(pet.id);
       if (isOwned) {
@@ -2577,8 +2701,13 @@ export class ShopScene extends Phaser.Scene {
   private purchaseWardrobeItem(item: WardrobeItem): void {
     const dm = DataManager.getInstance();
     const profile = dm.getProfile();
-    const currency = item.costCoins > 0 ? 'coins' : 'gems';
-    const cost = item.costCoins > 0 ? item.costCoins : item.costGems;
+    // Wardrobe prices can be expressed in either currency. Prefer coins when
+    // the player can afford the coin price; otherwise use the gem price. This
+    // keeps the purchase atomic while allowing the UI's displayed fallback
+    // currency to match the ledger deduction.
+    const canAffordCoins = item.costCoins > 0 && profile.coins >= item.costCoins;
+    const currency = canAffordCoins ? 'coins' : 'gems';
+    const cost = currency === 'coins' ? item.costCoins : item.costGems;
     const canAfford = currency === 'coins' ? profile.coins >= cost : profile.gems >= cost;
     if (!canAfford) {
       SoundManager.play('wrong');
@@ -2605,8 +2734,9 @@ export class ShopScene extends Phaser.Scene {
     if (this.purchaseModal || this.wardrobePurchasePending || !this.add) return;
     const dm = DataManager.getInstance();
     const profile = dm.getProfile();
-    const currency = item.costCoins > 0 ? 'coins' : 'gems';
-    const cost = item.costCoins > 0 ? item.costCoins : item.costGems;
+    const canAffordCoins = item.costCoins > 0 && profile.coins >= item.costCoins;
+    const currency = canAffordCoins ? 'coins' : 'gems';
+    const cost = currency === 'coins' ? item.costCoins : item.costGems;
     const canAfford = currency === 'coins' ? profile.coins >= cost : profile.gems >= cost;
     if (!canAfford) {
       SoundManager.play('wrong');
@@ -2626,7 +2756,7 @@ export class ShopScene extends Phaser.Scene {
       theme: 'gold',
       borderColor: 0xf5bd42,
       onClose: () => {
-        this.purchaseModal = null;
+        if (this.purchaseModal === modal) this.purchaseModal = null;
       },
     });
 
@@ -2665,6 +2795,7 @@ export class ShopScene extends Phaser.Scene {
         this.actionButton?.setColor?.('grey');
         this.actionButton?.setEnabled?.(false);
         modal.close();
+        if (this.purchaseModal === modal) this.purchaseModal = null;
         const completePurchase = () => {
           this.wardrobePurchasePending = false;
           this.purchaseWardrobeItem(item);
@@ -3092,6 +3223,9 @@ export class ShopScene extends Phaser.Scene {
   }
 
   public cleanup(): void {
+    this.assetRequestGeneration++;
+    this.runtimeAssetLoader?.destroy();
+    this.runtimeAssetLoader = null;
     if (this.scale && typeof (this.scale as any).off === 'function') {
       (this.scale as any).off(Phaser.Scale.Events.RESIZE, this.handleScaleResize, this);
     }
@@ -3118,6 +3252,8 @@ export class ShopScene extends Phaser.Scene {
     this.wardrobePurchasePending = false;
     this.previewController?.destroy();
     this.previewController = null;
+    this.previewCharacterLayer = null;
+    this.previewLayout = null;
   }
 
   private detectReducedMotionPreference(): boolean {

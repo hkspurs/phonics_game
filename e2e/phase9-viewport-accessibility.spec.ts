@@ -54,8 +54,18 @@ test('portrait guidance is optional and rotation preserves the active screen', a
   expect(viewportMeta).not.toContain('user-scalable=no');
   expect(viewportMeta).not.toContain('maximum-scale=1');
   const warning = page.locator('#orientation-warning');
+  await expect(warning).toBeHidden();
+  await page.getByRole('button', { name: '換新造型' }).click();
+  await expect.poll(() => page.evaluate(() =>
+    (window as any).__PHASER_GAME__?.scene.isActive('ShopScene'))).toBe(true);
   await expect(warning).toBeVisible();
   await expect.poll(() => warning.evaluate((element) => getComputedStyle(element).pointerEvents)).toBe('none');
+  await page.evaluate(() => {
+    const shop = (window as any).__PHASER_GAME__?.scene.getScene('ShopScene');
+    shop?.scene.start('TitleScene');
+  });
+  await expect(page.locator('.home-view')).toBeVisible();
+  await expect(warning).toBeHidden();
 
   await page.setViewportSize({ width: 844, height: 390 });
   await expect(page.locator('.home-view')).toBeVisible();

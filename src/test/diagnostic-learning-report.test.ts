@@ -3,6 +3,7 @@ import { DataManager } from '../services/DataManager';
 import { DiagnosticReportModal } from '../ui/DiagnosticReportModal';
 import { createMockSceneForMeta } from '../scenes/MetaScenes.test';
 import { QuestionEngine } from '../engine/QuestionEngine';
+import { QuestionScene } from '../scenes/QuestionScene';
 
 describe('Enhancement 6: Diagnostic Learning Report & Review Mistakes Queue', () => {
   let localStorageMock: Record<string, string>;
@@ -149,6 +150,40 @@ describe('Enhancement 6: Diagnostic Learning Report & Review Mistakes Queue', ()
     expect(report.totalHintsUsed).toBe(3);
   });
 
+  it('groups interleaved new attempts by explicit session identity', () => {
+    const dm = DataManager.getInstance();
+    const base = { questionId: 'm-session', stationId: 1, subject: 'math' as const, knowledgeTag: 'addition', difficulty: 1, selectedAnswerId: 0, isCorrect: false, timestamp: Date.now() };
+    dm.recordAttempt({ ...base, sessionId: 'visit-a', attemptNumber: 1, hintLevelUsed: 1 });
+    dm.recordAttempt({ ...base, sessionId: 'visit-b', attemptNumber: 1, hintLevelUsed: 3 });
+    dm.recordAttempt({ ...base, sessionId: 'visit-a', attemptNumber: 2, hintLevelUsed: 2 });
+    expect(dm.getDiagnosticSummary().totalHintsUsed).toBe(5);
+  });
+
+  it('keeps one explicit session across midnight and reordered timestamps', () => {
+    const dm = DataManager.getInstance();
+    const base = { questionId: 'm-midnight', stationId: 1, subject: 'math' as const, knowledgeTag: 'addition', difficulty: 1, selectedAnswerId: 0, isCorrect: false, sessionId: 'visit-midnight' };
+    dm.recordAttempt({ ...base, attemptNumber: 2, hintLevelUsed: 3, timestamp: Date.parse('2026-09-15T00:00:01+08:00') });
+    dm.recordAttempt({ ...base, attemptNumber: 1, hintLevelUsed: 1, timestamp: Date.parse('2026-09-14T23:59:59+08:00') });
+    expect(dm.getDiagnosticSummary().totalHintsUsed).toBe(3);
+  });
+
+  it('treats legacy rows without attempt numbers as separate conservative sessions', () => {
+    const dm = DataManager.getInstance();
+    const base = { questionId: 'legacy-missing-attempt', stationId: 1, subject: 'math' as const, knowledgeTag: 'addition', difficulty: 1, selectedAnswerId: 0, isCorrect: false, timestamp: Date.now() };
+    dm.recordAttempt({ ...base, attemptNumber: undefined as unknown as number, hintLevelUsed: 1 });
+    dm.recordAttempt({ ...base, attemptNumber: undefined as unknown as number, hintLevelUsed: 2 });
+    expect(dm.getDiagnosticSummary().totalHintsUsed).toBe(3);
+  });
+
+  it('aggregates explicit and legacy sessions independently for one question', () => {
+    const dm = DataManager.getInstance();
+    const base = { questionId: 'mixed-history', stationId: 1, subject: 'math' as const, knowledgeTag: 'addition', difficulty: 1, selectedAnswerId: 0, isCorrect: false, timestamp: Date.now() };
+    dm.recordAttempt({ ...base, attemptNumber: 1, hintLevelUsed: 1 });
+    dm.recordAttempt({ ...base, attemptNumber: 2, hintLevelUsed: 2 });
+    dm.recordAttempt({ ...base, sessionId: 'new-visit', attemptNumber: 1, hintLevelUsed: 3 });
+    expect(dm.getDiagnosticSummary().totalHintsUsed).toBe(5);
+  });
+
   it('returns queued questions in queue order using saved snapshots', () => {
     const dm = DataManager.getInstance();
     const snapshot = { id: 'math_dynamic_1', subject: 'math' as const, type: 'multiple_choice' as const, prompt: '2 + 3 = ?', speakText: '二加三', options: ['4', '5'], correctAnswer: 5 };
@@ -156,12 +191,34 @@ describe('Enhancement 6: Diagnostic Learning Report & Review Mistakes Queue', ()
     expect(dm.getMistakeReviewQuestions()).toEqual([snapshot]);
   });
 
+  it('deep-copies mutable question arrays when recording and reading snapshots', () => {
+    const dm = DataManager.getInstance();
+    const snapshot = { id: 'mutable', subject: 'chinese' as const, type: 'sentence_scramble' as const, prompt: '排句', speakText: '姐姐吃餅乾', correctTokens: ['姐姐', '吃', '餅乾'], shuffledTokens: ['吃', '姐姐', '餅乾'] };
+    dm.recordAttempt({ questionId: snapshot.id, stationId: 1, subject: 'chinese', knowledgeTag: 'sentence', difficulty: 1, selectedAnswerId: '', isCorrect: false, attemptNumber: 1, hintLevelUsed: 0, timestamp: Date.now(), questionSnapshot: snapshot });
+    snapshot.correctTokens[0] = '已改';
+    const replay = dm.getMistakeReviewQuestions()[0];
+    expect(replay.correctTokens).toEqual(['姐姐', '吃', '餅乾']);
+    replay.correctTokens![1] = '再改';
+    expect(dm.getMistakeReviewQuestions()[0].correctTokens).toEqual(['姐姐', '吃', '餅乾']);
+  });
+
   it('provides usable same-subject review content for legacy dynamic mistakes', () => {
     const dm = DataManager.getInstance();
     dm.recordAttempt({ questionId: 'legacy_math', stationId: 1, subject: 'math', knowledgeTag: 'addition', difficulty: 1, selectedAnswerId: 4, isCorrect: false, attemptNumber: 1, hintLevelUsed: 0, timestamp: Date.now() });
     const review = QuestionEngine.getMistakeReviewQuestions();
     expect(review).toHaveLength(1);
-    expect(review[0]).toMatchObject({ id: 'legacy_math', subject: 'math' });
+    expect(review[0]).toMatchObject({ subject: 'math', originalQuestionId: 'legacy_math', reviewSource: 'replacement', reviewLabel: '相同類型練習' });
+    expect(review[0].id).not.toBe('legacy_math');
     expect(review[0].options?.length).toBeGreaterThan(1);
+  });
+
+  it('creates a distinct question session identity for each scene visit', () => {
+    const scene = new QuestionScene();
+    scene.init({ stationId: 1 });
+    const first = scene.questionSessionId;
+    scene.init({ stationId: 1 });
+    expect(first).toBeTruthy();
+    expect(scene.questionSessionId).toBeTruthy();
+    expect(scene.questionSessionId).not.toBe(first);
   });
 });

@@ -105,7 +105,7 @@ describe('SpeechService', () => {
       expect(mockSpeechSynthesis.getVoices).toHaveBeenCalled();
     });
 
-    it('should match Cantonese voices in order: zh-HK, yue-HK, zh-TW, then zh-CN', () => {
+    it('matches Cantonese voices without silently substituting Mandarin', () => {
       const voice = SpeechService.getBestVoice('zh-HK');
       expect(voice).toBeDefined();
       expect(voice?.lang).toBe('zh-HK');
@@ -118,13 +118,13 @@ describe('SpeechService', () => {
       const yueVoice = SpeechService.getBestVoice('zh-HK');
       expect(yueVoice?.lang).toBe('yue-HK');
 
-      // Test fallback to zh-TW when zh-HK / yue-HK not present
+      // zh-TW is Mandarin and must not satisfy a Cantonese listen action.
       mockSpeechSynthesis.getVoices.mockReturnValueOnce([
         { name: 'Mei-Jia', lang: 'zh-TW' },
         { name: 'Samantha', lang: 'en-US' },
       ]);
       const twVoice = SpeechService.getBestVoice('zh-HK');
-      expect(twVoice?.lang).toBe('zh-TW');
+      expect(twVoice).toBeNull();
     });
 
     it('should match English voices in order: en-US, en-GB, en', () => {

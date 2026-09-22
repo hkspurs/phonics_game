@@ -1,4 +1,5 @@
 import { DataManager } from '../services/DataManager';
+import { SpeechService } from '../services/SpeechService';
 import type { VoiceLanguage } from '../types';
 import { DIFFICULTY_OPTIONS, VOICE_LANGUAGES } from '../scenes/SettingsScene';
 import { addText, makeElement, type ScreenHandle } from './responsive';
@@ -36,7 +37,14 @@ export function mountSettingsView(host: HTMLElement, scene: SettingsViewScene, a
   addText(subjects, 'p', '最少保留一個練習科目。', 'support-help');
 
   const voices = section('朗讀語言');
-  VOICE_LANGUAGES.forEach((voice) => voices.append(choiceButton(voice.label, settings.voiceLanguage === voice.lang, `voice-${voice.lang}`, () => { scene.selectVoiceLanguage(voice.lang, voice.sample); mountSettingsView(host, scene, `朗讀語言已設定為${voice.label}。`, `voice-${voice.lang}`); })));
+  VOICE_LANGUAGES.forEach((voice) => voices.append(choiceButton(voice.label, settings.voiceLanguage === voice.lang, `voice-${voice.lang}`, () => {
+    const cantoneseUnavailable = voice.lang === 'zh-HK' && !SpeechService.getBestVoice(voice.lang);
+    scene.selectVoiceLanguage(voice.lang, voice.sample);
+    const message = cantoneseUnavailable
+      ? '呢部裝置暫時未有廣東話朗讀，可以先睇文字。'
+      : `朗讀語言已設定為${voice.label}。`;
+    mountSettingsView(host, scene, message, `voice-${voice.lang}`);
+  })));
 
   const volume = section('音效音量');
   ([['靜音', 0], ['50%', .5], ['100%', 1]] as const).forEach(([label, value]) => volume.append(choiceButton(label, Math.abs(settings.soundVolume - value) < .05, `volume-${value}`, () => { scene.setVolumeLevel(value); DataManager.getInstance().updateSettings({ soundVolume: value }); mountSettingsView(host, scene, `音效音量已設定為${label}。`, `volume-${value}`); })));

@@ -1,6 +1,7 @@
 import { test, expect } from '@playwright/test';
 import * as fs from 'fs';
 import * as path from 'path';
+import { selectReadyWardrobeItem, waitForWardrobeAssets } from './helpers/wardrobe';
 
 test.describe('Gamer Deep Interactive Playtest & Zero-Trust Visual QA', () => {
   const artifactDir = path.resolve(process.cwd(), 'playtest-artifacts/gamer-interactive-qa');
@@ -12,6 +13,7 @@ test.describe('Gamer Deep Interactive Playtest & Zero-Trust Visual QA', () => {
   });
 
   test('full interactive gamer playthrough from shop purchase to runner sprint', async ({ page }) => {
+    test.setTimeout(120_000);
     // 1. Initialize Profile with enough currency to test purchase flows
     await page.goto('/');
     await page.evaluate(() => {
@@ -72,19 +74,18 @@ test.describe('Gamer Deep Interactive Playtest & Zero-Trust Visual QA', () => {
         }
       }
     });
-    await page.waitForTimeout(1000);
+    await waitForWardrobeAssets(page);
     await page.screenshot({ path: path.join(artifactDir, '02_shop_wardrobe_catalog.png') });
 
     // Select HK School Shirt (香港校服襯衫) by the visible catalog index.
+    await selectReadyWardrobeItem(page, 'top', 'hk_school_shirt');
     const selectionState = await page.evaluate(() => {
       const game = (window as any).__PHASER_GAME__;
       const shop = game?.scene.getScene('ShopScene') as any;
       if (!shop) throw new Error('ShopScene is not available');
-      shop.switchWardrobeCategory('top');
       const items = shop.getVisibleWardrobeItems();
       const index = items.findIndex((item: any) => item.id === 'hk_school_shirt');
       if (index < 0) throw new Error('HK School Shirt is not in the top catalog');
-      shop.selectWardrobeItem(index);
       return {
         itemId: items[index].id,
         action: shop.actionButton?.getText?.(),
@@ -129,9 +130,14 @@ test.describe('Gamer Deep Interactive Playtest & Zero-Trust Visual QA', () => {
         (child: any) => child?.getText?.() === '✅ 確認購買'
       );
       if (!confirmButton) throw new Error('Purchase confirmation CTA is not available');
-      confirmButton.emit('pointerup');
+      // Trigger the public button contract; synthetic Phaser events can be
+      // swallowed when the modal tween is still mounting in Chromium.
+      confirmButton.triggerClick();
     });
-    await page.waitForTimeout(700);
+    await expect.poll(
+      () => page.evaluate(() => (window as any).__PHASER_GAME__?.scene.getScene('ShopScene')?.purchaseModal?.getTitle?.()),
+      { timeout: 5000 }
+    ).toBe('✨ 購買成功！');
 
     const successState = await page.evaluate(() => {
       const game = (window as any).__PHASER_GAME__;
@@ -177,14 +183,16 @@ test.describe('Gamer Deep Interactive Playtest & Zero-Trust Visual QA', () => {
       game.scene.start('ShopScene');
     });
     await page.waitForTimeout(1200);
+    await page.evaluate(() => {
+      const shop = (window as any).__PHASER_GAME__?.scene.getScene('ShopScene') as any;
+      shop?.switchTab?.('wardrobe');
+    });
+    await selectReadyWardrobeItem(page, 'top', 'hk_school_shirt', '脫下衣物');
     const persistedState = await page.evaluate(() => {
       const game = (window as any).__PHASER_GAME__;
       const shop = game?.scene.getScene('ShopScene') as any;
-      shop.switchTab('wardrobe');
-      shop.switchWardrobeCategory('top');
       const items = shop.getVisibleWardrobeItems();
       const index = items.findIndex((item: any) => item.id === 'hk_school_shirt');
-      shop.selectWardrobeItem(index);
       const profile = JSON.parse(localStorage.getItem('p1_adventure_save_v1') || '{}');
       return {
         owned: profile.ownedWardrobe,
@@ -504,33 +512,43 @@ test.describe('Gamer Deep Interactive Playtest & Zero-Trust Visual QA', () => {
       const shop = (window as any).__PHASER_GAME__?.scene.getScene('ShopScene') as any;
       shop?.switchTab?.('wardrobe');
     });
-    await page.waitForTimeout(300);
+    await selectReadyWardrobeItem(page, 'dress', 'scholar_robe');
 
     const selection = await page.evaluate(() => {
       const game = (window as any).__PHASER_GAME__;
       const shop = game?.scene.getScene('ShopScene') as any;
-      shop?.switchWardrobeCategory?.('dress');
       const index = shop?.getVisibleWardrobeItems?.().findIndex(
         (item: any) => item.id === 'scholar_robe'
       );
       if (index < 0) throw new Error('Scholar Gown is not in the dress catalogue');
-      shop.selectWardrobeItem(index);
-      return { action: shop.actionButton?.getText?.() };
+      return {
+        action: shop.actionButton?.getText?.(),
+        item: shop.getVisibleWardrobeItems?.()[shop.selectedWardrobeIndex]?.id,
+      };
     });
     expect(selection.action).toContain('立即購買');
+
+    await page.evaluate(() => {
+      const game = (window as any).__PHASER_GAME__;
+      const shop = game?.scene.getScene('ShopScene') as any;
+      shop.handleActionClick();
+    });
+    await expect.poll(
+      () => page.evaluate(() => (window as any).__PHASER_GAME__?.scene.getScene('ShopScene')?.purchaseModal?.getTitle?.()),
+      { timeout: 5000 }
+    ).toBe('🛒 確認購買');
 
     const confirmation = await page.evaluate(() => {
       const game = (window as any).__PHASER_GAME__;
       const shop = game?.scene.getScene('ShopScene') as any;
       const profile = JSON.parse(localStorage.getItem('p1_adventure_save_v1') || '{}');
-      shop.handleActionClick();
       const modal = shop.purchaseModal;
       const confirmButton = modal?.getContentContainer?.().list?.find(
         (child: any) => child?.getText?.() === '✅ 確認購買'
       );
       if (!confirmButton) throw new Error('Purchase confirmation CTA is not available');
-      confirmButton.emit('pointerup');
-      confirmButton.emit('pointerup');
+      confirmButton.triggerClick();
+      confirmButton.triggerClick();
       return {
         beforeGems: profile.gems,
         modalClosed: shop.purchaseModal === null,

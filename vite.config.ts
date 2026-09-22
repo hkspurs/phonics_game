@@ -1,4 +1,4 @@
-import { defineConfig } from 'vite';
+import { defineConfig, type Plugin } from 'vite';
 import { GAME_VERSION } from './src/config';
 
 const now = new Date();
@@ -10,7 +10,19 @@ const hh = pad(now.getHours());
 const ii = pad(now.getMinutes());
 const versionString = `ver ${GAME_VERSION} (${yyyy}${mm}${dd}${hh}${ii})`;
 
+const buildIdentityPlugin: Plugin = {
+  name: 'emit-build-identity',
+  generateBundle() {
+    this.emitFile({
+      type: 'asset',
+      fileName: 'build-info.json',
+      source: `${JSON.stringify({ sourceSha: process.env.GITHUB_SHA ?? 'local' }, null, 2)}\n`,
+    });
+  },
+};
+
 export default defineConfig({
+  plugins: [buildIdentityPlugin],
   base: './',
   define: {
     __APP_VERSION__: JSON.stringify(versionString),

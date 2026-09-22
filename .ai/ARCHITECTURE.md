@@ -90,11 +90,23 @@ p1-adventure/
   resolves queued IDs in persisted order, preferring serialized `questionSnapshot`
   data and falling back to exact curriculum items or a same-subject generated
   question for legacy dynamic attempts.
-- **Diagnostic hint aggregation**: `DataManager.getDiagnosticSummary()` treats
-  `hintLevelUsed` as cumulative within a question session. It counts each
-  session's highest level and detects a revisit when `attemptNumber` resets,
-  so repeated practice of one curriculum ID is represented without counting
-  every retry as another hint.
+- **Diagnostic hint aggregation**: new learning attempts carry an optional
+  `sessionId` that remains stable across retries and hints for one visit.
+  `DataManager.getDiagnosticSummary()` counts each explicit session's highest
+  hint level independently of row or timestamp order. Legacy rows retain the
+  attempt-reset heuristic; a row with no usable attempt number is counted as a
+  separate conservative session.
+- **Review provenance**: saved question snapshots are cloned at record and
+  replay boundaries. Review questions identify their source and preserve the
+  original queue ID; unrecoverable legacy dynamic questions are visibly
+  labelled `相同類型練習`, and solving one removes only that queue entry.
+- **Deferred optional assets**: `PreloadScene` loads core scene art and the
+  currently equipped full-body outfit only. `RuntimeAssetLoader` owns separate
+  wardrobe and pet group promises, validates requested texture keys before
+  reporting completion, and permits retry after a partial failure. `ShopScene`
+  starts the appropriate group on tab entry, gates purchases on verified art,
+  and uses a scene generation token so stale callbacks cannot mutate a later
+  tab or scene instance.
 - **Interactive ownership**: while `QuestionView` is mounted, the hidden
   Phaser question controls are disabled and restored on scene shutdown. This
   prevents duplicate answer paths and keeps DOM feedback, hint and Continue

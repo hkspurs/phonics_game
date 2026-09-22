@@ -14,26 +14,17 @@ test.describe('Comprehensive Full Playwright UAT Suite', () => {
   test('UAT 1: Title Scene UI, Buttons & Modals', async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 720 });
     await page.goto('/');
-    await page.waitForTimeout(2000);
+    await expect(page.locator('.home-view')).toBeVisible();
 
     const canvas = page.locator('#game-container canvas');
     await expect(canvas).toBeVisible();
 
     await page.screenshot({ path: path.join(uatDir, '01_TitleScene.png') });
 
-    const box = await canvas.boundingBox();
-    expect(box).toBeTruthy();
-    if (!box) return;
-
-    // Click "開始遊戲"
-    await page.mouse.click(box.x + 640, box.y + 360);
-    await page.waitForTimeout(1500);
-
-    const activeScene = await page.evaluate(() => {
-      const game = (window as any).__PHASER_GAME__;
-      return game.scene.scenes.filter((s: any) => s.scene.isActive()).map((s: any) => s.scene.key);
-    });
-    expect(activeScene).toContain('MapScene');
+    // HomeView owns the Start action while it is mounted. Keep the canvas
+    // screenshot for visual evidence but activate the real semantic control.
+    await page.getByRole('button', { name: '開始冒險', exact: true }).click();
+    await expect(page.locator('.map-view')).toBeVisible();
     await page.screenshot({ path: path.join(uatDir, '02_MapScene_Loaded.png') });
   });
 

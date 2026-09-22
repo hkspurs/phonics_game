@@ -1,5 +1,177 @@
 # AI Coordination Changelog
 
+## 2026-09-22 — OpenAI Codex — TASK-20260913-RELEASE-HARDENING (Task 7 follow-up)
+
+Shop screenshot fixture now navigates from Home and asserts Home's DOM view is
+removed; saved-placeholder fixture polls for Title activation rather than using
+a fixed boot delay. The new overlay assertion was observed failing before the
+fixture fix. Fresh unit suite: 66 files / 1,960 passed; wardrobe Chromium
+suite: 10/10 with zero retries using external QA CJK and emoji fonts. Visual
+inspection found residual isolated missing-symbol glyphs. Chrome acceptance is
+still blocked by the managed runtime's installation permissions; Task 8's
+automated checks and review PR remain pending. Files: E2E wardrobe fixture,
+QA checkpoint, task board, changelog.
+
+## 2026-09-22 — OpenAI Codex — wardrobe readiness follow-up
+
+Reproduced four wardrobe browser failures after deferred loading; fixtures now
+enter wardrobe and await real group readiness without changing assertions.
+Chrome installation is permission-blocked. GitHub connector blob writes work,
+but branch synchronization is not done. Screenshot review found CJK tofu and
+Home DOM overlay: visual acceptance remains open, regardless of test counts.
+
+## 2026-09-22 — OpenAI Codex — TASK-20260913-RELEASE-HARDENING (Task 7 progress)
+
+Added explicit Graphics harness and migrated three duplicate factories; scoped
+expected storage/audio warning assertions. Removed temporary Runner debug logs.
+Fresh unit 66 files / 1,960 tests, production build, and repeated Runner
+dedicated-outfit Chromium check 3/3 passed. The prior Runner failure did not
+reproduce; no production fix or confirmed root cause is claimed. Task 7 remains
+in progress pending remaining browser evidence; Task 8 is not complete.
+
+## 2026-09-14 — OpenAI Codex — TASK-20260913-RELEASE-HARDENING (Task 6)
+
+Deferred unselected wardrobe and pet art from boot into independent, retryable
+runtime groups. Shop loading/error states now gate purchases until the selected
+texture is present, stale scene/tab callbacks are generation-guarded, and the
+purchase confirmation lifecycle no longer lets an old modal clear a new
+success modal. Prices, inventory cardinality, ledger IDs and balances are
+unchanged.
+
+Changed: RuntimeAssetLoader and tests, Preload/Shop scenes, optional asset
+configuration, deterministic wardrobe E2E helpers, failure/retry and rapid-tab
+browser tests, cold-load measurement script/results, architecture and QA docs.
+
+Verification: full unit 65 files / 1,958 tests; build 1,968.41 kB JS /
+468.64 kB gzip; release visual matrix 7/7; focused asset/purchase browser set
+4/4. Five-run cold-load median improved from 26,809 ms to 21,504 ms and eager
+optional transfer fell from 2,387,582 bytes to zero.
+
+Pending: Task 7 explicit Phaser Graphics harness.
+
+## 2026-09-14 — OpenAI Codex — TASK-20260913-RELEASE-HARDENING (Task 5)
+
+Added additive question-session identity and robust mixed legacy/new hint
+aggregation. Persisted/replayed question snapshots are deep-cloned and replay
+provenance is centralized. Legacy replacement practice is visibly labelled and
+solving it removes only its original queue entry while preserving historical
+attempts, saves and reward semantics.
+
+Changed: question types, QuestionSnapshot, QuestionEngine, DataManager,
+QuestionScene, QuestionView, focused unit/E2E tests, architecture and release
+checkpoint records.
+
+Verification: focused unit 96/96; full unit 64 files / 1,953 tests; production
+build passed with the existing chunk advisory; review-mistakes Playwright flow
+1/1 passed with zero retries.
+
+Pending: Task 6 safe deferred assets and purchase-path verification.
+
+## 2026-09-14 — OpenAI Codex — TASK-20260913-RELEASE-HARDENING (Tasks 2-4)
+
+Added the Google Chrome acceptance configuration, seven-size visual evidence,
+keyboard/forced-colors/reduced-motion checks, deterministic browser speech
+fixtures and truthful no-Cantonese fallback. Speech cancellation now owns a
+generation and QuestionScene shutdown cancels its request. No save/economy or
+deployment behavior changed.
+
+Verification: unit 64 files / 1,946 tests; local Chromium baseline 87/87;
+visual/accessibility 9/9; speech browser gate 4/4 and repeated 12/12. Google
+Chrome 153 was identified but cannot launch under the managed runtime socket
+policy, so Chrome-specific evidence remains BLOCKED rather than substituted.
+
+## 2026-09-14 — OpenAI Codex — TASK-20260913-RELEASE-HARDENING (recovery)
+
+Confirmed that the repository contains the verified Task A-C chain only; the
+previously reported D-H commits are absent from refs, reflogs and unreachable
+objects. Added an evidence-backed recovery inventory and a Chrome-only
+completion plan. No source, save schema, economy or deployment state changed.
+
+Fresh checks on the Task C source: 63 unit files / 1,941 tests passed, and the
+production build passed with the existing large-chunk advisory. Google Chrome
+153.0.8010.36 was identified from an official package, but Playwright launch
+is blocked by this managed runtime's socket restriction; Chromium is not being
+substituted as Chrome evidence. Physical devices and non-Chrome browsers are
+OUT_OF_SCOPE under the revised acceptance.
+
+## 2026-09-13 — OpenAI Codex — TASK-20260913-RELEASE-HARDENING (Task C)
+
+Added a verification-only PR CI workflow and a separately runnable deployed
+smoke gate. Local Playwright now collects only the product/local browser suite;
+the five historical live probes were moved under `e2e/live/` with their
+assertions preserved, and a sixth smoke spec verifies exact build identity,
+static-resource/page errors, the semantic learning journey and save reload.
+
+Changed:
+- `.github/workflows/ci.yml` and `.github/workflows/deploy.yml`
+- `playwright.config.ts`, `playwright.live.config.ts`, `package.json`
+- `e2e/live/` and the Chaos 3 stress-test timeout
+- `vite.config.ts` build identity emission
+- `docs/qa/release-hardening/task-c-results.json`
+
+Verification:
+- `npm ci`: passed; 53 packages installed.
+- `npm run test:unit`: 63 files, 1,941 tests passed.
+- `npm run build`: passed; `dist/build-info.json` emitted `sourceSha: local`;
+  existing Vite large-chunk advisory remains.
+- Full local Playwright collection: 87/87 passed, 0 skipped.
+- Chaos 3 stress repeat: 5/5 passed after a harness-only timeout allowance.
+- Live config list: six tests; missing URL fails clearly rather than silently
+  falling back to localhost.
+
+Deployment boundary:
+- The public Pages index returned HTTP 200, but `/build-info.json` returned
+  HTTP 404, so the current host cannot prove this branch's source SHA or live
+  journey. This remains `ENVIRONMENT_BLOCKED`; no deployment was run.
+- Physical-device touch, installed Traditional Chinese font, audible speech
+  and assistive-technology evidence remain `MANUAL_PENDING` for Tasks D/E.
+
+## 2026-09-13 — OpenAI Codex — TASK-20260913-RELEASE-HARDENING (Task B)
+
+Migrated the local browser suite to the current semantic DOM interaction
+contract while retaining real canvas coordinate coverage for Runner and Shop.
+Added shared learning/canvas helpers, stabilized asynchronous scene assertions,
+and kept answer, save, reward and purchase-economy assertions intact. Restored
+the full-body wardrobe source art and sized/grounded the preview from the
+available stage so the reproduced alpha-clipping/readability defect is fixed.
+
+Verification:
+- `npm run test:unit`: 63 files, 1,941 tests passed.
+- `npm run build`: passed; 1,963.34 kB JS / 466.90 kB gzip; existing Vite
+  large-chunk advisory remains.
+- Final local Playwright collection: 88 passed, 0 local failures, 0 skipped.
+- Four existing public-host specs remain external failures and are recorded in
+  `docs/qa/release-hardening/task-b-results.json`; Task C will give them a
+  dedicated live configuration rather than hiding them from local coverage.
+- Repeated wardrobe geometry and Chaos scene-race checks passed 5/5 each.
+
+Pending: deployed source identity/public smoke, physical-device touch and
+Traditional Chinese font evidence, real audible speech and assistive-technology
+review remain `MANUAL_PENDING` or Task C/D/E work.
+
+## 2026-09-13 — OpenAI Codex — TASK-20260913-RELEASE-HARDENING (Task A)
+
+Established a fresh release-hardening baseline from `p1-adventure` merge
+`2656552`. Captured the complete Playwright JSON report and an evidence-backed
+inventory of all failures without deleting, skipping or weakening tests.
+
+Changed:
+- `docs/qa/release-hardening/failure-inventory.md`
+- `docs/qa/release-hardening/checkpoint.md`
+- `docs/qa/release-hardening/baseline-results.json`
+- `.ai/TASK_BOARD.md`, `.ai/OWNERSHIP.md`
+
+Verification:
+- `npm ci`: passed; 53 packages installed.
+- `npm run test:unit`: 63 files / 1,940 tests passed.
+- `npm run build`: passed; 1,962.48 kB JS / 466.61 kB gzip; existing Vite
+  large-chunk advisory remains.
+- Full Playwright collection: 92 tests; 59 passed, 33 failed, 0 skipped.
+- Chromium 129 installed for reproducible browser runs.
+
+Pending: migrate the affected local browser specs in Task B; physical-device,
+real-audible speech and assistive-technology evidence remain `MANUAL_PENDING`.
+
 ## 2026-09-13 — OpenAI Codex — TASK-20260913-PHASE89-FOLLOWUP
 
 Follow-up review fixes for the Phase 8–9 release gates:

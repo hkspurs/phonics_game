@@ -14,23 +14,9 @@ import { CharacterOutfitCompositor, FULL_SPRITE_LOCAL_SCALE } from '../ui/Charac
 import { OutfitRenderer } from '../ui/OutfitRenderer';
 import { CharacterPreviewController } from '../ui/CharacterPreviewController';
 import { getWardrobeLayout } from '../ui/wardrobeLayout';
+import { createPhaserGraphicsMock } from './phaserGraphicsMock';
 
-const mockGraphics = () => ({
-  clear: vi.fn(),
-  fillStyle: vi.fn(),
-  lineStyle: vi.fn(),
-  beginPath: vi.fn(),
-  moveTo: vi.fn(),
-  lineTo: vi.fn(),
-  closePath: vi.fn(),
-  fillPath: vi.fn(),
-  strokePath: vi.fn(),
-  fillRect: vi.fn(),
-  fillCircle: vi.fn(),
-  fillRoundedRect: vi.fn(),
-  strokeRoundedRect: vi.fn(),
-  strokeCircle: vi.fn(),
-});
+const mockGraphics = createPhaserGraphicsMock;
 
 describe('Dream Wardrobe preview system', () => {
   it('keeps every outfit definition separate from its wearing asset', () => {

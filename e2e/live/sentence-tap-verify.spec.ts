@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 
 test('Live Verify: Choice Quiz and Sentence Scramble on Live GitHub Pages', async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 720 });
-  await page.goto('https://hkspurs.github.io/phonics_game/?_t=' + Date.now());
+  await page.goto('/?_t=' + Date.now());
   await page.waitForTimeout(3000);
 
   const canvas = page.locator('#game-container canvas');

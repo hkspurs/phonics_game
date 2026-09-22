@@ -1,23 +1,16 @@
 import { test, expect } from '@playwright/test';
+import { installSpeechFixture, latestSpeech } from './helpers/speech-fixture';
 
 test('Verify: Math question spoken text uses explicit Chinese words (減/加/等於幾多), enlarged prompt banner, no duplicate box', async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 720 });
+  await installSpeechFixture(page);
   await page.goto('http://localhost:4173/');
-  await page.waitForTimeout(2000);
+  await expect(page.locator('.home-view')).toBeVisible();
 
   // Start directly at QuestionScene with a Math Subtraction question
   await page.evaluate(() => {
     const game = (window as any).__PHASER_GAME__;
     const title = game.scene.getScene('TitleScene');
-
-    (window as any).__LAST_SPOKEN_TEXT__ = '';
-    const origSpeak = (window as any).speechSynthesis?.speak;
-    if ((window as any).speechSynthesis) {
-      (window as any).speechSynthesis.speak = (utt: any) => {
-        (window as any).__LAST_SPOKEN_TEXT__ = utt.text;
-        if (origSpeak) origSpeak.call((window as any).speechSynthesis, utt);
-      };
-    }
 
     title.scene.start('QuestionScene', {
       stationId: 1,
@@ -36,13 +29,14 @@ test('Verify: Math question spoken text uses explicit Chinese words (減/加/等
     });
   });
 
-  await page.waitForFunction(() => !!(window as any).__LAST_SPOKEN_TEXT__, { timeout: 10000 });
-  const speechCaptured = await page.evaluate(() => (window as any).__LAST_SPOKEN_TEXT__);
+  await page.waitForFunction(() => (window as any).__SPEECH_UTTERANCES__.length > 0, undefined, { timeout: 10000 });
+  const speechCaptured = await latestSpeech(page);
 
   console.log('Spoken text captured for 5 - 2 = ?:', speechCaptured);
-  expect(speechCaptured).toContain('減');
-  expect(speechCaptured).toContain('等於幾多');
-  expect(speechCaptured).not.toContain('-');
+  expect(speechCaptured?.text).toContain('減');
+  expect(speechCaptured?.text).toContain('等於幾多');
+  expect(speechCaptured?.text).not.toContain('-');
+  expect(speechCaptured?.voiceName).toBe('QA Cantonese');
 
   // Take visual verification screenshot
   await page.screenshot({ path: '/tmp/test_math_question_layout.png' });

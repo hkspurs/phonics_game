@@ -1,4 +1,5 @@
 import { test, expect, type Page } from '@playwright/test';
+import { skipRunner } from './helpers/canvas-controls';
 
 /**
  * Helper to wait until a Phaser scene is active and ready.
@@ -328,12 +329,8 @@ test.describe('P1 Adventure Game — E2E Integration Test Suite', () => {
     expect(runnerState.hasSkipBtn).toBe(true);
     expect(runnerState.itemCount).toBeGreaterThan(0);
 
-    // Trigger Runner skip -> transitions to QuestionScene (next question)
-    await page.evaluate(() => {
-      const g = (window as any).__PHASER_GAME__;
-      const rs = g.scene.getScene('RunnerScene');
-      rs.skipButton.triggerClick();
-    });
+    // Trigger the visible Runner skip and confirm the explicit reward warning.
+    await skipRunner(page);
 
     // Verify transition to QuestionScene
     await waitForScene(page, 'QuestionScene');

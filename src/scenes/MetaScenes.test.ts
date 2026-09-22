@@ -8,6 +8,7 @@ import { DataManager, TROPHY_DEFINITIONS } from '../services/DataManager';
 import { SoundManager } from '../services/SoundManager';
 import { SpeechService } from '../services/SpeechService';
 import { WARDROBE_ITEMS } from '../config/wardrobe';
+import { createPhaserGraphicsMock } from '../test/phaserGraphicsMock';
 
 function attachEventEmitter(obj: any): any {
   const listeners: Record<string, Function[]> = {};
@@ -91,37 +92,7 @@ export function createMockSceneForMeta(sceneKey: string): any {
         return c;
       }),
       graphics: vi.fn((config?: any) => {
-        const g: any = {
-          x: config?.x ?? 0,
-          y: config?.y ?? 0,
-          clear: vi.fn().mockReturnThis(),
-          fillStyle: vi.fn().mockReturnThis(),
-          fillGradientStyle: vi.fn().mockReturnThis(),
-          fillRect: vi.fn().mockReturnThis(),
-          fillRoundedRect: vi.fn().mockReturnThis(),
-          fillCircle: vi.fn().mockReturnThis(),
-          fillEllipse: vi.fn().mockReturnThis(),
-          lineStyle: vi.fn().mockReturnThis(),
-          lineBetween: vi.fn().mockReturnThis(),
-          strokeRect: vi.fn().mockReturnThis(),
-          strokeRoundedRect: vi.fn().mockReturnThis(),
-          strokeCircle: vi.fn().mockReturnThis(),
-          beginPath: vi.fn().mockReturnThis(),
-          moveTo: vi.fn().mockReturnThis(),
-          lineTo: vi.fn().mockReturnThis(),
-          strokePath: vi.fn().mockReturnThis(),
-          fillPath: vi.fn().mockReturnThis(),
-          closePath: vi.fn().mockReturnThis(),
-          setDepth: vi.fn(function (d: number) {
-            g.depth = d;
-            return g;
-          }),
-          setPosition: vi.fn().mockReturnThis(),
-          setAlpha: vi.fn().mockReturnThis(),
-          setVisible: vi.fn().mockReturnThis(),
-          setScale: vi.fn().mockReturnThis(),
-          destroy: vi.fn(),
-        };
+        const g: any = createPhaserGraphicsMock(config);
         return attachEventEmitter(g);
       }),
       text: vi.fn((x: number, y: number, text: string, style?: any) => {
