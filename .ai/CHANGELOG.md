@@ -1,5 +1,51 @@
 # AI Coordination Changelog
 
+## 2026-09-14 — OpenAI Codex — TASK-20260913-RELEASE-HARDENING (recovery)
+
+Confirmed that the repository contains the verified Task A-C chain only; the
+previously reported D-H commits are absent from refs, reflogs and unreachable
+objects. Added an evidence-backed recovery inventory and a Chrome-only
+completion plan. No source, save schema, economy or deployment state changed.
+
+Fresh checks on the Task C source: 63 unit files / 1,941 tests passed, and the
+production build passed with the existing large-chunk advisory. Google Chrome
+153.0.8010.36 was identified from an official package, but Playwright launch
+is blocked by this managed runtime's socket restriction; Chromium is not being
+substituted as Chrome evidence. Physical devices and non-Chrome browsers are
+OUT_OF_SCOPE under the revised acceptance.
+
+## 2026-09-13 — OpenAI Codex — TASK-20260913-RELEASE-HARDENING (Task C)
+
+Added a verification-only PR CI workflow and a separately runnable deployed
+smoke gate. Local Playwright now collects only the product/local browser suite;
+the five historical live probes were moved under `e2e/live/` with their
+assertions preserved, and a sixth smoke spec verifies exact build identity,
+static-resource/page errors, the semantic learning journey and save reload.
+
+Changed:
+- `.github/workflows/ci.yml` and `.github/workflows/deploy.yml`
+- `playwright.config.ts`, `playwright.live.config.ts`, `package.json`
+- `e2e/live/` and the Chaos 3 stress-test timeout
+- `vite.config.ts` build identity emission
+- `docs/qa/release-hardening/task-c-results.json`
+
+Verification:
+- `npm ci`: passed; 53 packages installed.
+- `npm run test:unit`: 63 files, 1,941 tests passed.
+- `npm run build`: passed; `dist/build-info.json` emitted `sourceSha: local`;
+  existing Vite large-chunk advisory remains.
+- Full local Playwright collection: 87/87 passed, 0 skipped.
+- Chaos 3 stress repeat: 5/5 passed after a harness-only timeout allowance.
+- Live config list: six tests; missing URL fails clearly rather than silently
+  falling back to localhost.
+
+Deployment boundary:
+- The public Pages index returned HTTP 200, but `/build-info.json` returned
+  HTTP 404, so the current host cannot prove this branch's source SHA or live
+  journey. This remains `ENVIRONMENT_BLOCKED`; no deployment was run.
+- Physical-device touch, installed Traditional Chinese font, audible speech
+  and assistive-technology evidence remain `MANUAL_PENDING` for Tasks D/E.
+
 ## 2026-09-13 — OpenAI Codex — TASK-20260913-RELEASE-HARDENING (Task B)
 
 Migrated the local browser suite to the current semantic DOM interaction

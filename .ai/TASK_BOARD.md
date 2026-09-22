@@ -10,10 +10,11 @@ Started: 2026-09-13
 
 Description: Execute the approved release-hardening plan sequentially from
 Task A on a branch based on current `p1-adventure`, with per-task tests,
-commits and checkpoints. Preserve player saves and reward semantics; mark
-physical/device evidence MANUAL_PENDING.
+commits and checkpoints. Preserve player saves and reward semantics. Under the
+revised acceptance, Google Chrome at the seven agreed CSS viewport sizes is
+required; physical devices and non-Chrome browsers are OUT_OF_SCOPE.
 
-Current phase: Task C — PR CI and deployed smoke.
+Current phase: Task 2 — establish Google Chrome acceptance and fresh baseline.
 
 ### TASK-20260912-STORYBOOK-UX
 
@@ -70,6 +71,28 @@ Verification:
 - `npm run build`: passed; existing Vite large-chunk advisory remains.
 - Focused release Playwright gates: 5 passed.
 - Compatible responsive/sentence regression set: 3 passed.
+
+### TASK-20260913-RELEASE-HARDENING-C
+Agent: OpenAI Codex
+Status: DONE
+Started: 2026-09-13
+Completed: 2026-09-13
+
+Description:
+Added PR-targeted verification and a separately runnable deployed smoke gate.
+The local Playwright collection now excludes only the preserved `e2e/live/`
+directory; those six live checks require an explicit URL and expected source
+SHA. Vite emits `build-info.json`, and the Pages workflow verifies that SHA
+before publication. No deployment was run.
+
+Verification:
+- `npm run test:unit`: 63 files, 1,941 tests passed.
+- `npm run build`: passed; `dist/build-info.json` emitted `sourceSha: local`;
+  existing Vite large-chunk advisory remains.
+- Full local Playwright collection: 87/87 passed, 0 skipped.
+- Chaos 3 stress repeat: 5/5 passed after a harness-only timeout allowance.
+- Live config list: six tests; public Pages index 200 but `build-info.json` 404,
+  so deployed source identity remains `ENVIRONMENT_BLOCKED`.
 
 ### TASK-20260902-020
 

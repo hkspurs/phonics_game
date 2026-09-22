@@ -93,3 +93,32 @@ hosting as `ENVIRONMENT_BLOCKED`, never as a pass.
 
 The complete JSON report is `task-b-results.json`; no test was skipped, deleted
 or marked expected-fail to obtain this result.
+
+## Task C resolution
+
+Task C separated deployment-dependent evidence from the local release gate
+without removing any historical assertion:
+
+- The five preserved live specs now live under `e2e/live/` and are collected by
+  `playwright.live.config.ts`. A sixth `deployed-smoke.spec.ts` checks exact
+  source identity, resource/page errors, the semantic learning journey and save
+  reload. `npm run test:e2e:live` requires `LIVE_BASE_URL` and
+  `EXPECTED_SOURCE_SHA`; it has no local preview server and cannot silently
+  fall back to localhost.
+- The local Playwright config ignores only `e2e/live/`. A fresh full local run
+  on the Task C source collected 87 tests and passed 87 with zero skips. Its
+  JSON report is `task-c-results.json`.
+- The public Pages index was reachable with HTTP 200, but
+  `https://hkspurs.github.io/phonics_game/build-info.json` returned HTTP 404 on
+  the fresh probe. The current public page therefore cannot prove the source
+  SHA for this branch; this remains `ENVIRONMENT_BLOCKED` until the normal
+  branch publication path serves the identity file. No live test was relabeled
+  as passed on that basis.
+- `.github/workflows/ci.yml` now provides visible PR unit/build/local-browser
+  checks with bounded artifacts. The existing deployment workflow verifies the
+  emitted SHA before it publishes and remains a separate, non-PR trigger.
+
+The timeout adjustment in Chaos 3 is harness-only: it accommodates the
+reproduced 50-drag stress sequence on a loaded worker, while preserving all
+pointer events and page-error assertions. No test was deleted, skipped or
+marked expected-fail.

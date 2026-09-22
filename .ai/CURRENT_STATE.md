@@ -59,13 +59,20 @@
 - Responsive & Production Polish (Phase 5): Multi-viewport matrix verification (iPhone 16 Pro Max, iPhone 14, iPhone SE, iPad 4:3, Desktop 16:9), touch targets >=48px, minimum rendered font size >=16px, SpeechService fallback resilience, and reduced motion compliance.
 - Storybook UX migration (Phases 0–7): Warm woodland art direction, responsive Home → Map → Station Detail → Question → Result flow, explicit answer feedback pacing, stable sentence-token interaction, runner input blur safety, and consistent shop/result styling.
 - Supporting accessibility and release verification (Phases 8–9): Responsive Settings/Trophy/Diagnostic Report destinations, truthful diagnostic empty states, semantic keyboard/touch controls, queued mistake reconstruction for current and legacy saves, per-session diagnostic hint counts, optional portrait guidance, 48px short-landscape scrolling fixes, real-control journey coverage and the seven-viewport release matrix.
-- 63 test suites and 1,940 unit tests passing. Production TypeScript/Vite build succeeds; Vite reports only its existing large-chunk advisory.
+- Release hardening Task C: PR-targeted CI runs unit/build/local browser gates with bounded artifacts; deployed checks are isolated in `test:e2e:live` and require `LIVE_BASE_URL` plus `EXPECTED_SOURCE_SHA`. Vite emits `build-info.json` and the Pages workflow verifies the SHA before publication.
+- 63 test suites and 1,941 unit tests passing. Production TypeScript/Vite build succeeds; Vite reports only its existing large-chunk advisory.
 
 ## Known Issues
 - Vitest JSDOM environment lacks some Phaser Graphics mock functions (`strokeCircle`), requiring defensive checks (`typeof g.strokeCircle === 'function'`).
 - Web Speech API voice availability varies by OS/browser, requiring text-only fallback on unsupported platforms.
 - Traditional Chinese glyph shape depends on fonts installed by the host browser; responsive layout uses system fallback fonts and keeps the minimum readable size at 16px.
-- The repository-wide Playwright collection still contains legacy canvas-coordinate and live GitHub Pages suites. The semantic DOM release gates pass; those older suites need a follow-up migration before `npm run test:e2e` can be an all-green release gate.
+- The local Playwright release gate is now isolated from deployment transport: the Task C source passes 87/87 local tests. Six preserved public-host probes (including the new source-identity smoke) run only through `test:e2e:live`; the current Pages index is reachable but `/build-info.json` returns 404, so deployed source identity and interaction evidence remain `ENVIRONMENT_BLOCKED` until a normal publication serves the new artifact.
+- Release-hardening recovery confirmed that only Tasks A-C are reachable. The
+  later D-H commit IDs recorded in earlier handoff text are absent from refs,
+  reflogs and unreachable-object scans, so the missing work is being rebuilt.
+  The required browser gate is Google Chrome at seven CSS viewport sizes;
+  physical devices and other browser engines are OUT_OF_SCOPE by revised user
+  acceptance and are not represented as passes.
 
 ## Important Decisions
 - **Master Character Spec**: Standard 512x512 canvas, ground baseline Y=460, X=256 center, Chibi 1:2.5 ratio.
