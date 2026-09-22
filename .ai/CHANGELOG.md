@@ -1,5 +1,14 @@
 # AI Coordination Changelog
 
+## 2026-09-22 — OpenAI Codex — TASK-20260913-RELEASE-HARDENING (Task 7 progress)
+
+Added explicit Graphics harness and migrated three duplicate factories; scoped
+expected storage/audio warning assertions. Removed temporary Runner debug logs.
+Fresh unit 66 files / 1,960 tests, production build, and repeated Runner
+dedicated-outfit Chromium check 3/3 passed. The prior Runner failure did not
+reproduce; no production fix or confirmed root cause is claimed. Task 7 remains
+in progress pending remaining browser evidence; Task 8 is not complete.
+
 ## 2026-09-14 — OpenAI Codex — TASK-20260913-RELEASE-HARDENING (Task 6)
 
 Deferred unselected wardrobe and pet art from boot into independent, retryable

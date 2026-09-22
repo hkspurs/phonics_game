@@ -305,12 +305,18 @@ describe('DataManager', () => {
     });
 
     it('should handle corrupted localStorage gracefully with default fallback', () => {
+      const warning = vi.spyOn(console, 'warn').mockImplementation(() => {});
       localStorageMock['p1_adventure_save_v1'] = 'INVALID_JSON_CORRUPTED{[[';
       (DataManager as any).instance = undefined;
 
       const manager = DataManager.getInstance();
       expect(manager.getProfile().coins).toBe(0);
       expect(manager.getProfile().unlockedStations).toBe(1);
+      expect(warning).toHaveBeenCalledWith(
+        'Failed to load save data from localStorage, falling back to default:',
+        expect.any(SyntaxError),
+      );
+      warning.mockRestore();
     });
 
     it('should reset all state back to default profile on reset()', () => {

@@ -358,3 +358,26 @@ below the 500 KiB budget. Raw evidence is in
 Google Chrome-specific evidence remains `BLOCKED` by the managed-runtime socket
 restriction; these results are correctly labelled bundled Chromium. No deploy
 or merge was attempted.
+
+## Checkpoint 10 — Task 7 harness progress, fresh Runner verification
+
+- Recorded: 2026-09-22 UTC
+- Status: IN_PROGRESS; not a final Chrome acceptance claim.
+- Explicit named chainable Graphics spies replace three duplicate factories;
+  geometry calls are recorded, and expected storage/audio warnings are asserted
+  locally rather than globally suppressed. Production guards remain unchanged.
+- Fresh unit verification: 66 files / 1,960 tests passed.
+- Fresh production build: passed; 1,968.41 kB JS / 468.64 kB gzip,
+  with the existing large-chunk advisory.
+- Reinstalled missing pinned Chromium 129 (Playwright build 1134).
+- The unchanged Runner dedicated-outfit assertions passed once with diagnostic
+  output, then 3/3 with zero retries after removing temporary debug logging.
+  School-uniform idle/run/cheer textures were present and all four poses used
+  dedicated art. The earlier failure is not reproduced; its root cause is not
+  established. Do not claim a product fix or assume stale-server causation.
+- Ruling: retain production preload behavior because fresh browser evidence
+  does not reproduce a defect; cost if wrong is an intermittent loading issue
+  still requiring the full browser suite to expose it.
+- Remaining: complete wardrobe suite, actual Chrome acceptance, final full
+  collection/performance gate, remote checkpoint and review PR. Generated
+  tracked screenshot changes are retained locally, excluded from this commit.

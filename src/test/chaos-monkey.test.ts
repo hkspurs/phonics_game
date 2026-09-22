@@ -147,12 +147,18 @@ describe('Chaos Monkey / Adversarial Stress Suite', () => {
 
   describe('4. DataManager Corrupted Storage Chaos Injection', () => {
     it('handles corrupted JSON string without crashing', () => {
+      const warning = vi.spyOn(console, 'warn').mockImplementation(() => {});
       localStorageMock['p1_adventure_save_v1'] = '{ broken json %%@@!!';
       const dm = (DataManager as any).getInstance();
       const profile = (dm as any).load();
       expect(profile).toBeDefined();
       expect(profile.coins).toBe(0);
       expect(profile.unlockedStations).toBe(1);
+      expect(warning).toHaveBeenCalledWith(
+        'Failed to load save data from localStorage, falling back to default:',
+        expect.any(SyntaxError),
+      );
+      warning.mockRestore();
     });
 
     it('handles corrupted stats (null / undefined fields)', () => {

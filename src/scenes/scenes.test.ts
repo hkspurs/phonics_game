@@ -387,6 +387,11 @@ describe('Scene Lifecycle & Navigation Flow', () => {
         'assets/character/outfits/scholar_gown/run.png',
         'assets/character/outfits/scholar_gown/cheer.png',
       ]));
+      expect(getEquippedWardrobePreloadPaths({ top: 'hk_school_shirt' })).toEqual(expect.arrayContaining([
+        'assets/character/outfits/school_uniform/idle.png',
+        'assets/character/outfits/school_uniform/run.png',
+        'assets/character/outfits/school_uniform/cheer.png',
+      ]));
     });
 
     it('does not enqueue unavailable Star Hoodie placeholder art', () => {

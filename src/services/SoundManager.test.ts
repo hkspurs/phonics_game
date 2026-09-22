@@ -95,6 +95,7 @@ describe('SoundManager', () => {
     });
 
     it('should gracefully catch and handle play errors if sound key is missing in Phaser cache', () => {
+      const warning = vi.spyOn(console, 'warn').mockImplementation(() => {});
       mockPhaserSound.play.mockImplementationOnce(() => {
         throw new Error('Missing audio key in cache');
       });
@@ -103,6 +104,11 @@ describe('SoundManager', () => {
       expect(() => {
         SoundManager.play('wrong');
       }).not.toThrow();
+      expect(warning).toHaveBeenCalledWith(
+        '[SoundManager] Failed to play sound key "wrong":',
+        expect.objectContaining({ message: 'Missing audio key in cache' }),
+      );
+      warning.mockRestore();
     });
   });
 

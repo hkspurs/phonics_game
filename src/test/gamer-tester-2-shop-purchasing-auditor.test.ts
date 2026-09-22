@@ -683,6 +683,7 @@ describe('Gamer Tester 2: Shop Gem/Coin Skin & Wardrobe Purchasing Auditor Suite
     });
 
     it('falls back safely to default profile if localStorage has corrupted JSON', () => {
+      const warning = vi.spyOn(console, 'warn').mockImplementation(() => {});
       localStorage.setItem('p1_adventure_save_v1', 'INVALID_CORRUPTED_JSON{{{');
 
       (DataManager as any).instance = undefined;
@@ -692,6 +693,11 @@ describe('Gamer Tester 2: Shop Gem/Coin Skin & Wardrobe Purchasing Auditor Suite
       expect(dm.getProfile().ownedSkins).toEqual(['adventurer']);
       expect(dm.getProfile().coins).toBe(0);
       expect(dm.getProfile().gems).toBe(0);
+      expect(warning).toHaveBeenCalledWith(
+        'Failed to load save data from localStorage, falling back to default:',
+        expect.any(SyntaxError),
+      );
+      warning.mockRestore();
     });
   });
 

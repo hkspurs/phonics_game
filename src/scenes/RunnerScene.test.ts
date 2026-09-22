@@ -12,6 +12,7 @@ import {
   FULL_SPRITE_CANVAS_CENTER,
   FULL_SPRITE_GROUND_BASELINE,
 } from '../ui/CharacterOutfitCompositor';
+import { createPhaserGraphicsMock } from '../test/phaserGraphicsMock';
 
 function attachEventEmitter(obj: any): any {
   const listeners: Record<string, Function[]> = {};
@@ -98,30 +99,7 @@ export function createMockRunnerScene(): any {
         return c;
       }),
       graphics: vi.fn((config?: any) => {
-        const g: any = {
-          x: config?.x ?? 0,
-          y: config?.y ?? 0,
-          clear: vi.fn().mockReturnThis(),
-          fillStyle: vi.fn().mockReturnThis(),
-          fillGradientStyle: vi.fn().mockReturnThis(),
-          fillRect: vi.fn().mockReturnThis(),
-          fillRoundedRect: vi.fn().mockReturnThis(),
-          fillCircle: vi.fn().mockReturnThis(),
-          fillEllipse: vi.fn().mockReturnThis(),
-          lineStyle: vi.fn().mockReturnThis(),
-          strokeRoundedRect: vi.fn().mockReturnThis(),
-          strokeCircle: vi.fn().mockReturnThis(),
-          beginPath: vi.fn().mockReturnThis(),
-          moveTo: vi.fn().mockReturnThis(),
-          lineTo: vi.fn().mockReturnThis(),
-          closePath: vi.fn().mockReturnThis(),
-          fillPath: vi.fn().mockReturnThis(),
-          setDepth: vi.fn().mockReturnThis(),
-          setPosition: vi.fn().mockReturnThis(),
-          setAlpha: vi.fn().mockReturnThis(),
-          setVisible: vi.fn().mockReturnThis(),
-          destroy: vi.fn(),
-        };
+        const g: any = createPhaserGraphicsMock(config);
         return attachEventEmitter(g);
       }),
       text: vi.fn((x: number, y: number, text: string, style?: any) => {
