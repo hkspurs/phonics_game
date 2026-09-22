@@ -7,8 +7,8 @@
 npm run test:unit
 ```
 - **Engine**: Vitest
-- **Scope**: 63 test suites covering DataManager, QuestionEngine, SentenceEngine, MathGenerator, RunnerScene physics, Wardrobe preview, and responsive presentation contracts.
-- **Pass Criteria**: 100% tests green (1,941 / 1,941).
+- **Scope**: 65 test suites covering DataManager, QuestionEngine, SentenceEngine, MathGenerator, RunnerScene physics, Wardrobe preview, runtime asset loading, and responsive presentation contracts.
+- **Pass Criteria**: 100% tests green (1,958 / 1,958).
 
 ### B. Build Production Bundle
 ```bash
@@ -76,6 +76,22 @@ checks horizontal overflow, named keyboard controls, focus return, Escape,
 forced colors and reduced motion. Screenshot attachments belong in Playwright
 artifacts, not tracked image directories. Use a QA host with Noto Sans TC and
 an emoji font; font promises alone do not prove readable glyph rendering.
+
+Deferred-shop asset and purchase verification:
+
+```bash
+CI=1 npx playwright test \
+  e2e/runtime-asset-loading.spec.ts \
+  e2e/gamer-deep-interactive-playtest.spec.ts \
+  --retries=0
+node scripts/measure-home-load.mjs \
+  docs/qa/release-hardening/task-6-performance-after.json
+```
+
+The performance script performs five cold, cache-disabled Home loads with a
+4x CPU throttle. Compare identical before/after JSON profiles; the Task 6 gate
+requires compressed initial JavaScript <=500 KiB, median Start-ready no more
+than 10% slower, and at least 30% fewer previously eager optional bytes.
 
 The phases 0–7 verification run passed five tests across those files. The
 manual smoke flow also covers Home → Map → station detail → choice question →

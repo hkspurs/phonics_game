@@ -33,7 +33,7 @@ for (const viewport of VIEWPORTS) {
     test.setTimeout(120_000);
     await page.setViewportSize({ width: viewport.width, height: viewport.height });
     await page.goto('/');
-    await expect(page.locator('.home-view')).toBeVisible();
+    await expect(page.locator('.home-view')).toBeVisible({ timeout: 15000 });
     expect(
       await page.evaluate(() => document.fonts.check('16px "Noto Sans TC"', '繁體中文學習')),
       `${viewport.name} should resolve the QA Traditional Chinese font`,

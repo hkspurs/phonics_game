@@ -14,7 +14,7 @@ commits and checkpoints. Preserve player saves and reward semantics. Under the
 revised acceptance, Google Chrome at the seven agreed CSS viewport sizes is
 required; physical devices and non-Chrome browsers are OUT_OF_SCOPE.
 
-Current phase: Task 6 — safe deferred assets and purchase-path verification.
+Current phase: Task 7 — explicit Phaser Graphics test harness.
 
 ### TASK-20260912-STORYBOOK-UX
 

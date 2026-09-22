@@ -1,6 +1,8 @@
 import Phaser from 'phaser';
 import { GAME_WIDTH, GAME_HEIGHT, GAME_TITLE } from '../config';
-import { getWardrobePreloadPaths } from '../config/outfits';
+import { getEquippedWardrobePreloadPaths } from '../config/outfits';
+import { DataManager } from '../services/DataManager';
+import { PET_RUNTIME_ASSETS } from '../services/RuntimeAssetLoader';
 import { SoundManager } from '../services/SoundManager';
 import { registerAllVectorIcons } from '../ui/CanvasIcon';
 
@@ -281,26 +283,6 @@ export class PreloadScene extends Phaser.Scene {
       ninja_celebration: 'assets/characters/ninja/sprites/celebration.png',
       ninja_shop_preview: 'assets/characters/ninja/sprites/shop_preview.png',
 
-      // Pet Sprites (All 4 Pets)
-      pet_mecha_cat_idle: 'assets/pets/mecha_cat/idle.png',
-      pet_mecha_cat_fly: 'assets/pets/mecha_cat/fly.png',
-      pet_mecha_cat_cheer: 'assets/pets/mecha_cat/cheer.png',
-      pet_mecha_cat_thumbnail: 'assets/pets/mecha_cat/thumbnail.png',
-
-      pet_pixie_dragon_idle: 'assets/pets/pixie_dragon/idle.png',
-      pet_pixie_dragon_fly: 'assets/pets/pixie_dragon/fly.png',
-      pet_pixie_dragon_cheer: 'assets/pets/pixie_dragon/cheer.png',
-      pet_pixie_dragon_thumbnail: 'assets/pets/pixie_dragon/thumbnail.png',
-
-      pet_panda_cub_idle: 'assets/pets/panda_cub/idle.png',
-      pet_panda_cub_fly: 'assets/pets/panda_cub/fly.png',
-      pet_panda_cub_cheer: 'assets/pets/panda_cub/cheer.png',
-      pet_panda_cub_thumbnail: 'assets/pets/panda_cub/thumbnail.png',
-
-      pet_phoenix_chick_idle: 'assets/pets/phoenix_chick/idle.png',
-      pet_phoenix_chick_fly: 'assets/pets/phoenix_chick/fly.png',
-      pet_phoenix_chick_cheer: 'assets/pets/phoenix_chick/cheer.png',
-      pet_phoenix_chick_thumbnail: 'assets/pets/phoenix_chick/thumbnail.png',
     };
 
     for (const [key, path] of Object.entries(spriteMap)) {
@@ -339,10 +321,18 @@ export class PreloadScene extends Phaser.Scene {
 
   private loadWardrobeAssets(): void {
     if (!this.load || typeof this.load.image !== 'function') return;
-
-    // Optional art is loaded under its path key. Missing files simply stay absent;
-    // OutfitRenderer then selects layered/composite/base fallback without crashing.
-    getWardrobePreloadPaths().forEach(path => this.load.image(path, path));
+    try {
+      const profile = DataManager.getInstance().getProfile();
+      getEquippedWardrobePreloadPaths(profile.equippedWardrobe ?? {})
+        .forEach(path => this.load.image(path, path));
+      if (profile.equippedPet) {
+        PET_RUNTIME_ASSETS
+          .filter(asset => asset.key.startsWith(`pet_${profile.equippedPet}_`))
+          .forEach(asset => this.load.image(asset.key, asset.url));
+      }
+    } catch {
+      // A malformed save must not block core boot assets.
+    }
   }
 
   public generateProceduralTextures(): void {

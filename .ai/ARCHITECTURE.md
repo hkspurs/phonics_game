@@ -100,6 +100,13 @@ p1-adventure/
   replay boundaries. Review questions identify their source and preserve the
   original queue ID; unrecoverable legacy dynamic questions are visibly
   labelled `相同類型練習`, and solving one removes only that queue entry.
+- **Deferred optional assets**: `PreloadScene` loads core scene art and the
+  currently equipped full-body outfit only. `RuntimeAssetLoader` owns separate
+  wardrobe and pet group promises, validates requested texture keys before
+  reporting completion, and permits retry after a partial failure. `ShopScene`
+  starts the appropriate group on tab entry, gates purchases on verified art,
+  and uses a scene generation token so stale callbacks cannot mutate a later
+  tab or scene instance.
 - **Interactive ownership**: while `QuestionView` is mounted, the hidden
   Phaser question controls are disabled and restored on scene shutdown. This
   prevents duplicate answer paths and keeps DOM feedback, hint and Continue

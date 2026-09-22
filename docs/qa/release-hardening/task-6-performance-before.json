@@ -1,0 +1,69 @@
+{
+  "generatedAt": "2026-09-14T22:37:55.899Z",
+  "browser": "Playwright Chromium 129",
+  "cpuThrottleRate": 4,
+  "cacheDisabled": true,
+  "runs": [
+    {
+      "run": 1,
+      "startReadyMs": 26409,
+      "requestCount": 302,
+      "transferBytes": 8276542,
+      "optionalRequestCount": 36,
+      "optionalTransferBytes": 2387582,
+      "compressedJsBytes": 468101,
+      "longTaskCount": 204,
+      "longTaskTotalMs": 24528,
+      "failures": []
+    },
+    {
+      "run": 2,
+      "startReadyMs": 26918,
+      "requestCount": 302,
+      "transferBytes": 8276542,
+      "optionalRequestCount": 36,
+      "optionalTransferBytes": 2387582,
+      "compressedJsBytes": 468101,
+      "longTaskCount": 204,
+      "longTaskTotalMs": 24082,
+      "failures": []
+    },
+    {
+      "run": 3,
+      "startReadyMs": 27213,
+      "requestCount": 302,
+      "transferBytes": 8276542,
+      "optionalRequestCount": 36,
+      "optionalTransferBytes": 2387582,
+      "compressedJsBytes": 468101,
+      "longTaskCount": 217,
+      "longTaskTotalMs": 24980,
+      "failures": []
+    },
+    {
+      "run": 4,
+      "startReadyMs": 26809,
+      "requestCount": 302,
+      "transferBytes": 8276542,
+      "optionalRequestCount": 36,
+      "optionalTransferBytes": 2387582,
+      "compressedJsBytes": 468101,
+      "longTaskCount": 209,
+      "longTaskTotalMs": 24478,
+      "failures": []
+    },
+    {
+      "run": 5,
+      "startReadyMs": 25758,
+      "requestCount": 302,
+      "transferBytes": 8276542,
+      "optionalRequestCount": 36,
+      "optionalTransferBytes": 2387582,
+      "compressedJsBytes": 468101,
+      "longTaskCount": 209,
+      "longTaskTotalMs": 23690,
+      "failures": []
+    }
+  ],
+  "medianStartReadyMs": 26809
+}

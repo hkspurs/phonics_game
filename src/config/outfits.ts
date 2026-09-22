@@ -278,6 +278,24 @@ export function getWardrobePreloadPaths(
   return [...paths];
 }
 
+/** Assets required before the first scene when a full-body outfit is equipped. */
+export function getEquippedWardrobePreloadPaths(
+  equipped: EquippedWardrobe,
+  definitions: readonly OutfitDefinition[] = OUTFIT_DEFINITIONS
+): readonly string[] {
+  const bodyIds = [equipped.dress, equipped.top, equipped.bottom].filter(Boolean) as string[];
+  if (bodyIds.length !== 1) return [];
+  const definition = definitions.find(candidate =>
+    candidate.id === bodyIds[0] || candidate.aliases?.includes(bodyIds[0])
+  );
+  if (!definition || definition.artworkStatus === 'placeholder') return [];
+  return [...new Set([
+    definition.assets.thumbnail,
+    ...Object.values(definition.assets),
+    ...Object.values(definition.layers ?? {}),
+  ].filter((path): path is string => Boolean(path)))];
+}
+
 export function getWardrobeSlot(item: WardrobeItem): OutfitSlot {
   if (item.category === 'dress') return OutfitSlot.DRESS;
   if (item.category === 'top') return OutfitSlot.TOP;

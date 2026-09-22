@@ -60,7 +60,11 @@
 - Storybook UX migration (Phases 0–7): Warm woodland art direction, responsive Home → Map → Station Detail → Question → Result flow, explicit answer feedback pacing, stable sentence-token interaction, runner input blur safety, and consistent shop/result styling.
 - Supporting accessibility and release verification (Phases 8–9): Responsive Settings/Trophy/Diagnostic Report destinations, truthful diagnostic empty states, semantic keyboard/touch controls, queued mistake reconstruction for current and legacy saves, explicit additive session IDs for new attempt history, conservative legacy hint aggregation, visibly labelled replacement practice, optional portrait guidance, 48px short-landscape scrolling fixes, real-control journey coverage and the seven-viewport release matrix.
 - Release hardening Task C: PR-targeted CI runs unit/build/local browser gates with bounded artifacts; deployed checks are isolated in `test:e2e:live` and require `LIVE_BASE_URL` plus `EXPECTED_SOURCE_SHA`. Vite emits `build-info.json` and the Pages workflow verifies the SHA before publication.
-- 64 test suites and 1,953 unit tests passing. Production TypeScript/Vite build succeeds; Vite reports only its existing large-chunk advisory.
+- Release hardening Task 6: boot keeps core art plus the equipped outfit available,
+  while unselected wardrobe and pet art load per destination through a
+  group-isolated, retryable `RuntimeAssetLoader`. Shop purchase controls remain
+  disabled until the selected art is verified in Phaser's texture store.
+- 65 test suites and 1,958 unit tests passing. Production TypeScript/Vite build succeeds; Vite reports only its existing large-chunk advisory.
 
 ## Known Issues
 - Vitest JSDOM environment lacks some Phaser Graphics mock functions (`strokeCircle`), requiring defensive checks (`typeof g.strokeCircle === 'function'`).

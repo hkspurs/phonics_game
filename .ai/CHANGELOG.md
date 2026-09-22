@@ -1,5 +1,25 @@
 # AI Coordination Changelog
 
+## 2026-09-14 — OpenAI Codex — TASK-20260913-RELEASE-HARDENING (Task 6)
+
+Deferred unselected wardrobe and pet art from boot into independent, retryable
+runtime groups. Shop loading/error states now gate purchases until the selected
+texture is present, stale scene/tab callbacks are generation-guarded, and the
+purchase confirmation lifecycle no longer lets an old modal clear a new
+success modal. Prices, inventory cardinality, ledger IDs and balances are
+unchanged.
+
+Changed: RuntimeAssetLoader and tests, Preload/Shop scenes, optional asset
+configuration, deterministic wardrobe E2E helpers, failure/retry and rapid-tab
+browser tests, cold-load measurement script/results, architecture and QA docs.
+
+Verification: full unit 65 files / 1,958 tests; build 1,968.41 kB JS /
+468.64 kB gzip; release visual matrix 7/7; focused asset/purchase browser set
+4/4. Five-run cold-load median improved from 26,809 ms to 21,504 ms and eager
+optional transfer fell from 2,387,582 bytes to zero.
+
+Pending: Task 7 explicit Phaser Graphics harness.
+
 ## 2026-09-14 — OpenAI Codex — TASK-20260913-RELEASE-HARDENING (Task 5)
 
 Added additive question-session identity and robust mixed legacy/new hint

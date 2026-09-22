@@ -323,3 +323,38 @@ and reward ledger remain unchanged while the intended queue entry is removed.
 The first browser attempt was infrastructure-only because the Playwright binary
 cache had been cleared; after reinstalling pinned Chromium 129, the unchanged
 product flow passed. No deploy or merge was run.
+
+## Checkpoint 9 — Task 6 deferred assets and purchase safety
+
+- **Task:** 6 — safe deferred assets and purchase-path verification
+- **Status:** `AUTOMATED_VERIFIED`
+- **Recorded at:** 2026-09-14 UTC
+
+`PreloadScene` now keeps core art and the equipped full-body outfit available at
+boot while unselected wardrobe and pet art load in separate destination-owned
+groups. Repeated requests deduplicate within a group; overlapping groups cannot
+mark each other complete; missing textures produce a retryable error. Shop
+actions stay disabled during loading, and scene-generation guards prevent stale
+callbacks from mutating a later tab/scene. Purchase prices, balance deductions,
+single inventory insertion and transaction-ledger behavior are preserved.
+
+| Check | Result |
+|---|---|
+| Runtime loader + focused scene unit tests | PASS — 2 files / 36 tests |
+| Broader loader/shop unit regression | PASS — 3 files / 124 tests |
+| `npm run test:unit` | PASS — 65 files / 1,958 tests |
+| `npm run build` | PASS — 1,968.41 kB JS / 468.64 kB gzip; existing advisory |
+| Runtime failure/retry, rapid tab switching and two purchase flows | PASS — 4/4, zero retries |
+| `e2e/visual-release.spec.ts` | PASS — 7/7 viewport cases, zero retries |
+
+Five identical cold, cache-disabled, 4x CPU-throttled Chromium runs measured
+302 requests / 8,276,542 bytes before and 230 requests / 5,890,172 bytes after.
+Previously eager optional transfer fell from 2,387,582 bytes to zero (100%
+reduction). Median Start-ready changed from 26,809 ms to 21,504 ms (19.8%
+faster). Compressed initial JavaScript is 469,313 bytes in the measured bundle,
+below the 500 KiB budget. Raw evidence is in
+`task-6-performance-before.json` and `task-6-performance-after.json`.
+
+Google Chrome-specific evidence remains `BLOCKED` by the managed-runtime socket
+restriction; these results are correctly labelled bundled Chromium. No deploy
+or merge was attempted.
