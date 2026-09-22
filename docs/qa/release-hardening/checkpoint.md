@@ -227,3 +227,27 @@ Retry the exact docs commit through an authorized GitHub path and verify its
 remote SHA, then proceed to Task 2: create the Chrome config, rerun the fresh
 baseline with `--retries=0`, and record any launch/runtime boundary without
 substituting Chromium for required Chrome evidence.
+
+## Checkpoint 5 — Task 2 Chrome configuration and baseline
+
+- **Task:** 2 — establish Chrome acceptance and current baseline
+- **Status:** IMPLEMENTED; local regression `AUTOMATED_VERIFIED`, Google Chrome `BLOCKED`
+- **Branch:** `codex/p1-release-hardening`
+- **Recorded at:** 2026-09-14 UTC
+
+### Fresh evidence
+
+| Check | Result |
+|---|---|
+| `npm ci` | PASS |
+| `npm run test:unit` | PASS — 63 files, 1,941 tests |
+| `npm run build` | PASS — 1,963.34 kB JS / 466.90 kB gzip; existing large-chunk advisory |
+| Chrome config collection | PASS — 87 tests in 26 files, project `google-chrome` |
+| Full local Chromium, `CI=1`, `--retries=0` | PASS — 87/87 in 10.8 minutes; `task-2-local-results.json` |
+| Google Chrome 153.0.8010.36 | BLOCKED before page creation by managed-runtime socket permission; no Chromium substitution |
+| Public Pages | NOT_RUN — deployment intentionally not authorized |
+
+The Playwright browser missing after `npm ci` caused an initial infrastructure-
+only 87-test failure. The pinned browser was installed and the identical
+zero-retry suite was rerun to green. No test was skipped, deleted, retried or
+weakened. Player persistence and economy source were unchanged.
