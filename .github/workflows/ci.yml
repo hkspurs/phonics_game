@@ -103,6 +103,12 @@ jobs:
           PLAYWRIGHT_JSON_OUTPUT_NAME: test-results/chrome-acceptance.json
         run: npm run test:e2e:chrome -- e2e/visual-release.spec.ts e2e/accessibility-release.spec.ts --retries=0 --reporter=list,json
 
+      - name: Verify wardrobe and Runner graphics in Google Chrome
+        env:
+          CI: '1'
+          PLAYWRIGHT_JSON_OUTPUT_NAME: test-results/chrome-graphics.json
+        run: npm run test:e2e:chrome -- e2e/wardrobe-hybrid-shop-visual.spec.ts --grep 'renders Dream Wardrobe shop across Desktop|keeps dedicated wearing art through Runner pose changes' --retries=0 --reporter=list,json
+
       - name: Upload Chrome screenshots and test report
         if: always()
         uses: actions/upload-artifact@v4
