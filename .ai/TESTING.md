@@ -65,6 +65,18 @@ Chrome (`channel: 'chrome'`) at 375×667, 390×844, 430×932, 667×375, 844×390
 evidence but must not be labelled Google Chrome evidence. Physical-device,
 Safari and Firefox checks are OUT_OF_SCOPE under the revised acceptance.
 
+Focused release visual/accessibility evidence:
+
+```bash
+npx playwright test e2e/visual-release.spec.ts e2e/accessibility-release.spec.ts --retries=0
+```
+
+This captures nine release screens at the seven agreed CSS viewport sizes and
+checks horizontal overflow, named keyboard controls, focus return, Escape,
+forced colors and reduced motion. Screenshot attachments belong in Playwright
+artifacts, not tracked image directories. Use a QA host with Noto Sans TC and
+an emoji font; font promises alone do not prove readable glyph rendering.
+
 The phases 0–7 verification run passed five tests across those files. The
 manual smoke flow also covers Home → Map → station detail → choice question →
 sentence scramble → Result at 844×390.

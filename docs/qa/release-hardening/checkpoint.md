@@ -251,3 +251,24 @@ The Playwright browser missing after `npm ci` caused an initial infrastructure-
 only 87-test failure. The pinned browser was installed and the identical
 zero-retry suite was rerun to green. No test was skipped, deleted, retried or
 weakened. Player persistence and economy source were unchanged.
+
+## Checkpoint 6 — Task 3 visual and accessibility evidence
+
+- **Task:** 3 — restore visual, font and accessibility coverage
+- **Status:** Chromium evidence `AUTOMATED_VERIFIED`; Google Chrome-specific evidence `BLOCKED`
+- **Recorded at:** 2026-09-14 UTC
+
+Added release screenshot coverage for nine screens at all seven CSS viewport
+sizes plus keyboard focus/return, Escape, forced-colors and reduced-motion
+checks. The first run exposed two test-contract defects: the close button's
+actual accessible name is `關閉報告`, and the second test counted controls
+before the asynchronous Home view mounted. After correcting those locators and
+condition waits, the combined suite passed 9/9 with zero retries in 1.7 minutes.
+
+Noto Sans TC and Noto Color Emoji were installed in the QA environment only.
+The latter resolved host-generated emoji tofu boxes observed during screenshot
+review; production assets and font payload were not changed. Representative
+375×667 Home and Trophy screenshots were inspected after the font correction.
+Actual Google Chrome screenshots and 200% browser zoom remain `BLOCKED` because
+Chrome cannot launch in this managed runtime. Physical devices and non-Chrome
+browsers remain `OUT_OF_SCOPE — user revised acceptance`.

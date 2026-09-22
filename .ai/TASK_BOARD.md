@@ -14,7 +14,7 @@ commits and checkpoints. Preserve player saves and reward semantics. Under the
 revised acceptance, Google Chrome at the seven agreed CSS viewport sizes is
 required; physical devices and non-Chrome browsers are OUT_OF_SCOPE.
 
-Current phase: Task 2 — establish Google Chrome acceptance and fresh baseline.
+Current phase: Task 4 — speech lifecycle and deterministic browser fixtures.
 
 ### TASK-20260912-STORYBOOK-UX
 
