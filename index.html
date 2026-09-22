@@ -256,6 +256,11 @@
       }
     }
 
+    /* Responsive DOM screens are designed for portrait; preserve their header. */
+    body.has-screen-view #orientation-warning {
+      display: none;
+    }
+
     .rotate-icon {
       font-size: 24px;
       margin-bottom: 2px;

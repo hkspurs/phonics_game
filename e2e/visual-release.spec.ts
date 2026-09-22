@@ -34,6 +34,7 @@ for (const viewport of VIEWPORTS) {
     await page.setViewportSize({ width: viewport.width, height: viewport.height });
     await page.goto('/');
     await expect(page.locator('.home-view')).toBeVisible({ timeout: 15000 });
+    await expect(page.locator('#orientation-warning'), `${viewport.name} responsive Home stays unobscured`).toBeHidden();
     expect(
       await page.evaluate(() => document.fonts.check('16px "Noto Sans TC"', '繁體中文學習')),
       `${viewport.name} should resolve the QA Traditional Chinese font`,
@@ -42,6 +43,7 @@ for (const viewport of VIEWPORTS) {
 
     await page.getByRole('button', { name: /開始冒險|繼續冒險/ }).click();
     await expect(page.locator('.map-view')).toBeVisible();
+    await expect(page.locator('#orientation-warning')).toBeHidden();
     await attachScreen(page, testInfo, viewport.name, 'map');
     await page.locator('.station-choice').first().click();
     await expect(page.locator('.station-detail-view')).toBeVisible();
@@ -76,6 +78,7 @@ for (const viewport of VIEWPORTS) {
       runnerCoins: 0,
     });
     await expect(page.locator('.result-view')).toBeVisible();
+    await expect(page.locator('#orientation-warning')).toBeHidden();
     await attachScreen(page, testInfo, viewport.name, 'result');
   });
 }
