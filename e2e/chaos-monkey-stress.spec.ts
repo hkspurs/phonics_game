@@ -58,6 +58,10 @@ test.describe('Chaos Monkey & Adversarial Stress E2E Suite', () => {
   });
 
   test('Chaos 3: Rapid card drag & drop 50 times in 1 second in QuestionScene', async ({ page }) => {
+    // Fifty real pointer sequences can take longer than the suite default on
+    // a loaded CI worker; keep the stress assertion intact while allowing the
+    // browser enough time to finish all input events.
+    test.setTimeout(60000);
     const pageErrors: string[] = [];
     page.on('pageerror', (err) => pageErrors.push(err.message));
 

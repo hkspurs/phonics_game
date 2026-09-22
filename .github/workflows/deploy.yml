@@ -37,6 +37,12 @@ jobs:
       - name: Build production bundle
         run: npm run build
 
+      - name: Verify build identity before publication
+        env:
+          EXPECTED_SOURCE_SHA: ${{ github.sha }}
+        run: |
+          node -e "const info=require('./dist/build-info.json'); if(info.sourceSha !== process.env.EXPECTED_SOURCE_SHA) { throw new Error('build-info.json sourceSha mismatch before Pages publication'); }"
+
       - name: Deploy to gh-pages branch
         uses: peaceiris/actions-gh-pages@v4
         with:

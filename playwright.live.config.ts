@@ -1,20 +1,29 @@
 import { defineConfig, devices } from '@playwright/test';
 
+const configuredBaseUrl = process.env.LIVE_BASE_URL?.trim();
+if (!configuredBaseUrl) {
+  throw new Error('LIVE_BASE_URL is required for deployed smoke tests.');
+}
+
+const baseURL = configuredBaseUrl.endsWith('/') ? configuredBaseUrl : `${configuredBaseUrl}/`;
+const jsonOutput = process.env.PLAYWRIGHT_JSON_OUTPUT_NAME;
+
 export default defineConfig({
-  testDir: './e2e',
+  testDir: './e2e/live',
   fullyParallel: false,
   workers: 1,
-  testIgnore: ['**/live/**'],
   timeout: 30000,
   expect: {
     timeout: 5000,
   },
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
-  reporter: 'list',
+  reporter: jsonOutput
+    ? [['list'], ['json', { outputFile: jsonOutput }]]
+    : 'list',
   use: {
-    baseURL: 'http://localhost:4173',
-    trace: 'on-first-retry',
+    baseURL,
+    trace: 'retain-on-failure',
     viewport: { width: 1280, height: 720 },
   },
   projects: [
@@ -28,10 +37,4 @@ export default defineConfig({
       },
     },
   ],
-  webServer: {
-    command: 'npm run preview -- --port 4173',
-    port: 4173,
-    reuseExistingServer: !process.env.CI,
-    timeout: 120000,
-  },
 });

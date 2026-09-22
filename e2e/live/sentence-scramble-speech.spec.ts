@@ -1,8 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 test('Live Verify: Sentence scramble speaks prompt instruction first on GitHub Pages', async ({ page }) => {
-  const targetUrl = process.env.LIVE_URL || 'http://localhost:4173/';
-  await page.goto(targetUrl);
+  await page.goto('/?_t=' + Date.now());
   await page.waitForTimeout(2000);
 
   await page.evaluate(() => {

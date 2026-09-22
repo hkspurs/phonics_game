@@ -1,0 +1,115 @@
+name: Release Hardening CI
+
+on:
+  pull_request:
+    branches:
+      - p1-adventure
+  workflow_dispatch:
+    inputs:
+      live_base_url:
+        description: Optional deployed Pages URL for the live smoke job
+        required: false
+        type: string
+      expected_source_sha:
+        description: Source SHA expected in the deployed build-info.json
+        required: false
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-hardening-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    name: Unit, build and local browser regression
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout review source
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install lockfile dependencies
+        run: npm ci
+
+      - name: Run unit tests
+        run: npm run test:unit
+
+      - name: Build production bundle
+        env:
+          GITHUB_SHA: ${{ github.sha }}
+        run: |
+          npm run build
+          node -e "const info=require('./dist/build-info.json'); if(info.sourceSha !== process.env.GITHUB_SHA) { throw new Error('build-info.json sourceSha mismatch'); }"
+
+      - name: Install Chromium and system dependencies
+        run: npx playwright install --with-deps chromium
+
+      - name: Run local browser regression
+        env:
+          CI: '1'
+          PLAYWRIGHT_JSON_OUTPUT_NAME: test-results/local-e2e.json
+        run: npm run test:e2e -- --reporter=list,json --retries=0
+
+      - name: Upload verification reports and traces
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-hardening-verify-${{ github.run_id }}
+          path: |
+            test-results/
+            playwright-report/
+            dist/build-info.json
+          if-no-files-found: ignore
+          retention-days: 7
+
+  live-smoke:
+    name: Deployed build identity and smoke (manual)
+    if: ${{ github.event_name == 'workflow_dispatch' && (inputs.live_base_url != '' || vars.LIVE_BASE_URL != '') && (inputs.expected_source_sha != '' || vars.EXPECTED_SOURCE_SHA != '') }}
+    needs: verify
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      LIVE_BASE_URL: ${{ inputs.live_base_url || vars.LIVE_BASE_URL }}
+      EXPECTED_SOURCE_SHA: ${{ inputs.expected_source_sha || vars.EXPECTED_SOURCE_SHA }}
+      LIVE_PROPAGATION_TIMEOUT_MS: '120000'
+    steps:
+      - name: Checkout review source
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install lockfile dependencies
+        run: npm ci
+
+      - name: Install Chromium and system dependencies
+        run: npx playwright install --with-deps chromium
+
+      - name: Run deployed smoke suite
+        env:
+          CI: '1'
+          PLAYWRIGHT_JSON_OUTPUT_NAME: test-results/live-e2e.json
+        run: npm run test:e2e:live -- --reporter=list,json --retries=0
+
+      - name: Upload deployed smoke reports and traces
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-hardening-live-${{ github.run_id }}
+          path: |
+            test-results/
+            playwright-report/
+          if-no-files-found: ignore
+          retention-days: 7

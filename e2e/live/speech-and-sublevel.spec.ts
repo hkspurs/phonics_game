@@ -2,8 +2,7 @@ import { test, expect } from '@playwright/test';
 
 test('Live Verify: Auto-read after 1s & 100% full-area sub-level row clicks on GitHub Pages', async ({ page }) => {
   await page.setViewportSize({ width: 932, height: 430 });
-  const targetUrl = process.env.LIVE_URL || 'http://localhost:4173/';
-  await page.goto(targetUrl);
+  await page.goto('/?_t=' + Date.now());
   await page.waitForTimeout(2000);
 
   const canvas = page.locator('#game-container canvas');

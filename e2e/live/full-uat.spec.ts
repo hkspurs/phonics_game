@@ -1,10 +1,6 @@
 import { test, expect } from '@playwright/test';
-import * as path from 'path';
-import * as fs from 'fs';
 
-test('Full Live UAT on https://hkspurs.github.io/phonics_game/', async ({ page }) => {
-  const uatDir = path.join(process.cwd(), 'live-uat-screenshots');
-  if (!fs.existsSync(uatDir)) fs.mkdirSync(uatDir, { recursive: true });
+test('Full Live UAT on the configured deployment host', async ({ page }, testInfo) => {
 
   const consoleLogs: string[] = [];
   const pageErrors: string[] = [];
@@ -15,7 +11,7 @@ test('Full Live UAT on https://hkspurs.github.io/phonics_game/', async ({ page }
   
   // Go to live GitHub Pages
   console.log('Navigating to live GitHub Pages...');
-  await page.goto('https://hkspurs.github.io/phonics_game/?_t=' + Date.now());
+  await page.goto('/?_t=' + Date.now());
   await page.waitForTimeout(3000);
 
   const scriptSrcs = await page.evaluate(() => {
@@ -25,7 +21,7 @@ test('Full Live UAT on https://hkspurs.github.io/phonics_game/', async ({ page }
   expect(scriptSrcs.some(s => s.includes('index-') && s.endsWith('.js'))).toBe(true);
 
   // Take live TitleScene screenshot
-  await page.screenshot({ path: path.join(uatDir, '01_Live_TitleScene.png') });
+  await page.screenshot({ path: testInfo.outputPath('01_Live_TitleScene.png') });
 
   // 1. Click "開始遊戲"
   const canvas = page.locator('#game-container canvas');
@@ -35,13 +31,13 @@ test('Full Live UAT on https://hkspurs.github.io/phonics_game/', async ({ page }
 
   await page.mouse.click(box.x + 640, box.y + 360);
   await page.waitForTimeout(1500);
-  await page.screenshot({ path: path.join(uatDir, '02_Live_MapScene.png') });
+  await page.screenshot({ path: testInfo.outputPath('02_Live_MapScene.png') });
 
   // 2. Click Station 1 node on the roadmap
   console.log('Clicking Station 1 node on live MapScene...');
   await page.mouse.click(box.x + 640, box.y + 450);
   await page.waitForTimeout(1000);
-  await page.screenshot({ path: path.join(uatDir, '03_Live_Station1_Modal.png') });
+  await page.screenshot({ path: testInfo.outputPath('03_Live_Station1_Modal.png') });
 
   // Verify modal is open on live site
   const isModalOpen = await page.evaluate(() => {
@@ -55,7 +51,7 @@ test('Full Live UAT on https://hkspurs.github.io/phonics_game/', async ({ page }
   console.log('Clicking Sub-level 1 [中] on live site...');
   await page.mouse.click(box.x + 640, box.y + 295);
   await page.waitForTimeout(1500);
-  await page.screenshot({ path: path.join(uatDir, '04_Live_QuestionScene_Chinese.png') });
+  await page.screenshot({ path: testInfo.outputPath('04_Live_QuestionScene_Chinese.png') });
 
   let activeScene = await page.evaluate(() => {
     const game = (window as any).__PHASER_GAME__;
@@ -79,7 +75,7 @@ test('Full Live UAT on https://hkspurs.github.io/phonics_game/', async ({ page }
   console.log('Clicking Enter button (⚔️ 進入關卡 (進入)) on live site...');
   await page.mouse.click(box.x + 640, box.y + 565);
   await page.waitForTimeout(1500);
-  await page.screenshot({ path: path.join(uatDir, '05_Live_QuestionScene_EnterBtn.png') });
+  await page.screenshot({ path: testInfo.outputPath('05_Live_QuestionScene_EnterBtn.png') });
 
   activeScene = await page.evaluate(() => {
     const game = (window as any).__PHASER_GAME__;

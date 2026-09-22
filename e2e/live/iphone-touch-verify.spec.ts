@@ -2,8 +2,7 @@ import { test, expect } from '@playwright/test';
 
 test('Live Verify iPhone Touch: All 5 button points (Center, 4 corners) click reliably on GitHub Pages', async ({ page }) => {
   await page.setViewportSize({ width: 932, height: 430 });
-  const targetUrl = process.env.LIVE_URL || 'http://localhost:4173/';
-  await page.goto(targetUrl);
+  await page.goto('/?_t=' + Date.now());
   await page.waitForTimeout(3000);
 
   const canvas = page.locator('#game-container canvas');
