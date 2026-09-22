@@ -292,3 +292,34 @@ tests; four browser speech specs 4/4; three repeated zero-retry runs 12/12.
 The three legacy specs now install a deterministic complete `zh-HK` fixture
 before navigation and retain their timing, math-word and instruction/answer
 ordering assertions. Actual audible output is not available in this runtime.
+
+## Checkpoint 8 — Task 5 save provenance and session identity
+
+- **Task:** 5 — exact mistake replay provenance and explicit question sessions
+- **Status:** `AUTOMATED_VERIFIED`
+- **Recorded at:** 2026-09-14 UTC
+
+New attempts now carry an additive optional `sessionId`, created once for each
+QuestionScene visit and reused across retries and hints. Diagnostic hint totals
+group new rows by this identity, including interleaved and cross-midnight rows.
+Legacy rows retain the attempt-reset heuristic; rows without a usable attempt
+number are conservatively counted as separate sessions.
+
+Question snapshots are deep-copied at record and replay boundaries. Review
+resolution is snapshot first, exact curriculum second, then a same-subject
+replacement visibly labelled `相同類型練習`. Every review item preserves its
+original queue ID independently of the replacement ID. Solving a review item
+removes only that original queue entry and retains the historical wrong answer.
+
+| Command | Result |
+|---|---|
+| Focused history, QuestionScene and state suites | PASS — 3 files / 96 tests |
+| `npm run test:unit` | PASS — 64 files / 1,953 tests |
+| `npm run build` | PASS — 1,964.56 kB JS / 467.36 kB gzip; existing large-chunk advisory |
+| `CI=1 npx playwright test e2e/review-mistakes-replay.spec.ts --retries=0 --reporter=list` | PASS — 1/1; real DOM report/review/answer controls |
+
+The E2E save comparison confirmed coins, gems, inventory, equipped wardrobe
+and reward ledger remain unchanged while the intended queue entry is removed.
+The first browser attempt was infrastructure-only because the Playwright binary
+cache had been cleared; after reinstalling pinned Chromium 129, the unchanged
+product flow passed. No deploy or merge was run.

@@ -48,6 +48,8 @@ export interface ProgressiveHints {
 }
 
 export interface QuestionAttempt {
+  /** Stable for retries/hints within one question visit; absent on legacy saves. */
+  sessionId?: string;
   questionId: string;
   stationId: number;
   subject: SubjectType;
@@ -64,6 +66,8 @@ export interface QuestionAttempt {
 }
 
 export interface LearningAttemptRecord {
+  /** Stable for records produced during one question visit; absent on legacy saves. */
+  sessionId?: string;
   attemptId: string;
   questionId: string;
   stationId: number;
@@ -174,6 +178,10 @@ export interface QuizQuestion {
   correctOptionIndex?: number;
   correctAnswer?: number | string;
   hintText?: string;
+  /** Review-only provenance; additive and ignored by ordinary curriculum play. */
+  reviewSource?: 'snapshot' | 'curriculum' | 'replacement';
+  originalQuestionId?: string;
+  reviewLabel?: string;
 }
 
 export interface MathQuestion {

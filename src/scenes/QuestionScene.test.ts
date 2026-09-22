@@ -646,6 +646,49 @@ describe('QuestionScene — Interactive Quiz Scene Suite', () => {
   // 6. Correct Celebration & Scene Transition
   // =========================================================================
   describe('Celebration & Transition Flow', () => {
+    it('removes only the original review queue entry after a replacement is solved', () => {
+      const originalId = 'legacy_dynamic_math';
+      dataManager.recordAttempt({
+        questionId: originalId,
+        stationId: 1,
+        subject: 'math',
+        knowledgeTag: 'addition',
+        difficulty: 1,
+        selectedAnswerId: 0,
+        isCorrect: false,
+        attemptNumber: 1,
+        hintLevelUsed: 0,
+        timestamp: 1,
+      });
+      dataManager.recordAttempt({
+        questionId: 'another_mistake',
+        stationId: 1,
+        subject: 'math',
+        knowledgeTag: 'addition',
+        difficulty: 1,
+        selectedAnswerId: 0,
+        isCorrect: false,
+        attemptNumber: 1,
+        hintLevelUsed: 0,
+        timestamp: 2,
+      });
+      scene.init({
+        questions: [{
+          ...mockMathCalcQuestion,
+          id: 'replacement_math',
+          originalQuestionId: originalId,
+          reviewSource: 'replacement',
+          reviewLabel: '相同類型練習',
+        }],
+      });
+      scene.create();
+
+      scene.onCorrectAnswer();
+
+      expect(dataManager.getMistakeReviewQueue()).toEqual(['another_mistake']);
+      expect(dataManager.getQuestionAttempts().some((attempt) => attempt.questionId === originalId && !attempt.isCorrect)).toBe(true);
+    });
+
     it('spawns celebration particles and banner on correct answer', () => {
       scene.init({
         questions: [mockChineseSentenceQuestion],

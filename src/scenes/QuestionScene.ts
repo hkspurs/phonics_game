@@ -6,6 +6,7 @@ import { SentenceEngine } from '../engine/SentenceEngine';
 import { DataManager } from '../services/DataManager';
 import { SoundManager } from '../services/SoundManager';
 import { SpeechService } from '../services/SpeechService';
+import { cloneQuizQuestion } from '../engine/QuestionSnapshot';
 import { CanvasButton } from '../ui/CanvasButton';
 import { CanvasCard } from '../ui/CanvasCard';
 import { SlotBox } from '../ui/SlotBox';
@@ -56,6 +57,7 @@ export class QuestionScene extends Phaser.Scene {
   public currentAttemptNumber: number = 0;
   public currentQuestionStartTime: number = Date.now();
   public currentHintLevel: number = 0;
+  public questionSessionId: string = '';
   public lastFeedbackMessage: string = '';
   private previousInputEnabled: boolean | null = null;
 
@@ -118,6 +120,9 @@ export class QuestionScene extends Phaser.Scene {
     this.currentAttemptNumber = 0;
     this.currentQuestionStartTime = Date.now();
     this.currentHintLevel = 0;
+    this.questionSessionId = typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function'
+      ? crypto.randomUUID()
+      : `question_${Date.now()}_${Math.random().toString(36).slice(2, 10)}`;
 
     if (data?.questions && data.questions.length > 0) {
       this.questions = [...data.questions];
@@ -973,7 +978,8 @@ export class QuestionScene extends Phaser.Scene {
             hintLevelUsed: this.currentHintLevel,
             timestamp: Date.now(),
             responseTimeMs: Date.now() - this.currentQuestionStartTime,
-            questionSnapshot: { ...this.currentQuestion },
+            sessionId: this.questionSessionId,
+            questionSnapshot: cloneQuizQuestion(this.currentQuestion),
           });
         } catch {
           // Ignore
@@ -1053,7 +1059,8 @@ export class QuestionScene extends Phaser.Scene {
             hintLevelUsed: this.currentHintLevel,
             timestamp: Date.now(),
             responseTimeMs: Date.now() - this.currentQuestionStartTime,
-            questionSnapshot: { ...this.currentQuestion },
+            sessionId: this.questionSessionId,
+            questionSnapshot: cloneQuizQuestion(this.currentQuestion),
           });
         } catch {
           // Ignore
@@ -1318,8 +1325,9 @@ export class QuestionScene extends Phaser.Scene {
 
     // 1. Record stats and attempt in DataManager
     try {
-      DataManager.getInstance().recordCorrectAnswer(this.currentQuestion.subject);
-      DataManager.getInstance().recordAttempt({
+      const dataManager = DataManager.getInstance();
+      dataManager.recordCorrectAnswer(this.currentQuestion.subject);
+      dataManager.recordAttempt({
         questionId: this.currentQuestion.id,
         stationId: this.stationId,
         subject: this.currentQuestion.subject,
@@ -1331,8 +1339,12 @@ export class QuestionScene extends Phaser.Scene {
         hintLevelUsed: this.currentHintLevel,
         timestamp: Date.now(),
         responseTimeMs: Date.now() - this.currentQuestionStartTime,
-        questionSnapshot: { ...this.currentQuestion },
+        sessionId: this.questionSessionId,
+        questionSnapshot: cloneQuizQuestion(this.currentQuestion),
       });
+      if (this.currentQuestion.originalQuestionId) {
+        dataManager.removeMistakeFromQueue(this.currentQuestion.originalQuestionId);
+      }
     } catch {
       // Ignore
     }

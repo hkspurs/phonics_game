@@ -1,5 +1,23 @@
 # AI Coordination Changelog
 
+## 2026-09-14 — OpenAI Codex — TASK-20260913-RELEASE-HARDENING (Task 5)
+
+Added additive question-session identity and robust mixed legacy/new hint
+aggregation. Persisted/replayed question snapshots are deep-cloned and replay
+provenance is centralized. Legacy replacement practice is visibly labelled and
+solving it removes only its original queue entry while preserving historical
+attempts, saves and reward semantics.
+
+Changed: question types, QuestionSnapshot, QuestionEngine, DataManager,
+QuestionScene, QuestionView, focused unit/E2E tests, architecture and release
+checkpoint records.
+
+Verification: focused unit 96/96; full unit 64 files / 1,953 tests; production
+build passed with the existing chunk advisory; review-mistakes Playwright flow
+1/1 passed with zero retries.
+
+Pending: Task 6 safe deferred assets and purchase-path verification.
+
 ## 2026-09-14 — OpenAI Codex — TASK-20260913-RELEASE-HARDENING (Tasks 2-4)
 
 Added the Google Chrome acceptance configuration, seven-size visual evidence,

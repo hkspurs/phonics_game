@@ -1,4 +1,5 @@
 import { UserProfile, GameSettings, Trophy, SubjectType, PetDefinition, GadgetDefinition, EquippedWardrobe, QuestionAttempt, RewardTransaction, LearningAttemptRecord, QuizQuestion } from '../types';
+import { cloneQuizQuestion } from '../engine/QuestionSnapshot';
 import { WARDROBE_ITEMS, WardrobeItem, WardrobeCategory } from '../config/wardrobe';
 
 const STORAGE_KEY = 'p1_adventure_save_v1';
@@ -1415,7 +1416,10 @@ export class DataManager {
     if (!this.profile.questionAttempts) {
       this.profile.questionAttempts = [];
     }
-    this.profile.questionAttempts.push(attempt);
+    this.profile.questionAttempts.push({
+      ...attempt,
+      questionSnapshot: attempt.questionSnapshot ? cloneQuizQuestion(attempt.questionSnapshot) : undefined,
+    });
 
     if (!this.profile.mistakeReviewQueue) {
       this.profile.mistakeReviewQueue = [];
@@ -1473,7 +1477,7 @@ export class DataManager {
     const attempts = this.profile.questionAttempts || [];
     return this.getMistakeReviewQueue().flatMap((questionId) => {
       const snapshot = [...attempts].reverse().find((attempt) => attempt.questionId === questionId && attempt.questionSnapshot)?.questionSnapshot;
-      return snapshot ? [{ ...snapshot }] : [];
+      return snapshot ? [cloneQuizQuestion(snapshot)] : [];
     });
   }
 
@@ -1653,20 +1657,40 @@ export class DataManager {
     // the full history in the saved attempt records.
     totalHints = questionIds.reduce((sum, id) => {
       const qAttempts = attempts.filter((attempt) => attempt.questionId === id);
+      const explicitSessions = new Map<string, number>();
+      const legacyAttempts = qAttempts.filter((attempt) => {
+        if (!attempt.sessionId) return true;
+        explicitSessions.set(
+          attempt.sessionId,
+          Math.max(explicitSessions.get(attempt.sessionId) ?? 0, attempt.hintLevelUsed || 0),
+        );
+        return false;
+      });
       let sessionMax = 0;
       let previousAttemptNumber: number | null = null;
       let questionHints = 0;
 
-      for (const attempt of qAttempts) {
-        if (previousAttemptNumber !== null && attempt.attemptNumber <= previousAttemptNumber) {
+      for (const attempt of legacyAttempts) {
+        const attemptNumber = Number.isFinite(attempt.attemptNumber) ? attempt.attemptNumber : null;
+        // Legacy rows without an attempt number cannot be joined reliably.
+        // Count each as its own conservative session rather than merging away
+        // evidence of a revisit.
+        if (attemptNumber === null) {
+          questionHints += sessionMax + (attempt.hintLevelUsed || 0);
+          sessionMax = 0;
+          previousAttemptNumber = null;
+          continue;
+        }
+        if (previousAttemptNumber !== null && attemptNumber <= previousAttemptNumber) {
           questionHints += sessionMax;
           sessionMax = 0;
         }
         sessionMax = Math.max(sessionMax, attempt.hintLevelUsed || 0);
-        previousAttemptNumber = attempt.attemptNumber;
+        previousAttemptNumber = attemptNumber;
       }
 
-      return sum + questionHints + sessionMax;
+      const explicitHints = [...explicitSessions.values()].reduce((total, value) => total + value, 0);
+      return sum + explicitHints + questionHints + sessionMax;
     }, 0);
 
     const calcAcc = (correct: number, total: number) => (total > 0 ? correct / total : 0);
