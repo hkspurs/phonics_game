@@ -13,7 +13,7 @@ Task A on a branch based on current `p1-adventure`, with per-task tests,
 commits and checkpoints. Preserve player saves and reward semantics; mark
 physical/device evidence MANUAL_PENDING.
 
-Current phase: Task B — browser-suite migration.
+Current phase: Task C — PR CI and deployed smoke.
 
 ### TASK-20260912-STORYBOOK-UX
 

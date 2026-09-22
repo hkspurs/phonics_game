@@ -61,8 +61,35 @@ its owning interaction and replacement coverage are checked.
 - Existing browser warnings include suspended AudioContext in headless Chromium;
   they are recorded for Task E and are not swallowed by the harness.
 
-## Next action
+## Baseline next action (completed)
 
-Task B: migrate the affected local browser specs using semantic controls for DOM
+Task B migrated the affected local browser specs using semantic controls for DOM
 surfaces and logical-to-display coordinate mapping for genuine Phaser surfaces;
-then rerun each changed spec and the complete local collection.
+the final collection and disposition are recorded below.
+
+## Task B resolution
+
+Final source-tree rerun: `CI=1 PLAYWRIGHT_JSON_OUTPUT_NAME=docs/qa/release-hardening/task-b-results.json npm run test:e2e -- --reporter=list,json --retries=0`
+
+| Result | Count | Disposition |
+|---|---:|---|
+| Passed local regression | 88 | Resolved/verified; no local failures or skips |
+| Public-host failures | 4 | Carried forward to Task C deployed-smoke configuration |
+
+The local failures from rows 1–9, 14–32 and 33 were migrated or fixed without
+removing their intent. DOM-owned Home/Map/Question interactions now use visible
+semantic controls; duplicate sentence tokens still select the first remaining
+match; Runner/Shop retain logical canvas coordinate checks; and the wardrobe
+visual assertion now passes repeatedly after restoring full-body wearing art and
+stage-derived scale/grounding. The purchase regression also proves the selected
+currency and reward-ledger transaction remain atomic.
+
+Rows 10–13 are intentionally not relabeled as local product failures. They are
+the four existing live GitHub Pages probes and remain external/deployed evidence:
+the current host returned `ERR_EMPTY_RESPONSE` for two tests, while the other
+two still use the old live canvas contract. Task C will keep them runnable under
+`test:e2e:live` with explicit URL/source identity and will report unavailable
+hosting as `ENVIRONMENT_BLOCKED`, never as a pass.
+
+The complete JSON report is `task-b-results.json`; no test was skipped, deleted
+or marked expected-fail to obtain this result.

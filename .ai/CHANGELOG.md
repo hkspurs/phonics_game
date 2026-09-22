@@ -1,5 +1,28 @@
 # AI Coordination Changelog
 
+## 2026-09-13 — OpenAI Codex — TASK-20260913-RELEASE-HARDENING (Task B)
+
+Migrated the local browser suite to the current semantic DOM interaction
+contract while retaining real canvas coordinate coverage for Runner and Shop.
+Added shared learning/canvas helpers, stabilized asynchronous scene assertions,
+and kept answer, save, reward and purchase-economy assertions intact. Restored
+the full-body wardrobe source art and sized/grounded the preview from the
+available stage so the reproduced alpha-clipping/readability defect is fixed.
+
+Verification:
+- `npm run test:unit`: 63 files, 1,941 tests passed.
+- `npm run build`: passed; 1,963.34 kB JS / 466.90 kB gzip; existing Vite
+  large-chunk advisory remains.
+- Final local Playwright collection: 88 passed, 0 local failures, 0 skipped.
+- Four existing public-host specs remain external failures and are recorded in
+  `docs/qa/release-hardening/task-b-results.json`; Task C will give them a
+  dedicated live configuration rather than hiding them from local coverage.
+- Repeated wardrobe geometry and Chaos scene-race checks passed 5/5 each.
+
+Pending: deployed source identity/public smoke, physical-device touch and
+Traditional Chinese font evidence, real audible speech and assistive-technology
+review remain `MANUAL_PENDING` or Task C/D/E work.
+
 ## 2026-09-13 — OpenAI Codex — TASK-20260913-RELEASE-HARDENING (Task A)
 
 Established a fresh release-hardening baseline from `p1-adventure` merge
