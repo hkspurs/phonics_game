@@ -153,6 +153,30 @@ describe('ShopScene 4 Tabs & Wardrobe Live Fitting Room', () => {
     expect(dm.getEquippedWardrobe().dress).toBeUndefined();
   });
 
+  it('uses a wardrobe gem price when the player cannot afford the coin price', () => {
+    const dm = DataManager.getInstance();
+    dm.getProfile().coins = 0;
+    dm.getProfile().gems = 100;
+    scene.create();
+    scene.switchTab('wardrobe');
+    scene.switchWardrobeCategory('dress');
+    scene.selectWardrobeItem(1);
+
+    expect(scene.actionButton?.getText()).toContain('立即購買');
+    const coinsBefore = dm.getProfile().coins;
+    scene.handleActionClick();
+
+    expect(dm.isWardrobeOwned('scholar_robe')).toBe(true);
+    expect(dm.getProfile().gems).toBe(70);
+    expect(dm.getProfile().coins).toBeGreaterThanOrEqual(coinsBefore);
+    expect(dm.getRewardLedger().some((transaction) => (
+      transaction.sourceId === 'wardrobe_scholar_robe'
+      && transaction.currencyType === 'gems'
+      && transaction.amount === -30
+    ))).toBe(true);
+    expect(dm.getEquippedWardrobe().dress).toBe('scholar_robe');
+  });
+
   it('does not queue a second live wardrobe purchase while confirmation is pending', () => {
     (scene as any).sys.settings.active = true;
     mock.textures.exists = vi.fn((key: string) => key.includes('thumbnail') || key.includes('/idle.png'));

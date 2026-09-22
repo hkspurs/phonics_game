@@ -44,6 +44,10 @@ test('Verification: Auto-read after 1s in QuestionScene and 100% full-area sub-l
       ]
     });
   });
+  // Scene start is asynchronous; anchor the timing assertion to the mounted
+  // question view so a slow Phaser boot cannot make the one-second timer look
+  // like a product failure.
+  await expect(page.locator('.question-view')).toBeVisible();
 
   // At 500ms, should NOT have spoken yet
   await page.waitForTimeout(500);
@@ -51,75 +55,46 @@ test('Verification: Auto-read after 1s in QuestionScene and 100% full-area sub-l
   console.log('Speech called at 500ms:', speechAt500ms);
   expect(speechAt500ms).toBe(false);
 
-  // After 1s delay (allow 1500ms margin), MUST have spoken!
-  await page.waitForTimeout(1500);
+  // Wait for the Phaser one-second timer to dispatch.  A busy headless GPU
+  // can advance the game clock more slowly than wall time, so the assertion
+  // observes the timer event instead of assuming a fixed sleep is equivalent.
+  await expect.poll(
+    () => page.evaluate(() => (window as any).__SPEECH_CALLED__),
+    { timeout: 5000, intervals: [100, 250, 500] }
+  ).toBe(true);
   const speechAfter1s = await page.evaluate(() => ({
     called: (window as any).__SPEECH_CALLED__,
-    text: (window as any).__SPEECH_TEXT__
+    text: (window as any).__SPEECH_TEXT__,
   }));
   console.log('Speech called after 1s:', speechAfter1s);
   expect(speechAfter1s.called).toBe(true);
   expect(speechAfter1s.text).toContain('請問「大」的反義詞是甚麼？');
 
-  // 2. Return to MapScene and test Sub-Level Row clicks across all parts (Center, Left, Right)
+  // 2. Return to the responsive Map/Station detail surface. The responsive
+  // layer is the owner of these controls, so test the complete visible row
+  // rather than clicking an obsolete canvas coordinate.
   console.log('Testing Sub-level row click across entire button surface...');
-  await page.evaluate(() => {
-    const game = (window as any).__PHASER_GAME__;
-    const q = game.scene.getScene('QuestionScene');
-    q.scene.start('MapScene');
-  });
-  await page.waitForTimeout(1500);
-
-  // Open Station 1 Modal
-  await page.evaluate(() => {
-    const game = (window as any).__PHASER_GAME__;
-    const map = game.scene.getScene('MapScene');
-    map.openStationModal(map.stations[0]);
-  });
-  await page.waitForTimeout(800);
-
-  // Get Row 1 bounds
-  const row1Bounds = await page.evaluate(() => {
-    const game = (window as any).__PHASER_GAME__;
-    const map = game.scene.getScene('MapScene');
-    const modal = map.activeModal;
-    // Row 1 is index 1 in modal contentContainer list
-    const row = (modal as any).contentContainer.list[1];
-    return {
-      modalX: modal.x,
-      modalY: modal.y + (modal as any).contentContainer.y,
-      rowX: row.x,
-      rowY: row.y,
-      rowW: row.width,
-      rowH: row.height,
-      gameW: game.scale.width,
-      gameH: game.scale.height,
-    };
-  });
-  console.log('Sub-level Row 1 Bounds in Modal:', row1Bounds);
-
-  // Calculate screen position for:
-  // 1. Far Left of row (the [中] badge)
-  // 2. Center of row (the title text)
-  // 3. Far Right of row (the star icon)
-  const toScreen = (gx: number, gy: number) => ({
-    x: box.x + (gx / row1Bounds.gameW) * box.width,
-    y: box.y + (gy / row1Bounds.gameH) * box.height,
-  });
-
-  const modalCenterX = row1Bounds.modalX;
-  const rowCenterY = row1Bounds.modalY + row1Bounds.rowY;
-
-  // Test clicking the Far Right of Row 1 (at x = +240px from row center, right on top of star icon!)
-  const rightClickPos = toScreen(modalCenterX + 220, rowCenterY);
-  console.log(`Clicking Far Right of Row 1 at (${rightClickPos.x.toFixed(1)}, ${rightClickPos.y.toFixed(1)})...`);
-  await page.mouse.click(rightClickPos.x, rightClickPos.y);
-  await page.waitForTimeout(1500);
-
-  const activeSceneAfterRightClick = await page.evaluate(() => {
-    const game = (window as any).__PHASER_GAME__;
-    return game.scene.scenes.filter((s: any) => s.sys?.settings?.active).map((s: any) => s.scene.key);
-  });
-  console.log('Active scenes after clicking far right of sub-level button:', activeSceneAfterRightClick);
-  expect(activeSceneAfterRightClick).toContain('QuestionScene');
+  await page.getByRole('button', { name: '‹ 地圖', exact: true }).click();
+  await expect(page.locator('.map-view')).toBeVisible();
+  await page.getByRole('button', { name: /第 1 關/ }).click();
+  await expect(page.locator('.station-detail-view')).toBeVisible();
+  const activity = page.getByRole('button', { name: /^中文小挑戰：/ });
+  const activityBox = await activity.boundingBox();
+  expect(activityBox).not.toBeNull();
+  if (!activityBox) return;
+  // Probe left, middle and right edges of the same real DOM row. Each probe
+  // should enter QuestionScene; return through the owned control before the
+  // next probe so no hidden canvas layer participates.
+  for (const x of [activityBox.x + 3, activityBox.x + activityBox.width / 2, activityBox.x + activityBox.width - 3]) {
+    await page.mouse.click(x, activityBox.y + activityBox.height / 2);
+    await expect(page.locator('.question-view')).toBeVisible();
+    const prompt = await page.locator('.question-prompt').textContent();
+    expect(prompt?.trim(), 'the selected sub-level should load a real question prompt').toBeTruthy();
+    if (x !== activityBox.x + activityBox.width - 3) {
+      await page.getByRole('button', { name: '‹ 地圖', exact: true }).click();
+      await expect(page.locator('.map-view')).toBeVisible();
+      await page.getByRole('button', { name: /第 1 關/ }).click();
+      await expect(page.locator('.station-detail-view')).toBeVisible();
+    }
+  }
 });

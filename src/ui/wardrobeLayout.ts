@@ -16,6 +16,13 @@ export interface WardrobeLayout {
   compact: boolean;
 }
 
+// Art Bible full-body PNGs use a 512px master canvas and an authored visible
+// alpha span of roughly 92 logical pixels after the renderer's 0.23 local
+// scale. Layout scale is derived from the available stage instead of a fixed
+// multiplier so the same outfit remains readable on desktop and landscape
+// mobile without clipping.
+const FULL_SPRITE_VISIBLE_HEIGHT = 92;
+
 export function getWardrobeLayout(width: number, height: number, compactOverride?: boolean): WardrobeLayout {
   const w = Math.max(1, width);
   const h = Math.max(1, height);
@@ -39,7 +46,7 @@ export function getWardrobeLayout(width: number, height: number, compactOverride
     height: actionHeight,
   };
   const detailsHeight = compact
-    ? Math.min(96, Math.max(84, h * 0.14))
+    ? Math.min(90, Math.max(72, h * 0.13))
     : Math.min(116, Math.max(105, h * 0.16));
   const details = {
     x: action.x,
@@ -58,12 +65,16 @@ export function getWardrobeLayout(width: number, height: number, compactOverride
     preview.height * 0.75
   );
   const characterWidth = Math.max(1, Math.min(stage.width - 12, characterHeight * 0.72));
+  const visualCharacterHeight = Math.max(
+    1,
+    Math.min(Math.max(1, stage.height - 2), preview.height * 0.58)
+  );
   const character = {
     x: stage.x + (stage.width - characterWidth) / 2,
     y: preview.y + (preview.height - characterHeight) / 2,
     width: characterWidth,
     height: characterHeight,
-    scale: compact ? 1.35 : 1.55,
+    scale: visualCharacterHeight / FULL_SPRITE_VISIBLE_HEIGHT,
   };
 
   return {

@@ -72,6 +72,9 @@ async function inspectLiveTextureAlpha(page: Page, textureKey: string): Promise<
 
 test.describe('Dream Wardrobe Hybrid Character Outfit & Shop UI Visual Audit', () => {
   test('renders Dream Wardrobe shop across Desktop, iPad, and iPhone viewports with clean preview', async ({ page }) => {
+    // This is an explicit 10-screenshot visual evidence run; the default
+    // 30-second interaction timeout is too short on cold Chromium workers.
+    test.setTimeout(120_000);
     // 1. Desktop 1920x1080 (the game canvas remains Scale.FIT at its logical size)
     await page.setViewportSize({ width: 1920, height: 1080 });
     await page.goto('/?test=true');

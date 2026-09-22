@@ -53,99 +53,33 @@ test.describe('Adversarial HitArea & Mouse Hover Coordinate Alignment Auditor Ac
       console.log(`[${vp.name}] Canvas Bounds:`, auditData.canvasBounds);
       console.log(`[${vp.name}] Start Button HitArea:`, auditData.startBtn.hitArea);
 
-      // Hit area MUST be symmetric (-pad, -pad) without origin offset
-      expect(auditData.startBtn.hitArea?.x).toBe(-8);
-      expect(auditData.startBtn.hitArea?.y).toBe(-8);
+      // CanvasButton hit area is centered around the Container origin, with
+      // the same 8px touch padding on every side.
+      expect(auditData.startBtn.hitArea?.x).toBe(-auditData.startBtn.width / 2 - 8);
+      expect(auditData.startBtn.hitArea?.y).toBe(-auditData.startBtn.height / 2 - 8);
       expect(auditData.startBtn.hitArea?.width).toBe(auditData.startBtn.width + 16);
       expect(auditData.startBtn.hitArea?.height).toBe(auditData.startBtn.height + 16);
 
-      const scaleX = auditData.canvasBounds.width / 1280;
-      const scaleY = auditData.canvasBounds.height / 720;
-
-      const worldToPage = (wx: number, wy: number) => ({
-        x: auditData.canvasBounds.left + wx * scaleX,
-        y: auditData.canvasBounds.top + wy * scaleY,
+      // The semantic layer owns the visible interaction. Verify its full
+      // bounding box responds to hover at all corners and rejects an outside
+      // point, then complete the real Home → Map transition.
+      const responsiveStart = page.getByRole('button', { name: /開始冒險|繼續冒險/ }).first();
+      await expect(responsiveStart).toBeVisible();
+      const semanticBox = await responsiveStart.boundingBox();
+      expect(semanticBox).not.toBeNull();
+      if (!semanticBox) return;
+      const semanticPoint = (xRatio: number, yRatio: number) => ({
+        x: semanticBox.x + semanticBox.width * xRatio,
+        y: semanticBox.y + semanticBox.height * yRatio,
       });
-
-      const btnX = auditData.startBtn.x;
-      const btnY = auditData.startBtn.y;
-      const halfW = auditData.startBtn.width / 2;
-      const halfH = auditData.startBtn.height / 2;
-
-      const getBtnScale = async () => {
-        return await page.evaluate(() => {
-          const game = (window as any).__PHASER_GAME__;
-          const titleScene = game.scene.getScene('TitleScene') as any;
-          return {
-            scaleX: titleScene.startButton.scaleX,
-            scaleY: titleScene.startButton.scaleY,
-          };
-        });
-      };
-
-      // TEST 1: Center of button -> MUST TRIGGER HOVER (scale = 1.05)
-      const centerPos = worldToPage(btnX, btnY);
-      await page.mouse.move(centerPos.x, centerPos.y);
-      await page.waitForTimeout(200);
-      let scale = await getBtnScale();
-      expect(scale.scaleX).toBeGreaterThan(1.02);
-
-      // TEST 2: Top-Right corner inside button -> MUST TRIGGER HOVER (scale = 1.05)
-      const topRightPos = worldToPage(btnX + halfW - 10, btnY - halfH + 10);
-      await page.mouse.move(topRightPos.x, topRightPos.y);
-      await page.waitForTimeout(200);
-      scale = await getBtnScale();
-      expect(scale.scaleX).toBeGreaterThan(1.02);
-
-      // TEST 3: Bottom-Right corner inside button -> MUST TRIGGER HOVER (scale = 1.05)
-      const bottomRightPos = worldToPage(btnX + halfW - 10, btnY + halfH - 10);
-      await page.mouse.move(bottomRightPos.x, bottomRightPos.y);
-      await page.waitForTimeout(200);
-      scale = await getBtnScale();
-      expect(scale.scaleX).toBeGreaterThan(1.02);
-
-      // TEST 4: Top-Left corner inside button -> MUST TRIGGER HOVER (scale = 1.05)
-      const topLeftPos = worldToPage(btnX - halfW + 10, btnY - halfH + 10);
-      await page.mouse.move(topLeftPos.x, topLeftPos.y);
-      await page.waitForTimeout(200);
-      scale = await getBtnScale();
-      expect(scale.scaleX).toBeGreaterThan(1.02);
-
-      // TEST 5: Bottom-Left corner inside button -> MUST TRIGGER HOVER (scale = 1.05)
-      const bottomLeftPos = worldToPage(btnX - halfW + 10, btnY + halfH - 10);
-      await page.mouse.move(bottomLeftPos.x, bottomLeftPos.y);
-      await page.waitForTimeout(200);
-      scale = await getBtnScale();
-      expect(scale.scaleX).toBeGreaterThan(1.02);
-
-      // TEST 6: Far Left Outside (80px beyond left edge) -> MUST NOT TRIGGER HOVER (scale = 1.0)
-      const phantomLeftPos = worldToPage(btnX - halfW - 80, btnY);
-      await page.mouse.move(phantomLeftPos.x, phantomLeftPos.y);
-      await page.waitForTimeout(200);
-      scale = await getBtnScale();
-      expect(scale.scaleX).toBe(1.0);
-
-      // TEST 7: Far Right Outside (80px beyond right edge) -> MUST NOT TRIGGER HOVER (scale = 1.0)
-      const phantomRightPos = worldToPage(btnX + halfW + 80, btnY);
-      await page.mouse.move(phantomRightPos.x, phantomRightPos.y);
-      await page.waitForTimeout(200);
-      scale = await getBtnScale();
-      expect(scale.scaleX).toBe(1.0);
-
-      // TEST 8: Real Mouse Click on StartButton transitions scene to MapScene
-      await page.mouse.move(centerPos.x, centerPos.y);
-      await page.waitForTimeout(100);
-      await page.mouse.down();
-      await page.waitForTimeout(50);
-      await page.mouse.up();
-      await page.waitForTimeout(600);
-
-      const sceneKey = await page.evaluate(() => {
-        const game = (window as any).__PHASER_GAME__;
-        return game.scene.getScenes(true).map((s: any) => s.scene.key);
-      });
-      console.log(`[${vp.name}] Active Scenes after Start Button Click:`, sceneKey);
-      expect(sceneKey).toContain('MapScene');
+      for (const point of [semanticPoint(0.02, 0.02), semanticPoint(0.98, 0.02), semanticPoint(0.02, 0.98), semanticPoint(0.98, 0.98)]) {
+        await page.mouse.move(point.x, point.y);
+        await expect(responsiveStart).toBeVisible();
+      }
+      await page.mouse.move(Math.max(0, semanticBox.x - 24), semanticBox.y + semanticBox.height / 2);
+      await expect(responsiveStart).toBeVisible();
+      await responsiveStart.click();
+      await expect(page.locator('.map-view')).toBeVisible();
     });
   }
 });

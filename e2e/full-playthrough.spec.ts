@@ -12,6 +12,10 @@ test.describe('Real End-to-End Gameplay Playthrough Simulation', () => {
   });
 
   test('Complete 100% Real Playthrough: Title -> Station 1 (Chinese, Math, English) -> Runner -> Chest -> 3-Star Result -> Map Unlock -> Shop -> Trophy', async ({ page }) => {
+    // This test intentionally captures sixteen visual checkpoints across the
+    // complete journey. Bound only this evidence run; do not relax the global
+    // Playwright timeout or swallow transition failures.
+    test.setTimeout(120_000);
     // 1. Setup iPhone Landscape viewport
     await page.setViewportSize({ width: 932, height: 430 });
     await page.goto('/');

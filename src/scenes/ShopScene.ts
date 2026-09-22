@@ -5,7 +5,12 @@ import { SoundManager } from '../services/SoundManager';
 import { SpeechService } from '../services/SpeechService';
 import { CanvasButton } from '../ui/CanvasButton';
 import { CanvasModal } from '../ui/CanvasModal';
-import { CharacterOutfitCompositor } from '../ui/CharacterOutfitCompositor';
+import {
+  CharacterOutfitCompositor,
+  FULL_SPRITE_CANVAS_CENTER,
+  FULL_SPRITE_GROUND_BASELINE,
+  FULL_SPRITE_LOCAL_SCALE,
+} from '../ui/CharacterOutfitCompositor';
 import {
   WARDROBE_ITEMS,
   WardrobeItem,
@@ -195,6 +200,10 @@ export class ShopScene extends Phaser.Scene {
   private purchaseModal: CanvasModal | null = null;
   private wardrobePurchasePending = false;
   private previewController: CharacterPreviewController | null = null;
+  private previewCharacterLayer: Phaser.GameObjects.Container | null = null;
+  private previewCharacterX = 0;
+  private previewPedestalCenterY = 0;
+  private previewLayout: ReturnType<typeof getWardrobeLayout> | null = null;
   private previewWardrobeState: EquippedWardrobe | null = null;
   private previewIsCompact = false;
   private wardrobePage = 0;
@@ -1374,7 +1383,10 @@ export class ShopScene extends Phaser.Scene {
       g.strokeRoundedRect(stageX + 7, stageY + 7, Math.max(1, layout.stage.width - 14), Math.max(1, layout.stage.height - 14), 14);
 
       // 3D Stepped Pedestal Base & Glowing Disc (Proportional Hero Platform)
-      const pedestalCenterY = stageY + layout.stage.height * 0.72;
+      // Keep the platform low enough to give the authored full-body sprite a
+      // readable 55%+ stage presence while leaving the head and details dock
+      // inside the preview frame.
+      const pedestalCenterY = stageY + layout.stage.height * (compact ? 0.99 : 0.88);
       const pedestalWidth = Math.min(300, layout.stage.width * 0.48);
 
       // Soft Floor Light Pool Texture
@@ -1470,11 +1482,23 @@ export class ShopScene extends Phaser.Scene {
       reducedMotion: this.prefersReducedMotion,
     });
     const characterX = layout.character.x + layout.character.width / 2 - panelX;
-    const pedestalCenterY = stageY + layout.stage.height * 0.72;
-    // Ground character feet precisely on top of the velvet platform disc (pedestalCenterY - 4)
-    const characterY = pedestalCenterY - 4 - (55 * layout.character.scale);
+    const pedestalCenterY = stageY + layout.stage.height * (compact ? 0.99 : 0.88);
+    const isFullSprite = controller.lastRenderResult?.mode === 'fullSprite';
+    // Ground authored full-body art by its shared 512px baseline. Composite
+    // fallback art keeps its historical 55px visual anchor.
+    const characterOffset = isFullSprite
+      ? (FULL_SPRITE_GROUND_BASELINE - FULL_SPRITE_CANVAS_CENTER)
+        * FULL_SPRITE_LOCAL_SCALE
+        * layout.character.scale
+      : 55 * layout.character.scale;
+    const characterY = pedestalCenterY - 4 - characterOffset;
     characterLayer.setPosition(characterX, characterY);
     this.previewController = controller;
+    this.previewCharacterLayer = characterLayer;
+    this.previewCharacterX = characterX;
+    this.previewPedestalCenterY = pedestalCenterY;
+    this.previewLayout = layout;
+    this.positionPreviewCharacter();
     this.previewSprite = controller.sprite;
     this.wardrobeGraphics = controller.wardrobeGraphics;
 
@@ -1785,8 +1809,27 @@ export class ShopScene extends Phaser.Scene {
       this.updateGadgetPreviewDisplay(dm, profile);
     }
 
+    this.positionPreviewCharacter();
     this.updatePetCompanionStage();
     this.refreshCurrencyHUD();
+  }
+
+  /** Re-anchor the preview whenever a try-on changes render mode. */
+  private positionPreviewCharacter(): void {
+    if (!this.previewCharacterLayer || !this.previewController || !this.previewLayout) return;
+    const layout = this.previewLayout;
+    const isFullSprite = this.previewController.lastRenderResult?.mode === 'fullSprite';
+    const characterOffset = isFullSprite
+      ? (FULL_SPRITE_GROUND_BASELINE - FULL_SPRITE_CANVAS_CENTER)
+        * FULL_SPRITE_LOCAL_SCALE
+        * layout.character.scale
+      : 55 * layout.character.scale;
+    this.previewCharacterLayer.setPosition(
+      this.previewCharacterX,
+      // Keep the authored alpha bounds just inside the stage even after
+      // texture rounding at recording-size and compact landscape viewports.
+      this.previewPedestalCenterY + 4 - characterOffset
+    );
   }
 
   private updatePetCompanionStage(): void {
@@ -2577,8 +2620,13 @@ export class ShopScene extends Phaser.Scene {
   private purchaseWardrobeItem(item: WardrobeItem): void {
     const dm = DataManager.getInstance();
     const profile = dm.getProfile();
-    const currency = item.costCoins > 0 ? 'coins' : 'gems';
-    const cost = item.costCoins > 0 ? item.costCoins : item.costGems;
+    // Wardrobe prices can be expressed in either currency. Prefer coins when
+    // the player can afford the coin price; otherwise use the gem price. This
+    // keeps the purchase atomic while allowing the UI's displayed fallback
+    // currency to match the ledger deduction.
+    const canAffordCoins = item.costCoins > 0 && profile.coins >= item.costCoins;
+    const currency = canAffordCoins ? 'coins' : 'gems';
+    const cost = currency === 'coins' ? item.costCoins : item.costGems;
     const canAfford = currency === 'coins' ? profile.coins >= cost : profile.gems >= cost;
     if (!canAfford) {
       SoundManager.play('wrong');
@@ -2605,8 +2653,9 @@ export class ShopScene extends Phaser.Scene {
     if (this.purchaseModal || this.wardrobePurchasePending || !this.add) return;
     const dm = DataManager.getInstance();
     const profile = dm.getProfile();
-    const currency = item.costCoins > 0 ? 'coins' : 'gems';
-    const cost = item.costCoins > 0 ? item.costCoins : item.costGems;
+    const canAffordCoins = item.costCoins > 0 && profile.coins >= item.costCoins;
+    const currency = canAffordCoins ? 'coins' : 'gems';
+    const cost = currency === 'coins' ? item.costCoins : item.costGems;
     const canAfford = currency === 'coins' ? profile.coins >= cost : profile.gems >= cost;
     if (!canAfford) {
       SoundManager.play('wrong');
@@ -3118,6 +3167,8 @@ export class ShopScene extends Phaser.Scene {
     this.wardrobePurchasePending = false;
     this.previewController?.destroy();
     this.previewController = null;
+    this.previewCharacterLayer = null;
+    this.previewLayout = null;
   }
 
   private detectReducedMotionPreference(): boolean {

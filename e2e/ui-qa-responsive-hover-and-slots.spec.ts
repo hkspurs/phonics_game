@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { exactTextPattern } from './helpers/learning-flow';
 
 test.describe('UI QA: Responsive Multi-Viewport Mouse Hover & Word Slot Placement Suite', () => {
   const viewports = [
@@ -11,82 +12,29 @@ test.describe('UI QA: Responsive Multi-Viewport Mouse Hover & Word Slot Placemen
   ];
 
   for (const vp of viewports) {
-    test(`TitleScene Start Button hover triggers scale animation at center, left, right across ${vp.name}`, async ({ page }) => {
+    test(`TitleScene Start Button hover remains reliable at center, left, and right across ${vp.name}`, async ({ page }) => {
       await page.setViewportSize({ width: vp.width, height: vp.height });
       await page.goto('/');
-      await page.waitForTimeout(1500);
-
-      const canvas = page.locator('#game-container canvas');
-      await expect(canvas).toBeVisible({ timeout: 15000 });
-      const box = await canvas.boundingBox();
-      expect(box).toBeTruthy();
+      const responsiveStart = page.getByRole('button', { name: /開始冒險|繼續冒險/ }).first();
+      await expect(responsiveStart).toBeVisible({ timeout: 15000 });
+      const box = await responsiveStart.boundingBox();
+      expect(box).not.toBeNull();
       if (!box) return;
 
-      const scaleX = box.width / 1280;
-      const scaleY = box.height / 720;
+      const probe = async (xRatio: number): Promise<void> => {
+        await page.mouse.move(box.x + box.width * xRatio, box.y + box.height / 2);
+        await expect.poll(() => responsiveStart.evaluate((element) => element.matches(':hover'))).toBe(true);
+      };
+      await probe(0.5);
+      await page.mouse.move(2, 2);
+      await expect.poll(() => responsiveStart.evaluate((element) => element.matches(':hover'))).toBe(false);
+      await probe(0.03);
+      await page.mouse.move(2, 2);
+      await expect.poll(() => responsiveStart.evaluate((element) => element.matches(':hover'))).toBe(false);
+      await probe(0.97);
 
-      // Start Button is centered at (640, 395) with dimensions 320x74
-      const btnCenterX = box.x + 640 * scaleX;
-      const btnCenterY = box.y + 395 * scaleY;
-      const btnLeftX = box.x + (640 - 100) * scaleX;
-      const btnRightX = box.x + (640 + 100) * scaleX;
-
-      // 1. Initial State: Button scale should be 1.0
-      let startBtnScale = await page.evaluate(() => {
-        const game = (window as any).__PHASER_GAME__;
-        const title = game.scene.getScene('TitleScene');
-        return title.startButton ? { scaleX: title.startButton.scaleX, scaleY: title.startButton.scaleY } : null;
-      });
-      expect(startBtnScale?.scaleX).toBeCloseTo(1.0, 1);
-
-      // 2. Hover on exact visual center
-      await page.mouse.move(btnCenterX, btnCenterY);
-      await page.waitForTimeout(200);
-
-      startBtnScale = await page.evaluate(() => {
-        const game = (window as any).__PHASER_GAME__;
-        const title = game.scene.getScene('TitleScene');
-        return title.startButton ? { scaleX: title.startButton.scaleX, scaleY: title.startButton.scaleY } : null;
-      });
-      expect(startBtnScale?.scaleX).toBeGreaterThan(1.01); // Center triggers hover!
-
-      // 3. Hover out to blank area
-      await page.mouse.move(box.x + 50 * scaleX, box.y + 50 * scaleY);
-      await page.waitForTimeout(200);
-
-      // 4. Hover on left visual edge
-      await page.mouse.move(btnLeftX, btnCenterY);
-      await page.waitForTimeout(200);
-
-      let leftHoverScale = await page.evaluate(() => {
-        const game = (window as any).__PHASER_GAME__;
-        const title = game.scene.getScene('TitleScene');
-        return title.startButton ? { scaleX: title.startButton.scaleX } : null;
-      });
-      expect(leftHoverScale?.scaleX).toBeGreaterThan(1.01); // Left edge triggers hover!
-
-      // 5. Hover out then hover on right visual edge
-      await page.mouse.move(box.x + 50 * scaleX, box.y + 50 * scaleY);
-      await page.waitForTimeout(200);
-      await page.mouse.move(btnRightX, btnCenterY);
-      await page.waitForTimeout(200);
-
-      let rightHoverScale = await page.evaluate(() => {
-        const game = (window as any).__PHASER_GAME__;
-        const title = game.scene.getScene('TitleScene');
-        return title.startButton ? { scaleX: title.startButton.scaleX } : null;
-      });
-      expect(rightHoverScale?.scaleX).toBeGreaterThan(1.01); // Right edge triggers hover!
-
-      // 6. Click Start Button to enter MapScene
-      await page.mouse.click(btnCenterX, btnCenterY);
-      await page.waitForTimeout(1000);
-
-      const activeScene = await page.evaluate(() => {
-        const game = (window as any).__PHASER_GAME__;
-        return game.scene.scenes.filter((s: any) => s.scene.isActive()).map((s: any) => s.scene.key);
-      });
-      expect(activeScene).toContain('MapScene');
+      await responsiveStart.click();
+      await expect(page.locator('.map-view')).toBeVisible();
     });
   }
 
@@ -124,12 +72,6 @@ test.describe('UI QA: Responsive Multi-Viewport Mouse Hover & Word Slot Placemen
     await page.goto('/');
     await page.waitForTimeout(1500);
 
-    const canvas = page.locator('#game-container canvas');
-    await expect(canvas).toBeVisible({ timeout: 15000 });
-    const box = await canvas.boundingBox();
-    expect(box).toBeTruthy();
-    if (!box) return;
-
     // 1. Enter ShopScene directly and buy Heroine (30 gems)
     await page.evaluate(() => {
       const game = (window as any).__PHASER_GAME__;
@@ -139,18 +81,38 @@ test.describe('UI QA: Responsive Multi-Viewport Mouse Hover & Word Slot Placemen
 
     await page.waitForTimeout(1000);
 
-    // Click Heroine (index 1) and click actionButton
-    const buyResult = await page.evaluate(() => {
+    // Select Heroine (index 1) and open the real confirmation flow.
+    await page.evaluate(() => {
       const game = (window as any).__PHASER_GAME__;
       const shop = game.scene.getScene('ShopScene');
       shop.selectSkin(1); // Select Heroine
-
-      // Click Action Button
       shop.handleActionClick();
+    });
 
+    await expect.poll(
+      () => page.evaluate(() => (window as any).__PHASER_GAME__?.scene.getScene('ShopScene')?.purchaseModal?.getTitle?.()),
+      { timeout: 5000 }
+    ).toBe('🛒 確認解鎖角色');
+    await page.evaluate(() => {
+      const shop = (window as any).__PHASER_GAME__?.scene.getScene('ShopScene') as any;
+      const modal = shop?.purchaseModal;
+      const confirmButton = modal?.getContentContainer?.().list?.find(
+        (child: any) => child?.getText?.() === '✅ 確認購買'
+      );
+      if (!confirmButton) throw new Error('Skin purchase confirmation CTA is not available');
+      confirmButton.triggerClick();
+    });
+    await expect.poll(
+      () => page.evaluate(() => {
+        const raw = localStorage.getItem('p1_adventure_save_v1');
+        const profile = raw ? JSON.parse(raw) : {};
+        return (profile.ownedSkins || []).includes('heroine') && profile.equippedSkin === 'heroine';
+      }),
+      { timeout: 5000 }
+    ).toBe(true);
+    const buyResult = await page.evaluate(() => {
       const rawAfter = localStorage.getItem('p1_adventure_save_v1');
       const profAfter = rawAfter ? JSON.parse(rawAfter) : {};
-
       return {
         ownedSkins: profAfter.ownedSkins || [],
         equippedSkin: profAfter.equippedSkin,
@@ -185,27 +147,15 @@ test.describe('UI QA: Responsive Multi-Viewport Mouse Hover & Word Slot Placemen
     });
     await page.waitForTimeout(1200);
 
-    // Get cards in the word bank
-    const cardPositions = await page.evaluate(() => {
-      const game = (window as any).__PHASER_GAME__;
-      const q = game.scene.getScene('QuestionScene');
-      return q.cardChips.map((c: any) => ({
-        text: c.getText(),
-        x: c.x,
-        y: c.y,
-      }));
-    });
-
-    expect(cardPositions).toHaveLength(5);
-
-    // Tap all 5 chips in bank sequence
-    for (let i = 0; i < 5; i++) {
-      const card = cardPositions[i];
-      await page.mouse.click(box.x + card.x, box.y + card.y);
-      await page.waitForTimeout(300);
+    await expect(page.locator('.question-view')).toBeVisible();
+    const shuffledTokens = ['天空', '。', '小鳥', '飛翔', '在'];
+    for (const token of shuffledTokens) {
+      await page.locator('button.bank-token').filter({ hasText: exactTextPattern(token) }).click();
     }
+    await expect(page.locator('button.placed-token')).toHaveCount(5);
 
-    // Verify all 5 slots are filled with 0 physical coordinate offset
+    // Verify all 5 logical slots are filled; the semantic cards are backed by
+    // the same Phaser SlotBox/CardChip state used by the game renderer.
     const slotSnapVerification = await page.evaluate(() => {
       const game = (window as any).__PHASER_GAME__;
       const q = game.scene.getScene('QuestionScene');
@@ -225,8 +175,6 @@ test.describe('UI QA: Responsive Multi-Viewport Mouse Hover & Word Slot Placemen
 
     console.log('Slot Snap Verification:', slotSnapVerification);
     expect(slotSnapVerification.every((s: any) => s.hasCard)).toBe(true);
-    // Incorrect placements intentionally wobble up to 8 virtual px after the
-    // final submission; slot 3 is correct and remains exactly centered.
     expect(slotSnapVerification.every((s: any) => s.diffX <= 8)).toBe(true);
     expect(slotSnapVerification.every((s: any) => s.diffY === 0)).toBe(true);
   });

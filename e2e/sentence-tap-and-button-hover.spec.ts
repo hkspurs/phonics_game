@@ -1,15 +1,11 @@
 import { test, expect } from '@playwright/test';
+import { exactTextPattern } from './helpers/learning-flow';
 
 test.describe('Sentence Scramble Card Tap & Button Repeated Hover UAT', () => {
   test('Card stays placed when tapped and does not fly back down', async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 720 });
     await page.goto('/');
     await page.waitForTimeout(2000);
-
-    const canvas = page.locator('#game-container canvas');
-    const box = await canvas.boundingBox();
-    expect(box).toBeTruthy();
-    if (!box) return;
 
     // Start directly at QuestionScene with Station 1, Question 0
     await page.evaluate(() => {
@@ -30,7 +26,7 @@ test.describe('Sentence Scramble Card Tap & Button Repeated Hover UAT', () => {
         ]
       });
     });
-    await page.waitForTimeout(1500);
+    await expect(page.locator('.question-view')).toBeVisible();
 
     // Verify QuestionScene is active
     let activeScene = await page.evaluate(() => {
@@ -39,90 +35,34 @@ test.describe('Sentence Scramble Card Tap & Button Repeated Hover UAT', () => {
     });
     expect(activeScene).toContain('QuestionScene');
 
-    // Get cards in the word bank
-    const cardInfoBefore = await page.evaluate(() => {
-      const game = (window as any).__PHASER_GAME__;
-      const q = game.scene.getScene('QuestionScene');
-      return q.cardChips.map((c: any) => ({
-        text: c.getText(),
-        x: c.x,
-        y: c.y,
-        slot: c.getCurrentSlot() ? c.getCurrentSlot().getIndex() : null,
-      }));
-    });
-    console.log('Cards before tapping:', cardInfoBefore);
-    expect(cardInfoBefore.length).toBeGreaterThan(0);
+    const firstToken = page.locator('button.bank-token').filter({ hasText: exactTextPattern('吃') }).first();
+    const secondToken = page.locator('button.bank-token').filter({ hasText: exactTextPattern('。') }).first();
+    await expect(firstToken).toBeVisible();
+    await expect(secondToken).toBeVisible();
 
-    // Tap Card 0 (first word chip in bank)
-    const card1 = cardInfoBefore[0];
-    console.log(`Tapping card 0 "${card1.text}" at (${card1.x}, ${card1.y})...`);
-    await page.mouse.click(box.x + card1.x, box.y + card1.y);
-    await page.waitForTimeout(600);
+    // The semantic responsive layer is the production interaction path. Tap
+    // two tokens, verify they stay in the answer slots, then remove one via
+    // its accessible placed-token control.
+    await firstToken.click();
+    await secondToken.click();
+    await expect(page.locator('button.placed-token')).toHaveCount(2);
+    await expect(page.locator('button.placed-token').nth(0)).toHaveText('吃');
+    await expect(page.locator('button.placed-token').nth(1)).toHaveText('。');
 
-    // Check if Card 0 is placed in Slot 0 and STAYS there
-    const cardInfoAfter1 = await page.evaluate(() => {
-      const game = (window as any).__PHASER_GAME__;
-      const q = game.scene.getScene('QuestionScene');
-      const c = q.cardChips[0];
-      const slot = c.getCurrentSlot();
+    await page.locator('button.placed-token').nth(0).click();
+    await expect(page.locator('button.placed-token')).toHaveCount(1);
+    await expect(page.locator('button.placed-token').first()).toHaveText('。');
+    await expect(page.locator('button.bank-token').filter({ hasText: exactTextPattern('吃') })).toHaveCount(1);
+
+    const cardState = await page.evaluate(() => {
+      const q = (window as any).__PHASER_GAME__?.scene.getScene('QuestionScene');
       return {
-        text: c.getText(),
-        x: c.x,
-        y: c.y,
-        slotIndex: slot ? slot.getIndex() : null,
-        hasCardInSlot0: q.slotBoxes[0].hasCard(),
+        active: Boolean(q),
+        filledSlots: q?.slotBoxes?.filter((slot: any) => slot.hasCard()).length ?? 0,
       };
     });
-    console.log('Card 0 after tap 1:', cardInfoAfter1);
-    expect(cardInfoAfter1.slotIndex).toBe(0);
-    expect(cardInfoAfter1.hasCardInSlot0).toBe(true);
-
-    // Tap Card 1
-    const card2 = cardInfoBefore[1];
-    console.log(`Tapping card 1 "${card2.text}" at (${card2.x}, ${card2.y})...`);
-    await page.mouse.click(box.x + card2.x, box.y + card2.y);
-    await page.waitForTimeout(600);
-
-    const cardInfoAfter2 = await page.evaluate(() => {
-      const game = (window as any).__PHASER_GAME__;
-      const q = game.scene.getScene('QuestionScene');
-      const c = q.cardChips[1];
-      const slot = c.getCurrentSlot();
-      return {
-        text: c.getText(),
-        x: c.x,
-        y: c.y,
-        slotIndex: slot ? slot.getIndex() : null,
-        hasCardInSlot1: q.slotBoxes[1].hasCard(),
-      };
-    });
-    console.log('Card 1 after tap 2:', cardInfoAfter2);
-    expect(cardInfoAfter2.slotIndex).toBe(1);
-    expect(cardInfoAfter2.hasCardInSlot1).toBe(true);
-
-    // Tap Card 0 inside Slot 0 to remove it back to bank
-    const slot0Pos = await page.evaluate(() => {
-      const game = (window as any).__PHASER_GAME__;
-      const q = game.scene.getScene('QuestionScene');
-      const s = q.slotBoxes[0];
-      return { x: s.x, y: s.y };
-    });
-    console.log(`Tapping card in Slot 0 at (${slot0Pos.x}, ${slot0Pos.y}) to remove it...`);
-    await page.mouse.click(box.x + slot0Pos.x, box.y + slot0Pos.y);
-    await page.waitForTimeout(600);
-
-    const card0Removed = await page.evaluate(() => {
-      const game = (window as any).__PHASER_GAME__;
-      const q = game.scene.getScene('QuestionScene');
-      const c = q.cardChips[0];
-      return {
-        slot: c.getCurrentSlot(),
-        hasCardInSlot0: q.slotBoxes[0].hasCard(),
-      };
-    });
-    console.log('Card 0 after removal tap:', card0Removed);
-    expect(card0Removed.slot).toBeNull();
-    expect(card0Removed.hasCardInSlot0).toBe(false);
+    expect(cardState.active).toBe(true);
+    expect(cardState.filledSlots).toBe(1);
   });
 
   test('Buttons respond to multiple repeated mouse hovers and clicks', async ({ page }) => {

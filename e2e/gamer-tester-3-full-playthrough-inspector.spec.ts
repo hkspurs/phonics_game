@@ -140,24 +140,42 @@ test.describe('Gamer Tester 3: Full End-to-End Playthrough & Live Browser Inspec
 
     // Click Action Button to Purchase Heroine (30💎) & Equip
     console.log('[Playthrough Inspector] Step 1.3: Purchasing Heroine skin...');
-    const purchaseResult = await page.evaluate(() => {
+    await page.evaluate(() => {
       const game = (window as any).__PHASER_GAME__;
       const shop = game.scene.getScene('ShopScene');
       const actionBtn = (shop as any).actionButton;
+      if (!actionBtn) throw new Error('Skin purchase action button is not available');
+      (shop as any).handleActionClick();
+    });
 
-      const rawBefore = localStorage.getItem('p1_adventure_save_v1');
-      const profileBefore = rawBefore ? JSON.parse(rawBefore) : {};
+    await expect.poll(
+      () => page.evaluate(() => (window as any).__PHASER_GAME__?.scene.getScene('ShopScene')?.purchaseModal?.getTitle?.()),
+      { timeout: 5000 }
+    ).toBe('🛒 確認解鎖角色');
 
-      // Trigger action button
-      if (actionBtn) {
-        (shop as any).handleActionClick();
-      }
+    await page.evaluate(() => {
+      const shop = (window as any).__PHASER_GAME__?.scene.getScene('ShopScene') as any;
+      const modal = shop?.purchaseModal;
+      const confirmButton = modal?.getContentContainer?.().list?.find(
+        (child: any) => child?.getText?.() === '✅ 確認購買'
+      );
+      if (!confirmButton) throw new Error('Skin purchase confirmation CTA is not available');
+      confirmButton.triggerClick();
+    });
 
+    await expect.poll(
+      () => page.evaluate(() => {
+        const raw = localStorage.getItem('p1_adventure_save_v1');
+        const profile = raw ? JSON.parse(raw) : {};
+        return (profile.ownedSkins || []).includes('heroine') && profile.equippedSkin === 'heroine';
+      }),
+      { timeout: 5000 }
+    ).toBe(true);
+
+    const purchaseResult = await page.evaluate(() => {
       const rawAfter = localStorage.getItem('p1_adventure_save_v1');
       const profileAfter = rawAfter ? JSON.parse(rawAfter) : {};
-
       return {
-        gemsBefore: profileBefore.gems,
         gemsAfter: profileAfter.gems,
         ownedSkins: profileAfter.ownedSkins || [],
         equippedSkin: profileAfter.equippedSkin,
@@ -204,7 +222,7 @@ test.describe('Gamer Tester 3: Full End-to-End Playthrough & Live Browser Inspec
         (child: any) => child?.getText?.() === '✅ 確認購買'
       );
       if (!confirmButton) throw new Error('Wardrobe purchase confirmation CTA is not available');
-      confirmButton.emit('pointerup');
+      confirmButton.triggerClick();
 
       return {
         currentTab,
@@ -498,6 +516,20 @@ test.describe('Gamer Tester 3: Full End-to-End Playthrough & Live Browser Inspec
 
     expect(q1Completed.isAnswered).toBe(true);
     expect(q1Completed.correctCount).toBe(1);
+
+    // The reading-first question view deliberately waits for an explicit
+    // Continue action before handing control to the runner. This test drives
+    // the Phaser slot audit directly, so invoke the same public action handler
+    // rather than assuming the DOM view has re-rendered after every internal
+    // chip mutation.
+    await page.evaluate(() => {
+      const qScene = (window as any).__PHASER_GAME__?.scene.getScene('QuestionScene') as any;
+      qScene?.continueButton?.triggerClick?.();
+    });
+    await expect.poll(
+      () => page.evaluate(() => (window as any).__PHASER_GAME__?.scene.isActive('RunnerScene')),
+      { timeout: 10000 }
+    ).toBe(true);
 
     // =========================================================================
     // STEP 4: RunnerScene Phase 1 (Analog Virtual Joystick & Mobile Controls Audit)
@@ -801,6 +833,11 @@ test.describe('Gamer Tester 3: Full End-to-End Playthrough & Live Browser Inspec
     await page.waitForTimeout(500);
     await page.screenshot({ path: path.join(runDir, '13_Q2_Math_Solved.png') });
 
+    await page.evaluate(() => {
+      const qScene = (window as any).__PHASER_GAME__?.scene.getScene('QuestionScene') as any;
+      qScene?.continueButton?.triggerClick?.();
+    });
+
     // Transition to RunnerScene Phase 2
     console.log('[Playthrough Inspector] Step 5.2: Entering RunnerScene Phase 2...');
     await page.waitForTimeout(1600);
@@ -962,6 +999,11 @@ test.describe('Gamer Tester 3: Full End-to-End Playthrough & Live Browser Inspec
 
     expect(q3Completed.isAnswered).toBe(true);
     expect(q3Completed.correctCount).toBe(3);
+
+    await page.evaluate(() => {
+      const qScene = (window as any).__PHASER_GAME__?.scene.getScene('QuestionScene') as any;
+      qScene?.continueButton?.triggerClick?.();
+    });
 
     // =========================================================================
     // STEP 7: Final Runner Phase -> Reach Final Treasure Chest -> ResultScene

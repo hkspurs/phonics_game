@@ -12,6 +12,7 @@ test.describe('Gamer Deep Interactive Playtest & Zero-Trust Visual QA', () => {
   });
 
   test('full interactive gamer playthrough from shop purchase to runner sprint', async ({ page }) => {
+    test.setTimeout(120_000);
     // 1. Initialize Profile with enough currency to test purchase flows
     await page.goto('/');
     await page.evaluate(() => {
@@ -129,9 +130,14 @@ test.describe('Gamer Deep Interactive Playtest & Zero-Trust Visual QA', () => {
         (child: any) => child?.getText?.() === '✅ 確認購買'
       );
       if (!confirmButton) throw new Error('Purchase confirmation CTA is not available');
-      confirmButton.emit('pointerup');
+      // Trigger the public button contract; synthetic Phaser events can be
+      // swallowed when the modal tween is still mounting in Chromium.
+      confirmButton.triggerClick();
     });
-    await page.waitForTimeout(700);
+    await expect.poll(
+      () => page.evaluate(() => (window as any).__PHASER_GAME__?.scene.getScene('ShopScene')?.purchaseModal?.getTitle?.()),
+      { timeout: 5000 }
+    ).toBe('✨ 購買成功！');
 
     const successState = await page.evaluate(() => {
       const game = (window as any).__PHASER_GAME__;
@@ -515,22 +521,34 @@ test.describe('Gamer Deep Interactive Playtest & Zero-Trust Visual QA', () => {
       );
       if (index < 0) throw new Error('Scholar Gown is not in the dress catalogue');
       shop.selectWardrobeItem(index);
-      return { action: shop.actionButton?.getText?.() };
+      return {
+        action: shop.actionButton?.getText?.(),
+        item: shop.getVisibleWardrobeItems?.()[shop.selectedWardrobeIndex]?.id,
+      };
     });
     expect(selection.action).toContain('立即購買');
+
+    await page.evaluate(() => {
+      const game = (window as any).__PHASER_GAME__;
+      const shop = game?.scene.getScene('ShopScene') as any;
+      shop.handleActionClick();
+    });
+    await expect.poll(
+      () => page.evaluate(() => (window as any).__PHASER_GAME__?.scene.getScene('ShopScene')?.purchaseModal?.getTitle?.()),
+      { timeout: 5000 }
+    ).toBe('🛒 確認購買');
 
     const confirmation = await page.evaluate(() => {
       const game = (window as any).__PHASER_GAME__;
       const shop = game?.scene.getScene('ShopScene') as any;
       const profile = JSON.parse(localStorage.getItem('p1_adventure_save_v1') || '{}');
-      shop.handleActionClick();
       const modal = shop.purchaseModal;
       const confirmButton = modal?.getContentContainer?.().list?.find(
         (child: any) => child?.getText?.() === '✅ 確認購買'
       );
       if (!confirmButton) throw new Error('Purchase confirmation CTA is not available');
-      confirmButton.emit('pointerup');
-      confirmButton.emit('pointerup');
+      confirmButton.triggerClick();
+      confirmButton.triggerClick();
       return {
         beforeGems: profile.gems,
         modalClosed: shop.purchaseModal === null,

@@ -1,0 +1,4114 @@
+{
+  "config": {
+    "configFile": "/workspace/scratch/d2f78c43f3a7/phonics_game/.worktrees/release-hardening/playwright.config.ts",
+    "rootDir": "/workspace/scratch/d2f78c43f3a7/phonics_game/.worktrees/release-hardening/e2e",
+    "forbidOnly": true,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "reporter": [
+      [
+        "list"
+      ],
+      [
+        "json"
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 15000
+    },
+    "quiet": false,
+    "projects": [
+      {
+        "outputDir": "/workspace/scratch/d2f78c43f3a7/phonics_game/.worktrees/release-hardening/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {},
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "/workspace/scratch/d2f78c43f3a7/phonics_game/.worktrees/release-hardening/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      }
+    ],
+    "shard": null,
+    "updateSnapshots": "missing",
+    "version": "1.47.0",
+    "workers": 1,
+    "webServer": {
+      "command": "npm run preview -- --port 4173",
+      "port": 4173,
+      "reuseExistingServer": false,
+      "timeout": 120000
+    }
+  },
+  "suites": [
+    {
+      "title": "auto-speech-and-sublevel-click.spec.ts",
+      "file": "auto-speech-and-sublevel-click.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "Verification: Auto-read after 1s in QuestionScene and 100% full-area sub-level row clicks",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "status": "passed",
+                  "duration": 9535,
+                  "errors": [],
+                  "stdout": [
+                    {
+                      "text": "Testing Auto-read in QuestionScene...\n"
+                    },
+                    {
+                      "text": "Speech called at 500ms: \u001b[33mfalse\u001b[39m\n"
+                    },
+                    {
+                      "text": "Speech called after 1s: { called: \u001b[33mtrue\u001b[39m, text: \u001b[32m'請問「大」的反義詞是甚麼？'\u001b[39m }\n"
+                    },
+                    {
+                      "text": "Testing Sub-level row click across entire button surface...\n"
+                    }
+                  ],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-13T13:24:47.141Z",
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "5bf831d34ed360598928-48cb357ba5e1817d8f3b",
+          "file": "auto-speech-and-sublevel-click.spec.ts",
+          "line": 3,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "title": "chaos-monkey-stress.spec.ts",
+      "file": "chaos-monkey-stress.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Chaos Monkey & Adversarial Stress E2E Suite",
+          "file": "chaos-monkey-stress.spec.ts",
+          "line": 3,
+          "column": 6,
+          "specs": [
+            {
+              "title": "Chaos 1: Rapid button spam & double clicks on TitleScene",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "status": "passed",
+                      "duration": 6224,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-13T13:24:56.782Z",
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "f0b036439e71a6273bfc-7f1a57f47cbad3c06305",
+              "file": "chaos-monkey-stress.spec.ts",
+              "line": 11,
+              "column": 3
+            },
+            {
+              "title": "Chaos 2: Modal rapid double-clicking & spam closing",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "status": "passed",
+                      "duration": 4306,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-13T13:25:03.011Z",
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "f0b036439e71a6273bfc-0c7487856d3acca6927b",
+              "file": "chaos-monkey-stress.spec.ts",
+              "line": 33,
+              "column": 3
+            },
+            {
+              "title": "Chaos 3: Rapid card drag & drop 50 times in 1 second in QuestionScene",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "status": "passed",
+                      "duration": 28772,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-13T13:25:07.322Z",
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "f0b036439e71a6273bfc-0a8f236380cda9a4c8fb",
+              "file": "chaos-monkey-stress.spec.ts",
+              "line": 62,
+              "column": 3
+            },
+            {
+              "title": "Chaos 4: Spam Hint Button 50 times in QuestionScene",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "status": "passed",
+                      "duration": 6519,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-13T13:25:36.100Z",
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "f0b036439e71a6273bfc-8477afc964afc8a97809",
+              "file": "chaos-monkey-stress.spec.ts",
+              "line": 124,
+              "column": 3
+            },
+            {
+              "title": "Chaos 5: Corrupted localStorage edge case injection & game boot",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "status": "passed",
+                      "duration": 2439,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-13T13:25:42.624Z",
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "f0b036439e71a6273bfc-20720bae4b5ea2bebb94",
+              "file": "chaos-monkey-stress.spec.ts",
+              "line": 152,
+              "column": 3
+            },
+            {
+              "title": "Chaos 6: Race condition on scene transition during celebration delay",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "status": "passed",
+                      "duration": 3607,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "Active scenes after interruption: [ \u001b[32m'MapScene'\u001b[39m ]\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-13T13:25:45.067Z",
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "f0b036439e71a6273bfc-bf23dfaa2b449f4d5be0",
+              "file": "chaos-monkey-stress.spec.ts",
+              "line": 192,
+              "column": 3
+            },
+            {
+              "title": "Chaos 7: RunnerScene skip spamming and springboard spam",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "status": "passed",
+                      "duration": 5165,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-13T13:25:48.679Z",
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "f0b036439e71a6273bfc-1b20c9430e6dd333e51e",
+              "file": "chaos-monkey-stress.spec.ts",
+              "line": 245,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "comprehensive-uat.spec.ts",
+      "file": "comprehensive-uat.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Comprehensive Full Playwright UAT Suite",
+          "file": "comprehensive-uat.spec.ts",
+          "line": 5,
+          "column": 6,
+          "specs": [
+            {
+              "title": "UAT 1: Title Scene UI, Buttons & Modals",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "status": "passed",
+                      "duration": 4404,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-13T13:25:53.861Z",
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "0883bd266c8ff68d40ae-dc5570b846e7b01a7904",
+              "file": "comprehensive-uat.spec.ts",
+              "line": 14,
+              "column": 3
+            },
+            {
+              "title": "UAT 2: MapScene Navigation, Station 1 Modal, and Sub-Level Clicks",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "status": "passed",
+                      "duration": 22266,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "Clicking Station 1 node at (640, 450)...\n"
+                        },
+                        {
+                          "text": "Clicking Sub-level 1 [中] at (640, 295)...\n"
+                        },
+                        {
+                          "text": "Clicking Sub-level 2 [數] at (640, 367)...\n"
+                        },
+                        {
+                          "text": "Clicking Sub-level 3 [英] at (640, 439)...\n"
+                        },
+                        {
+                          "text": "Clicking Enter button at (640, 565)...\n"
+                        },
+                        {
+                          "text": "Clicking Close button (✕) at (952, 128)...\n"
+                        },
+                        {
+                          "text": "Clicking \"◀ 返回主頁\" button at (100, 42)...\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-13T13:25:58.269Z",
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "0883bd266c8ff68d40ae-94f91418a9b72c43894c",
+              "file": "comprehensive-uat.spec.ts",
+              "line": 31,
+              "column": 3
+            },
+            {
+              "title": "UAT 3: Mobile Viewport 100% Click & Touch Responsiveness",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "status": "passed",
+                      "duration": 6833,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "Clicking Enter button on iPhone viewport...\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-13T13:26:20.538Z",
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "0883bd266c8ff68d40ae-244f0156f081f157c812",
+              "file": "comprehensive-uat.spec.ts",
+              "line": 197,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "full-playthrough.spec.ts",
+      "file": "full-playthrough.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Real End-to-End Gameplay Playthrough Simulation",
+          "file": "full-playthrough.spec.ts",
+          "line": 5,
+          "column": 6,
+          "specs": [
+            {
+              "title": "Complete 100% Real Playthrough: Title -> Station 1 (Chinese, Math, English) -> Runner -> Chest -> 3-Star Result -> Map Unlock -> Shop -> Trophy",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "status": "passed",
+                      "duration": 31240,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "[Playthrough] Step 1: Loaded TitleScreen\n"
+                        },
+                        {
+                          "text": "[Playthrough] Step 2: Entered MapScene Roadmap\n"
+                        },
+                        {
+                          "text": "[Playthrough] Step 3: Opened Station 1 Modal\n"
+                        },
+                        {
+                          "text": "[Playthrough] Step 4: Started Level 1-1 Chinese Question\n"
+                        },
+                        {
+                          "text": "[Playthrough] Step 5: Completed Level 1-1 Chinese Question with Celebration\n"
+                        },
+                        {
+                          "text": "[Playthrough] Step 6: Entered RunnerScene 2D Platformer Phase 1\n"
+                        },
+                        {
+                          "text": "[Playthrough] Step 7: Started Level 1-2 Math Question\n"
+                        },
+                        {
+                          "text": "[Playthrough] Step 8: Completed Level 1-2 Math Question\n"
+                        },
+                        {
+                          "text": "[Playthrough] Step 9: Running in Platformer Phase 2\n"
+                        },
+                        {
+                          "text": "[Playthrough] Step 10: Started Level 1-3 English Question\n"
+                        },
+                        {
+                          "text": "[Playthrough] Step 11: Completed Level 1-3 English Question\n"
+                        },
+                        {
+                          "text": "[Playthrough] Step 12: Reached Final Treasure Chest in Runner\n"
+                        },
+                        {
+                          "text": "[Playthrough] Step 13: Reached ResultScene 3-Star Settlement\n"
+                        },
+                        {
+                          "text": "[Playthrough] Step 14: Station 2 Unlocked on Map!\n"
+                        },
+                        {
+                          "text": "[Playthrough] Step 15: Visited ShopScene\n"
+                        },
+                        {
+                          "text": "[Playthrough] Step 16: Visited TrophyScene with Unlocked Badges\n"
+                        },
+                        {
+                          "text": "[Playthrough] ALL 16 STEPS OF THE REAL PLAYTHROUGH COMPLETED PERFECTLY!\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-13T13:26:27.385Z",
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "0eae1969935b60ef3477-18d3869a7c31f1741005",
+              "file": "full-playthrough.spec.ts",
+              "line": 14,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "game.spec.ts",
+      "file": "game.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "P1 Adventure Game — E2E Integration Test Suite",
+          "file": "game.spec.ts",
+          "line": 18,
+          "column": 6,
+          "specs": [
+            {
+              "title": "1. Game container boots, canvas renders, and TitleScene displays properly",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "status": "passed",
+                      "duration": 2508,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-13T13:26:58.639Z",
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "8b1bb1493a64c9fc3ab6-32d4e3e8e46d3929aad2",
+              "file": "game.spec.ts",
+              "line": 29,
+              "column": 3
+            },
+            {
+              "title": "2. TitleScene navigates to Sub-scenes (Map, Shop, Trophy, Settings) and back",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "status": "passed",
+                      "duration": 3903,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-13T13:27:01.149Z",
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "8b1bb1493a64c9fc3ab6-99373ab45bc3293c18ce",
+              "file": "game.spec.ts",
+              "line": 67,
+              "column": 3
+            },
+            {
+              "title": "3. MapScene renders 10 stations and StationModal opens with details",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "status": "passed",
+                      "duration": 3053,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-13T13:27:05.057Z",
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "8b1bb1493a64c9fc3ab6-00e4e745a94d71395c07",
+              "file": "game.spec.ts",
+              "line": 149,
+              "column": 3
+            },
+            {
+              "title": "4. QuestionScene loads questions, renders prompts, supports choices, sentence scramble and hints",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "status": "passed",
+                      "duration": 2618,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-13T13:27:08.112Z",
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "8b1bb1493a64c9fc3ab6-9a391685d82dff9c083a",
+              "file": "game.spec.ts",
+              "line": 207,
+              "column": 3
+            },
+            {
+              "title": "5. RunnerScene runs 2D platformer minigame and transitions",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "status": "passed",
+                      "duration": 4504,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-13T13:27:10.734Z",
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "8b1bb1493a64c9fc3ab6-0233707a1387d2db2e50",
+              "file": "game.spec.ts",
+              "line": 301,
+              "column": 3
+            },
+            {
+              "title": "6. ResultScene displays settlement summary, calculates stars and navigates back to map",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "status": "passed",
+                      "duration": 2795,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-13T13:27:15.242Z",
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "8b1bb1493a64c9fc3ab6-66ff490afa7639fcfc10",
+              "file": "game.spec.ts",
+              "line": 342,
+              "column": 3
+            },
+            {
+              "title": "7. ShopScene allows skin preview, purchase, and equipping",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "status": "passed",
+                      "duration": 3026,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-13T13:27:18.040Z",
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "8b1bb1493a64c9fc3ab6-3f529565faf7558bfbac",
+              "file": "game.spec.ts",
+              "line": 396,
+              "column": 3
+            },
+            {
+              "title": "8. SettingsScene toggles subjects, difficulty levels, and audio volumes",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "status": "passed",
+                      "duration": 2812,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-13T13:27:21.070Z",
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "8b1bb1493a64c9fc3ab6-837dc37d2119ba5028ae",
+              "file": "game.spec.ts",
+              "line": 439,
+              "column": 3
+            },
+            {
+              "title": "9. Game progress, currency, and settings persist across page reload",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "status": "passed",
+                      "duration": 4372,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-13T13:27:23.886Z",
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "8b1bb1493a64c9fc3ab6-89fad0a39993cab3f831",
+              "file": "game.spec.ts",
+              "line": 491,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "gamer-deep-interactive-playtest.spec.ts",
+      "file": "gamer-deep-interactive-playtest.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Gamer Deep Interactive Playtest & Zero-Trust Visual QA",
+          "file": "gamer-deep-interactive-playtest.spec.ts",
+          "line": 5,
+          "column": 6,
+          "specs": [
+            {
+              "title": "full interactive gamer playthrough from shop purchase to runner sprint",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "status": "passed",
+                      "duration": 31572,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-13T13:27:28.271Z",
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "7918050828467694cca4-dd840a20546f2b51c400",
+              "file": "gamer-deep-interactive-playtest.spec.ts",
+              "line": 14,
+              "column": 3
+            },
+            {
+              "title": "does not double-charge when the purchase confirmation is tapped twice",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "status": "passed",
+                      "duration": 6681,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-13T13:27:59.847Z",
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "7918050828467694cca4-064806b76130fb8e98ed",
+              "file": "gamer-deep-interactive-playtest.spec.ts",
+              "line": 492,
+              "column": 3
+            },
+            {
+              "title": "awards the chest summary once when the chest handler is re-entered",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "status": "passed",
+                      "duration": 2815,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-13T13:28:06.530Z",
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "7918050828467694cca4-0e5514cd3a4ffaaf5cb7",
+              "file": "gamer-deep-interactive-playtest.spec.ts",
+              "line": 599,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "gamer-tester-3-full-playthrough-inspector.spec.ts",
+      "file": "gamer-tester-3-full-playthrough-inspector.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Gamer Tester 3: Full End-to-End Playthrough & Live Browser Inspector",
+          "file": "gamer-tester-3-full-playthrough-inspector.spec.ts",
+          "line": 5,
+          "column": 6,
+          "specs": [
+            {
+              "title": "Ruthless Adversarial E2E Playthrough: Title -> Shop Buy/Equip Heroine (30💎) -> Map Station 1 -> Q1 Chinese Scramble (Slot Audit) -> Runner (Touch Jump) -> Q2 Math -> Runner -> Q3 English Scramble (Slot Audit) -> Final Runner -> 3-Star Result Settlement",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "status": "passed",
+                      "duration": 39948,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "[Playthrough Inspector] Step 1: Opening ShopScene...\n"
+                        },
+                        {
+                          "text": "[Playthrough Inspector] Step 1.2: Selecting Heroine skin (30💎)...\n"
+                        },
+                        {
+                          "text": "[Playthrough Inspector] Step 1.3: Purchasing Heroine skin...\n"
+                        },
+                        {
+                          "text": "[Playthrough Inspector] Purchase Result: {\n  gemsAfter: \u001b[33m25\u001b[39m,\n  ownedSkins: [ \u001b[32m'adventurer'\u001b[39m, \u001b[32m'heroine'\u001b[39m ],\n  equippedSkin: \u001b[32m'heroine'\u001b[39m,\n  isHeroineOwned: \u001b[33mtrue\u001b[39m,\n  isHeroineEquipped: \u001b[33mtrue\u001b[39m\n}\n"
+                        },
+                        {
+                          "text": "[Playthrough Inspector] Step 1.4: Auditing Wardrobe Tab & Subcategories...\n"
+                        },
+                        {
+                          "text": "[Playthrough Inspector] Wardrobe Audit: {\n  currentTab: \u001b[32m'wardrobe'\u001b[39m,\n  subCategoryCount: \u001b[33m4\u001b[39m,\n  currentCat: \u001b[32m'accessory'\u001b[39m\n}\n"
+                        },
+                        {
+                          "text": "[Playthrough Inspector] Step 1.5: Auditing OOTD Photo Booth Modal...\n"
+                        },
+                        {
+                          "text": "[Playthrough Inspector] Step 2: Navigating to MapScene...\n"
+                        },
+                        {
+                          "text": "[Playthrough Inspector] Step 2.2: Opening Station 1 Modal...\n"
+                        },
+                        {
+                          "text": "[Playthrough Inspector] Step 2.3: Entering QuestionScene for Station 1...\n"
+                        },
+                        {
+                          "text": "[Playthrough Inspector] Step 3: Solving Question 1 (Chinese Sentence Scramble)...\n"
+                        },
+                        {
+                          "text": "[Playthrough Inspector] Q1 Details: {\n  isActive: \u001b[33mtrue\u001b[39m,\n  subject: \u001b[32m'chinese'\u001b[39m,\n  type: \u001b[32m'sentence_scramble'\u001b[39m,\n  prompt: \u001b[32m'重組句子：請把字詞排列成通順的句子。'\u001b[39m,\n  correctTokens: [ \u001b[32m'姐姐'\u001b[39m, \u001b[32m'吃'\u001b[39m, \u001b[32m'餅乾'\u001b[39m, \u001b[32m'。'\u001b[39m ],\n  shuffledTokens: [ \u001b[32m'吃'\u001b[39m, \u001b[32m'。'\u001b[39m, \u001b[32m'姐姐'\u001b[39m, \u001b[32m'餅乾'\u001b[39m ],\n  slotBoxesCount: \u001b[33m4\u001b[39m,\n  cardChipsCount: \u001b[33m4\u001b[39m\n}\n"
+                        },
+                        {
+                          "text": "[Playthrough Inspector] Q1 Slot 0 Audit ('姐姐'): {\n  hasCard: \u001b[33mtrue\u001b[39m,\n  slotIndex: \u001b[33m0\u001b[39m,\n  placedCardText: \u001b[32m'姐姐'\u001b[39m,\n  cardCurrentSlotIndex: \u001b[33m0\u001b[39m,\n  slotIsCorrect: \u001b[33mtrue\u001b[39m\n}\n"
+                        },
+                        {
+                          "text": "[Playthrough Inspector] Q1 Slot 0 Physical Positioning: {\n  cardX: \u001b[33m371.5\u001b[39m,\n  cardY: \u001b[33m270\u001b[39m,\n  slotX: \u001b[33m371.5\u001b[39m,\n  slotY: \u001b[33m270\u001b[39m,\n  diffX: \u001b[33m0\u001b[39m,\n  diffY: \u001b[33m0\u001b[39m\n}\n"
+                        },
+                        {
+                          "text": "[Playthrough Inspector] Q1 Slot 1 Audit ('吃'): {\n  hasCard: \u001b[33mtrue\u001b[39m,\n  slotIndex: \u001b[33m1\u001b[39m,\n  placedCardText: \u001b[32m'吃'\u001b[39m,\n  cardCurrentSlotIndex: \u001b[33m1\u001b[39m,\n  slotIsCorrect: \u001b[33mtrue\u001b[39m\n}\n"
+                        },
+                        {
+                          "text": "[Playthrough Inspector] Q1 Slot 1 Physical Positioning: {\n  cardX: \u001b[33m550.5\u001b[39m,\n  cardY: \u001b[33m270\u001b[39m,\n  slotX: \u001b[33m550.5\u001b[39m,\n  slotY: \u001b[33m270\u001b[39m,\n  diffX: \u001b[33m0\u001b[39m,\n  diffY: \u001b[33m0\u001b[39m\n}\n"
+                        },
+                        {
+                          "text": "[Playthrough Inspector] Q1 Slot 2 Audit ('餅乾'): {\n  hasCard: \u001b[33mtrue\u001b[39m,\n  slotIndex: \u001b[33m2\u001b[39m,\n  placedCardText: \u001b[32m'餅乾'\u001b[39m,\n  cardCurrentSlotIndex: \u001b[33m2\u001b[39m,\n  slotIsCorrect: \u001b[33mtrue\u001b[39m\n}\n"
+                        },
+                        {
+                          "text": "[Playthrough Inspector] Q1 Slot 2 Physical Positioning: {\n  cardX: \u001b[33m729.5\u001b[39m,\n  cardY: \u001b[33m270\u001b[39m,\n  slotX: \u001b[33m729.5\u001b[39m,\n  slotY: \u001b[33m270\u001b[39m,\n  diffX: \u001b[33m0\u001b[39m,\n  diffY: \u001b[33m0\u001b[39m\n}\n"
+                        },
+                        {
+                          "text": "[Playthrough Inspector] Q1 Slot 3 Audit ('。'): {\n  hasCard: \u001b[33mtrue\u001b[39m,\n  slotIndex: \u001b[33m3\u001b[39m,\n  placedCardText: \u001b[32m'。'\u001b[39m,\n  cardCurrentSlotIndex: \u001b[33m3\u001b[39m,\n  slotIsCorrect: \u001b[33mtrue\u001b[39m\n}\n"
+                        },
+                        {
+                          "text": "[Playthrough Inspector] Q1 Slot 3 Physical Positioning: {\n  cardX: \u001b[33m908.5\u001b[39m,\n  cardY: \u001b[33m270\u001b[39m,\n  slotX: \u001b[33m908.5\u001b[39m,\n  slotY: \u001b[33m270\u001b[39m,\n  diffX: \u001b[33m0\u001b[39m,\n  diffY: \u001b[33m0\u001b[39m\n}\n"
+                        },
+                        {
+                          "text": "[Playthrough Inspector] Step 4: Waiting for transition to RunnerScene Phase 1...\n"
+                        },
+                        {
+                          "text": "[Playthrough Inspector] Runner Phase 1 State: {\n  isActive: \u001b[33mtrue\u001b[39m,\n  skinId: \u001b[32m'heroine'\u001b[39m,\n  walk1Key: \u001b[32m'female_walk1'\u001b[39m,\n  questionIndex: \u001b[33m0\u001b[39m,\n  hasJoystick: \u001b[33mtrue\u001b[39m,\n  hasJumpBtn: \u001b[33mtrue\u001b[39m,\n  initialDistance: \u001b[33m0\u001b[39m\n}\n"
+                        },
+                        {
+                          "text": "[Playthrough Inspector] Step 4.1: Auditing Joystick Idle State...\n"
+                        },
+                        {
+                          "text": "[Playthrough Inspector] Idle Check: { distBefore: \u001b[33m0\u001b[39m, distAfter: \u001b[33m0\u001b[39m, isStationary: \u001b[33mtrue\u001b[39m, axisX: \u001b[33m0\u001b[39m }\n"
+                        },
+                        {
+                          "text": "[Playthrough Inspector] Step 4.2: Auditing Continuous Joystick Swipe...\n"
+                        },
+                        {
+                          "text": "[Playthrough Inspector] Swipe Check: {\n  leftAxis: \u001b[33m-1\u001b[39m,\n  rightAxis: \u001b[33m1\u001b[39m,\n  distAfterLeft: \u001b[33m58.19999999999999\u001b[39m,\n  distAfterRight: \u001b[33m100\u001b[39m,\n  switchedDirection: \u001b[33mtrue\u001b[39m\n}\n"
+                        },
+                        {
+                          "text": "[Playthrough Inspector] Step 4.3: Auditing Elastic Release...\n"
+                        },
+                        {
+                          "text": "[Playthrough Inspector] Release Check: {\n  axisAfterRelease: \u001b[33m0\u001b[39m,\n  isHalted: \u001b[33mtrue\u001b[39m,\n  textureKey: \u001b[32m'female_stand'\u001b[39m,\n  standKey: \u001b[32m'female_stand'\u001b[39m\n}\n"
+                        },
+                        {
+                          "text": "[Playthrough Inspector] Step 4.4: Auditing Multi-touch Joystick + Jump...\n"
+                        },
+                        {
+                          "text": "[Playthrough Inspector] Multi-touch Check: {\n  isJumping: \u001b[33mtrue\u001b[39m,\n  velocityY: \u001b[33m-726.0000000000001\u001b[39m,\n  axisMaintained: \u001b[33mtrue\u001b[39m,\n  isAirborne: \u001b[33mtrue\u001b[39m\n}\n"
+                        },
+                        {
+                          "text": "[Playthrough Inspector] Step 4.5: Auditing Rock Obstacle Kinematics...\n"
+                        },
+                        {
+                          "text": "[Playthrough Inspector] Rock Obstacle Audit: {\n  stumbleTimer: \u001b[33m650\u001b[39m,\n  stumbleAfterAirborne: \u001b[33m0\u001b[39m,\n  isSlowdownTriggered: \u001b[33mtrue\u001b[39m,\n  isAirborneClearClean: \u001b[33mtrue\u001b[39m\n}\n"
+                        },
+                        {
+                          "text": "[Playthrough Inspector] Step 4.6: Auditing Double Jump Kinematics...\n"
+                        },
+                        {
+                          "text": "[Playthrough Inspector] Double Jump Audit: {\n  firstJumpVelocity: \u001b[33m-726.0000000000001\u001b[39m,\n  secondJumpVelocity: \u001b[33m-660\u001b[39m,\n  isAirborneAfterFirst: \u001b[33mtrue\u001b[39m,\n  hasDoubleJumped: \u001b[33mtrue\u001b[39m,\n  isSecondJumpBoosted: \u001b[33mtrue\u001b[39m\n}\n"
+                        },
+                        {
+                          "text": "[Playthrough Inspector] Step 4.7: Running to chest and verifying celebration...\n"
+                        },
+                        {
+                          "text": "[Playthrough Inspector] Step 5: Solving Question 2 (Math Calculation)...\n"
+                        },
+                        {
+                          "text": "[Playthrough Inspector] Q2 Details: {\n  isActive: \u001b[33mtrue\u001b[39m,\n  questionIndex: \u001b[33m1\u001b[39m,\n  subject: \u001b[32m'math'\u001b[39m,\n  type: \u001b[32m'multiple_choice'\u001b[39m,\n  prompt: \u001b[32m'計算題：請選出正確的答案 12 + 5 = ?'\u001b[39m,\n  correctAnswer: \u001b[32m'17'\u001b[39m,\n  correctOptionIndex: \u001b[33m1\u001b[39m,\n  choiceCardsCount: \u001b[33m4\u001b[39m\n}\n"
+                        },
+                        {
+                          "text": "[Playthrough Inspector] Q2 Solved State: { isAnswered: \u001b[33mtrue\u001b[39m, cardState: \u001b[32m'correct'\u001b[39m, correctCount: \u001b[33m2\u001b[39m }\n"
+                        },
+                        {
+                          "text": "[Playthrough Inspector] Step 5.2: Entering RunnerScene Phase 2...\n"
+                        },
+                        {
+                          "text": "[Playthrough Inspector] Step 6: Solving Question 3 (English)...\n"
+                        },
+                        {
+                          "text": "[Playthrough Inspector] Q3 Details: {\n  isActive: \u001b[33mtrue\u001b[39m,\n  questionIndex: \u001b[33m2\u001b[39m,\n  subject: \u001b[32m'english'\u001b[39m,\n  type: \u001b[32m'sentence_scramble'\u001b[39m,\n  prompt: \u001b[32m'Sentence Scramble: Put the words in the right order.'\u001b[39m,\n  correctTokens: [ \u001b[32m'I'\u001b[39m, \u001b[32m'like'\u001b[39m, \u001b[32m'apples'\u001b[39m, \u001b[32m'.'\u001b[39m ],\n  slotBoxesCount: \u001b[33m4\u001b[39m,\n  cardChipsCount: \u001b[33m4\u001b[39m\n}\n"
+                        },
+                        {
+                          "text": "[Playthrough Inspector] Q3 English Slot 0 Audit ('I'): {\n  hasCard: \u001b[33mtrue\u001b[39m,\n  slotIndex: \u001b[33m0\u001b[39m,\n  placedCardText: \u001b[32m'I'\u001b[39m,\n  cardCurrentSlotIndex: \u001b[33m0\u001b[39m,\n  slotIsCorrect: \u001b[33mtrue\u001b[39m\n}\n"
+                        },
+                        {
+                          "text": "[Playthrough Inspector] Q3 English Slot 0 Physical Positioning: {\n  cardX: \u001b[33m371.5\u001b[39m,\n  cardY: \u001b[33m270\u001b[39m,\n  slotX: \u001b[33m371.5\u001b[39m,\n  slotY: \u001b[33m270\u001b[39m,\n  diffX: \u001b[33m0\u001b[39m,\n  diffY: \u001b[33m0\u001b[39m\n}\n"
+                        },
+                        {
+                          "text": "[Playthrough Inspector] Q3 English Slot 1 Audit ('like'): {\n  hasCard: \u001b[33mtrue\u001b[39m,\n  slotIndex: \u001b[33m1\u001b[39m,\n  placedCardText: \u001b[32m'like'\u001b[39m,\n  cardCurrentSlotIndex: \u001b[33m1\u001b[39m,\n  slotIsCorrect: \u001b[33mtrue\u001b[39m\n}\n"
+                        },
+                        {
+                          "text": "[Playthrough Inspector] Q3 English Slot 1 Physical Positioning: {\n  cardX: \u001b[33m550.5\u001b[39m,\n  cardY: \u001b[33m270\u001b[39m,\n  slotX: \u001b[33m550.5\u001b[39m,\n  slotY: \u001b[33m270\u001b[39m,\n  diffX: \u001b[33m0\u001b[39m,\n  diffY: \u001b[33m0\u001b[39m\n}\n"
+                        },
+                        {
+                          "text": "[Playthrough Inspector] Q3 English Slot 2 Audit ('apples'): {\n  hasCard: \u001b[33mtrue\u001b[39m,\n  slotIndex: \u001b[33m2\u001b[39m,\n  placedCardText: \u001b[32m'apples'\u001b[39m,\n  cardCurrentSlotIndex: \u001b[33m2\u001b[39m,\n  slotIsCorrect: \u001b[33mtrue\u001b[39m\n}\n"
+                        },
+                        {
+                          "text": "[Playthrough Inspector] Q3 English Slot 2 Physical Positioning: {\n  cardX: \u001b[33m729.5\u001b[39m,\n  cardY: \u001b[33m270\u001b[39m,\n  slotX: \u001b[33m729.5\u001b[39m,\n  slotY: \u001b[33m270\u001b[39m,\n  diffX: \u001b[33m0\u001b[39m,\n  diffY: \u001b[33m0\u001b[39m\n}\n"
+                        },
+                        {
+                          "text": "[Playthrough Inspector] Q3 English Slot 3 Audit ('.'): {\n  hasCard: \u001b[33mtrue\u001b[39m,\n  slotIndex: \u001b[33m3\u001b[39m,\n  placedCardText: \u001b[32m'.'\u001b[39m,\n  cardCurrentSlotIndex: \u001b[33m3\u001b[39m,\n  slotIsCorrect: \u001b[33mtrue\u001b[39m\n}\n"
+                        },
+                        {
+                          "text": "[Playthrough Inspector] Q3 English Slot 3 Physical Positioning: {\n  cardX: \u001b[33m908.5\u001b[39m,\n  cardY: \u001b[33m270\u001b[39m,\n  slotX: \u001b[33m908.5\u001b[39m,\n  slotY: \u001b[33m270\u001b[39m,\n  diffX: \u001b[33m0\u001b[39m,\n  diffY: \u001b[33m0\u001b[39m\n}\n"
+                        },
+                        {
+                          "text": "[Playthrough Inspector] Step 7: Final Runner Phase with Station Completion...\n"
+                        },
+                        {
+                          "text": "[Playthrough Inspector] Step 8: Auditing ResultScene 3-Star Victory Settlement...\n"
+                        },
+                        {
+                          "text": "[Playthrough Inspector] ResultScene Audit: {\n  isActive: \u001b[33mtrue\u001b[39m,\n  stationId: \u001b[33m1\u001b[39m,\n  starsEarned: \u001b[33m3\u001b[39m,\n  rewardCoins: \u001b[33m76\u001b[39m,\n  rewardGems: \u001b[33m8\u001b[39m,\n  sessionCorrect: \u001b[33m3\u001b[39m,\n  sessionHints: \u001b[33m0\u001b[39m,\n  sessionMistakes: \u001b[33m0\u001b[39m,\n  hasMapBtn: \u001b[33mtrue\u001b[39m,\n  hasRetryBtn: \u001b[33mtrue\u001b[39m,\n  profileStarsStation1: \u001b[33m3\u001b[39m,\n  unlockedStations: \u001b[33m2\u001b[39m,\n  finalGems: \u001b[33m50\u001b[39m,\n  finalCoins: \u001b[33m1327\u001b[39m\n}\n"
+                        },
+                        {
+                          "text": "[Playthrough Inspector] Step 9: Final Browser Console & Error Inspection...\n"
+                        },
+                        {
+                          "text": "[Playthrough Inspector] Total console messages collected: 2\n"
+                        },
+                        {
+                          "text": "[Playthrough Inspector] Page error count: 0\n"
+                        },
+                        {
+                          "text": "[Playthrough Inspector] PLAYTHROUGH 100% COMPLETE AND INSPECTED WITH ZERO UNCAUGHT ERRORS.\n"
+                        }
+                      ],
+                      "stderr": [
+                        {
+                          "text": "[Browser Console WARN] The AudioContext was not allowed to start. It must be resumed (or created) after a user gesture on the page. https://goo.gl/7K7WLu\n"
+                        }
+                      ],
+                      "retry": 0,
+                      "startTime": "2026-09-13T13:28:09.388Z",
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "ea398e50410421ace767-5a0096ba00ded0a2028d",
+              "file": "gamer-tester-3-full-playthrough-inspector.spec.ts",
+              "line": 14,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "gamer-zero-trust-playtest.spec.ts",
+      "file": "gamer-zero-trust-playtest.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Gamer Zero-Trust Playtest & Visual Inspection Suite",
+          "file": "gamer-zero-trust-playtest.spec.ts",
+          "line": 5,
+          "column": 6,
+          "specs": [
+            {
+              "title": "comprehensive gamer playtest across all scenes with custom wardrobe & pet",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "status": "passed",
+                      "duration": 16034,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-13T13:28:49.349Z",
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "9d9b7a3db4747441cdd2-c8df9ed57e548d439b51",
+              "file": "gamer-zero-trust-playtest.spec.ts",
+              "line": 14,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "iphone-touch-calibration.spec.ts",
+      "file": "iphone-touch-calibration.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "iPhone Touch Calibration: all button corners, edges, and center trigger reliably",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "status": "passed",
+                  "duration": 13913,
+                  "errors": [],
+                  "stdout": [
+                    {
+                      "text": "Test Center at (431.0, 277.3): PASS\n"
+                    },
+                    {
+                      "text": "Test Top-Left Corner at (395.7, 262.0): PASS\n"
+                    },
+                    {
+                      "text": "Test Top-Right Corner at (466.3, 262.0): PASS\n"
+                    },
+                    {
+                      "text": "Test Bottom-Left Corner at (395.7, 292.7): PASS\n"
+                    },
+                    {
+                      "text": "Test Bottom-Right Corner at (466.3, 292.7): PASS\n"
+                    }
+                  ],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-13T13:29:05.398Z",
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "be45b5d24868959b1f29-5a2160bf52fe4825bede",
+          "file": "iphone-touch-calibration.spec.ts",
+          "line": 3,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "title": "live-iphone-touch-verify.spec.ts",
+      "file": "live-iphone-touch-verify.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "Live Verify iPhone Touch: All 5 button points (Center, 4 corners) click reliably on GitHub Pages",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "status": "failed",
+                  "duration": 3846,
+                  "error": {
+                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m",
+                    "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m\n    at testBtn (/workspace/scratch/d2f78c43f3a7/phonics_game/.worktrees/release-hardening/e2e/live-iphone-touch-verify.spec.ts:33:21)\n    at /workspace/scratch/d2f78c43f3a7/phonics_game/.worktrees/release-hardening/e2e/live-iphone-touch-verify.spec.ts:36:3",
+                    "location": {
+                      "file": "/workspace/scratch/d2f78c43f3a7/phonics_game/.worktrees/release-hardening/e2e/live-iphone-touch-verify.spec.ts",
+                      "column": 21,
+                      "line": 33
+                    },
+                    "snippet": "  31 |     const success = await page.evaluate(() => (window as any).__CLICKED__);\n  32 |     console.log(`Live Test ${name} at (${coords.clientX.toFixed(1)}, ${coords.clientY.toFixed(1)}): ${success ? 'PASS' : 'FAIL'}`);\n> 33 |     expect(success).toBe(true);\n     |                     ^\n  34 |   };\n  35 |\n  36 |   await testBtn('Center', 0, 0);"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/workspace/scratch/d2f78c43f3a7/phonics_game/.worktrees/release-hardening/e2e/live-iphone-touch-verify.spec.ts",
+                        "column": 21,
+                        "line": 33
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m\n\n  31 |     const success = await page.evaluate(() => (window as any).__CLICKED__);\n  32 |     console.log(`Live Test ${name} at (${coords.clientX.toFixed(1)}, ${coords.clientY.toFixed(1)}): ${success ? 'PASS' : 'FAIL'}`);\n> 33 |     expect(success).toBe(true);\n     |                     ^\n  34 |   };\n  35 |\n  36 |   await testBtn('Center', 0, 0);\n\n    at testBtn (/workspace/scratch/d2f78c43f3a7/phonics_game/.worktrees/release-hardening/e2e/live-iphone-touch-verify.spec.ts:33:21)\n    at /workspace/scratch/d2f78c43f3a7/phonics_game/.worktrees/release-hardening/e2e/live-iphone-touch-verify.spec.ts:36:3"
+                    }
+                  ],
+                  "stdout": [
+                    {
+                      "text": "Live Canvas Box: width=764.4375, height=430\n"
+                    },
+                    {
+                      "text": "Live Test Center at (526.4, 231.7): FAIL\n"
+                    }
+                  ],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-13T13:29:19.320Z",
+                  "attachments": [],
+                  "errorLocation": {
+                    "file": "/workspace/scratch/d2f78c43f3a7/phonics_game/.worktrees/release-hardening/e2e/live-iphone-touch-verify.spec.ts",
+                    "column": 21,
+                    "line": 33
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "5b02bf2c38c763c6e8e1-6c1c85000fdd6a19ad8c",
+          "file": "live-iphone-touch-verify.spec.ts",
+          "line": 3,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "title": "live-sentence-scramble-speech.spec.ts",
+      "file": "live-sentence-scramble-speech.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "Live Verify: Sentence scramble speaks prompt instruction first on GitHub Pages",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "status": "passed",
+                  "duration": 4786,
+                  "errors": [],
+                  "stdout": [
+                    {
+                      "text": "Live Spoken Text for Sentence Scramble: 重組句子：請把字詞排列成通順的句子。\n"
+                    }
+                  ],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-13T13:29:23.658Z",
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "4452206619b0ec239b84-d50b3b9d63fdaac56f36",
+          "file": "live-sentence-scramble-speech.spec.ts",
+          "line": 3,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "title": "live-sentence-tap-verify.spec.ts",
+      "file": "live-sentence-tap-verify.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "Live Verify: Choice Quiz and Sentence Scramble on Live GitHub Pages",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "status": "failed",
+                  "duration": 57,
+                  "error": {
+                    "message": "Error: page.goto: net::ERR_EMPTY_RESPONSE at https://hkspurs.github.io/phonics_game/?_t=1789306168601\nCall log:\n  \u001b[2m- navigating to \"https://hkspurs.github.io/phonics_game/?_t=1789306168601\", waiting until \"load\"\u001b[22m\n",
+                    "stack": "Error: page.goto: net::ERR_EMPTY_RESPONSE at https://hkspurs.github.io/phonics_game/?_t=1789306168601\nCall log:\n  \u001b[2m- navigating to \"https://hkspurs.github.io/phonics_game/?_t=1789306168601\", waiting until \"load\"\u001b[22m\n\n    at /workspace/scratch/d2f78c43f3a7/phonics_game/.worktrees/release-hardening/e2e/live-sentence-tap-verify.spec.ts:5:14",
+                    "location": {
+                      "file": "/workspace/scratch/d2f78c43f3a7/phonics_game/.worktrees/release-hardening/e2e/live-sentence-tap-verify.spec.ts",
+                      "column": 14,
+                      "line": 5
+                    },
+                    "snippet": "  3 | test('Live Verify: Choice Quiz and Sentence Scramble on Live GitHub Pages', async ({ page }) => {\n  4 |   await page.setViewportSize({ width: 1280, height: 720 });\n> 5 |   await page.goto('https://hkspurs.github.io/phonics_game/?_t=' + Date.now());\n    |              ^\n  6 |   await page.waitForTimeout(3000);\n  7 |\n  8 |   const canvas = page.locator('#game-container canvas');"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/workspace/scratch/d2f78c43f3a7/phonics_game/.worktrees/release-hardening/e2e/live-sentence-tap-verify.spec.ts",
+                        "column": 14,
+                        "line": 5
+                      },
+                      "message": "Error: page.goto: net::ERR_EMPTY_RESPONSE at https://hkspurs.github.io/phonics_game/?_t=1789306168601\nCall log:\n  \u001b[2m- navigating to \"https://hkspurs.github.io/phonics_game/?_t=1789306168601\", waiting until \"load\"\u001b[22m\n\n\n  3 | test('Live Verify: Choice Quiz and Sentence Scramble on Live GitHub Pages', async ({ page }) => {\n  4 |   await page.setViewportSize({ width: 1280, height: 720 });\n> 5 |   await page.goto('https://hkspurs.github.io/phonics_game/?_t=' + Date.now());\n    |              ^\n  6 |   await page.waitForTimeout(3000);\n  7 |\n  8 |   const canvas = page.locator('#game-container canvas');\n\n    at /workspace/scratch/d2f78c43f3a7/phonics_game/.worktrees/release-hardening/e2e/live-sentence-tap-verify.spec.ts:5:14"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-13T13:29:28.553Z",
+                  "attachments": [],
+                  "errorLocation": {
+                    "file": "/workspace/scratch/d2f78c43f3a7/phonics_game/.worktrees/release-hardening/e2e/live-sentence-tap-verify.spec.ts",
+                    "column": 14,
+                    "line": 5
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "2722bd530f2ebe99004a-5f559ff28f344e6a3960",
+          "file": "live-sentence-tap-verify.spec.ts",
+          "line": 3,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "title": "live-speech-and-sublevel.spec.ts",
+      "file": "live-speech-and-sublevel.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "Live Verify: Auto-read after 1s & 100% full-area sub-level row clicks on GitHub Pages",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 2,
+                  "status": "failed",
+                  "duration": 7355,
+                  "error": {
+                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoContain\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // indexOf\u001b[22m\n\nExpected value: \u001b[32m\"QuestionScene\"\u001b[39m\nReceived array: \u001b[31m[\"TitleScene\"]\u001b[39m",
+                    "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoContain\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // indexOf\u001b[22m\n\nExpected value: \u001b[32m\"QuestionScene\"\u001b[39m\nReceived array: \u001b[31m[\"TitleScene\"]\u001b[39m\n    at /workspace/scratch/d2f78c43f3a7/phonics_game/.worktrees/release-hardening/e2e/live-speech-and-sublevel.spec.ts:49:24",
+                    "location": {
+                      "file": "/workspace/scratch/d2f78c43f3a7/phonics_game/.worktrees/release-hardening/e2e/live-speech-and-sublevel.spec.ts",
+                      "column": 24,
+                      "line": 49
+                    },
+                    "snippet": "  47 |   });\n  48 |   console.log('Active scenes after clicking far right of sub-level row:', activeScenes);\n> 49 |   expect(activeScenes).toContain('QuestionScene');\n     |                        ^\n  50 | });\n  51 |"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/workspace/scratch/d2f78c43f3a7/phonics_game/.worktrees/release-hardening/e2e/live-speech-and-sublevel.spec.ts",
+                        "column": 24,
+                        "line": 49
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoContain\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // indexOf\u001b[22m\n\nExpected value: \u001b[32m\"QuestionScene\"\u001b[39m\nReceived array: \u001b[31m[\"TitleScene\"]\u001b[39m\n\n  47 |   });\n  48 |   console.log('Active scenes after clicking far right of sub-level row:', activeScenes);\n> 49 |   expect(activeScenes).toContain('QuestionScene');\n     |                        ^\n  50 | });\n  51 |\n\n    at /workspace/scratch/d2f78c43f3a7/phonics_game/.worktrees/release-hardening/e2e/live-speech-and-sublevel.spec.ts:49:24"
+                    }
+                  ],
+                  "stdout": [
+                    {
+                      "text": "Clicking Far Right of Sub-level Row 1 at (596.6, 176.2)...\n"
+                    },
+                    {
+                      "text": "Active scenes after clicking far right of sub-level row: [ \u001b[32m'TitleScene'\u001b[39m ]\n"
+                    }
+                  ],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-13T13:29:29.086Z",
+                  "attachments": [],
+                  "errorLocation": {
+                    "file": "/workspace/scratch/d2f78c43f3a7/phonics_game/.worktrees/release-hardening/e2e/live-speech-and-sublevel.spec.ts",
+                    "column": 24,
+                    "line": 49
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "df92ce02a88a4123f29a-17fcc68b5e53c153a315",
+          "file": "live-speech-and-sublevel.spec.ts",
+          "line": 3,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "title": "live-test.spec.ts",
+      "file": "live-test.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "Full Live UAT on https://hkspurs.github.io/phonics_game/",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 3,
+                  "status": "failed",
+                  "duration": 59,
+                  "error": {
+                    "message": "Error: page.goto: net::ERR_EMPTY_RESPONSE at https://hkspurs.github.io/phonics_game/?_t=1789306177157\nCall log:\n  \u001b[2m- navigating to \"https://hkspurs.github.io/phonics_game/?_t=1789306177157\", waiting until \"load\"\u001b[22m\n",
+                    "stack": "Error: page.goto: net::ERR_EMPTY_RESPONSE at https://hkspurs.github.io/phonics_game/?_t=1789306177157\nCall log:\n  \u001b[2m- navigating to \"https://hkspurs.github.io/phonics_game/?_t=1789306177157\", waiting until \"load\"\u001b[22m\n\n    at /workspace/scratch/d2f78c43f3a7/phonics_game/.worktrees/release-hardening/e2e/live-test.spec.ts:18:14",
+                    "location": {
+                      "file": "/workspace/scratch/d2f78c43f3a7/phonics_game/.worktrees/release-hardening/e2e/live-test.spec.ts",
+                      "column": 14,
+                      "line": 18
+                    },
+                    "snippet": "  16 |   // Go to live GitHub Pages\n  17 |   console.log('Navigating to live GitHub Pages...');\n> 18 |   await page.goto('https://hkspurs.github.io/phonics_game/?_t=' + Date.now());\n     |              ^\n  19 |   await page.waitForTimeout(3000);\n  20 |\n  21 |   const scriptSrcs = await page.evaluate(() => {"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/workspace/scratch/d2f78c43f3a7/phonics_game/.worktrees/release-hardening/e2e/live-test.spec.ts",
+                        "column": 14,
+                        "line": 18
+                      },
+                      "message": "Error: page.goto: net::ERR_EMPTY_RESPONSE at https://hkspurs.github.io/phonics_game/?_t=1789306177157\nCall log:\n  \u001b[2m- navigating to \"https://hkspurs.github.io/phonics_game/?_t=1789306177157\", waiting until \"load\"\u001b[22m\n\n\n  16 |   // Go to live GitHub Pages\n  17 |   console.log('Navigating to live GitHub Pages...');\n> 18 |   await page.goto('https://hkspurs.github.io/phonics_game/?_t=' + Date.now());\n     |              ^\n  19 |   await page.waitForTimeout(3000);\n  20 |\n  21 |   const scriptSrcs = await page.evaluate(() => {\n\n    at /workspace/scratch/d2f78c43f3a7/phonics_game/.worktrees/release-hardening/e2e/live-test.spec.ts:18:14"
+                    }
+                  ],
+                  "stdout": [
+                    {
+                      "text": "Navigating to live GitHub Pages...\n"
+                    }
+                  ],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-13T13:29:37.025Z",
+                  "attachments": [],
+                  "errorLocation": {
+                    "file": "/workspace/scratch/d2f78c43f3a7/phonics_game/.worktrees/release-hardening/e2e/live-test.spec.ts",
+                    "column": 14,
+                    "line": 18
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "93fb78da5b956328290e-71ebb859e4f988b8be4e",
+          "file": "live-test.spec.ts",
+          "line": 5,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "title": "math-speech-and-layout.spec.ts",
+      "file": "math-speech-and-layout.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "Verify: Math question spoken text uses explicit Chinese words (減/加/等於幾多), enlarged prompt banner, no duplicate box",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 4,
+                  "status": "passed",
+                  "duration": 5200,
+                  "errors": [],
+                  "stdout": [
+                    {
+                      "text": "Spoken text captured for 5 - 2 = ?: 計算以下減法算式：5 減 2 等於幾多？\n"
+                    },
+                    {
+                      "text": "Screenshot saved to /tmp/test_math_question_layout.png\n"
+                    }
+                  ],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-13T13:29:37.620Z",
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "d56eddf341f107198164-7cdfa7ebe0311d42586e",
+          "file": "math-speech-and-layout.spec.ts",
+          "line": 3,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "title": "mobile-rendering-perf-audit.spec.ts",
+      "file": "mobile-rendering-perf-audit.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Adversarial Mobile Rendering & Engine Performance Audit",
+          "file": "mobile-rendering-perf-audit.spec.ts",
+          "line": 3,
+          "column": 6,
+          "specs": [
+            {
+              "title": "Audit 1: Viewport Geometry & Coordinate Drift across 6 device form-factors",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 4,
+                      "status": "passed",
+                      "duration": 14055,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "[Viewport Audit] Device: iPhone 14 Pro Max (19.5:9 notch)\n"
+                        },
+                        {
+                          "text": "  Window: 932x430\n"
+                        },
+                        {
+                          "text": "  Canvas Rect: {\"width\":764.4375,\"height\":430,\"top\":0,\"left\":83}\n"
+                        },
+                        {
+                          "text": "  Phaser Scale: {\"gameWidth\":1280,\"gameHeight\":720,\"displayScaleX\":1.674433815714169,\"displayScaleY\":1.6744186046511629,\"isFullScreen\":false,\"parentSize\":{\"width\":932,\"height\":430}}\n"
+                        },
+                        {
+                          "text": "[Viewport Audit] Device: iPhone SE Landscape (16:9 compact)\n"
+                        },
+                        {
+                          "text": "  Window: 667x375\n"
+                        },
+                        {
+                          "text": "  Canvas Rect: {\"width\":666.65625,\"height\":375,\"top\":0,\"left\":0}\n"
+                        },
+                        {
+                          "text": "  Phaser Scale: {\"gameWidth\":1280,\"gameHeight\":720,\"displayScaleX\":1.9200300004687574,\"displayScaleY\":1.92,\"isFullScreen\":false,\"parentSize\":{\"width\":667,\"height\":375}}\n"
+                        },
+                        {
+                          "text": "[Viewport Audit] Device: iPad Pro 11 Landscape (4:3 aspect)\n"
+                        },
+                        {
+                          "text": "  Window: 1024x768\n"
+                        },
+                        {
+                          "text": "  Canvas Rect: {\"width\":1024,\"height\":576,\"top\":96,\"left\":0}\n"
+                        },
+                        {
+                          "text": "  Phaser Scale: {\"gameWidth\":1280,\"gameHeight\":720,\"displayScaleX\":1.25,\"displayScaleY\":1.25,\"isFullScreen\":false,\"parentSize\":{\"width\":1024,\"height\":768}}\n"
+                        },
+                        {
+                          "text": "[Viewport Audit] Device: Android Galaxy S20 (20:9 tall)\n"
+                        },
+                        {
+                          "text": "  Window: 915x412\n"
+                        },
+                        {
+                          "text": "  Canvas Rect: {\"width\":732.4375,\"height\":412,\"top\":0,\"left\":91}\n"
+                        },
+                        {
+                          "text": "  Phaser Scale: {\"gameWidth\":1280,\"gameHeight\":720,\"displayScaleX\":1.7475893847597919,\"displayScaleY\":1.7475728155339805,\"isFullScreen\":false,\"parentSize\":{\"width\":915,\"height\":412}}\n"
+                        },
+                        {
+                          "text": "[Viewport Audit] Device: Desktop 1080p (16:9 FHD)\n"
+                        },
+                        {
+                          "text": "  Window: 1920x1080\n"
+                        },
+                        {
+                          "text": "  Canvas Rect: {\"width\":1920,\"height\":1080,\"top\":0,\"left\":0}\n"
+                        },
+                        {
+                          "text": "  Phaser Scale: {\"gameWidth\":1280,\"gameHeight\":720,\"displayScaleX\":0.6666666666666666,\"displayScaleY\":0.6666666666666666,\"isFullScreen\":false,\"parentSize\":{\"width\":1920,\"height\":1080}}\n"
+                        },
+                        {
+                          "text": "[Viewport Audit] Device: Ultra-wide 21:9 Display\n"
+                        },
+                        {
+                          "text": "  Window: 2560x1080\n"
+                        },
+                        {
+                          "text": "  Canvas Rect: {\"width\":1920,\"height\":1080,\"top\":0,\"left\":320}\n"
+                        },
+                        {
+                          "text": "  Phaser Scale: {\"gameWidth\":1280,\"gameHeight\":720,\"displayScaleX\":0.6666666666666666,\"displayScaleY\":0.6666666666666666,\"isFullScreen\":false,\"parentSize\":{\"width\":2560,\"height\":1080}}\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-13T13:29:42.934Z",
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "4c2bed692d7711fe9ed8-f2fe4508143b8bb4f373",
+              "file": "mobile-rendering-perf-audit.spec.ts",
+              "line": 5,
+              "column": 3
+            },
+            {
+              "title": "Audit 2: Rapid Scene Cycling & GameObject / Texture Leak Stress Test",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 4,
+                      "status": "passed",
+                      "duration": 6446,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "[Leak Audit] Initial Stats in MapScene: {\"textureCount\":332,\"mapChildren\":22}\n"
+                        },
+                        {
+                          "text": "[Leak Audit] Final Stats after 4 cycles: {\"textureCount\":332,\"mapChildren\":22}\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-13T13:29:56.993Z",
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "4c2bed692d7711fe9ed8-a3b43e884f0b3740d2a7",
+              "file": "mobile-rendering-perf-audit.spec.ts",
+              "line": 80,
+              "column": 3
+            },
+            {
+              "title": "Audit 3: Web Audio API & Synthesizer State Audit",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 4,
+                      "status": "passed",
+                      "duration": 1309,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "[Audio Audit] Audio Report: {\"hasPhaserSound\":true,\"soundManagerMuted\":false,\"phaserAudioContextState\":\"suspended\"}\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-13T13:30:03.444Z",
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "4c2bed692d7711fe9ed8-923b66269f6274150088",
+              "file": "mobile-rendering-perf-audit.spec.ts",
+              "line": 169,
+              "column": 3
+            },
+            {
+              "title": "Audit 4: MapScene Station Modal Opening and Title/Children Accumulation Check",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 4,
+                      "status": "passed",
+                      "duration": 2589,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "[Modal Audit] Modal Audit Result: {\"initialChildCount\":5,\"childCountAfterSet1\":5,\"childCountAfterSet2\":5,\"finalChildCount\":5,\"leakedChildren\":0}\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-13T13:30:04.757Z",
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "4c2bed692d7711fe9ed8-e3486550f814e6a731e2",
+              "file": "mobile-rendering-perf-audit.spec.ts",
+              "line": 187,
+              "column": 3
+            },
+            {
+              "title": "Audit 5: Canvas DPI / Text Resolution Audit across scenes",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 4,
+                      "status": "passed",
+                      "duration": 2099,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "[DPI Audit] Text Resolution Report: {\"TitleScene\":{\"totalTexts\":15,\"textsWithLowResolution\":9},\"MapScene\":{\"totalTexts\":0,\"textsWithLowResolution\":0},\"QuestionScene\":{\"totalTexts\":0,\"textsWithLowResolution\":0},\"RunnerScene\":{\"totalTexts\":0,\"textsWithLowResolution\":0},\"ResultScene\":{\"totalTexts\":0,\"textsWithLowResolution\":0},\"ShopScene\":{\"totalTexts\":0,\"textsWithLowResolution\":0},\"TrophyScene\":{\"totalTexts\":0,\"textsWithLowResolution\":0},\"SettingsScene\":{\"totalTexts\":0,\"textsWithLowResolution\":0}}\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-13T13:30:07.352Z",
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "4c2bed692d7711fe9ed8-72b4b2cc97c98c8d39f2",
+              "file": "mobile-rendering-perf-audit.spec.ts",
+              "line": 236,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "phase8-9-full-journey.spec.ts",
+      "file": "phase8-9-full-journey.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "completes a learning station through semantic screens and returns home",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 4,
+                  "status": "passed",
+                  "duration": 16877,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-13T13:30:09.467Z",
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "234c225a7d05d3348435-eae09578a104fbf230a8",
+          "file": "phase8-9-full-journey.spec.ts",
+          "line": 101,
+          "column": 1
+        },
+        {
+          "title": "reveals the DOM Continue action when a sentence hint places the final token",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 4,
+                  "status": "passed",
+                  "duration": 4887,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-13T13:30:26.348Z",
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "234c225a7d05d3348435-a02f3720b93430251ecd",
+          "file": "phase8-9-full-journey.spec.ts",
+          "line": 145,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "title": "phase8-support-destinations.spec.ts",
+      "file": "phase8-support-destinations.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "support destinations expose readable dialogs, focus order and safe reset",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 4,
+                  "status": "passed",
+                  "duration": 8079,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-13T13:30:31.252Z",
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "24d86c775bcca836ee84-05e4990a8f50c45f586a",
+          "file": "phase8-support-destinations.spec.ts",
+          "line": 3,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "title": "phase9-viewport-accessibility.spec.ts",
+      "file": "phase9-viewport-accessibility.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "home and map remain readable across the release viewport matrix",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 120000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 4,
+                  "status": "passed",
+                  "duration": 35458,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-13T13:30:39.348Z",
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "291ec6a77a0275bdddf4-b2ed7bb3548f4cd3392a",
+          "file": "phase9-viewport-accessibility.spec.ts",
+          "line": 19,
+          "column": 1
+        },
+        {
+          "title": "portrait guidance is optional and rotation preserves the active screen",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 4,
+                  "status": "passed",
+                  "duration": 5053,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-13T13:31:14.812Z",
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "291ec6a77a0275bdddf4-7640a212e083858aaae1",
+          "file": "phase9-viewport-accessibility.spec.ts",
+          "line": 49,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "title": "responsive-layout.spec.ts",
+      "file": "responsive-layout.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "Responsive Layout Verification: iPhone 15 Pro Max landscape, iPad, and Desktop",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 4,
+                  "status": "passed",
+                  "duration": 3623,
+                  "errors": [],
+                  "stdout": [
+                    {
+                      "text": "iPhone 15 Pro Max Canvas Bounds: x=83, y=0, w=764.4375, h=430\n"
+                    },
+                    {
+                      "text": "TitleScene Dimensions & Coordinates: { gameW: \u001b[33m1280\u001b[39m, gameH: \u001b[33m720\u001b[39m, startBtnX: \u001b[33m742.4\u001b[39m, startBtnY: \u001b[33m388\u001b[39m }\n"
+                    },
+                    {
+                      "text": "Screenshot saved to /tmp/test_iphone_landscape.png\n"
+                    },
+                    {
+                      "text": "iPad Canvas Bounds: x=0, y=96, w=1024, h=576\n"
+                    }
+                  ],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-13T13:31:19.884Z",
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "973d642d79b98c4f8bd6-1fef0042eef9d2769c3d",
+          "file": "responsive-layout.spec.ts",
+          "line": 3,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "title": "sentence-correction-flow.spec.ts",
+      "file": "sentence-correction-flow.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "Verify Sentence Scramble: Wrong placement, tap card to return to bank, replace with correct card, auto-validation",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 4,
+                  "status": "passed",
+                  "duration": 10360,
+                  "errors": [],
+                  "stdout": [
+                    {
+                      "text": "--- Step 1: Placing WRONG order tokens ---\n"
+                    },
+                    {
+                      "text": "Tapping card \"吃\" at (371.5, 425) [slot: null]...\n"
+                    },
+                    {
+                      "text": "Tapping card \"。\" at (550.5, 425) [slot: null]...\n"
+                    },
+                    {
+                      "text": "Tapping card \"姐姐\" at (729.5, 425) [slot: null]...\n"
+                    },
+                    {
+                      "text": "Tapping card \"餅乾\" at (908.5, 425) [slot: null]...\n"
+                    },
+                    {
+                      "text": "Slots after wrong order filled: [\n  { index: \u001b[33m0\u001b[39m, hasCard: \u001b[33mtrue\u001b[39m, cardText: \u001b[32m'吃'\u001b[39m, isError: \u001b[90mundefined\u001b[39m },\n  { index: \u001b[33m1\u001b[39m, hasCard: \u001b[33mtrue\u001b[39m, cardText: \u001b[32m'。'\u001b[39m, isError: \u001b[90mundefined\u001b[39m },\n  { index: \u001b[33m2\u001b[39m, hasCard: \u001b[33mtrue\u001b[39m, cardText: \u001b[32m'姐姐'\u001b[39m, isError: \u001b[90mundefined\u001b[39m },\n  { index: \u001b[33m3\u001b[39m, hasCard: \u001b[33mtrue\u001b[39m, cardText: \u001b[32m'餅乾'\u001b[39m, isError: \u001b[90mundefined\u001b[39m }\n]\n"
+                    },
+                    {
+                      "text": "Recorded mistakes on wrong submission: \u001b[33m1\u001b[39m\n"
+                    },
+                    {
+                      "text": "--- Step 2: Removing wrong cards from slots ---\n"
+                    },
+                    {
+                      "text": "Tapping card \"。\" at (550.5, 270) [slot: 1]...\n"
+                    },
+                    {
+                      "text": "Tapping card \"吃\" at (371.5, 270) [slot: 0]...\n"
+                    },
+                    {
+                      "text": "Tapping card \"姐姐\" at (729.5, 270) [slot: 2]...\n"
+                    },
+                    {
+                      "text": "Tapping card \"餅乾\" at (908.5, 270) [slot: 3]...\n"
+                    },
+                    {
+                      "text": "Slots after returning all cards to bank: [\n  { index: \u001b[33m0\u001b[39m, hasCard: \u001b[33mfalse\u001b[39m, cardText: \u001b[1mnull\u001b[22m, isError: \u001b[90mundefined\u001b[39m },\n  { index: \u001b[33m1\u001b[39m, hasCard: \u001b[33mfalse\u001b[39m, cardText: \u001b[1mnull\u001b[22m, isError: \u001b[90mundefined\u001b[39m },\n  { index: \u001b[33m2\u001b[39m, hasCard: \u001b[33mfalse\u001b[39m, cardText: \u001b[1mnull\u001b[22m, isError: \u001b[90mundefined\u001b[39m },\n  { index: \u001b[33m3\u001b[39m, hasCard: \u001b[33mfalse\u001b[39m, cardText: \u001b[1mnull\u001b[22m, isError: \u001b[90mundefined\u001b[39m }\n]\n"
+                    },
+                    {
+                      "text": "--- Step 3: Placing CORRECT order tokens ---\n"
+                    },
+                    {
+                      "text": "Tapping card \"姐姐\" at (729.5, 425) [slot: null]...\n"
+                    },
+                    {
+                      "text": "Tapping card \"吃\" at (371.5, 425) [slot: null]...\n"
+                    },
+                    {
+                      "text": "Tapping card \"餅乾\" at (908.5, 425) [slot: null]...\n"
+                    },
+                    {
+                      "text": "Tapping card \"。\" at (550.5, 425) [slot: null]...\n"
+                    },
+                    {
+                      "text": "Question correctly answered & celebrated: \u001b[33mtrue\u001b[39m\n"
+                    }
+                  ],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-13T13:31:23.515Z",
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "be73bdcfaa6c425399a5-082f8aa2184b2898dc59",
+          "file": "sentence-correction-flow.spec.ts",
+          "line": 3,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "title": "sentence-scramble-speech.spec.ts",
+      "file": "sentence-scramble-speech.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "Verify Sentence Scramble Speech: Reads prompt instruction before answering, and reads answer sentence after solving",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 4,
+                  "status": "passed",
+                  "duration": 5389,
+                  "errors": [],
+                  "stdout": [
+                    {
+                      "text": "1. Initial auto-read spoken text for sentence scramble: 重組句子：請把字詞排列成通順的句子。\n"
+                    },
+                    {
+                      "text": "2. Clicking speaker button...\n"
+                    },
+                    {
+                      "text": "Spoken text from speaker button: 重組句子：請把字詞排列成通順的句子。\n"
+                    },
+                    {
+                      "text": "3. Solving question...\n"
+                    },
+                    {
+                      "text": "Spoken text upon correct answer celebration: 姐姐吃餅乾。\n"
+                    }
+                  ],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-13T13:31:33.882Z",
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "11477524e578ada25918-711931f913e91410ad77",
+          "file": "sentence-scramble-speech.spec.ts",
+          "line": 3,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "title": "sentence-tap-and-button-hover.spec.ts",
+      "file": "sentence-tap-and-button-hover.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Sentence Scramble Card Tap & Button Repeated Hover UAT",
+          "file": "sentence-tap-and-button-hover.spec.ts",
+          "line": 4,
+          "column": 6,
+          "specs": [
+            {
+              "title": "Card stays placed when tapped and does not fly back down",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 4,
+                      "status": "passed",
+                      "duration": 4369,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-13T13:31:39.281Z",
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "578f4f1547928c3e025b-7b5864b103f85b57f859",
+              "file": "sentence-tap-and-button-hover.spec.ts",
+              "line": 5,
+              "column": 3
+            },
+            {
+              "title": "Buttons respond to multiple repeated mouse hovers and clicks",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 4,
+                      "status": "passed",
+                      "duration": 5595,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-13T13:31:43.653Z",
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "578f4f1547928c3e025b-2b8bd518938b17963fc1",
+              "file": "sentence-tap-and-button-hover.spec.ts",
+              "line": 68,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "top10-enhancements.spec.ts",
+      "file": "top10-enhancements.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Top 10 Enhancements Verification Suite",
+          "file": "top10-enhancements.spec.ts",
+          "line": 3,
+          "column": 6,
+          "specs": [
+            {
+              "title": "verifies Daily Quest, Stamp Book, Pet Companion, and Gameplay Flow",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 4,
+                      "status": "passed",
+                      "duration": 13352,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "Top 10 Enhancements E2E test completed successfully!\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-13T13:31:49.257Z",
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "774087ddbb5c279badac-c9285eefad55f3903a8f",
+              "file": "top10-enhancements.spec.ts",
+              "line": 4,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "uat-modal-clicks.spec.ts",
+      "file": "uat-modal-clicks.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "MapScene and Station Modal Click UAT",
+          "file": "uat-modal-clicks.spec.ts",
+          "line": 5,
+          "column": 6,
+          "specs": [
+            {
+              "title": "Click Station 1, test all buttons inside Station Modal",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 4,
+                      "status": "passed",
+                      "duration": 9727,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "Modal Debug: {\n  \"modalX\": 640,\n  \"modalY\": 360,\n  \"modalDepth\": 1000,\n  \"modalScrollFactor\": 0,\n  \"cameraScroll\": {\n    \"x\": 0,\n    \"y\": 1730\n  },\n  \"contentCount\": 6,\n  \"contentChildren\": [\n    {\n      \"type\": \"Text\",\n      \"x\": 0,\n      \"y\": -155,\n      \"width\": 323,\n      \"height\": 21,\n      \"input\": false,\n      \"hitArea\": null\n    },\n    {\n      \"type\": \"Container\",\n      \"x\": 0,\n      \"y\": -95,\n      \"width\": 580,\n      \"height\": 56,\n      \"input\": true,\n      \"hitArea\": {\n        \"x\": -306,\n        \"y\": -36,\n        \"w\": 612,\n        \"h\": 72\n      }\n    },\n    {\n      \"type\": \"Container\",\n      \"x\": 0,\n      \"y\": -23,\n      \"width\": 580,\n      \"height\": 56,\n      \"input\": true,\n      \"hitArea\": {\n        \"x\": -306,\n        \"y\": -36,\n        \"w\": 612,\n        \"h\": 72\n      }\n    },\n    {\n      \"type\": \"Container\",\n      \"x\": 0,\n      \"y\": 49,\n      \"width\": 580,\n      \"height\": 56,\n      \"input\": true,\n      \"hitArea\": {\n        \"x\": -306,\n        \"y\": -36,\n        \"w\": 612,\n        \"h\": 72\n      }\n    },\n    {\n      \"type\": \"Container\",\n      \"x\": 0,\n      \"y\": 115,\n      \"width\": 0,\n      \"height\": 0,\n      \"input\": false,\n      \"hitArea\": null\n    },\n    {\n      \"type\": \"Container\",\n      \"x\": 0,\n      \"y\": 175,\n      \"width\": 280,\n      \"height\": 56,\n      \"input\": true,\n      \"hitArea\": {\n        \"x\": -148,\n        \"y\": -36,\n        \"w\": 296,\n        \"h\": 72\n      }\n    }\n  ],\n  \"closeBtn\": {\n    \"x\": 312,\n    \"y\": -232,\n    \"input\": true,\n    \"scrollFactor\": 0\n  }\n}\n"
+                        },
+                        {
+                          "text": "Testing close button click at (956, 124)...\n"
+                        },
+                        {
+                          "text": "Modal is closed after clicking close button: \u001b[33mtrue\u001b[39m\n"
+                        },
+                        {
+                          "text": "Testing Row 1 [中] click at (640, 295)...\n"
+                        },
+                        {
+                          "text": "Active scenes after clicking Row 1: [ \u001b[32m'QuestionScene'\u001b[39m ]\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-13T13:32:02.617Z",
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "c187b10230906529368a-f24d25d0b4934c7ff3ed",
+              "file": "uat-modal-clicks.spec.ts",
+              "line": 14,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "uat-qa.spec.ts",
+      "file": "uat-qa.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Comprehensive UAT & QA Visual/UX Inspection Suite",
+          "file": "uat-qa.spec.ts",
+          "line": 5,
+          "column": 6,
+          "specs": [
+            {
+              "title": "UAT-01: TitleScene layout, typography, buttons, and Report Modal",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 4,
+                      "status": "passed",
+                      "duration": 4760,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-13T13:32:12.366Z",
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "046b64849452053ae7df-e3c7de345a05df868b40",
+              "file": "uat-qa.spec.ts",
+              "line": 14,
+              "column": 3
+            },
+            {
+              "title": "UAT-02: Portrait Mode Mandatory Rotation Warning Overlay",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 4,
+                      "status": "passed",
+                      "duration": 1320,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-13T13:32:17.129Z",
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "046b64849452053ae7df-2c686816487bac1372d6",
+              "file": "uat-qa.spec.ts",
+              "line": 40,
+              "column": 3
+            },
+            {
+              "title": "UAT-03: MapScene 10-Station Roadmap and Station Modal",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 4,
+                      "status": "passed",
+                      "duration": 5639,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-13T13:32:18.460Z",
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "046b64849452053ae7df-9e54d1a8da05aa05ffaf",
+              "file": "uat-qa.spec.ts",
+              "line": 50,
+              "column": 3
+            },
+            {
+              "title": "UAT-04: QuestionScene Chinese Sentence Scramble with large chips",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 4,
+                      "status": "passed",
+                      "duration": 3928,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-13T13:32:24.102Z",
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "046b64849452053ae7df-74ccf91bf97d44b45862",
+              "file": "uat-qa.spec.ts",
+              "line": 85,
+              "column": 3
+            },
+            {
+              "title": "UAT-05: QuestionScene Math Calculation with large equation prompt and choices",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 4,
+                      "status": "passed",
+                      "duration": 3901,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-13T13:32:28.033Z",
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "046b64849452053ae7df-eadf88bfe82ae3719592",
+              "file": "uat-qa.spec.ts",
+              "line": 120,
+              "column": 3
+            },
+            {
+              "title": "UAT-06: QuestionScene English Vocab & CVC Phonics",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 4,
+                      "status": "passed",
+                      "duration": 3948,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-13T13:32:31.936Z",
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "046b64849452053ae7df-46a22ad902e6445d37a6",
+              "file": "uat-qa.spec.ts",
+              "line": 155,
+              "column": 3
+            },
+            {
+              "title": "UAT-07: RunnerScene 2D Platformer action and parallax world",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 4,
+                      "status": "passed",
+                      "duration": 4388,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-13T13:32:35.889Z",
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "046b64849452053ae7df-4ba61124e3352a8b1aac",
+              "file": "uat-qa.spec.ts",
+              "line": 190,
+              "column": 3
+            },
+            {
+              "title": "UAT-08: ResultScene 3-Star Settlement and Trophy Celebration",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 4,
+                      "status": "passed",
+                      "duration": 4250,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-13T13:32:40.283Z",
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "046b64849452053ae7df-d85ebc31edfa88094f1d",
+              "file": "uat-qa.spec.ts",
+              "line": 216,
+              "column": 3
+            },
+            {
+              "title": "UAT-09: ShopScene 5-Skin Showcase and live preview",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 4,
+                      "status": "passed",
+                      "duration": 4352,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-13T13:32:44.541Z",
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "046b64849452053ae7df-bca5bf94731df3b5892f",
+              "file": "uat-qa.spec.ts",
+              "line": 239,
+              "column": 3
+            },
+            {
+              "title": "UAT-10: TrophyScene Hall of Fame Categories & Progress",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 4,
+                      "status": "passed",
+                      "duration": 3991,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-13T13:32:48.899Z",
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "046b64849452053ae7df-9c5f52993ab0877d9842",
+              "file": "uat-qa.spec.ts",
+              "line": 257,
+              "column": 3
+            },
+            {
+              "title": "UAT-11: SettingsScene Subject Switches, Difficulty Slider & Reset",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 4,
+                      "status": "passed",
+                      "duration": 4098,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-13T13:32:52.893Z",
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "046b64849452053ae7df-bc3a2e83e02472fb1e6e",
+              "file": "uat-qa.spec.ts",
+              "line": 275,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "ui-qa-card-typography-viewport-auditor.spec.ts",
+      "file": "ui-qa-card-typography-viewport-auditor.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "UI QA Tester 1: Visual, Typography, Slot Alignment & Multi-Viewport Auditor",
+          "file": "ui-qa-card-typography-viewport-auditor.spec.ts",
+          "line": 3,
+          "column": 6,
+          "specs": [
+            {
+              "title": "Visual & Viewport Layout Audit on iPhone-15-Pro-Max (932x430)",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 4,
+                      "status": "passed",
+                      "duration": 4169,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "[iPhone-15-Pro-Max] Canvas Box: x=83, y=0, w=764.4375, h=430\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-13T13:32:57.002Z",
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "40bc4dd36325e5774413-0672ae322081e439872e",
+              "file": "ui-qa-card-typography-viewport-auditor.spec.ts",
+              "line": 12,
+              "column": 5
+            },
+            {
+              "title": "Visual & Viewport Layout Audit on iPad-4-3 (1024x768)",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 4,
+                      "status": "passed",
+                      "duration": 4137,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "[iPad-4-3] Canvas Box: x=0, y=96, w=1024, h=576\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-13T13:33:01.173Z",
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "40bc4dd36325e5774413-ca584bd7fc2b53ba2c13",
+              "file": "ui-qa-card-typography-viewport-auditor.spec.ts",
+              "line": 12,
+              "column": 5
+            },
+            {
+              "title": "Visual & Viewport Layout Audit on Android-20-9 (800x360)",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 4,
+                      "status": "passed",
+                      "duration": 4172,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "[Android-20-9] Canvas Box: x=80, y=0, w=640, h=360\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-13T13:33:05.314Z",
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "40bc4dd36325e5774413-3c7355e9a3e501814905",
+              "file": "ui-qa-card-typography-viewport-auditor.spec.ts",
+              "line": 12,
+              "column": 5
+            },
+            {
+              "title": "Visual & Viewport Layout Audit on Desktop-16-9 (1280x720)",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 4,
+                      "status": "passed",
+                      "duration": 4146,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "[Desktop-16-9] Canvas Box: x=0, y=0, w=1280, h=720\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-13T13:33:09.494Z",
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "40bc4dd36325e5774413-3ea0fc3f4cbfc0d4003d",
+              "file": "ui-qa-card-typography-viewport-auditor.spec.ts",
+              "line": 12,
+              "column": 5
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "ui-qa-hitarea-adversarial-auditor.spec.ts",
+      "file": "ui-qa-hitarea-adversarial-auditor.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Adversarial HitArea & Mouse Hover Coordinate Alignment Auditor Across 6 Viewports",
+          "file": "ui-qa-hitarea-adversarial-auditor.spec.ts",
+          "line": 12,
+          "column": 6,
+          "specs": [
+            {
+              "title": "Audits CanvasButton, Map Nodes, and Responsive Coordinate Alignment on Desktop 1920x1080 (16:9)",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 4,
+                      "status": "passed",
+                      "duration": 3034,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "[Desktop 1920x1080 (16:9)] Canvas Bounds: { left: \u001b[33m0\u001b[39m, top: \u001b[33m0\u001b[39m, width: \u001b[33m1920\u001b[39m, height: \u001b[33m1080\u001b[39m }\n"
+                        },
+                        {
+                          "text": "[Desktop 1920x1080 (16:9)] Start Button HitArea: { x: \u001b[33m-193\u001b[39m, y: \u001b[33m-49\u001b[39m, width: \u001b[33m386\u001b[39m, height: \u001b[33m98\u001b[39m }\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-13T13:33:13.661Z",
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "7c95882cfcc4dfa97d59-97b3771505bd5c77b094",
+              "file": "ui-qa-hitarea-adversarial-auditor.spec.ts",
+              "line": 14,
+              "column": 5
+            },
+            {
+              "title": "Audits CanvasButton, Map Nodes, and Responsive Coordinate Alignment on MacBook 1440x900 (16:10)",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 4,
+                      "status": "passed",
+                      "duration": 3033,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "[MacBook 1440x900 (16:10)] Canvas Bounds: { left: \u001b[33m0\u001b[39m, top: \u001b[33m45\u001b[39m, width: \u001b[33m1440\u001b[39m, height: \u001b[33m810\u001b[39m }\n"
+                        },
+                        {
+                          "text": "[MacBook 1440x900 (16:10)] Start Button HitArea: { x: \u001b[33m-193\u001b[39m, y: \u001b[33m-49\u001b[39m, width: \u001b[33m386\u001b[39m, height: \u001b[33m98\u001b[39m }\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-13T13:33:16.698Z",
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "7c95882cfcc4dfa97d59-8da8a15f4f6cc609a3ff",
+              "file": "ui-qa-hitarea-adversarial-auditor.spec.ts",
+              "line": 14,
+              "column": 5
+            },
+            {
+              "title": "Audits CanvasButton, Map Nodes, and Responsive Coordinate Alignment on iPad Pro 1024x768 (4:3)",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 4,
+                      "status": "passed",
+                      "duration": 3128,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "[iPad Pro 1024x768 (4:3)] Canvas Bounds: { left: \u001b[33m0\u001b[39m, top: \u001b[33m96\u001b[39m, width: \u001b[33m1024\u001b[39m, height: \u001b[33m576\u001b[39m }\n"
+                        },
+                        {
+                          "text": "[iPad Pro 1024x768 (4:3)] Start Button HitArea: { x: \u001b[33m-193\u001b[39m, y: \u001b[33m-49\u001b[39m, width: \u001b[33m386\u001b[39m, height: \u001b[33m98\u001b[39m }\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-13T13:33:19.737Z",
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "7c95882cfcc4dfa97d59-844d6bd5ef272aad11f0",
+              "file": "ui-qa-hitarea-adversarial-auditor.spec.ts",
+              "line": 14,
+              "column": 5
+            },
+            {
+              "title": "Audits CanvasButton, Map Nodes, and Responsive Coordinate Alignment on iPhone 15 Pro Max 932x430 (wide landscape)",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 4,
+                      "status": "passed",
+                      "duration": 3254,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "[iPhone 15 Pro Max 932x430 (wide landscape)] Canvas Bounds: { left: \u001b[33m83\u001b[39m, top: \u001b[33m0\u001b[39m, width: \u001b[33m764.4375\u001b[39m, height: \u001b[33m430\u001b[39m }\n"
+                        },
+                        {
+                          "text": "[iPhone 15 Pro Max 932x430 (wide landscape)] Start Button HitArea: { x: \u001b[33m-193\u001b[39m, y: \u001b[33m-49\u001b[39m, width: \u001b[33m386\u001b[39m, height: \u001b[33m98\u001b[39m }\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-13T13:33:22.868Z",
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "7c95882cfcc4dfa97d59-b57c948d7da4419ac2f7",
+              "file": "ui-qa-hitarea-adversarial-auditor.spec.ts",
+              "line": 14,
+              "column": 5
+            },
+            {
+              "title": "Audits CanvasButton, Map Nodes, and Responsive Coordinate Alignment on iPhone SE 667x375 (compact landscape)",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 4,
+                      "status": "passed",
+                      "duration": 3167,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "[iPhone SE 667x375 (compact landscape)] Canvas Bounds: { left: \u001b[33m0\u001b[39m, top: \u001b[33m0\u001b[39m, width: \u001b[33m666.65625\u001b[39m, height: \u001b[33m375\u001b[39m }\n"
+                        },
+                        {
+                          "text": "[iPhone SE 667x375 (compact landscape)] Start Button HitArea: { x: \u001b[33m-193\u001b[39m, y: \u001b[33m-49\u001b[39m, width: \u001b[33m386\u001b[39m, height: \u001b[33m98\u001b[39m }\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-13T13:33:26.124Z",
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "7c95882cfcc4dfa97d59-1c4df76b5028c88ff76c",
+              "file": "ui-qa-hitarea-adversarial-auditor.spec.ts",
+              "line": 14,
+              "column": 5
+            },
+            {
+              "title": "Audits CanvasButton, Map Nodes, and Responsive Coordinate Alignment on Galaxy S20 915x412 (tall aspect)",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 4,
+                      "status": "passed",
+                      "duration": 3131,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "[Galaxy S20 915x412 (tall aspect)] Canvas Bounds: { left: \u001b[33m91\u001b[39m, top: \u001b[33m0\u001b[39m, width: \u001b[33m732.4375\u001b[39m, height: \u001b[33m412\u001b[39m }\n"
+                        },
+                        {
+                          "text": "[Galaxy S20 915x412 (tall aspect)] Start Button HitArea: { x: \u001b[33m-193\u001b[39m, y: \u001b[33m-49\u001b[39m, width: \u001b[33m386\u001b[39m, height: \u001b[33m98\u001b[39m }\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-13T13:33:29.294Z",
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "7c95882cfcc4dfa97d59-7df91ac7f8ef838d4a61",
+              "file": "ui-qa-hitarea-adversarial-auditor.spec.ts",
+              "line": 14,
+              "column": 5
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "ui-qa-responsive-hover-and-slots.spec.ts",
+      "file": "ui-qa-responsive-hover-and-slots.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "UI QA: Responsive Multi-Viewport Mouse Hover & Word Slot Placement Suite",
+          "file": "ui-qa-responsive-hover-and-slots.spec.ts",
+          "line": 4,
+          "column": 6,
+          "specs": [
+            {
+              "title": "TitleScene Start Button hover remains reliable at center, left, and right across Desktop (1920x1080)",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 4,
+                      "status": "passed",
+                      "duration": 4720,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-13T13:33:32.434Z",
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "18689b8b83d1b51a86fc-6a6b751a0137e98ffbad",
+              "file": "ui-qa-responsive-hover-and-slots.spec.ts",
+              "line": 15,
+              "column": 5
+            },
+            {
+              "title": "TitleScene Start Button hover remains reliable at center, left, and right across MacBook (1440x900)",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 4,
+                      "status": "passed",
+                      "duration": 5001,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-13T13:33:37.157Z",
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "18689b8b83d1b51a86fc-10ff4c184e1eb94358c2",
+              "file": "ui-qa-responsive-hover-and-slots.spec.ts",
+              "line": 15,
+              "column": 5
+            },
+            {
+              "title": "TitleScene Start Button hover remains reliable at center, left, and right across iPad Pro (1024x768)",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 4,
+                      "status": "passed",
+                      "duration": 4561,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-13T13:33:42.162Z",
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "18689b8b83d1b51a86fc-a96b73342321c4a2c255",
+              "file": "ui-qa-responsive-hover-and-slots.spec.ts",
+              "line": 15,
+              "column": 5
+            },
+            {
+              "title": "TitleScene Start Button hover remains reliable at center, left, and right across iPhone 15 Pro Max (932x430)",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 4,
+                      "status": "passed",
+                      "duration": 4537,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-13T13:33:46.727Z",
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "18689b8b83d1b51a86fc-2a885f711a965a2899fe",
+              "file": "ui-qa-responsive-hover-and-slots.spec.ts",
+              "line": 15,
+              "column": 5
+            },
+            {
+              "title": "TitleScene Start Button hover remains reliable at center, left, and right across iPhone SE (667x375)",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 4,
+                      "status": "passed",
+                      "duration": 3622,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-13T13:33:51.267Z",
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "18689b8b83d1b51a86fc-5510df49cb0e053fbf67",
+              "file": "ui-qa-responsive-hover-and-slots.spec.ts",
+              "line": 15,
+              "column": 5
+            },
+            {
+              "title": "TitleScene Start Button hover remains reliable at center, left, and right across Android Galaxy (915x412)",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 4,
+                      "status": "passed",
+                      "duration": 3646,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-13T13:33:54.893Z",
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "18689b8b83d1b51a86fc-c006b8774697036e6522",
+              "file": "ui-qa-responsive-hover-and-slots.spec.ts",
+              "line": 15,
+              "column": 5
+            },
+            {
+              "title": "Shop purchasing Heroine (30💎) and QuestionScene sentence scramble card placement",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 4,
+                      "status": "passed",
+                      "duration": 9313,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "Shop Heroine Purchase Result: {\n  ownedSkins: [ \u001b[32m'adventurer'\u001b[39m, \u001b[32m'heroine'\u001b[39m ],\n  equippedSkin: \u001b[32m'heroine'\u001b[39m,\n  remainingGems: \u001b[33m25\u001b[39m\n}\n"
+                        },
+                        {
+                          "text": "Slot Snap Verification: [\n  {\n    hasCard: \u001b[33mtrue\u001b[39m,\n    slotX: \u001b[33m320\u001b[39m,\n    slotY: \u001b[33m270\u001b[39m,\n    cardX: \u001b[33m320\u001b[39m,\n    cardY: \u001b[33m270\u001b[39m,\n    diffX: \u001b[33m0\u001b[39m,\n    diffY: \u001b[33m0\u001b[39m\n  },\n  {\n    hasCard: \u001b[33mtrue\u001b[39m,\n    slotX: \u001b[33m480\u001b[39m,\n    slotY: \u001b[33m270\u001b[39m,\n    cardX: \u001b[33m480\u001b[39m,\n    cardY: \u001b[33m270\u001b[39m,\n    diffX: \u001b[33m0\u001b[39m,\n    diffY: \u001b[33m0\u001b[39m\n  },\n  {\n    hasCard: \u001b[33mtrue\u001b[39m,\n    slotX: \u001b[33m640\u001b[39m,\n    slotY: \u001b[33m270\u001b[39m,\n    cardX: \u001b[33m640\u001b[39m,\n    cardY: \u001b[33m270\u001b[39m,\n    diffX: \u001b[33m0\u001b[39m,\n    diffY: \u001b[33m0\u001b[39m\n  },\n  {\n    hasCard: \u001b[33mtrue\u001b[39m,\n    slotX: \u001b[33m800\u001b[39m,\n    slotY: \u001b[33m270\u001b[39m,\n    cardX: \u001b[33m800\u001b[39m,\n    cardY: \u001b[33m270\u001b[39m,\n    diffX: \u001b[33m0\u001b[39m,\n    diffY: \u001b[33m0\u001b[39m\n  },\n  {\n    hasCard: \u001b[33mtrue\u001b[39m,\n    slotX: \u001b[33m960\u001b[39m,\n    slotY: \u001b[33m270\u001b[39m,\n    cardX: \u001b[33m960\u001b[39m,\n    cardY: \u001b[33m270\u001b[39m,\n    diffX: \u001b[33m0\u001b[39m,\n    diffY: \u001b[33m0\u001b[39m\n  }\n]\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-13T13:33:58.542Z",
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "18689b8b83d1b51a86fc-d9d1008f1309ff1fb7e8",
+              "file": "ui-qa-responsive-hover-and-slots.spec.ts",
+              "line": 41,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "ui-qa-touch-drift-and-viewport-adversarial.spec.ts",
+      "file": "ui-qa-touch-drift-and-viewport-adversarial.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "UI QA Auditor 1: Adversarial Viewport & Touch Coordinate Drift E2E Tests",
+          "file": "ui-qa-touch-drift-and-viewport-adversarial.spec.ts",
+          "line": 10,
+          "column": 6,
+          "specs": [
+            {
+              "title": "Audits touch coordinates, letterbox bounds, and button hit responsiveness on iPhone 15 Pro Max (932x430 landscape)",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 4,
+                      "status": "passed",
+                      "duration": 4633,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "[iPhone 15 Pro Max (932x430 landscape)] Canvas Bounds: { left: \u001b[33m83\u001b[39m, top: \u001b[33m0\u001b[39m, width: \u001b[33m764.4375\u001b[39m, height: \u001b[33m430\u001b[39m }\n"
+                        },
+                        {
+                          "text": "[iPhone 15 Pro Max (932x430 landscape)] QuestionScene Loaded: {\n  type: \u001b[32m'multiple_choice'\u001b[39m,\n  prompt: \u001b[32m'找出帶有「口」部首的字：'\u001b[39m,\n  hasBackButton: \u001b[33mtrue\u001b[39m,\n  hasSpeakerButton: \u001b[33mtrue\u001b[39m,\n  choiceCardsCount: \u001b[33m4\u001b[39m,\n  slotBoxesCount: \u001b[33m0\u001b[39m,\n  cardChipsCount: \u001b[33m0\u001b[39m\n}\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-13T13:34:07.866Z",
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "6ec84452e7bfcaa3962e-e9019906b0aa551e7179",
+              "file": "ui-qa-touch-drift-and-viewport-adversarial.spec.ts",
+              "line": 12,
+              "column": 5
+            },
+            {
+              "title": "Audits touch coordinates, letterbox bounds, and button hit responsiveness on iPhone SE / 8 (667x375 landscape)",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 4,
+                      "status": "passed",
+                      "duration": 4551,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "[iPhone SE / 8 (667x375 landscape)] Canvas Bounds: { left: \u001b[33m0\u001b[39m, top: \u001b[33m0\u001b[39m, width: \u001b[33m666.65625\u001b[39m, height: \u001b[33m375\u001b[39m }\n"
+                        },
+                        {
+                          "text": "[iPhone SE / 8 (667x375 landscape)] QuestionScene Loaded: {\n  type: \u001b[32m'multiple_choice'\u001b[39m,\n  prompt: \u001b[32m'找出帶有「口」部首的字：'\u001b[39m,\n  hasBackButton: \u001b[33mtrue\u001b[39m,\n  hasSpeakerButton: \u001b[33mtrue\u001b[39m,\n  choiceCardsCount: \u001b[33m4\u001b[39m,\n  slotBoxesCount: \u001b[33m0\u001b[39m,\n  cardChipsCount: \u001b[33m0\u001b[39m\n}\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-13T13:34:12.503Z",
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "6ec84452e7bfcaa3962e-d34c749482864a3ef026",
+              "file": "ui-qa-touch-drift-and-viewport-adversarial.spec.ts",
+              "line": 12,
+              "column": 5
+            },
+            {
+              "title": "Audits touch coordinates, letterbox bounds, and button hit responsiveness on iPad (1024x768 4:3)",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 4,
+                      "status": "passed",
+                      "duration": 4530,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "[iPad (1024x768 4:3)] Canvas Bounds: { left: \u001b[33m0\u001b[39m, top: \u001b[33m96\u001b[39m, width: \u001b[33m1024\u001b[39m, height: \u001b[33m576\u001b[39m }\n"
+                        },
+                        {
+                          "text": "[iPad (1024x768 4:3)] QuestionScene Loaded: {\n  type: \u001b[32m'sentence_scramble'\u001b[39m,\n  prompt: \u001b[32m'重組句子：請把字詞排列成通順的句子。'\u001b[39m,\n  hasBackButton: \u001b[33mtrue\u001b[39m,\n  hasSpeakerButton: \u001b[33mtrue\u001b[39m,\n  choiceCardsCount: \u001b[33m0\u001b[39m,\n  slotBoxesCount: \u001b[33m4\u001b[39m,\n  cardChipsCount: \u001b[33m4\u001b[39m\n}\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-13T13:34:17.057Z",
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "6ec84452e7bfcaa3962e-b8d8ab4a887a09857437",
+              "file": "ui-qa-touch-drift-and-viewport-adversarial.spec.ts",
+              "line": 12,
+              "column": 5
+            },
+            {
+              "title": "Audits touch coordinates, letterbox bounds, and button hit responsiveness on Desktop (1920x1080 16:9)",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 4,
+                      "status": "passed",
+                      "duration": 4632,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "[Desktop (1920x1080 16:9)] Canvas Bounds: { left: \u001b[33m0\u001b[39m, top: \u001b[33m0\u001b[39m, width: \u001b[33m1920\u001b[39m, height: \u001b[33m1080\u001b[39m }\n"
+                        },
+                        {
+                          "text": "[Desktop (1920x1080 16:9)] QuestionScene Loaded: {\n  type: \u001b[32m'multiple_choice'\u001b[39m,\n  prompt: \u001b[32m'找出「跑、跳、踢」的共同部首：'\u001b[39m,\n  hasBackButton: \u001b[33mtrue\u001b[39m,\n  hasSpeakerButton: \u001b[33mtrue\u001b[39m,\n  choiceCardsCount: \u001b[33m4\u001b[39m,\n  slotBoxesCount: \u001b[33m0\u001b[39m,\n  cardChipsCount: \u001b[33m0\u001b[39m\n}\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-13T13:34:21.590Z",
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "6ec84452e7bfcaa3962e-2219bac942b924366903",
+              "file": "ui-qa-touch-drift-and-viewport-adversarial.spec.ts",
+              "line": 12,
+              "column": 5
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "wardrobe-hybrid-shop-visual.spec.ts",
+      "file": "wardrobe-hybrid-shop-visual.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Dream Wardrobe Hybrid Character Outfit & Shop UI Visual Audit",
+          "file": "wardrobe-hybrid-shop-visual.spec.ts",
+          "line": 73,
+          "column": 6,
+          "specs": [
+            {
+              "title": "renders Dream Wardrobe shop across Desktop, iPad, and iPhone viewports with clean preview",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 4,
+                      "status": "passed",
+                      "duration": 32006,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-13T13:34:26.233Z",
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "a23b9c5b50333b025d2b-03801901a97fbe54f391",
+              "file": "wardrobe-hybrid-shop-visual.spec.ts",
+              "line": 74,
+              "column": 3
+            },
+            {
+              "title": "honors browser reduced-motion preference during Wardrobe preview feedback",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 4,
+                      "status": "passed",
+                      "duration": 3425,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-13T13:34:58.242Z",
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "a23b9c5b50333b025d2b-a05f981cb06eb67706bb",
+              "file": "wardrobe-hybrid-shop-visual.spec.ts",
+              "line": 389,
+              "column": 3
+            },
+            {
+              "title": "keeps the active Wardrobe try-on when switching to the skin catalogue",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 4,
+                      "status": "passed",
+                      "duration": 3518,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-13T13:35:01.670Z",
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "a23b9c5b50333b025d2b-44f4346ffd27c142dc4d",
+              "file": "wardrobe-hybrid-shop-visual.spec.ts",
+              "line": 433,
+              "column": 3
+            },
+            {
+              "title": "keeps the active Wardrobe try-on when the owned filter is empty",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 4,
+                      "status": "passed",
+                      "duration": 3538,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-13T13:35:05.191Z",
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "a23b9c5b50333b025d2b-f3b19f744d7eafa73ea0",
+              "file": "wardrobe-hybrid-shop-visual.spec.ts",
+              "line": 468,
+              "column": 3
+            },
+            {
+              "title": "renders the selected bottom when paired with a full-body top outfit",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 4,
+                      "status": "passed",
+                      "duration": 3520,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-13T13:35:08.732Z",
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "a23b9c5b50333b025d2b-de36c4095c3a647608e8",
+              "file": "wardrobe-hybrid-shop-visual.spec.ts",
+              "line": 502,
+              "column": 3
+            },
+            {
+              "title": "keeps dedicated wearing art through Runner pose changes",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 4,
+                      "status": "passed",
+                      "duration": 4944,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-13T13:35:12.256Z",
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "a23b9c5b50333b025d2b-c87fc60d2c066da5ded9",
+              "file": "wardrobe-hybrid-shop-visual.spec.ts",
+              "line": 543,
+              "column": 3
+            },
+            {
+              "title": "persists dedicated wearing art through Shop, Runner, Question, and reload",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 4,
+                      "status": "passed",
+                      "duration": 10166,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-13T13:35:17.203Z",
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "a23b9c5b50333b025d2b-b79de579db0be9dc1ff2",
+              "file": "wardrobe-hybrid-shop-visual.spec.ts",
+              "line": 620,
+              "column": 3
+            },
+            {
+              "title": "keeps the wearing character inside the stage across landscape layout buckets",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 4,
+                      "status": "passed",
+                      "duration": 9412,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-13T13:35:27.381Z",
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "a23b9c5b50333b025d2b-3608dbc4ee2d6144cdc0",
+              "file": "wardrobe-hybrid-shop-visual.spec.ts",
+              "line": 743,
+              "column": 3
+            },
+            {
+              "title": "falls back without promoting a thumbnail when live wearing art is missing",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 4,
+                      "status": "passed",
+                      "duration": 3416,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-13T13:35:36.794Z",
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "a23b9c5b50333b025d2b-5453b3e4ed709f3694c9",
+              "file": "wardrobe-hybrid-shop-visual.spec.ts",
+              "line": 873,
+              "column": 3
+            },
+            {
+              "title": "keeps a saved placeholder outfit safe across avatar consumers",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 4,
+                      "status": "passed",
+                      "duration": 6321,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-13T13:35:40.213Z",
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "a23b9c5b50333b025d2b-038c55a3664900bb7410",
+              "file": "wardrobe-hybrid-shop-visual.spec.ts",
+              "line": 918,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-09-13T13:24:46.193Z",
+    "duration": 660414.291,
+    "expected": 88,
+    "skipped": 0,
+    "unexpected": 4,
+    "flaky": 0
+  }
+}
