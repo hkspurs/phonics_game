@@ -103,6 +103,11 @@ jobs:
           PLAYWRIGHT_JSON_OUTPUT_NAME: test-results/chrome-acceptance.json
         run: npm run test:e2e:chrome -- e2e/visual-release.spec.ts e2e/accessibility-release.spec.ts --retries=0 --reporter=list,json
 
+      - name: Preserve Chrome viewport screenshots before the next Playwright run
+        run: |
+          mkdir -p chrome-reports
+          cp test-results/chrome-acceptance.json chrome-reports/chrome-acceptance.json
+
       - name: Verify wardrobe and Runner graphics in Google Chrome
         env:
           CI: '1'
@@ -115,6 +120,7 @@ jobs:
         with:
           name: release-hardening-chrome-${{ github.run_id }}
           path: |
+            chrome-reports/
             test-results/
             playwright-report/
           if-no-files-found: ignore
