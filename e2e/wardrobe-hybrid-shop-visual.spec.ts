@@ -1,4 +1,13 @@
 import { test, expect, type Page } from '@playwright/test';
+import { waitForWardrobeAssets } from './helpers/wardrobe';
+
+async function openReadyWardrobe(page: Page): Promise<void> {
+  await page.evaluate(() => {
+    const game = (window as any).__PHASER_GAME__;
+    game.scene.getScene('ShopScene').switchTab('wardrobe');
+  });
+  await waitForWardrobeAssets(page);
+}
 
 async function expectCanvasFitsViewport(page: Page): Promise<void> {
   const bounds = await page.evaluate(() => {
@@ -397,6 +406,7 @@ test.describe('Dream Wardrobe Hybrid Character Outfit & Shop UI Visual Audit', (
       game?.scene.start('ShopScene');
     });
     await page.waitForTimeout(900);
+    await openReadyWardrobe(page);
 
     const state = await page.evaluate(() => {
       const game = (window as any).__PHASER_GAME__;
@@ -749,6 +759,7 @@ test.describe('Dream Wardrobe Hybrid Character Outfit & Shop UI Visual Audit', (
       game?.scene.start('ShopScene');
     });
     await page.waitForTimeout(900);
+    await openReadyWardrobe(page);
     await page.evaluate(() => {
       const game = (window as any).__PHASER_GAME__;
       const shop = game?.scene.getScene('ShopScene') as any;
@@ -879,6 +890,7 @@ test.describe('Dream Wardrobe Hybrid Character Outfit & Shop UI Visual Audit', (
       game?.scene.start('ShopScene');
     });
     await page.waitForTimeout(900);
+    await openReadyWardrobe(page);
 
     const state = await page.evaluate(() => {
       const game = (window as any).__PHASER_GAME__;
@@ -968,6 +980,7 @@ test.describe('Dream Wardrobe Hybrid Character Outfit & Shop UI Visual Audit', (
       game?.scene.start('ShopScene');
     });
     await page.waitForTimeout(800);
+    await openReadyWardrobe(page);
     const shopState = await page.evaluate(() => {
       const game = (window as any).__PHASER_GAME__;
       const shop = game?.scene.getScene('ShopScene') as any;

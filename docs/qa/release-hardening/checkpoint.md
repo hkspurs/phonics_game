@@ -381,3 +381,32 @@ or merge was attempted.
 - Remaining: complete wardrobe suite, actual Chrome acceptance, final full
   collection/performance gate, remote checkpoint and review PR. Generated
   tracked screenshot changes are retained locally, excluded from this commit.
+
+## Checkpoint 11 — wardrobe readiness and acceptance boundaries
+
+Full wardrobe run reproduced four failures (6 passed): reduced-motion full
+sprite, stage geometry full sprite, missing-art fallback precondition, and
+saved-placeholder action label. These fixtures inspected artwork before the
+deferred wardrobe group completed; three bypassed wardrobe tab entry entirely.
+Added explicit tab entry plus the existing asset readiness assertion to those
+four fixtures. Original assertions are unchanged; no production code changed.
+Final frozen-build rerun: 10/10 Chromium wardrobe tests passed, zero retries
+(1.5 minutes). Production build passed, retaining the existing chunk advisory.
+An intermediate 9/10 run was contaminated by rebuilding dist during preview;
+it is not used as acceptance evidence. Unit source is unchanged from the
+previous checkpoint's 1,960-test verification; no fresh full unit claim here.
+
+GitHub connector read and create-blob operations succeeded. This proves those
+operations only: no branch, commit history or PR has been synchronized yet.
+CLI credentials remain unavailable; do not conflate the two access paths.
+
+Actual Chrome launch failed because /opt/google/chrome/chrome is absent.
+The standard Playwright Chrome installer was denied setgroups/seteuid system
+operations. Stop at this permission boundary; do not bypass it. Chrome remains
+BLOCKED, not substituted by Chromium.
+
+Visual inspection of the newly generated desktop Scholar Gown screenshot found
+missing CJK glyphs and the Home DOM overlay over the canvas Shop. These images
+are NOT visual acceptance evidence. Investigate fixture scene entry (manager
+start without stopping Title) and restore the QA font environment before new
+screenshots. Do not weaken geometry/render assertions to close these findings.

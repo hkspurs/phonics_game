@@ -1,5 +1,13 @@
 # AI Coordination Changelog
 
+## 2026-09-22 — OpenAI Codex — wardrobe readiness follow-up
+
+Reproduced four wardrobe browser failures after deferred loading; fixtures now
+enter wardrobe and await real group readiness without changing assertions.
+Chrome installation is permission-blocked. GitHub connector blob writes work,
+but branch synchronization is not done. Screenshot review found CJK tofu and
+Home DOM overlay: visual acceptance remains open, regardless of test counts.
+
 ## 2026-09-22 — OpenAI Codex — TASK-20260913-RELEASE-HARDENING (Task 7 progress)
 
 Added explicit Graphics harness and migrated three duplicate factories; scoped
