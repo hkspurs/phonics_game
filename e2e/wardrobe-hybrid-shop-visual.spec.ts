@@ -1,6 +1,14 @@
 import { test, expect, type Page } from '@playwright/test';
 import { waitForWardrobeAssets } from './helpers/wardrobe';
 
+async function openShopFromHome(page: Page): Promise<void> {
+  await expect(page.locator('.home-view')).toBeVisible();
+  await page.getByRole('button', { name: '換新造型' }).click();
+  await expect(page.locator('.home-view'), 'Shop should replace the Home DOM view').toHaveCount(0);
+  await expect.poll(() => page.evaluate(() =>
+    (window as any).__PHASER_GAME__?.scene.isActive('ShopScene'))).toBe(true);
+}
+
 async function openReadyWardrobe(page: Page): Promise<void> {
   await page.evaluate(() => {
     const game = (window as any).__PHASER_GAME__;
@@ -89,13 +97,8 @@ test.describe('Dream Wardrobe Hybrid Character Outfit & Shop UI Visual Audit', (
     await page.goto('/?test=true');
     await page.waitForTimeout(2000);
 
-    // Navigate to Shop
-    await page.evaluate(() => {
-      const game = (window as any).__PHASER_GAME__;
-      if (game && game.scene) {
-        game.scene.start('ShopScene');
-      }
-    });
+    // Follow the same Home control and scene transition used by players.
+    await openShopFromHome(page);
     await page.waitForTimeout(1500);
 
     // Switch to 夢幻衣櫥 tab
@@ -884,7 +887,9 @@ test.describe('Dream Wardrobe Hybrid Character Outfit & Shop UI Visual Audit', (
   test('falls back without promoting a thumbnail when live wearing art is missing', async ({ page }) => {
     await page.setViewportSize({ width: 844, height: 390 });
     await page.goto('/?test=true');
-    await page.waitForTimeout(1800);
+    await expect.poll(() => page.evaluate(() =>
+      Boolean((window as any).__PHASER_GAME__?.scene.isActive('TitleScene'))),
+    ).toBe(true);
     await page.evaluate(() => {
       const game = (window as any).__PHASER_GAME__;
       game?.scene.start('ShopScene');

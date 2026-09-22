@@ -1,5 +1,17 @@
 # AI Coordination Changelog
 
+## 2026-09-22 — OpenAI Codex — TASK-20260913-RELEASE-HARDENING (Task 7 follow-up)
+
+Shop screenshot fixture now navigates from Home and asserts Home's DOM view is
+removed; saved-placeholder fixture polls for Title activation rather than using
+a fixed boot delay. The new overlay assertion was observed failing before the
+fixture fix. Fresh unit suite: 66 files / 1,960 passed; wardrobe Chromium
+suite: 10/10 with zero retries using external QA CJK and emoji fonts. Visual
+inspection found residual isolated missing-symbol glyphs. Chrome acceptance is
+still blocked by the managed runtime's installation permissions; Task 8's
+automated checks and review PR remain pending. Files: E2E wardrobe fixture,
+QA checkpoint, task board, changelog.
+
 ## 2026-09-22 — OpenAI Codex — wardrobe readiness follow-up
 
 Reproduced four wardrobe browser failures after deferred loading; fixtures now

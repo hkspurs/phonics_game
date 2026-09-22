@@ -14,7 +14,9 @@ commits and checkpoints. Preserve player saves and reward semantics. Under the
 revised acceptance, Google Chrome at the seven agreed CSS viewport sizes is
 required; physical devices and non-Chrome browsers are OUT_OF_SCOPE.
 
-Current phase: Task 7 — explicit Phaser Graphics test harness.
+Current phase: Task 8 — final automated gate and draft PR. Task 7's graphics
+harness and Chromium regression checks are verified; Google Chrome acceptance
+remains BLOCKED by runtime installation permission. No Chrome pass is claimed.
 
 ### TASK-20260912-STORYBOOK-UX
 

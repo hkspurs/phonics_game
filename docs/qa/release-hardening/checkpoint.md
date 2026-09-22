@@ -410,3 +410,24 @@ missing CJK glyphs and the Home DOM overlay over the canvas Shop. These images
 are NOT visual acceptance evidence. Investigate fixture scene entry (manager
 start without stopping Title) and restore the QA font environment before new
 screenshots. Do not weaken geometry/render assertions to close these findings.
+
+## Checkpoint 12 — Task 7 browser fixture and font QA
+
+- Source: follow-up to `7aa80e0`; branch synchronization remains pending.
+- The first Shop visual fixture now enters through the actual Home control and
+  asserts that the Home DOM view is removed. Before that change the new
+  assertion failed because direct game-manager scene start left Title active.
+- The saved-placeholder fixture now polls for Title scene activation before
+  inspecting textures; its fixed 1.8-second boot wait failed under concurrent
+  unit-test load. Neither change alters save, reward or production behavior.
+- Fresh verification: `npm run test:unit`: 66 files / 1,960 passed;
+  `CI=1 npx playwright test e2e/wardrobe-hybrid-shop-visual.spec.ts
+  --retries=0`: 10/10 passed with QA fontconfig.
+- Temporary QA fonts: OFL-1.1 Noto Sans TC 5.3.0 and Noto Color Emoji 5.3.0;
+  installed outside the repository. Desktop Scholar Gown screenshot was
+  inspected: Home overlay absent, main Traditional Chinese and emoji readable,
+  with isolated missing-symbol glyphs remaining. Generated screenshots are not
+  checked into the branch and this does not establish Chrome acceptance.
+- Google Chrome remains BLOCKED by installation permission; Chromium is
+  recorded as regression evidence only. Continue Task 8 checks and publish a
+  draft review PR with this limitation stated explicitly.
