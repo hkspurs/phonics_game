@@ -1511,6 +1511,7 @@ export class QuestionScene extends Phaser.Scene {
   }
 
   public shutdown(): void {
+    SpeechService.stop();
     if (this.input && this.previousInputEnabled !== null) this.input.enabled = this.previousInputEnabled;
     this.previousInputEnabled = null;
     this.questionScreenHandle?.destroy();

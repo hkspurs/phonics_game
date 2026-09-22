@@ -14,7 +14,7 @@ commits and checkpoints. Preserve player saves and reward semantics. Under the
 revised acceptance, Google Chrome at the seven agreed CSS viewport sizes is
 required; physical devices and non-Chrome browsers are OUT_OF_SCOPE.
 
-Current phase: Task 4 — speech lifecycle and deterministic browser fixtures.
+Current phase: Task 5 — exact replay provenance and explicit session identity.
 
 ### TASK-20260912-STORYBOOK-UX
 

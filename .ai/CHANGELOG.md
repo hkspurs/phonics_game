@@ -1,5 +1,18 @@
 # AI Coordination Changelog
 
+## 2026-09-14 — OpenAI Codex — TASK-20260913-RELEASE-HARDENING (Tasks 2-4)
+
+Added the Google Chrome acceptance configuration, seven-size visual evidence,
+keyboard/forced-colors/reduced-motion checks, deterministic browser speech
+fixtures and truthful no-Cantonese fallback. Speech cancellation now owns a
+generation and QuestionScene shutdown cancels its request. No save/economy or
+deployment behavior changed.
+
+Verification: unit 64 files / 1,946 tests; local Chromium baseline 87/87;
+visual/accessibility 9/9; speech browser gate 4/4 and repeated 12/12. Google
+Chrome 153 was identified but cannot launch under the managed runtime socket
+policy, so Chrome-specific evidence remains BLOCKED rather than substituted.
+
 ## 2026-09-14 — OpenAI Codex — TASK-20260913-RELEASE-HARDENING (recovery)
 
 Confirmed that the repository contains the verified Task A-C chain only; the

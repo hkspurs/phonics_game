@@ -272,3 +272,23 @@ review; production assets and font payload were not changed. Representative
 Actual Google Chrome screenshots and 200% browser zoom remain `BLOCKED` because
 Chrome cannot launch in this managed runtime. Physical devices and non-Chrome
 browsers remain `OUT_OF_SCOPE — user revised acceptance`.
+
+## Checkpoint 7 — Task 4 speech lifecycle
+
+- **Task:** 4 — speech lifecycle and deterministic browser fixtures
+- **Status:** `AUTOMATED_VERIFIED`; audible playback not claimed
+- **Recorded at:** 2026-09-14 UTC
+
+Speech voice refresh now clears stale entries, Cantonese requests accept only
+`zh-HK`/Cantonese-labelled or `yue` voices, failed unlock attempts remain
+locked, and cancellation generations suppress stale completion/error callbacks.
+QuestionScene shutdown cancels its owned speech. Settings announces the
+text-only fallback when no Cantonese voice is available.
+
+RED evidence: four lifecycle tests initially failed against the old behavior;
+the shutdown test then failed 0 calls versus 1; the browser fallback test
+received the old success message. GREEN evidence: full unit 64 files / 1,946
+tests; four browser speech specs 4/4; three repeated zero-retry runs 12/12.
+The three legacy specs now install a deterministic complete `zh-HK` fixture
+before navigation and retain their timing, math-word and instruction/answer
+ordering assertions. Actual audible output is not available in this runtime.

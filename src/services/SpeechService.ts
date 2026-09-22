@@ -7,7 +7,7 @@ import { SoundManager } from './SoundManager';
  * tailored for Hong Kong Primary 1 learners.
  *
  * Features:
- * - Priority fallback for Cantonese (zh-HK -> yue-HK -> zh-TW -> zh-CN)
+ * - Cantonese selection without silent Mandarin substitution
  * - English (en-US -> en-GB -> en) and Mandarin (zh-CN -> cmn -> zh)
  * - Safe execution in non-browser/SSR/test environments
  * - Autoplay gesture unlock for mobile Safari & Chrome
@@ -20,12 +20,14 @@ export class SpeechService {
   private static defaultPitch: number = 1.0;
   private static defaultVolume: number = 1.0;
   private static initialized: boolean = false;
+  private static generation: number = 0;
 
   /**
    * Initialize speech synthesis listeners
    */
   public static init(): void {
     this.unlocked = false;
+    this.initialized = false;
     if (!this.isAvailable()) return;
 
     try {
@@ -78,15 +80,14 @@ export class SpeechService {
         ? SpeechSynthesisUtterance
         : (window as any).SpeechSynthesisUtterance;
 
-      if (UtteranceClass && window.speechSynthesis) {
-        const unlockUtterance = new UtteranceClass(' ');
-        unlockUtterance.volume = 0;
-        unlockUtterance.rate = 2.0;
-        window.speechSynthesis.speak(unlockUtterance);
-      }
+      if (!UtteranceClass || !window.speechSynthesis) return;
+      const unlockUtterance = new UtteranceClass(' ');
+      unlockUtterance.volume = 0;
+      unlockUtterance.rate = 2.0;
+      window.speechSynthesis.speak(unlockUtterance);
       this.unlocked = true;
     } catch {
-      this.unlocked = true;
+      this.unlocked = false;
     }
   }
 
@@ -106,9 +107,7 @@ export class SpeechService {
     if (!this.isAvailable()) return;
     try {
       const v = window.speechSynthesis.getVoices();
-      if (v && v.length > 0) {
-        this.voices = v;
-      }
+      this.voices = Array.isArray(v) ? [...v] : [];
     } catch {
       // Ignore
     }
@@ -123,7 +122,8 @@ export class SpeechService {
 
     const targetLang = (lang || DataManager.getInstance().getProfile().settings.voiceLanguage || 'zh-HK').toLowerCase();
 
-    // Cantonese matching priority: zh-HK -> yue-HK -> zh-TW -> zh-CN
+    // Cantonese matching is deliberately strict. Mandarin is not a truthful
+    // substitute for a Cantonese-labelled listen action.
     if (targetLang.includes('hk') || targetLang.includes('yue') || targetLang.includes('cantonese')) {
       const zhHkVoice = voices.find((v) => {
         const l = v.lang.toLowerCase();
@@ -134,12 +134,7 @@ export class SpeechService {
 
       const yueVoice = voices.find((v) => v.lang.toLowerCase().startsWith('yue') || v.name.toLowerCase().includes('yue'));
       if (yueVoice) return yueVoice;
-
-      const zhTwVoice = voices.find((v) => v.lang.toLowerCase().includes('zh-tw') || v.lang.toLowerCase().includes('zh_tw') || v.name.toLowerCase().includes('taiwan'));
-      if (zhTwVoice) return zhTwVoice;
-
-      const zhCnVoice = voices.find((v) => v.lang.toLowerCase().startsWith('zh'));
-      if (zhCnVoice) return zhCnVoice;
+      return null;
     }
 
     // English matching priority: en-US -> en-GB -> en
@@ -225,6 +220,7 @@ export class SpeechService {
 
     try {
       this.stop();
+      const requestGeneration = this.generation;
 
       const UtteranceClass =
         (typeof SpeechSynthesisUtterance !== 'undefined')
@@ -280,13 +276,13 @@ export class SpeechService {
 
       if (onEnd) {
         utterance.onend = () => {
-          onEnd();
+          if (requestGeneration === this.generation) onEnd();
         };
       }
 
       if (onError) {
         utterance.onerror = (e: any) => {
-          onError(e);
+          if (requestGeneration === this.generation) onError(e);
         };
       }
 
@@ -302,6 +298,7 @@ export class SpeechService {
    * Stop any current speech playback
    */
   public static stop(): void {
+    this.generation += 1;
     if (!this.isAvailable()) return;
     try {
       window.speechSynthesis.cancel();

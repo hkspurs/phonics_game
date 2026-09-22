@@ -1,9 +1,11 @@
 import { test, expect } from '@playwright/test';
+import { installSpeechFixture, latestSpeech } from './helpers/speech-fixture';
 
 test('Verification: Auto-read after 1s in QuestionScene and 100% full-area sub-level row clicks', async ({ page }) => {
   await page.setViewportSize({ width: 932, height: 430 });
+  await installSpeechFixture(page);
   await page.goto('http://localhost:4173/');
-  await page.waitForTimeout(2000);
+  await expect(page.locator('.home-view')).toBeVisible();
 
   const canvas = page.locator('#game-container canvas');
   const box = await canvas.boundingBox();
@@ -15,19 +17,6 @@ test('Verification: Auto-read after 1s in QuestionScene and 100% full-area sub-l
   await page.evaluate(() => {
     const game = (window as any).__PHASER_GAME__;
     const title = game.scene.getScene('TitleScene');
-    (window as any).__SPEECH_CALLED__ = false;
-    (window as any).__SPEECH_TEXT__ = '';
-    
-    // Track SpeechService.speak
-    const origSpeak = (window as any).speechSynthesis?.speak;
-    if ((window as any).speechSynthesis) {
-      (window as any).speechSynthesis.speak = (utt: any) => {
-        (window as any).__SPEECH_CALLED__ = true;
-        (window as any).__SPEECH_TEXT__ = utt.text;
-        if (origSpeak) origSpeak.call((window as any).speechSynthesis, utt);
-      };
-    }
-
     title.scene.start('QuestionScene', {
       stationId: 1,
       questionIndex: 0,
@@ -51,24 +40,22 @@ test('Verification: Auto-read after 1s in QuestionScene and 100% full-area sub-l
 
   // At 500ms, should NOT have spoken yet
   await page.waitForTimeout(500);
-  const speechAt500ms = await page.evaluate(() => (window as any).__SPEECH_CALLED__);
+  const speechAt500ms = await latestSpeech(page);
   console.log('Speech called at 500ms:', speechAt500ms);
-  expect(speechAt500ms).toBe(false);
+  expect(speechAt500ms).toBeNull();
 
   // Wait for the Phaser one-second timer to dispatch.  A busy headless GPU
   // can advance the game clock more slowly than wall time, so the assertion
   // observes the timer event instead of assuming a fixed sleep is equivalent.
   await expect.poll(
-    () => page.evaluate(() => (window as any).__SPEECH_CALLED__),
+    () => latestSpeech(page).then((speech) => speech !== null),
     { timeout: 5000, intervals: [100, 250, 500] }
   ).toBe(true);
-  const speechAfter1s = await page.evaluate(() => ({
-    called: (window as any).__SPEECH_CALLED__,
-    text: (window as any).__SPEECH_TEXT__,
-  }));
+  const speechAfter1s = await latestSpeech(page);
   console.log('Speech called after 1s:', speechAfter1s);
-  expect(speechAfter1s.called).toBe(true);
-  expect(speechAfter1s.text).toContain('請問「大」的反義詞是甚麼？');
+  expect(speechAfter1s?.text).toContain('請問「大」的反義詞是甚麼？');
+  expect(speechAfter1s?.lang).toBe('zh-HK');
+  expect(speechAfter1s?.voiceName).toBe('QA Cantonese');
 
   // 2. Return to the responsive Map/Station detail surface. The responsive
   // layer is the owner of these controls, so test the complete visible row
