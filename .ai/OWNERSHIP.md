@@ -1,5 +1,9 @@
 | Path / Module | Agent | Task | Status |
 |---|---|---|---|
+| docs/qa/release-hardening/ | OpenAI Codex | TASK-20260913-RELEASE-HARDENING | LOCKED |
+| docs/superpowers/plans/2026-09-13-release-hardening.md | OpenAI Codex | TASK-20260913-RELEASE-HARDENING | LOCKED |
+| e2e/ | OpenAI Codex | TASK-20260913-RELEASE-HARDENING | LOCKED |
+| playwright.config.ts | OpenAI Codex | TASK-20260913-RELEASE-HARDENING | LOCKED |
 | (none) | — | — | AVAILABLE |
 
 

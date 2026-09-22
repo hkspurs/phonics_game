@@ -1,5 +1,28 @@
 # AI Coordination Changelog
 
+## 2026-09-13 — OpenAI Codex — TASK-20260913-RELEASE-HARDENING (Task A)
+
+Established a fresh release-hardening baseline from `p1-adventure` merge
+`2656552`. Captured the complete Playwright JSON report and an evidence-backed
+inventory of all failures without deleting, skipping or weakening tests.
+
+Changed:
+- `docs/qa/release-hardening/failure-inventory.md`
+- `docs/qa/release-hardening/checkpoint.md`
+- `docs/qa/release-hardening/baseline-results.json`
+- `.ai/TASK_BOARD.md`, `.ai/OWNERSHIP.md`
+
+Verification:
+- `npm ci`: passed; 53 packages installed.
+- `npm run test:unit`: 63 files / 1,940 tests passed.
+- `npm run build`: passed; 1,962.48 kB JS / 466.61 kB gzip; existing Vite
+  large-chunk advisory remains.
+- Full Playwright collection: 92 tests; 59 passed, 33 failed, 0 skipped.
+- Chromium 129 installed for reproducible browser runs.
+
+Pending: migrate the affected local browser specs in Task B; physical-device,
+real-audible speech and assistive-technology evidence remain `MANUAL_PENDING`.
+
 ## 2026-09-13 — OpenAI Codex — TASK-20260913-PHASE89-FOLLOWUP
 
 Follow-up review fixes for the Phase 8–9 release gates:

@@ -2,6 +2,19 @@
 
 ## ACTIVE
 
+### TASK-20260913-RELEASE-HARDENING
+
+Agent: OpenAI Codex
+Status: IN_PROGRESS
+Started: 2026-09-13
+
+Description: Execute the approved release-hardening plan sequentially from
+Task A on a branch based on current `p1-adventure`, with per-task tests,
+commits and checkpoints. Preserve player saves and reward semantics; mark
+physical/device evidence MANUAL_PENDING.
+
+Current phase: Task B — browser-suite migration.
+
 ### TASK-20260912-STORYBOOK-UX
 
 Agent: OpenAI Codex
